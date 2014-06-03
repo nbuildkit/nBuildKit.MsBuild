@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldClean Condition=" '$(ShouldClean)' == '' ">true</ShouldClean>
+        
+        <!-- Configurations -->
+        <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
+        <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">release</ProductionConfiguration>
+        
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces Condition=" '$(PlatformWithoutSpaces)' == '' ">$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+    </PropertyGroup>
+    
+    <Import Project="BuildSteps.props"
+            Condition="Exists('BuildSteps.props')"/>
+    
+    <Target Name="Run" DependsOnTargets="_DisplayInfo">
+        <!-- Prepare the workspace and create the necessary files for the build -->
+        <CallTarget Targets="_Prepare_Workspace" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetPrepareWorkspace)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_Prepare_GatherReleaseNotes" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetPrepareGatherReleaseNotes)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        
+        <!-- Perform analysis on the source files -->
+        <CallTarget Targets="_Analyze_Source_Ccm" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetAnalyzeSourceWithCcm)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_Analyze_Source_SourceMonitor" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetAnalyzeSourceWithSourceMonitor)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+
+        <!-- Build the binaries -->
+        <CallTarget Targets="_Build_Binaries" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetBuildBinaries)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        
+        <!-- Execute the unit tests -->
+        <CallTarget Targets="_Test_Unit" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetExecuteUnitTests)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        
+        <!-- Perform analysis on the binary files -->
+        <CallTarget Targets="_Analyze_Binaries_Moma" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetAnalyzeBinariesWithMoma)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_Analyze_Binaries_FxCop" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetAnalyzeBinariesWithFxCop)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        
+        <!-- Build the API documentation -->
+        <CallTarget Targets="_Build_ApiDocumentation" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetBuildApiDocumentation)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        
+        <!-- Package the binaries -->
+        <CallTarget Targets="_Package_Nuget" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetPackageNuGetPackages)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_Package_Zip" 
+                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetPackageZipFiles)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+    </Target>
+    
+    
+    <Target Name="_DisplayInfo">
+        <Message Text="Building ..." />
+        
+        <!-- Display all the configuration values here -->
+        <Message Text="ShouldClean: $(ShouldClean)" 
+                 Importance="low" />
+        
+        <Message Text="TestConfiguration: $(TestConfiguration)" 
+                 Importance="low" />
+        <Message Text="ProductionConfiguration: $(ProductionConfiguration)" 
+                 Importance="low" />
+        
+        <!-- Display the targets that will be executed -->
+        <Message Text="Executing targets: @(StepsToExecute->'%(identity)', ' ')" 
+                 Importance="normal" 
+                 Condition=" '@(StepsToExecute)' != '' " />
+        <Message Text="Executing targets: NONE" 
+                 Importance="normal" 
+                 Condition=" '@(StepsToExecute)' == '' " />
+    </Target>
+    
+    
+    <!-- Prepare the workspace and create the necessary files for the build -->
+    <PropertyGroup>
+        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
+    </PropertyGroup>
+    <PropertyGroup>
+        <MsBuildPrepareWorkspace>$(DirMsBuildScripts)\prepare.workspace.msbuild</MsBuildPrepareWorkspace>
+    </PropertyGroup>
+    <Target Name="_Prepare_Workspace">
+        <MSBuild Projects="$(MsBuildPrepareWorkspace)" Properties="ShouldClean=$(ShouldClean)" />
+    </Target>
+    
+    <PropertyGroup>
+        <MsBuildPrepareGatherReleaseNotes>$(DirMsBuildScripts)\prepare.gatherreleasenotes.msbuild</MsBuildPrepareGatherReleaseNotes>
+    </PropertyGroup>
+    <Target Name="_Prepare_GatherReleaseNotes">
+        <MSBuild Projects="$(MsBuildPrepareGatherReleaseNotes)" />
+    </Target>
+    
+    
+    <!-- Perform analysis on the source files -->
+    <PropertyGroup>
+        <MsBuildAnalyzeSourceCcm>$(DirMsBuildScripts)\analyze.source.ccm.msbuild</MsBuildAnalyzeSourceCcm>
+    </PropertyGroup>
+    <Target Name="_Analyze_Source_Ccm">
+        <MSBuild Projects="$(MsBuildAnalyzeSourceCcm)" />
+    </Target>
+    
+    <PropertyGroup>
+        <MsBuildAnalyzeSourceSourceMonitor>$(DirMsBuildScripts)\analyze.source.sourcemonitor.msbuild</MsBuildAnalyzeSourceSourceMonitor>
+    </PropertyGroup>
+    <Target Name="_Analyze_Source_SourceMonitor">
+        <MSBuild Projects="$(MsBuildAnalyzeSourceSourceMonitor)" />
+    </Target>
+    
+    
+    <!-- Build the binaries -->
+    <PropertyGroup>
+        <MsBuildBuildBinaries>$(DirMsBuildScripts)\build.binaries.msbuild</MsBuildBuildBinaries>
+    </PropertyGroup>
+    <Target Name="_Build_Binaries" DependsOnTargets="_PrepareWorkspace;_GatherReleaseNotes">
+        <MSBuild Projects="$(MsBuildBuildBinaries)" 
+                 Properties="Configuration=$(TestConfiguration)" />
+        <MSBuild Projects="$(MsBuildBuildBinaries)" 
+                 Properties="Configuration=$(ProductionConfiguration)" 
+                 Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' " />
+    </Target>
+    
+    
+    <!-- Execute the unit tests -->
+    <PropertyGroup>
+        <MsBuildTestUnit>$(DirMsBuildScripts)\test.unit.msbuild</MsBuildTestUnit>
+    </PropertyGroup>
+    <Target Name="_Test_Unit">
+        <MSBuild Projects="$(MsBuildTestUnit)" Properties="Configuration=Release" />
+    </Target>
+
+    
+    <!-- Perform analysis on the binary files -->
+    <PropertyGroup>
+        <MsBuildAnalyzeBinariesMoma>$(DirMsBuildScripts)\analyze.binaries.moma.msbuild</MsBuildAnalyzeBinariesMoma>
+    </PropertyGroup>
+    <Target Name="_Analyze_Binaries_Moma">
+        <MSBuild Projects="$(MsBuildAnalyzeBinariesMoma)" Properties="Configuration=Release" />
+    </Target>
+    
+    <PropertyGroup>
+        <MsBuildAnalyzeBinariesFxCop>$(DirMsBuildScripts)\analyze.binaries.fxcop.msbuild</MsBuildAnalyzeBinariesFxCop>
+    </PropertyGroup>
+    <Target Name="_Analyze_Binaries_FxCop">
+        <MSBuild Projects="$(MsBuildAnalyzeBinariesFxCop)" Properties="Configuration=Release" />
+    </Target>
+    
+    
+    <!-- Build the API documentation -->
+    <PropertyGroup>
+        <MsBuildBuildApiDocumentation>$(DirMsBuildScripts)\build.apidocumentation.sandcastle.msbuild</MsBuildBuildApiDocumentation>
+    </PropertyGroup>
+    <Target Name="_Build_ApiDocumentation">
+        <MSBuild Projects="$(MsBuildBuildApiDocumentation)" Properties="Configuration=Deploy" />
+    </Target>
+    
+    
+    <!-- Package the binaries -->
+    <PropertyGroup>
+        <MsBuildPackageNuGet>$(DirMsBuildScripts)\package.nuget.msbuild</MsBuildPackageNuGet>
+    </PropertyGroup>
+    <Target Name="_Package_Nuget">
+        <MSBuild Projects="$(MsBuildPackageNuGet)" Properties="Configuration=Deploy" />
+    </Target>
+    
+    <PropertyGroup>
+        <MsBuildPackageZip>$(DirMsBuildScripts)\package.zip.msbuild</MsBuildPackageZip>
+    </PropertyGroup>
+    <Target Name="_Package_Zip">
+        <MSBuild Projects="$(MsBuildPackageZip)" Properties="Configuration=Deploy" />
+    </Target>
+</Project>
