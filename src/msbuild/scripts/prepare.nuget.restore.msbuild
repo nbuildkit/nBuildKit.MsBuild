@@ -15,8 +15,8 @@
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
         
         <!-- External tools -->
         <ToolsExternalNuGetExe Condition=" '$(ToolsExternalNuGetExe)' == '' ">NuGet.exe</ToolsExternalNuGetExe>
@@ -41,11 +41,7 @@
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
-        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
-        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
         <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
-        <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
