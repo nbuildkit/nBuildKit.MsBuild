@@ -1,0 +1,80 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="TemplateFile" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <Template ParameterType="System.String" Required="true" />
+            <OutputFileName ParameterType="System.String" Required="true" />
+            <Tokens ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        const string MetadataValueTag = "ReplacementValue";
+                        var _regex = new System.Text.RegularExpressions.Regex(
+                            "(?<token>\\$\\{(?<identifier>\\w*)\\})",
+                            System.Text.RegularExpressions.RegexOptions.IgnoreCase 
+                            | System.Text.RegularExpressions.RegexOptions.Multiline 
+                            | System.Text.RegularExpressions.RegexOptions.Compiled 
+                            | System.Text.RegularExpressions.RegexOptions.Singleline);
+
+                        if (!System.IO.File.Exists(Template))
+                        {
+                            Log.LogError("Template File '{0}' cannot be found", Template);
+                        }
+                        else
+                        {
+                            var tokenPairs = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.InvariantCultureIgnoreCase);
+                            if (Tokens != null)
+                            {
+                                ITaskItem[] processedTokens = Tokens;
+                                for (int i = 0; i < processedTokens.Length; i++)
+                                {
+                                    ITaskItem taskItem = processedTokens[i];
+                                    if (!string.IsNullOrEmpty(taskItem.ItemSpec))
+                                    {
+                                        tokenPairs.Add(taskItem.ItemSpec, taskItem.GetMetadata(MetadataValueTag));
+                                    }
+                                }
+                            }
+
+                            using (var streamReader = new System.IO.StreamReader(Template))
+                            {
+                                string value = _regex.Replace(
+                                    streamReader.ReadToEnd(),
+                                    m => 
+                                    {
+                                        var output = m.Value;
+                                        if (tokenPairs.ContainsKey(m.Groups[2].Value))
+                                        {
+                                            output = tokenPairs[m.Groups[2].Value];
+                                        }
+                                        return output;
+                                    });
+
+                                using (var streamWriter = new System.IO.StreamWriter(OutputFileName))
+                                {
+                                    streamWriter.Write(value);
+                                    streamWriter.Flush();
+                                    Log.LogMessage("Template replaced and written to '{0}'", OutputFileName);
+                                }
+                            }
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

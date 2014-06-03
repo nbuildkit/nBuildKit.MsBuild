@@ -1,0 +1,77 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="GatherNuGetDependenciesForProject" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <Dependencies ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.Xml" />
+            <Reference Include="System.Xml.Linq" />
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var knownDependencies = new System.Collections.Generic.List<string>();
+                        var builder = new System.Text.StringBuilder();
+                        foreach (var token in Packages)
+                        {
+                            var filePath = token.ToString();
+                            if (!System.IO.File.Exists(filePath))
+                            {
+                                Log.LogMessage("File does not exist: {0}", filePath);
+                            }
+                            
+                            System.Xml.Linq.XDocument xDoc = null;
+                            try
+                            {
+                                xDoc = System.Xml.Linq.XDocument.Load(filePath);
+                            }
+                            catch(System.Exception)
+                            {
+                                Log.LogError("Failed to load document {0}.", filePath);
+                            }
+                            
+                            var packages = from package in xDoc.Element("packages").Descendants("package")
+                                           select new 
+                                                {
+                                                    Id = package.Attribute("id").Value,
+                                                    Version = package.Attribute("version").Value,
+                                                };
+
+                            foreach (var package in packages)
+                            {
+                                if (knownDependencies.Contains(package.Id))
+                                {
+                                    continue;
+                                }
+                            
+                                if (builder.Length > 0)
+                                {
+                                    builder.Append(System.Environment.NewLine);
+                                }
+
+                                builder.Append(string.Format("<dependency id=\"{0}\" version=\"{1}\" />", package.Id, package.Version));
+                                knownDependencies.Add(package.Id);
+                            }
+                        }
+                        
+
+                        Dependencies = builder.ToString();
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

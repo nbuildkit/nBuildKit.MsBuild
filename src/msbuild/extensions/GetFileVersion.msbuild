@@ -1,0 +1,28 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <!--
+        Finds the version of a file
+        Define:
+        - FilePath: Full path to the file from which the version must be obtained.
+        - Path: Return variable containing the version of the file
+    -->
+    <UsingTask TaskName="GetFileVersion" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <FilePath ParameterType="System.String" Required="true" />
+            <FileVersion ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+                    FileVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(FilePath).FileVersion.ToString();
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

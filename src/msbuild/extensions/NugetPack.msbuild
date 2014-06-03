@@ -1,0 +1,73 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="NugetPack" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <NugetPath ParameterType="System.String" Required="true" />
+            <File ParameterType="System.String" Required="true" />
+            <ShouldBuildSymbols ParameterType="System.Boolean" Required="true" />
+            <OutputDirectory ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var builder = new System.Text.StringBuilder();
+                        {
+                            builder.Append(string.Format("pack \"{0}\" ", File));
+                            if (ShouldBuildSymbols)
+                            {
+                                builder.Append("-Symbols ");
+                            }
+                            
+                            builder.Append(string.Format("-OutputDirectory \"{0}\" ", OutputDirectory));
+                        }
+                        
+                        var info = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = NugetPath,
+                                    Arguments = builder.ToString(),
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived += 
+                            (s, e) => 
+                            { 
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                }
+                            };
+                        process.ErrorDataReceived += 
+                            (s, e) => 
+                            { 
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogError(e.Data); 
+                                }
+                            };
+                        process.Start();
+
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+                        
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

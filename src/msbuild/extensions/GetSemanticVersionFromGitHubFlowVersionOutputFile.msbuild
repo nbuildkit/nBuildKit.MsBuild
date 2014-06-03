@@ -1,0 +1,82 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="GetSemanticVersionFromGitHubFlowVersionOutputFile" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <VersionFile ParameterType="System.String" Required="true" />
+            <VersionMajor ParameterType="System.String" Output="true" />
+            <VersionMinor ParameterType="System.String" Output="true" />
+            <VersionPatch ParameterType="System.String" Output="true" />
+            <VersionBuild ParameterType="System.String" Output="true" />
+            <VersionSemantic ParameterType="System.String" Output="true" />
+            <VersionSemanticFull ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        try
+                        {
+                            string text;
+                            using (var reader = new System.IO.StreamReader(VersionFile))
+                            {
+                                text = reader.ReadToEnd();
+                            }
+
+                            const string fullSemVersionStart = "\"GitHubFlowVersion_FullSemVer\": \"";
+                            var index = text.IndexOf(fullSemVersionStart);
+                            VersionSemanticFull = text.Substring(
+                                index + fullSemVersionStart.Length,
+                                text.IndexOf("\",", index) - (index + fullSemVersionStart.Length));
+
+                            const string majorVersionStart = "\"GitHubFlowVersion_Major\": \"";
+                            index = text.IndexOf(majorVersionStart);
+                            VersionMajor = text.Substring(
+                                index + majorVersionStart.Length,
+                                text.IndexOf("\",", index) - (index + majorVersionStart.Length));
+
+                            const string minorVersionStart = "\"GitHubFlowVersion_Minor\": \"";
+                            index = text.IndexOf(minorVersionStart);
+                            VersionMinor = text.Substring(
+                                index + minorVersionStart.Length,
+                                text.IndexOf("\",", index) - (index + minorVersionStart.Length));
+
+                            const string patchVersionStart = "\"GitHubFlowVersion_Patch\": \"";
+                            index = text.IndexOf(patchVersionStart);
+                            VersionPatch = text.Substring(
+                                index + patchVersionStart.Length,
+                                text.IndexOf("\",", index) - (index + patchVersionStart.Length));
+
+                            const string buildVersionStart = "\"GitHubFlowVersion_NumCommitsSinceRelease\": \"";
+                            index = text.IndexOf(buildVersionStart);
+                            VersionBuild = text.Substring(
+                                index + buildVersionStart.Length,
+                                text.IndexOf("\",", index) - (index + buildVersionStart.Length));
+                                
+                            VersionSemantic = string.Format(
+                                "{0}.{1}.{2}",
+                                VersionMajor,
+                                VersionMinor,
+                                VersionPatch);
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+                        
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

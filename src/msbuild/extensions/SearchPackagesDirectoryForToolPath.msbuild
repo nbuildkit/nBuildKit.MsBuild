@@ -1,0 +1,33 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <!--
+        Finds the full path for a tool that was installed by NuGet
+        Define:
+        - PackagesDir: Directory that contains the 'installed' packages.
+        - FileToLocate: Name of the executable file for which the path should be located.
+        - Path: Return variable containing the full path of the executable file.
+    -->
+    <UsingTask TaskName="SearchPackagesDirectoryForToolPath" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <PackagesDir ParameterType="System.String" Required="true" />
+            <FileToLocate ParameterType="System.String" Required="true" />
+            <Path ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Linq" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+                    Path = System.IO.Directory.EnumerateFiles(PackagesDir, FileToLocate, SearchOption.AllDirectories)
+                        .OrderBy(k => System.IO.Path.GetDirectoryName(k))
+                        .LastOrDefault();
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

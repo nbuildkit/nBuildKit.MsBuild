@@ -1,0 +1,94 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="SourceMonitorOutputToCsv" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <ProjectName ParameterType="System.String" Required="true" />
+            <InputFile ParameterType="System.String" Required="true" />
+            <OutputPath ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.Xml" />
+            <Reference Include="System.Xml.Linq" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+                    var doc = System.Xml.Linq.XDocument.Load(InputFile);
+                    var metrics = (from node in doc
+                                      .Element("sourcemonitor_metrics")
+                                      .Element("project")
+                                      .Element("checkpoints")
+                                      .Element("checkpoint")
+                                      .Element("metrics")
+                                      .Descendants("metric")
+                                   select node.Value).ToList();
+
+                    var numberOfLines = metrics[0];
+                    var percentComments = metrics[2];
+                    var percentDocs = metrics[3];
+                    var numberOfElements = metrics[4];
+                    var methodsPerClass = metrics[5];
+                    var callsPerMethod = metrics[6];
+                    var statementsPerMethod = metrics[7];
+                    var maximumComplexity = metrics[10];
+                    var averageComplexity = metrics[14];
+                    var maximumBlockDepth = metrics[12];
+                    var averageBlockDepth = metrics[13];
+
+                    {
+                        var text = string.Format(
+                            "\"Number of Lines\"" + System.Environment.NewLine + "{0}",
+                            numberOfLines);
+
+                        var path = string.Format("{0}.sourcemonitor.linecount.csv", ProjectName);
+                        using (var writer = new System.IO.StreamWriter(System.IO.Path.Combine(OutputPath, path)))
+                        {
+                            writer.Write(text);
+                        }
+                    }
+
+                    {
+                        var text = string.Format(
+                            "\"Percent comment lines\", \"Percent documentation lines\"" + System.Environment.NewLine + "{0}, {1}",
+                            percentComments,
+                            percentDocs);
+                        var path = string.Format("{0}.sourcemonitor.percentages.csv", ProjectName);
+                        using (var writer = new System.IO.StreamWriter(System.IO.Path.Combine(OutputPath, path)))
+                        {
+                            writer.Write(text);
+                        }
+                    }
+
+                    {
+                        var text = string.Format(
+                            "\"Methods per class\""
+                             + ", \"Calls per method\""
+                             + ", \"Statements per method\""
+                             + ", \"Maximum complexity\""
+                             + ", \"Average complexity\""
+                             + ", \"Average block depth\""
+                             + ", \"Maximum block depth\"" 
+                             + System.Environment.NewLine 
+                             + "{0}, {1}, {2}, {3}, {4}, {5}, {6}",
+                            methodsPerClass,
+                            callsPerMethod,
+                            statementsPerMethod,
+                            maximumComplexity,
+                            averageComplexity,
+                            averageBlockDepth,
+                            maximumBlockDepth);
+                        var path = string.Format("{0}.sourcemonitor.complexity.csv", ProjectName);
+                        using (var writer = new System.IO.StreamWriter(System.IO.Path.Combine(OutputPath, path)))
+                        {
+                            writer.Write(text);
+                        }
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

@@ -1,0 +1,80 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <!--
+        Invokes FxCopCmd and handles the error cases
+        Define:
+        - FxCopDir [Property]: The directory that contains FxCopCmd.exe
+        - FxCopOutputFile [Property]: The file that should contain the FxCop results
+        - FxCopProjectFile [Property]: The FxCop project file
+    -->
+    <UsingTask TaskName="FxCop" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <FxCopDir ParameterType="System.String" Required="true" />
+            <FxCopOutputFile ParameterType="System.String" Required="true" />
+            <FxCopProjectFile ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var builder = new System.Text.StringBuilder();
+                        {
+                            builder.Append(string.Format("/project:\"{0}\" ", FxCopProjectFile));
+                            builder.Append(string.Format("/out:\"{0}\" ", FxCopOutputFile));
+                            builder.Append(string.Format("/ignoregeneratedcode "));
+                            builder.Append(string.Format("/searchgac "));
+                            builder.Append(string.Format("/forceoutput "));
+                        }
+
+                        var info = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = System.IO.Path.Combine(FxCopDir, "FxCopCmd.exe"),
+                                    Arguments = builder.ToString(),
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+                                
+                        Log.LogMessage(MessageImportance.Normal, info.Arguments);
+                        
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived += 
+                            (s, e) => 
+                            { 
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                }
+                            };
+                        process.ErrorDataReceived += 
+                            (s, e) => 
+                            { 
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogError(e.Data); 
+                                }
+                            };
+                        process.Start();
+
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+                        
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>
