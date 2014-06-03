@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="Run"
+         DefaultTargets="nBuildKit_Build_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="BuildSteps.props"
+            Condition="Exists('BuildSteps.props')"/>    
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <!-- Default values for all the properties in case they were not overriden -->
+    <PropertyGroup>
         <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
         <ShouldClean Condition=" '$(ShouldClean)' == '' ">true</ShouldClean>
         
         <!-- Configurations -->
@@ -12,71 +23,104 @@
         
         <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
         <PlatformWithoutSpaces Condition=" '$(PlatformWithoutSpaces)' == '' ">$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+        
+        <!-- Directory structure -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
+        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        
+        <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
+        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
     </PropertyGroup>
     
-    <Import Project="BuildSteps.props"
-            Condition="Exists('BuildSteps.props')"/>
+    <Target Name="nBuildKit_Build_Run" DependsOnTargets="_nBuildKit_Build_DisplayInfo">
+        <!-- If there is no property file then we die -->
+        <Error Text="No build properties file was defined."
+               Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
     
-    <Target Name="Run" DependsOnTargets="_DisplayInfo">
         <!-- Prepare the workspace and create the necessary files for the build -->
-        <CallTarget Targets="_Prepare_Workspace" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetPrepareWorkspace)' OR  '%(StepsToExecute.Identity)' == 'all' " />
-        <CallTarget Targets="_Prepare_GatherReleaseNotes" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetPrepareGatherReleaseNotes)' OR  '%(StepsToExecute.Identity)' == 'all' " />
-        
+        <CallTarget Targets="_nBuildKit_Build_Prepare" 
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
+       
         <!-- Perform analysis on the source files -->
-        <CallTarget Targets="_Analyze_Source_Ccm" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetAnalyzeSourceWithCcm)' OR  '%(StepsToExecute.Identity)' == 'all' " />
-        <CallTarget Targets="_Analyze_Source_SourceMonitor" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetAnalyzeSourceWithSourceMonitor)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_nBuildKit_Build_Analyze_Source" 
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeSource)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
 
         <!-- Build the binaries -->
-        <CallTarget Targets="_Build_Binaries" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetBuildBinaries)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_nBuildKit_Build_Build_Binaries" 
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetBuildBinaries)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
         
         <!-- Execute the unit tests -->
-        <CallTarget Targets="_Test_Unit" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetExecuteUnitTests)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit" 
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetExecuteUnitTests)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
         
         <!-- Perform analysis on the binary files -->
-        <CallTarget Targets="_Analyze_Binaries_Moma" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetAnalyzeBinariesWithMoma)' OR  '%(StepsToExecute.Identity)' == 'all' " />
-        <CallTarget Targets="_Analyze_Binaries_FxCop" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetAnalyzeBinariesWithFxCop)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_nBuildKit_Build_Analyze_Binaries" 
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeBinaries)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
         
         <!-- Build the API documentation -->
-        <CallTarget Targets="_Build_ApiDocumentation" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetBuildApiDocumentation)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_nBuildKit_Build_Build_ApiDocumentation" 
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetBuildApiDocumentation)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
         
         <!-- Package the binaries -->
-        <CallTarget Targets="_Package_Nuget" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetPackageNuGetPackages)' OR  '%(StepsToExecute.Identity)' == 'all' " />
-        <CallTarget Targets="_Package_Zip" 
-                    Condition=" '%(StepsToExecute.Identity)' == '$(TargetPackageZipFiles)' OR  '%(StepsToExecute.Identity)' == 'all' " />
+        <CallTarget Targets="_nBuildKit_Build_Package" 
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPackage)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
     </Target>
     
     
-    <Target Name="_DisplayInfo">
+    <Target Name="_nBuildKit_Build_DisplayInfo">
         <Message Text="Building ..." />
-        
+
         <!-- Display all the configuration values here -->
-        <Message Text="ShouldClean: $(ShouldClean)" 
-                 Importance="low" />
+        <Message Text="Configuration values:"
+                 Condition="$(ShouldDisplayDebugLog)" />
+                 
+        <Message Text="ShouldClean:             $(ShouldClean)" 
+                 Condition="$(ShouldDisplayDebugLog)" />
         
-        <Message Text="TestConfiguration: $(TestConfiguration)" 
-                 Importance="low" />
+        <Message Text="TestConfiguration:       $(TestConfiguration)" 
+                 Condition="$(ShouldDisplayDebugLog)" />
         <Message Text="ProductionConfiguration: $(ProductionConfiguration)" 
-                 Importance="low" />
+                 Condition="$(ShouldDisplayDebugLog)" />
+                 
+        <Message Text=" "
+                 Condition="$(ShouldDisplayDebugLog)" />
         
         <!-- Display the targets that will be executed -->
-        <Message Text="Executing targets: @(StepsToExecute->'%(identity)', ' ')" 
-                 Importance="normal" 
-                 Condition=" '@(StepsToExecute)' != '' " />
+        <Message Text="Executing targets: @(BuildStepsToExecute->'%(identity)', '; ')" 
+                 Condition=" '@(BuildStepsToExecute)' != '' AND $(ShouldDisplayDebugLog) " />
         <Message Text="Executing targets: NONE" 
-                 Importance="normal" 
-                 Condition=" '@(StepsToExecute)' == '' " />
+                 Condition=" '@(BuildStepsToExecute)' == '' AND $(ShouldDisplayDebugLog) " />
+                 
+        <Message Text=" "
+                 Condition="$(ShouldDisplayDebugLog)" />
+                 
+        <!-- Display the known directories -->
+        <Message Text="Project directory structure:"
+                 Condition="$(ShouldDisplayDebugLog)" />
+                 
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the source code is located at:           $(DirSrc)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)"
+                 Condition="$(ShouldDisplayDebugLog)" />
     </Target>
-    
     
     <!-- Prepare the workspace and create the necessary files for the build -->
     <PropertyGroup>
@@ -84,94 +128,94 @@
     </PropertyGroup>
     <PropertyGroup>
         <MsBuildPrepareWorkspace>$(DirMsBuildScripts)\prepare.workspace.msbuild</MsBuildPrepareWorkspace>
-    </PropertyGroup>
-    <Target Name="_Prepare_Workspace">
-        <MSBuild Projects="$(MsBuildPrepareWorkspace)" Properties="ShouldClean=$(ShouldClean)" />
-    </Target>
-    
-    <PropertyGroup>
+        <MsBuildPrepareNuGetRestore>$(DirMsBuildScripts)\prepare.nuget.restore.msbuild</MsBuildPrepareNuGetRestore>
+        <MsBuildPrepareGitEnsureMasterBranch>$(DirMsBuildScripts)\prepare.git.ensuremasterbranch.msbuild</MsBuildPrepareGitEnsureMasterBranch>
         <MsBuildPrepareGatherReleaseNotes>$(DirMsBuildScripts)\prepare.gatherreleasenotes.msbuild</MsBuildPrepareGatherReleaseNotes>
     </PropertyGroup>
-    <Target Name="_Prepare_GatherReleaseNotes">
-        <MSBuild Projects="$(MsBuildPrepareGatherReleaseNotes)" />
+    <Target Name="_nBuildKit_Build_Prepare">
+        <MSBuild Projects="$(MsBuildPrepareWorkspace)" 
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+        <MSBuild Projects="$(MsBuildPrepareNuGetRestore)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Condition="" />
+        <MSBuild Projects="$(MsBuildPrepareGitEnsureMasterBranch)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Condition="" />
+        <MSBuild Projects="$(MsBuildPrepareGatherReleaseNotes)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Condition="" />
     </Target>
-    
     
     <!-- Perform analysis on the source files -->
     <PropertyGroup>
         <MsBuildAnalyzeSourceCcm>$(DirMsBuildScripts)\analyze.source.ccm.msbuild</MsBuildAnalyzeSourceCcm>
-    </PropertyGroup>
-    <Target Name="_Analyze_Source_Ccm">
-        <MSBuild Projects="$(MsBuildAnalyzeSourceCcm)" />
-    </Target>
-    
-    <PropertyGroup>
         <MsBuildAnalyzeSourceSourceMonitor>$(DirMsBuildScripts)\analyze.source.sourcemonitor.msbuild</MsBuildAnalyzeSourceSourceMonitor>
     </PropertyGroup>
-    <Target Name="_Analyze_Source_SourceMonitor">
-        <MSBuild Projects="$(MsBuildAnalyzeSourceSourceMonitor)" />
+    <Target Name="_nBuildKit_Build_Analyze_Source">
+        <MSBuild Projects="$(MsBuildAnalyzeSourceCcm)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Condition="" />
+        <MSBuild Projects="$(MsBuildAnalyzeSourceSourceMonitor)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Condition="" />
     </Target>
-    
     
     <!-- Build the binaries -->
     <PropertyGroup>
         <MsBuildBuildBinaries>$(DirMsBuildScripts)\build.binaries.msbuild</MsBuildBuildBinaries>
     </PropertyGroup>
-    <Target Name="_Build_Binaries" DependsOnTargets="_PrepareWorkspace;_GatherReleaseNotes">
+    <Target Name="_nBuildKit_Build_Build_Binaries" DependsOnTargets="_PrepareWorkspace;_GatherReleaseNotes">
         <MSBuild Projects="$(MsBuildBuildBinaries)" 
-                 Properties="Configuration=$(TestConfiguration)" />
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
         <MSBuild Projects="$(MsBuildBuildBinaries)" 
-                 Properties="Configuration=$(ProductionConfiguration)" 
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" 
                  Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' " />
     </Target>
     
-    
     <!-- Execute the unit tests -->
     <PropertyGroup>
-        <MsBuildTestUnit>$(DirMsBuildScripts)\test.unit.msbuild</MsBuildTestUnit>
+        <MsBuildTestUnitNUnit>$(DirMsBuildScripts)\test.unit.nunit.msbuild</MsBuildTestUnitNUnit>
+        <MsBuildTestUnitMsTest>$(DirMsBuildScripts)\test.unit.mstest.msbuild</MsBuildTestUnitMsTest>
     </PropertyGroup>
-    <Target Name="_Test_Unit">
-        <MSBuild Projects="$(MsBuildTestUnit)" Properties="Configuration=Release" />
+    <Target Name="_nBuildKit_Build_Test_Unit">
+        <MSBuild Projects="$(MsBuildTestUnitNUnit)" 
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Condition="" />
+        <MSBuild Projects="$(MsBuildTestUnitMsTest)" 
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" 
+                 Condition="" />
     </Target>
-
     
     <!-- Perform analysis on the binary files -->
     <PropertyGroup>
         <MsBuildAnalyzeBinariesMoma>$(DirMsBuildScripts)\analyze.binaries.moma.msbuild</MsBuildAnalyzeBinariesMoma>
-    </PropertyGroup>
-    <Target Name="_Analyze_Binaries_Moma">
-        <MSBuild Projects="$(MsBuildAnalyzeBinariesMoma)" Properties="Configuration=Release" />
-    </Target>
-    
-    <PropertyGroup>
         <MsBuildAnalyzeBinariesFxCop>$(DirMsBuildScripts)\analyze.binaries.fxcop.msbuild</MsBuildAnalyzeBinariesFxCop>
     </PropertyGroup>
-    <Target Name="_Analyze_Binaries_FxCop">
-        <MSBuild Projects="$(MsBuildAnalyzeBinariesFxCop)" Properties="Configuration=Release" />
+    <Target Name="_nBuildKit_Build_Analyze_Binaries">
+        <MSBuild Projects="$(MsBuildAnalyzeBinariesMoma)" 
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+        <MSBuild Projects="$(MsBuildAnalyzeBinariesFxCop)" 
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
     </Target>
-    
     
     <!-- Build the API documentation -->
     <PropertyGroup>
         <MsBuildBuildApiDocumentation>$(DirMsBuildScripts)\build.apidocumentation.sandcastle.msbuild</MsBuildBuildApiDocumentation>
     </PropertyGroup>
-    <Target Name="_Build_ApiDocumentation">
-        <MSBuild Projects="$(MsBuildBuildApiDocumentation)" Properties="Configuration=Deploy" />
-    </Target>
-    
+    <Target Name="_nBuildKit_Build_Build_ApiDocumentation">
+        <MSBuild Projects="$(MsBuildBuildApiDocumentation)" 
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+    </Target>    
     
     <!-- Package the binaries -->
     <PropertyGroup>
         <MsBuildPackageNuGet>$(DirMsBuildScripts)\package.nuget.msbuild</MsBuildPackageNuGet>
-    </PropertyGroup>
-    <Target Name="_Package_Nuget">
-        <MSBuild Projects="$(MsBuildPackageNuGet)" Properties="Configuration=Deploy" />
-    </Target>
-    
-    <PropertyGroup>
         <MsBuildPackageZip>$(DirMsBuildScripts)\package.zip.msbuild</MsBuildPackageZip>
     </PropertyGroup>
-    <Target Name="_Package_Zip">
-        <MSBuild Projects="$(MsBuildPackageZip)" Properties="Configuration=Deploy" />
+    <Target Name="_nBuildKit_Build_Package">
+        <MSBuild Projects="$(MsBuildPackageNuGet)" 
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+        <MSBuild Projects="$(MsBuildPackageZip)" 
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
     </Target>
 </Project>
