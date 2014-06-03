@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Prepare_Nuget_Restore_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
+        
+        <!-- External tools -->
+        <ToolsExternalNuGetExe Condition=" '$(ToolsExternalNuGetExe)' == '' ">NuGet.exe</ToolsExternalNuGetExe>
+        
+        <!-- Extensions -->
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\NugetRestore.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\NugetRestore.msbuild')"/>    
+
+    <Target Name="nBuildKit_Prepare_Nuget_Restore_Run" DependsOnTargets="_nBuildKit_Prepare_Nuget_Restore_DisplayInfo;_nBuildKit_Prepare_Nuget_Restore_Packages">
+        <!-- Do nothing here -->
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_Nuget_Restore_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <!-- Display all the configuration values here -->
+        <Message Text="Configuration values:" />
+        <Message Text="ShouldClean:             $(ShouldClean)" />
+        <Message Text=" " />
+        
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
+        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
+        <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetExe)" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Prepare_Nuget_Restore_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_Nuget_Restore_DebugLog">
+        <Message Text="Restoring packages ..." />
+    </Target>
+
+    <!-- Nuget restore -->
+    <Target Name="_nBuildKit_Prepare_Nuget_Restore_Packages" DependsOnTargets="_nBuildKit_Prepare_Nuget_Restore_DisplayInfo">
+        <ItemGroup>
+            <NugetPackageFiles Include="$(DirWorkspace)\**\packages.config"
+                               Exclude="$(DirPackages)\**\packages.config;$(DirBuild)\**\packages.config" />
+        </ItemGroup>
+        
+        <Message Text="No NuGet package configuration files found to restore packages from."
+                 Condition=" '@(NugetPackageFiles)' == '' " />
+        <NugetRestore NugetPath="$(ToolsExternalNuGetExe)" 
+                      PackageFile="@(NugetPackageFiles)" 
+                      PackageDirectory="$(DirPackages)"
+                      Condition=" '@(NugetPackageFiles)' != '' "/>
+    </Target>
+ </Project>
