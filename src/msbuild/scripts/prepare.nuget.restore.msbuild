@@ -20,7 +20,7 @@
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         
         <!-- External tools -->
-        <ToolsExternalNuGetExe Condition=" '$(ToolsExternalNuGetExe)' == '' ">NuGet.exe</ToolsExternalNuGetExe>
+        <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\NugetRestore.msbuild"
@@ -31,11 +31,6 @@
     </Target>
     
     <Target Name="_nBuildKit_Prepare_Nuget_Restore_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <!-- Display all the configuration values here -->
-        <Message Text="Configuration values:" />
-        <Message Text="ShouldClean:             $(ShouldClean)" />
-        <Message Text=" " />
-        
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -43,7 +38,7 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetExe)" />
+        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetPath)" />
     </Target>
     
     <!-- Display info -->
@@ -60,7 +55,7 @@
         
         <Message Text="No NuGet package configuration files found to restore packages from."
                  Condition=" '@(NugetPackageFiles)' == '' " />
-        <NugetRestore NugetPath="$(ToolsExternalNuGetExe)" 
+        <NugetRestore NugetPath="$(ToolsExternalNuGetPath)" 
                       PackageFile="@(NugetPackageFiles)" 
                       PackageDirectory="$(DirPackages)"
                       Condition=" '@(NugetPackageFiles)' != '' "/>

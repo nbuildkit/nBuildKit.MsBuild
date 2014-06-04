@@ -22,7 +22,7 @@
         
         <!-- Files -->
         <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild>
-        <FileSemanticVersion>$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
         
         <!-- Version number -->
         <VersionSemantic>0</VersionSemantic>
@@ -41,16 +41,11 @@
     <Target Name="nBuildKit_Prepare_GetVersion_Run" 
             DependsOnTargets="_nBuildKit_Prepare_GetVersion_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" />
-        <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromGit" />
+        <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_DisplaySemanticVersion" />
     </Target>
     
     <Target Name="_nBuildKit_Prepare_GetVersion_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <!-- Display all the configuration values here -->
-        <Message Text="Configuration values:" />
-        <Message Text="ShouldClean:             $(ShouldClean)" />
-        <Message Text=" " />
-        
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -89,11 +84,8 @@
                           Overwrite="true" />
     </Target>
 
-    <PropertyGroup>
-        <ToolsExternalGitVersionExe>GitHubFlowVersion.exe</ToolsExternalGitVersionExe>
-    </PropertyGroup>
-    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromGit">
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="$(ToolsExternalGitVersionExe)">
+    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" Condition="!Exists('$(FileVersionMsBuild)')">
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="GitHubFlowVersion.exe" Condition=" '$(ToolsExternalGitVersionPath)' == '' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalGitVersionPath" />
         </SearchPackagesDirectoryForToolPath>
         

@@ -34,8 +34,12 @@
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         
+        <!-- Files -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        
         <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
         <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
+        <DefaultFiles>FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;</DefaultFiles>
     </PropertyGroup>
     
     <Target Name="nBuildKit_Build_Run" DependsOnTargets="_nBuildKit_Build_DisplayInfo">
@@ -134,15 +138,15 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Prepare">
         <MSBuild Projects="$(MsBuildPrepareWorkspace)" 
-                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)" />
         <MSBuild Projects="$(MsBuildPrepareNuGetRestore)"
-                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)"
                  Condition="" />
         <MSBuild Projects="$(MsBuildPrepareGetVersion)"
-                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)"
                  Condition="" />
         <MSBuild Projects="$(MsBuildPrepareGatherReleaseNotes)"
-                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)"
                  Condition="" />
     </Target>
     
@@ -153,10 +157,10 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Analyze_Source">
         <MSBuild Projects="$(MsBuildAnalyzeSourceCcm)"
-                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)"
                  Condition="" />
         <MSBuild Projects="$(MsBuildAnalyzeSourceSourceMonitor)"
-                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)"
                  Condition="" />
     </Target>
     
@@ -166,9 +170,9 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Build_Binaries" DependsOnTargets="_PrepareWorkspace;_GatherReleaseNotes">
         <MSBuild Projects="$(MsBuildBuildBinaries)" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)" />
         <MSBuild Projects="$(MsBuildBuildBinaries)" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" 
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)" 
                  Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' " />
     </Target>
     
@@ -179,10 +183,10 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Test_Unit">
         <MSBuild Projects="$(MsBuildTestUnitNUnit)" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)"
                  Condition="" />
         <MSBuild Projects="$(MsBuildTestUnitMsTest)" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" 
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)" 
                  Condition="" />
     </Target>
     
@@ -193,9 +197,9 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Analyze_Binaries">
         <MSBuild Projects="$(MsBuildAnalyzeBinariesMoma)" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)" />
         <MSBuild Projects="$(MsBuildAnalyzeBinariesFxCop)" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)" />
     </Target>
     
     <!-- Build the API documentation -->
@@ -204,7 +208,7 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Build_ApiDocumentation">
         <MSBuild Projects="$(MsBuildBuildApiDocumentation)" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)" />
     </Target>    
     
     <!-- Package the binaries -->
@@ -214,8 +218,8 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Package">
         <MSBuild Projects="$(MsBuildPackageNuGet)" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)" />
         <MSBuild Projects="$(MsBuildPackageZip)" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)" />
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);(DefaultFiles)" />
     </Target>
 </Project>
