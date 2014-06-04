@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Prepare_GatherReleaseNotes_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        
+        <!-- Files -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        
+        <!-- Issue tracker -->
+        <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
+        <GitHubToken Condition=" '$(GitHubToken)' == '' ">UNDEFINED</GitHubToken>
+        <YouTrackUserName Condition=" '$(YouTrackUserName)' == '' ">UNDEFINED</YouTrackUserName>
+        <YouTrackPassword Condition=" '$(YouTrackPassword)' == '' ">UNDEFINED</YouTrackPassword>
+        <YouTrackServer Condition=" '$(YouTrackServer)' == '' ">UNDEFINED</YouTrackServer>
+        
+        <!-- Version number -->
+        <VersionSemantic>0</VersionSemantic>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+
+    <Target Name="nBuildKit_Prepare_GatherReleaseNotes_Run" DependsOnTargets="_nBuildKit_Prepare_GatherReleaseNotes_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Prepare_GatherReleaseNotes_Gather" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_GatherReleaseNotes_DebugLog">
+        <Message Text="Gathering release notes ..." />
+        
+        <Warning Text="Github username not specified" Condition=" '$(GitHubUserName)' == 'UNDEFINED' " />
+        <Warning Text="Github token not specified" Condition=" '$(GitHubToken)' == 'UNDEFINED' " />
+        <Warning Text="YouTrack username not specified" Condition=" '$(YouTrackUserName)' == 'UNDEFINED' " />
+        <Warning Text="YouTrack password not specified" Condition=" '$(YouTrackPassword)' == 'UNDEFINED' " />
+        <Warning Text="YouTrack server URI not specified" Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
+    </Target>
+   
+    <PropertyGroup>
+        <FileGitReleaseNotes>GitReleaseNotes.exe</FileGitReleaseNotes>
+        <FileReleaseNotesShort>$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
+        <FileReleaseNotesFull>$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_Gather" Condition=" '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubToken)' != 'UNDEFINED' AND '$(YouTrackServer)' != 'UNDEFINED' AND '$(YouTrackUserName)' != 'UNDEFINED' AND '$(YouTrackPassword)' != 'UNDEFINED' ">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        
+        <FindToolFromPackages PackagesDir="$(DirPackages)" FileToLocate="$(FileGitReleaseNotes)">
+            <Output TaskParameter="Path" PropertyName="PathGitReleaseNotesExe" />
+        </FindToolFromPackages>
+        
+        <Message Text="Gathering release notes for current release ..." />
+        <Exec Command="&quot;$(PathGitReleaseNotesExe)&quot; /IssueTracker YouTrack /Token $(GitHubToken) /Repo $(GitHubUserName)/apollo /Username $(YouTrackUserName) /Password $(YouTrackPassword) /YouTrackServer $(YouTrackServer) /ProjectId ap  /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
+              WorkingDirectory="$(DirWorkspace)" />
+        
+        <Message Text="Gathering release notes for all releases ..." />
+        <Exec Command="&quot;$(PathGitReleaseNotesExe)&quot; /IssueTracker YouTrack /Token $(GitHubToken) /Repo $(GitHubUserName)/apollo /Username $(YouTrackUserName) /Password $(YouTrackPassword) /YouTrackServer $(YouTrackServer) /ProjectId ap /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
+              WorkingDirectory="$(DirWorkspace)" />
+    </Target>
+ </Project>
