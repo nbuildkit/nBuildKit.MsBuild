@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Package_NuGet_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
+        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
+        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        
+        <!-- External tools -->
+        <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
+        
+        <!-- Build configuration -->
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == ''">x64</Platform>
+        <PlatformTranslated>$(Platform.Replace(" ",""))</PlatformTranslated>
+    
+        <!-- Directories -->
+        <DirBuildBin>$(DirBuild)\bin\$(PlatformTranslated)\$(Configuration)</DirBuildBin>
+
+        <!-- Files -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
+        
+        <!-- Version number -->
+        <VersionSemantic>0</VersionSemantic>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\NugetGatherDependencies.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\NugetGatherDependencies.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\NugetPack.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\NugetPack.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')"/>
+            
+    <Target Name="nBuildKit_Package_NuGet_Run" DependsOnTargets="_nBuildKit_Package_NuGet_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Package_NuGet_Build" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Package_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
+        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
+        <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
+        <Message Text="The directory containing the template files is located at:        $(DirTemplates)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="The NuGet spec files are:"
+                 Condition=" '@(FileNuSpec)' != '' "/>
+        <Message Text="Template: %(FileNuSpec.Template) - Output: %(FileNuSpec.Identity)"
+                 Condition=" '@(FileNuSpec)' != '' " />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Package_NuGet_DisplayInfo" DependsOnTargets="_nBuildKit_Package_NuGet_DebugLog">
+        <Message Text="Creating NuGet package..." />
+        
+        <Error Text="No NuGet spec files are specified!"
+               Condition=" '@(FileNuSpec)' == '' "/>
+    </Target>
+    
+    <!--  
+        MsBuild can't seem to handle using item metadata (FileNuSpec.Template) inside a property function
+        inside the Exists() function, so we'll split the process and do the transfer seperately.
+    -->
+    <Target Name="_nBuildKit_Package_NuGet_GetDirectories">
+        <ItemGroup>
+            <DirNuSpecTemp Include="$([System.IO.Path]::GetDirectoryName('%(FileNuSpec.Template)'))" />
+        </ItemGroup>
+    </Target>
+    
+    <Target Name="_nBuildKit_Package_NuGet_GetVersion">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        
+        <Message Text="Version: $(VersionSemantic)" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Package_NuGet_GetReleaseNotes" Condition="Exists('$(FileReleaseNotesFull)')">
+        <CreateProperty Condition="Exists('$(FileReleaseNotesFull)')" Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFull)'))">
+            <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
+        </CreateProperty>
+    </Target>
+    
+    <Target Name="_nBuildKit_Package_NuGet_Build" 
+            DependsOnTargets="_nBuildKit_Package_NuGet_DisplayInfo;_nBuildKit_Package_NuGet_GetDirectories;_nBuildKit_Package_NuGet_GetVersion;_nBuildKit_Package_NuGet_GetReleaseNotes"
+            Condition=" '@(FileNuSpec)' != '' ">
+        <MakeDir Directories="%(DirNuSpecTemp.Identity)" 
+                 Condition="!Exists('%(DirNuSpecTemp.Identity)')" />
+        <MakeDir Directories="$(DirBuildDeploy)" 
+                 Condition="!Exists('$(DirBuildDeploy)')" />
+
+        <!--
+        <ItemGroup>
+            <NonTestPackageConfigs Include="$(DirSrc)\**\packages.config"
+                                   Exclude="$(DirSrc)\test.*\packages.config;$(DirSrc)\solutionlevel\packages.config;$(DirSrc)\.nuget\packages.config" />
+        </ItemGroup>
+        <NugetGatherDependencies Packages="@(NonTestPackageConfigs->'%(identity)')">
+            <Output TaskParameter="Dependencies" PropertyName="NugetDependencies" />
+        </NugetGatherDependencies>
+        -->
+
+        <ItemGroup>
+            <NuSpecTokens Include="Version">
+                <ReplacementValue>$(VersionSemantic)</ReplacementValue>
+            </NuSpecTokens>
+            <NuSpecTokens Include="DirBin">
+                <ReplacementValue>$(DirBuildBin)</ReplacementValue>
+            </NuSpecTokens>
+            <NuSpecTokens Include="DirSrc">
+                <ReplacementValue>$(DirSrc)</ReplacementValue>
+            </NuSpecTokens>
+            <NuSpecTokens Include="ReleaseNotes">
+                <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
+            </NuSpecTokens>
+            <NuSpecTokens Include="Dependencies">
+                <ReplacementValue><!--$(NugetDependencies)--></ReplacementValue>
+            </NuSpecTokens>
+        </ItemGroup>
+        <TemplateFile Template="%(FileNuSpec.Template)" 
+                      OutputFileName="%(FileNuSpec.Identity)" 
+                      Tokens="@(NuSpecTokens)" />
+        
+        <NuGetPack NugetPath="$(ToolsExternalNuGetPath)" 
+                   File="%(FileNuSpec.Identity)" 
+                   OutputDirectory="$(DirBuildDeploy)" 
+                   ShouldBuildSymbols="%(FileNuSpec.ShouldBuildSymbols)" />
+    </Target>
+ </Project>
