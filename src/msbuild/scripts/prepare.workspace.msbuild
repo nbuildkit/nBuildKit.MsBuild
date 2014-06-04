@@ -22,8 +22,8 @@
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
     </PropertyGroup>
     
-    <Target Name="nBuildKit_Prepare_Workspace_Run" DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo;_nBuildKit_Prepare_Workspace_Clean">
-        <!-- Do nothing here -->
+    <Target Name="nBuildKit_Prepare_Workspace_Run" DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Prepare_Workspace_Clean" />
     </Target>
     
     <Target Name="_nBuildKit_Prepare_Workspace_DebugLog" Condition="$(ShouldDisplayDebugLog)">

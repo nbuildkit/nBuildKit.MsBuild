@@ -16,20 +16,18 @@
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         
         <!-- External tools -->
         <ToolsExternalNuGetExe Condition=" '$(ToolsExternalNuGetExe)' == '' ">NuGet.exe</ToolsExternalNuGetExe>
-        
-        <!-- Extensions -->
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\NugetRestore.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\NugetRestore.msbuild')"/>    
 
-    <Target Name="nBuildKit_Prepare_Nuget_Restore_Run" DependsOnTargets="_nBuildKit_Prepare_Nuget_Restore_DisplayInfo;_nBuildKit_Prepare_Nuget_Restore_Packages">
-        <!-- Do nothing here -->
+    <Target Name="nBuildKit_Prepare_Nuget_Restore_Run" DependsOnTargets="_nBuildKit_Prepare_Nuget_Restore_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Prepare_Nuget_Restore_Packages" />
     </Target>
     
     <Target Name="_nBuildKit_Prepare_Nuget_Restore_DebugLog" Condition="$(ShouldDisplayDebugLog)">
