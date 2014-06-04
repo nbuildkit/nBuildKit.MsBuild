@@ -129,7 +129,7 @@
     <PropertyGroup>
         <MsBuildPrepareWorkspace>$(DirMsBuildScripts)\prepare.workspace.msbuild</MsBuildPrepareWorkspace>
         <MsBuildPrepareNuGetRestore>$(DirMsBuildScripts)\prepare.nuget.restore.msbuild</MsBuildPrepareNuGetRestore>
-        <MsBuildPrepareGitEnsureMasterBranch>$(DirMsBuildScripts)\prepare.git.ensuremasterbranch.msbuild</MsBuildPrepareGitEnsureMasterBranch>
+        <MsBuildPrepareGetVersion>$(DirMsBuildScripts)\prepare.getversion.msbuild</MsBuildPrepareGetVersion>
         <MsBuildPrepareGatherReleaseNotes>$(DirMsBuildScripts)\prepare.gatherreleasenotes.msbuild</MsBuildPrepareGatherReleaseNotes>
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Prepare">
@@ -138,7 +138,7 @@
         <MSBuild Projects="$(MsBuildPrepareNuGetRestore)"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
                  Condition="" />
-        <MSBuild Projects="$(MsBuildPrepareGitEnsureMasterBranch)"
+        <MSBuild Projects="$(MsBuildPrepareGetVersion)"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties)"
                  Condition="" />
         <MSBuild Projects="$(MsBuildPrepareGatherReleaseNotes)"
