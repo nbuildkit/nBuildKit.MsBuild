@@ -168,7 +168,7 @@
     <PropertyGroup>
         <MsBuildBuildBinaries>$(DirMsBuildScripts)\build.binaries.msbuild</MsBuildBuildBinaries>
     </PropertyGroup>
-    <Target Name="_nBuildKit_Build_Build_Binaries" DependsOnTargets="_PrepareWorkspace;_GatherReleaseNotes">
+    <Target Name="_nBuildKit_Build_Build_Binaries">
         <MSBuild Projects="$(MsBuildBuildBinaries)" 
                  Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)" />
         <MSBuild Projects="$(MsBuildBuildBinaries)" 
