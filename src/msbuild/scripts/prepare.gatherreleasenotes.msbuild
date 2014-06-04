@@ -22,6 +22,8 @@
         
         <!-- Files -->
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
+        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
         
         <!-- Issue tracker -->
         <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
@@ -66,8 +68,6 @@
    
     <PropertyGroup>
         <FileGitReleaseNotes>GitReleaseNotes.exe</FileGitReleaseNotes>
-        <FileReleaseNotesShort>$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
-        <FileReleaseNotesFull>$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
     </PropertyGroup>
     <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_Gather" Condition=" '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubToken)' != 'UNDEFINED' AND '$(YouTrackServer)' != 'UNDEFINED' AND '$(YouTrackUserName)' != 'UNDEFINED' AND '$(YouTrackPassword)' != 'UNDEFINED' ">
         <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
