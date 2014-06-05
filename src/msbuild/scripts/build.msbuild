@@ -82,38 +82,24 @@
         <DefaultSwitches>ShouldDisplayDebugLog=$(ShouldDisplayDebugLog)</DefaultSwitches>
     </PropertyGroup>
     
+    <Import Project="$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild')" />
+    
     <Target Name="nBuildKit_Build_Run" DependsOnTargets="_nBuildKit_Build_DisplayInfo">
         <!-- If there is no property file then we die -->
         <Error Text="No build properties file was defined."
                Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
-    
-        <!-- Prepare the workspace and create the necessary files for the build -->
-        <CallTarget Targets="_nBuildKit_Build_Prepare" 
-                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
-       
-        <!-- Perform analysis on the source files -->
-        <CallTarget Targets="_nBuildKit_Build_Analyze_Source" 
-                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeSource)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
-
-        <!-- Build the binaries -->
-        <CallTarget Targets="_nBuildKit_Build_Build_Binaries" 
-                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetBuildBinaries)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
+               
+        <!-- Generate the task list in the right order -->
+        <FindInList List="@(BuildTargets)" ItemSpecToFind="%(BuildStepsToExecute.Identity)">
+            <Output TaskParameter="ItemFound" ItemName="UnsortedBuildTasksToExecute" />
+        </FindInList>
+        <SortItemGroupByKey Items="@(UnsortedBuildTasksToExecute)">
+            <Output TaskParameter="SortedItems" ItemName="BuildTasksToExecute" />
+        </SortItemGroupByKey>
         
-        <!-- Execute the unit tests -->
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit" 
-                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetExecuteUnitTests)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
-        
-        <!-- Perform analysis on the binary files -->
-        <CallTarget Targets="_nBuildKit_Build_Analyze_Binaries" 
-                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeBinaries)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
-        
-        <!-- Build the API documentation -->
-        <CallTarget Targets="_nBuildKit_Build_Build_ApiDocumentation" 
-                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetBuildApiDocumentation)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
-        
-        <!-- Package the binaries -->
-        <CallTarget Targets="_nBuildKit_Build_Package" 
-                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPackage)' OR  '%(BuildStepsToExecute.Identity)' == 'all' " />
+        <!-- Execute all the build tasks in the given order -->
+        <CallTarget Targets="%(BuildTasksToExecute.Identity)" />
     </Target>
     
     

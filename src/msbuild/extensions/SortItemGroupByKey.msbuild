@@ -1,0 +1,48 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="SortItemGroupByKey" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <SortedItems ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Linq" />
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        const string MetadataOrderTag = "Order";
+                    
+                        var list = new System.Collections.Generic.SortedList<int, ITaskItem>();
+                        if (Items != null)
+                        {
+                            ITaskItem[] processedItems = Items;
+                            for (int i = 0; i < processedItems.Length; i++)
+                            {
+                                ITaskItem item = processedItems[i];
+                                if (!string.IsNullOrEmpty(item.ItemSpec))
+                                {
+                                    var index = int.Parse(item.GetMetadata(MetadataOrderTag));
+                                    list.Add(index, item);
+                                }
+                            }
+                        }
+                        
+                        SortedItems = list.Values.ToArray();
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>
