@@ -13,6 +13,18 @@
         <BuildTargetBuildApiDocumentation>BuildApiDocumentation</BuildTargetBuildApiDocumentation>
         <BuildTargetExecuteUnitTests>TestUnit</BuildTargetExecuteUnitTests>
         <BuildTargetPackage>Package</BuildTargetPackage>
+        
+        <BuildStepsPrepareRestoreNuGet>NuGetRestore</BuildStepsPrepareRestoreNuGet>
+        <BuildStepsPrepareVersion>SemanticVersion</BuildStepsPrepareVersion>
+        <BuildStepsPrepareReleaseNotes>ReleaseNotes</BuildStepsPrepareReleaseNotes>
+        <BuildStepsAnalyzeSourceCcm>Ccm</BuildStepsAnalyzeSourceCcm>
+        <BuildStepsAnalyzeSourceSouceMonitor>SourceMonitor</BuildStepsAnalyzeSourceSouceMonitor>
+        <BuildStepsAnalyzeBinariesMoma>Moma</BuildStepsAnalyzeBinariesMoma>
+        <BuildStepsAnalyzeBinariesFxCop>FxCop</BuildStepsAnalyzeBinariesFxCop>
+        <BuildStepsUnitTestNUnit>NUnit</BuildStepsUnitTestNUnit>
+        <BuildStepsUnitTestMsTest>MsTest</BuildStepsUnitTestMsTest>
+        <BuildStepsPackNuGet>NuGetPackage</BuildStepsPackNuGet>
+        <BuildStepsPackZip>Zip</BuildStepsPackZip>
     </PropertyGroup>
     <ItemGroup>
         <BuildTargets Include="$(BuildTargetPrepare)">
@@ -166,38 +178,28 @@
     <PropertyGroup>
         <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
     </PropertyGroup>
-    <PropertyGroup>
-        <MsBuildPrepareWorkspace>$(DirMsBuildScripts)\prepare.workspace.msbuild</MsBuildPrepareWorkspace>
-        <MsBuildPrepareNuGetRestore>$(DirMsBuildScripts)\prepare.nuget.restore.msbuild</MsBuildPrepareNuGetRestore>
-        <MsBuildPrepareGetVersion>$(DirMsBuildScripts)\prepare.getversion.msbuild</MsBuildPrepareGetVersion>
-        <MsBuildPrepareGatherReleaseNotes>$(DirMsBuildScripts)\prepare.gatherreleasenotes.msbuild</MsBuildPrepareGatherReleaseNotes>
-    </PropertyGroup>
     <Target Name="_nBuildKit_Build_Prepare">
-        <MSBuild Projects="$(MsBuildPrepareWorkspace)" 
+        <MSBuild Projects="$(DirMsBuildScripts)\prepare.workspace.msbuild" 
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
-        <MSBuild Projects="$(MsBuildPrepareNuGetRestore)"
+        <MSBuild Projects="$(DirMsBuildScripts)\prepare.nuget.restore.msbuild"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition="" />
-        <MSBuild Projects="$(MsBuildPrepareGetVersion)"
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareRestoreNuGet)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\prepare.getversion.msbuild"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition="" />
-        <MSBuild Projects="$(MsBuildPrepareGatherReleaseNotes)"
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareVersion)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\prepare.gatherreleasenotes.msbuild"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition="" />
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareReleaseNotes)'))" />
     </Target>
     
     <!-- Perform analysis on the source files -->
-    <PropertyGroup>
-        <MsBuildAnalyzeSourceCcm>$(DirMsBuildScripts)\analyze.source.ccm.msbuild</MsBuildAnalyzeSourceCcm>
-        <MsBuildAnalyzeSourceSourceMonitor>$(DirMsBuildScripts)\analyze.source.sourcemonitor.msbuild</MsBuildAnalyzeSourceSourceMonitor>
-    </PropertyGroup>
     <Target Name="_nBuildKit_Build_Analyze_Source">
-        <MSBuild Projects="$(MsBuildAnalyzeSourceCcm)"
+        <MSBuild Projects="$(DirMsBuildScripts)\analyze.source.ccm.msbuild"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition="" />
-        <MSBuild Projects="$(MsBuildAnalyzeSourceSourceMonitor)"
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeSource)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsAnalyzeSourceCcm)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\analyze.source.sourcemonitor.msbuild"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition="" />
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeSource)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsAnalyzeSourceSouceMonitor)'))" />
     </Target>
     
     <!-- Build the binaries -->
@@ -213,50 +215,39 @@
     </Target>
     
     <!-- Execute the unit tests -->
-    <PropertyGroup>
-        <MsBuildTestUnitNUnit>$(DirMsBuildScripts)\test.unit.nunit.msbuild</MsBuildTestUnitNUnit>
-        <MsBuildTestUnitMsTest>$(DirMsBuildScripts)\test.unit.mstest.msbuild</MsBuildTestUnitMsTest>
-    </PropertyGroup>
     <Target Name="_nBuildKit_Build_Test_Unit">
-        <MSBuild Projects="$(MsBuildTestUnitNUnit)" 
+        <MSBuild Projects="$(DirMsBuildScripts)\test.unit.nunit.msbuild" 
                  Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition="" />
-        <MSBuild Projects="$(MsBuildTestUnitMsTest)" 
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetExecuteUnitTests)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsUnitTestNUnit)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\test.unit.mstest.msbuild" 
                  Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
-                 Condition="" />
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetExecuteUnitTests)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsUnitTestMsTest)'))" />
     </Target>
     
     <!-- Perform analysis on the binary files -->
-    <PropertyGroup>
-        <MsBuildAnalyzeBinariesMoma>$(DirMsBuildScripts)\analyze.binaries.moma.msbuild</MsBuildAnalyzeBinariesMoma>
-        <MsBuildAnalyzeBinariesFxCop>$(DirMsBuildScripts)\analyze.binaries.fxcop.msbuild</MsBuildAnalyzeBinariesFxCop>
-    </PropertyGroup>
     <Target Name="_nBuildKit_Build_Analyze_Binaries">
-        <MSBuild Projects="$(MsBuildAnalyzeBinariesMoma)" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
-        <MSBuild Projects="$(MsBuildAnalyzeBinariesFxCop)" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
+        <MSBuild Projects="$(DirMsBuildScripts)\analyze.binaries.moma.msbuild" 
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeBinaries)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsAnalyzeBinariesMoma)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\analyze.binaries.fxcop.msbuild" 
+                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeBinaries)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsAnalyzeBinariesFxCop)'))" />
     </Target>
     
     <!-- Build the API documentation -->
-    <PropertyGroup>
-        <MsBuildBuildApiDocumentation>$(DirMsBuildScripts)\build.apidocumentation.sandcastle.msbuild</MsBuildBuildApiDocumentation>
-    </PropertyGroup>
     <Target Name="_nBuildKit_Build_Build_ApiDocumentation">
-        <MSBuild Projects="$(MsBuildBuildApiDocumentation)" 
+        <MSBuild Projects="$(DirMsBuildScripts)\build.apidocumentation.sandcastle.msbuild" 
                  Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
     </Target>    
     
     <!-- Package the binaries -->
-    <PropertyGroup>
-        <!-- Note that NuGet doesn't like putting files starting with 'package' in a nuget package -->
-        <MsBuildPackageNuGet>$(DirMsBuildScripts)\pack.nuget.msbuild</MsBuildPackageNuGet>
-        <MsBuildPackageZip>$(DirMsBuildScripts)\pack.zip.msbuild</MsBuildPackageZip>
-    </PropertyGroup>
     <Target Name="_nBuildKit_Build_Package">
-        <MSBuild Projects="$(MsBuildPackageNuGet)" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
-        <MSBuild Projects="$(MsBuildPackageZip)" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
+        <!-- Note that NuGet doesn't like putting files starting with 'package' in a nuget package -->
+        <MSBuild Projects="$(DirMsBuildScripts)\pack.nuget.msbuild" 
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPackage)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPackNuGet)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\pack.zip.msbuild" 
+                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPackage)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPackZip)'))"/>
     </Target>
 </Project>
