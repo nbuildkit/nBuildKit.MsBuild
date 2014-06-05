@@ -56,7 +56,7 @@
         <Message Text="No NuGet package configuration files found to restore packages from."
                  Condition=" '@(NugetPackageFiles)' == '' " />
         <NugetRestore NugetPath="$(ToolsExternalNuGetPath)" 
-                      PackageFile="@(NugetPackageFiles)" 
+                      PackageFile="%(NugetPackageFiles.FullPath)" 
                       PackageDirectory="$(DirPackages)"
                       Condition=" '@(NugetPackageFiles)' != '' "/>
     </Target>
