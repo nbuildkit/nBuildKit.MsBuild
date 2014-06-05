@@ -5,9 +5,45 @@
     <PropertyGroup>
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
     </PropertyGroup>
+    <PropertyGroup>
+        <BuildTargetPrepare>_nBuildKit_Build_Prepare</BuildTargetPrepare>
+        <BuildTargetAnalyzeSource>_nBuildKit_Build_Analyze_Source</BuildTargetAnalyzeSource>
+        <BuildTargetAnalyzeBinaries>_nBuildKit_Build_Analyze_Binaries</BuildTargetAnalyzeBinaries>
+        <BuildTargetBuildBinaries>_nBuildKit_Build_Build_Binaries</BuildTargetBuildBinaries>
+        <BuildTargetBuildApiDocumentation>_nBuildKit_Build_Build_ApiDocumentation</BuildTargetBuildApiDocumentation>
+        <BuildTargetExecuteUnitTests>_nBuildKit_Build_Test_Unit</BuildTargetExecuteUnitTests>
+        <BuildTargetPackage>_nBuildKit_Build_Package</BuildTargetPackage>
+    </PropertyGroup>
+    <ItemGroup>
+        <BuildTargets Include="$(BuildTargetPrepare)">
+            <Order>1</Order>
+        </BuildTargets>
+        
+        <BuildTargets Include="$(BuildTargetAnalyzeSource)">
+            <Order>2</Order>
+        </BuildTargets>
+        
+        <BuildTargets Include="$(BuildTargetBuildBinaries)">
+            <Order>3</Order>
+        </BuildTargets>
+        
+        <BuildTargets Include="$(BuildTargetExecuteUnitTests)">
+            <Order>4</Order>
+        </BuildTargets>
+        
+        <BuildTargets Include="$(BuildTargetAnalyzeBinaries)">
+            <Order>5</Order>
+        </BuildTargets>
+        
+        <BuildTargets Include="$(BuildTargetBuildApiDocumentation)">
+            <Order>6</Order>
+        </BuildTargets>
+        
+        <BuildTargets Include="$(BuildTargetPackage)">
+            <Order>7</Order>
+        </BuildTargets>
+    </ItemGroup>
 
-    <Import Project="BuildSteps.props"
-            Condition="Exists('BuildSteps.props')"/>    
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)')" />
     
