@@ -24,65 +24,44 @@
                             Log.LogMessage("File does not exist: {0}", PackageFile);
                         }
 
-                        System.Xml.Linq.XDocument xDoc = null;
-                        try
+                        var builder = new System.Text.StringBuilder();
                         {
-                            xDoc = System.Xml.Linq.XDocument.Load(PackageFile);
-                        }
-                        catch (System.Exception)
-                        {
-                            Log.LogError("Failed to load document {0}.", PackageFile);
+                            builder.Append(string.Format("restore \"{0}\" ", PackageFile));
+                            builder.Append("-NonInteractive -Verbosity detailed -NoCache ");
+                            builder.Append(string.Format("-PackagesDirectory \"{0}\" ", PackageDirectory));
                         }
 
-                        var packages = from package in xDoc.Element("packages").Descendants("package")
-                                       select new
-                                       {
-                                           Id = package.Attribute("id").Value,
-                                           Version = package.Attribute("version").Value,
-                                       };
-
-                        foreach (var package in packages)
+                        var info = new System.Diagnostics.ProcessStartInfo
                         {
-                            var builder = new System.Text.StringBuilder();
+                            FileName = NugetPath,
+                            Arguments = builder.ToString(),
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                        };
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived +=
+                            (s, e) =>
                             {
-                                builder.Append(string.Format("install \"{0}\" ", package.Id));
-                                builder.Append(string.Format("-Version {0} ", package.Version));
-                                builder.Append("-NonInteractive -Verbosity detailed -NoCache ");
-                                builder.Append(string.Format("-OutputDirectory \"{0}\" ", PackageDirectory));
-                            }
-
-                            var info = new System.Diagnostics.ProcessStartInfo
-                            {
-                                FileName = NugetPath,
-                                Arguments = builder.ToString(),
-                                UseShellExecute = false,
-                                RedirectStandardOutput = true,
-                                RedirectStandardError = true,
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogMessage(MessageImportance.Normal, e.Data);
+                                }
                             };
-                            var process = new System.Diagnostics.Process();
-                            process.StartInfo = info;
-                            process.OutputDataReceived +=
-                                (s, e) =>
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
-                                    if (!string.IsNullOrWhiteSpace(e.Data))
-                                    {
-                                        Log.LogMessage(MessageImportance.Normal, e.Data);
-                                    }
-                                };
-                            process.ErrorDataReceived +=
-                                (s, e) =>
-                                {
-                                    if (!string.IsNullOrWhiteSpace(e.Data))
-                                    {
-                                        Log.LogError(e.Data);
-                                    }
-                                };
-                            process.Start();
+                                    Log.LogError(e.Data);
+                                }
+                            };
+                        process.Start();
 
-                            process.BeginOutputReadLine();
-                            process.BeginErrorReadLine();
-                            process.WaitForExit();
-                        }
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
                         
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
                         // from a task's constructor or property setter. As long as this task is written to always log an error
