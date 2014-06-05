@@ -6,41 +6,48 @@
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
     </PropertyGroup>
     <PropertyGroup>
-        <BuildTargetPrepare>_nBuildKit_Build_Prepare</BuildTargetPrepare>
-        <BuildTargetAnalyzeSource>_nBuildKit_Build_Analyze_Source</BuildTargetAnalyzeSource>
-        <BuildTargetAnalyzeBinaries>_nBuildKit_Build_Analyze_Binaries</BuildTargetAnalyzeBinaries>
-        <BuildTargetBuildBinaries>_nBuildKit_Build_Build_Binaries</BuildTargetBuildBinaries>
-        <BuildTargetBuildApiDocumentation>_nBuildKit_Build_Build_ApiDocumentation</BuildTargetBuildApiDocumentation>
-        <BuildTargetExecuteUnitTests>_nBuildKit_Build_Test_Unit</BuildTargetExecuteUnitTests>
-        <BuildTargetPackage>_nBuildKit_Build_Package</BuildTargetPackage>
+        <BuildTargetPrepare>Prepare</BuildTargetPrepare>
+        <BuildTargetAnalyzeSource>AnalyzeSource</BuildTargetAnalyzeSource>
+        <BuildTargetAnalyzeBinaries>AnalyzeBinaries</BuildTargetAnalyzeBinaries>
+        <BuildTargetBuildBinaries>BuildBinaries</BuildTargetBuildBinaries>
+        <BuildTargetBuildApiDocumentation>BuildApiDocumentation</BuildTargetBuildApiDocumentation>
+        <BuildTargetExecuteUnitTests>TestUnit</BuildTargetExecuteUnitTests>
+        <BuildTargetPackage>Package</BuildTargetPackage>
     </PropertyGroup>
     <ItemGroup>
         <BuildTargets Include="$(BuildTargetPrepare)">
             <Order>1</Order>
+            <TargetToExecute>_nBuildKit_Build_Prepare</TargetToExecute>
         </BuildTargets>
         
         <BuildTargets Include="$(BuildTargetAnalyzeSource)">
             <Order>2</Order>
+            <TargetToExecute>_nBuildKit_Build_Analyze_Source</TargetToExecute>
         </BuildTargets>
         
         <BuildTargets Include="$(BuildTargetBuildBinaries)">
             <Order>3</Order>
+            <TargetToExecute>_nBuildKit_Build_Build_Binaries</TargetToExecute>
         </BuildTargets>
         
         <BuildTargets Include="$(BuildTargetExecuteUnitTests)">
             <Order>4</Order>
+            <TargetToExecute>_nBuildKit_Build_Test_Unit</TargetToExecute>
         </BuildTargets>
         
         <BuildTargets Include="$(BuildTargetAnalyzeBinaries)">
             <Order>5</Order>
+            <TargetToExecute>_nBuildKit_Build_Analyze_Binaries</TargetToExecute>
         </BuildTargets>
         
         <BuildTargets Include="$(BuildTargetBuildApiDocumentation)">
             <Order>6</Order>
+            <TargetToExecute>_nBuildKit_Build_Build_ApiDocumentation</TargetToExecute>
         </BuildTargets>
         
         <BuildTargets Include="$(BuildTargetPackage)">
             <Order>7</Order>
+            <TargetToExecute>_nBuildKit_Build_Package</TargetToExecute>
         </BuildTargets>
     </ItemGroup>
 
@@ -75,6 +82,7 @@
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
         <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
         <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
+        <FileSln Condition=" '$(FileSln)' == '' ">UNDEFINED</FileSln>
         
         <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
         <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
@@ -85,11 +93,16 @@
     <Import Project="$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild')" />
     
-    <Target Name="nBuildKit_Build_Run" DependsOnTargets="_nBuildKit_Build_DisplayInfo">
+    <Target Name="nBuildKit_Build_Run" DependsOnTargets="_nBuildKit_Build_OrderTargets;_nBuildKit_Build_DisplayInfo">
         <!-- If there is no property file then we die -->
         <Error Text="No build properties file was defined."
                Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
-               
+        
+        <!-- Execute all the build tasks in the given order -->
+        <CallTarget Targets="%(BuildTasksToExecute.TargetToExecute)" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Build_OrderTargets">
         <!-- Generate the task list in the right order -->
         <FindInList List="@(BuildTargets)" ItemSpecToFind="%(BuildStepsToExecute.Identity)">
             <Output TaskParameter="ItemFound" ItemName="UnsortedBuildTasksToExecute" />
@@ -97,9 +110,6 @@
         <SortItemGroupByKey Items="@(UnsortedBuildTasksToExecute)">
             <Output TaskParameter="SortedItems" ItemName="BuildTasksToExecute" />
         </SortItemGroupByKey>
-        
-        <!-- Execute all the build tasks in the given order -->
-        <CallTarget Targets="%(BuildTasksToExecute.Identity)" />
     </Target>
     
     
@@ -122,10 +132,10 @@
                  Condition="$(ShouldDisplayDebugLog)" />
         
         <!-- Display the targets that will be executed -->
-        <Message Text="Executing targets: @(BuildStepsToExecute->'%(identity)', '; ')" 
-                 Condition=" '@(BuildStepsToExecute)' != '' AND $(ShouldDisplayDebugLog) " />
+        <Message Text="Executing targets: @(BuildTasksToExecute->'%(identity)', '; ')" 
+                 Condition=" '@(BuildTasksToExecute)' != '' AND $(ShouldDisplayDebugLog) " />
         <Message Text="Executing targets: NONE" 
-                 Condition=" '@(BuildStepsToExecute)' == '' AND $(ShouldDisplayDebugLog) " />
+                 Condition=" '@(BuildTasksToExecute)' == '' AND $(ShouldDisplayDebugLog) " />
                  
         <Message Text=" "
                  Condition="$(ShouldDisplayDebugLog)" />
