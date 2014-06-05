@@ -4,11 +4,11 @@
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
          ToolsVersion="4.0">
-    <UsingTask TaskName="NugetPack" 
+    <UsingTask TaskName="NuGetPack" 
                TaskFactory="CodeTaskFactory" 
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
         <ParameterGroup>
-            <NugetPath ParameterType="System.String" Required="true" />
+            <NuGetPath ParameterType="System.String" Required="true" />
             <File ParameterType="System.String" Required="true" />
             <ShouldBuildSymbols ParameterType="System.Boolean" Required="true" />
             <OutputDirectory ParameterType="System.String" Required="true" />
@@ -31,7 +31,7 @@
                         
                         var info = new System.Diagnostics.ProcessStartInfo
                                 {
-                                    FileName = NugetPath,
+                                    FileName = NuGetPath,
                                     Arguments = builder.ToString(),
                                     UseShellExecute = false,
                                     RedirectStandardOutput = true,

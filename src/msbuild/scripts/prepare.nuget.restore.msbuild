@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Prepare_Nuget_Restore_Run"
+         DefaultTargets="nBuildKit_Prepare_NuGet_Restore_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
@@ -23,14 +23,14 @@
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\NugetRestore.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\NugetRestore.msbuild')"/>    
+    <Import Project="$(DirMsBuildExtensions)\NuGetRestore.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\NuGetRestore.msbuild')"/>    
 
-    <Target Name="nBuildKit_Prepare_Nuget_Restore_Run" DependsOnTargets="_nBuildKit_Prepare_Nuget_Restore_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Prepare_Nuget_Restore_Packages" />
+    <Target Name="nBuildKit_Prepare_NuGet_Restore_Run" DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Prepare_NuGet_Restore_Packages" />
     </Target>
     
-    <Target Name="_nBuildKit_Prepare_Nuget_Restore_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Prepare_NuGet_Restore_DebugLog" Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -42,22 +42,22 @@
     </Target>
     
     <!-- Display info -->
-    <Target Name="_nBuildKit_Prepare_Nuget_Restore_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_Nuget_Restore_DebugLog">
+    <Target Name="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DebugLog">
         <Message Text="Restoring packages ..." />
     </Target>
 
-    <!-- Nuget restore -->
-    <Target Name="_nBuildKit_Prepare_Nuget_Restore_Packages" DependsOnTargets="_nBuildKit_Prepare_Nuget_Restore_DisplayInfo">
+    <!-- NuGet restore -->
+    <Target Name="_nBuildKit_Prepare_NuGet_Restore_Packages" DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo">
         <ItemGroup>
-            <NugetPackageFiles Include="$(DirWorkspace)\**\packages.config"
+            <NuGetPackageFiles Include="$(DirWorkspace)\**\packages.config"
                                Exclude="$(DirPackages)\**\packages.config;$(DirBuild)\**\packages.config" />
         </ItemGroup>
         
         <Message Text="No NuGet package configuration files found to restore packages from."
-                 Condition=" '@(NugetPackageFiles)' == '' " />
-        <NugetRestore NugetPath="$(ToolsExternalNuGetPath)" 
-                      PackageFile="%(NugetPackageFiles.FullPath)" 
+                 Condition=" '@(NuGetPackageFiles)' == '' " />
+        <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)" 
+                      PackageFile="%(NuGetPackageFiles.FullPath)" 
                       PackageDirectory="$(DirPackages)"
-                      Condition=" '@(NugetPackageFiles)' != '' "/>
+                      Condition=" '@(NuGetPackageFiles)' != '' "/>
     </Target>
  </Project>

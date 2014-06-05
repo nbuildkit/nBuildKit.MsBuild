@@ -35,8 +35,8 @@
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\NugetRestore.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\NugetRestore.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\NuGetRestore.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\NuGetRestore.msbuild')"/>
     
     <Target Name="nBuildKit_Build_Binaries_Run" DependsOnTargets="_nBuildKit_Build_Binaries_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Build_Binaries_RestorePackages" />
@@ -68,9 +68,9 @@
         <Message Text="Building from solution $(FileSln) with: Configuration = $(Configuration) and Platform = $(Platform) ..." />
     </Target>
     
-    <!-- Run Nuget for the build -->
+    <!-- Run NuGet for the build -->
     <Target Name="_nBuildKit_Build_Binaries_RestorePackages">
-        <NugetRestore NugetPath="$(ToolsExternalNuGetPath)" 
+        <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)" 
                       PackageFile="$(FileSln)" 
                       PackageDirectory="$(DirPackages)" />
     </Target>

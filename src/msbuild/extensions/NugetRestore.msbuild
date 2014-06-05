@@ -4,11 +4,11 @@
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
          ToolsVersion="4.0">
-    <UsingTask TaskName="NugetRestore" 
+    <UsingTask TaskName="NuGetRestore" 
                TaskFactory="CodeTaskFactory" 
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
         <ParameterGroup>
-            <NugetPath ParameterType="System.String" Required="true" />
+            <NuGetPath ParameterType="System.String" Required="true" />
             <PackageFile ParameterType="System.String" Required="true" />
             <PackageDirectory ParameterType="System.String" Required="true" />
         </ParameterGroup>
@@ -33,7 +33,7 @@
 
                         var info = new System.Diagnostics.ProcessStartInfo
                         {
-                            FileName = NugetPath,
+                            FileName = NuGetPath,
                             Arguments = builder.ToString(),
                             UseShellExecute = false,
                             RedirectStandardOutput = true,

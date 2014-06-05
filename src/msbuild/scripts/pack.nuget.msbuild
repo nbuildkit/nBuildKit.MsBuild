@@ -45,10 +45,10 @@
     
     <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
-    <Import Project="$(DirMsBuildExtensions)\NugetGatherDependencies.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\NugetGatherDependencies.msbuild')"/>
-    <Import Project="$(DirMsBuildExtensions)\NugetPack.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\NugetPack.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\NuGetGatherDependencies.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\NuGetGatherDependencies.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\NuGetPack.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\NuGetPack.msbuild')"/>
     <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')"/>
             
@@ -120,9 +120,9 @@
             <NonTestPackageConfigs Include="$(DirSrc)\**\packages.config"
                                    Exclude="$(DirSrc)\test.*\packages.config;$(DirSrc)\solutionlevel\packages.config;$(DirSrc)\.nuget\packages.config" />
         </ItemGroup>
-        <NugetGatherDependencies Packages="@(NonTestPackageConfigs->'%(identity)')">
-            <Output TaskParameter="Dependencies" PropertyName="NugetDependencies" />
-        </NugetGatherDependencies>
+        <NuGetGatherDependencies Packages="@(NonTestPackageConfigs->'%(identity)')">
+            <Output TaskParameter="Dependencies" PropertyName="NuGetDependencies" />
+        </NuGetGatherDependencies>
         -->
 
         <ItemGroup>
@@ -139,14 +139,14 @@
                 <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
             </NuSpecTokens>
             <NuSpecTokens Include="Dependencies">
-                <ReplacementValue><!--$(NugetDependencies)--></ReplacementValue>
+                <ReplacementValue><!--$(NuGetDependencies)--></ReplacementValue>
             </NuSpecTokens>
         </ItemGroup>
         <TemplateFile Template="%(FileNuSpec.Template)" 
                       OutputFileName="%(FileNuSpec.Identity)" 
                       Tokens="@(NuSpecTokens)" />
         
-        <NuGetPack NugetPath="$(ToolsExternalNuGetPath)" 
+        <NuGetPack NuGetPath="$(ToolsExternalNuGetPath)" 
                    File="%(FileNuSpec.Identity)" 
                    OutputDirectory="$(DirBuildDeploy)" 
                    ShouldBuildSymbols="%(FileNuSpec.ShouldBuildSymbols)" />
