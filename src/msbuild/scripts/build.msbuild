@@ -241,8 +241,9 @@
     
     <!-- Package the binaries -->
     <PropertyGroup>
-        <MsBuildPackageNuGet>$(DirMsBuildScripts)\package.nuget.msbuild</MsBuildPackageNuGet>
-        <MsBuildPackageZip>$(DirMsBuildScripts)\package.zip.msbuild</MsBuildPackageZip>
+        <!-- Note that NuGet doesn't like putting files starting with 'package' in a nuget package -->
+        <MsBuildPackageNuGet>$(DirMsBuildScripts)\pack.nuget.msbuild</MsBuildPackageNuGet>
+        <MsBuildPackageZip>$(DirMsBuildScripts)\pack.zip.msbuild</MsBuildPackageZip>
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Package">
         <MSBuild Projects="$(MsBuildPackageNuGet)" 
