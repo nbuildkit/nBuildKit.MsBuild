@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Test_Unit_NUnit_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+         <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Build configuration -->
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        <DirReportGeneratorOutput Condition=" '$(DirReportGeneratorOutput)' == '' ">$(DirBuildLogs)\coverage</DirReportGeneratorOutput>
+        
+        <!-- Files -->
+        <FileReportOpenCoverXml Condition=" '$(FileReportOpenCoverXml)' == '' ">$(DirBuildLogs)\opencover.xml</FileReportOpenCoverXml>
+        <FileReportOpenCoverCsv Condition=" '$(FileReportOpenCoverCsv)' == '' ">$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv>
+        <FileReportReportGeneratorXmlSummary Condition=" '$(FileReportReportGeneratorXmlSummary)' == '' ">$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
+        
+        <!-- Unit tests -->
+        <UnitTestAssemblyNamePrefix Condition=" '$(UnitTestAssemblyNamePrefix)' == '' " >test.unit</UnitTestAssemblyNamePrefix>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\OpenCover.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\OpenCover.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\ReportGenerator.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\ReportGenerator.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild')"/> 
+
+    <Target Name="nBuildKit_Test_Unit_NUnit_Run" DependsOnTargets="_nBuildKit_Test_Unit_NUnit_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Test_Unit_NUnit_Execute" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Test_Unit_NUnit_DisplayInfo" DependsOnTargets="_nBuildKit_Test_Unit_NUnit_DebugLog">
+        <Message Text="Running unit tests with NUnit ..." />
+    </Target>
+    
+    <Target Name="_nBuildKit_Test_Unit_NUnit_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                                     $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:                         $(DirBuild)" />
+        <Message Text="The directory containing the generated binaries is located at:                   $(DirBuildBin)" />
+        <Message Text="The directory containing the build logs is located at:                           $(DirBuildLogs)" />
+        <Message Text="The directory containing the OpenCover unit test coverage reports is located at: $(DirReportGeneratorOutput)" />
+        <Message Text="The directory containing the temporary build files is located at:                $(DirBuildTemp)" />
+        <Message Text="The directory containing the NuGet packages is located at:                       $(DirPackages)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:                    $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="The OpenCover XML report will be located at:               $(FileReportOpenCoverXml)" />
+        <Message Text="The OpenCover CSV report will be located at:               $(FileReportOpenCoverCsv)" />
+        <Message Text="The ReportGenerator XML summary report will be located at: $(FileReportReportGeneratorXmlSummary)" />
+        <Message Text=" " />
+    </Target>
+    
+    <Target Name="_nBuildKit_Test_Unit_NUnit_Execute">
+        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)')" />
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
+        <MakeDir Directories="$(DirReportGeneratorOutput)" Condition="!Exists('$(DirReportGeneratorOutput)')" />
+        
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="nunit-console-x86.exe">
+          <Output TaskParameter="Path" PropertyName="ToolsExternalNUnitConsolePath" />
+        </SearchPackagesDirectoryForToolPath>
+        
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="opencover.console.exe">
+          <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverPath" />
+        </SearchPackagesDirectoryForToolPath>
+        
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="ReportGenerator.exe">
+          <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
+        </SearchPackagesDirectoryForToolPath>
+        
+        <ItemGroup Condition=" '@(UnitTestAssemblies)' == '' ">
+            <UnitTestAssemblies Include="$(DirBuildBin)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
+        </ItemGroup>
+        <ItemGroup Condition=" '@(OpenCoverIgnoreAttributes)' == '' ">
+            <OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+            <OpenCoverIgnoreAttributes Include="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
+        </ItemGroup>
+        <ItemGroup Condition=" '@(OpenCoverFilters)' == '' ">
+            <!-- NOTE: Use the ASCII encodings for * (%2A) to avoid MsBuild trying to make sense out of the text -->
+            <OpenCoverFilters Include="+[$(ProjectName)]%2A" />
+            <OpenCoverFilters Include="+[$(ProjectName).%2A]%2A" />
+            <OpenCoverFilters Include="-[%2A$(UnitTestAssemblyNamePrefix)%2A]%2A" />
+            <OpenCoverFilters Include="-[NUnit]%2A" />
+            <OpenCoverFilters Include="-[NUnit.%2A]%2A" />
+        </ItemGroup>
+        
+        <OpenCover OpenCoverExe="$(ToolsExternalOpenCoverPath)"
+                   OpenCoverOutput="$(FileReportOpenCoverXml)"
+                   OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
+                   OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
+                   UnitTestExe="$(ToolsExternalNUnitConsolePath)"
+                   UnitTestArguments="/framework:net-4.5 /result:&quot;nunit-console.xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:single @(UnitTestAssemblies->'%22%(FullPath)%22', ' ')"
+                   BinDir="$(DirBuildBin)" />
+        
+        <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
+                         OpenCoverOutputFile="$(FileReportOpenCoverXml)"
+                         OutputDir="$(DirReportGeneratorOutput)" />
+                         
+        <ReportGeneratorOutputToCsv InputFile="$(FileReportReportGeneratorXmlSummary)"
+                                    OutputFile="$(FileReportOpenCoverCsv)" />
+    </Target>
+ </Project>
