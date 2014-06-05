@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Build_Binaries_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Build configuration -->
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces Condition=" '$(PlatformWithoutSpaces)' == '' ">$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
+        
+        <!-- Files -->
+        <FileSln Condition=" '$(FileSln)' == '' ">UNDEFINED</FileSln>
+        
+        <!-- External tools -->
+        <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\NugetRestore.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\NugetRestore.msbuild')"/>
+    
+    <Target Name="nBuildKit_Build_Binaries_Run" DependsOnTargets="_nBuildKit_Build_Binaries_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Binaries_RestorePackages" />
+        <CallTarget Targets="_nBuildKit_Build_Binaries_Build" />
+        <CallTarget Targets="_nBuildKit_Build_Binaries_CopyLogs" />
+    </Target>
+   
+    <Target Name="_nBuildKit_Build_Binaries_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBin)" />
+        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
+        <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetPath)" />
+        <Message Text=" " />
+        
+        <Message Text="Solution file is located at: $(FileSln)" />
+        <Message Text=" " />
+    </Target>
+   
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Build_Binaries_DisplayInfo" DependsOnTargets="_nBuildKit_Build_Binaries_DebugLog">
+        <Message Text="Building from solution $(FileSln) with: Configuration = $(Configuration) and Platform = $(Platform) ..." />
+    </Target>
+    
+    <!-- Run Nuget for the build -->
+    <Target Name="_nBuildKit_Build_Binaries_RestorePackages">
+        <NugetRestore NugetPath="$(ToolsExternalNuGetPath)" 
+                      PackageFile="$(FileSln)" 
+                      PackageDirectory="$(DirPackages)" />
+    </Target>
+    
+    <!-- Build binaries -->
+    <Target Name="_nBuildKit_Build_Binaries_Build">
+        <MSBuild Projects="$(FileSln)" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+    </Target>
+    
+    <!-- Copy code analysis logs -->
+    <Target Name="_nBuildKit_Build_Binaries_CopyLogs">
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
+        
+        <ItemGroup>
+            <LogFiles Include="$(DirBuildBin)\*.CodeAnalysisLog.xml" />
+        </ItemGroup>
+        
+        <Move SourceFiles="@(LogFiles)" 
+              DestinationFolder="$(DirBuildLogs)"
+              OverwriteReadOnlyFiles="true"
+              ContinueOnError="true" />
+    </Target>
+ </Project>
