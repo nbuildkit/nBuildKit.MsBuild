@@ -85,11 +85,11 @@
     </Target>
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" Condition="!Exists('$(FileVersionMsBuild)')">
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="GitHubFlowVersion.exe" Condition=" '$(ToolsExternalGitVersionPath)' == '' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalGitVersionPath" />
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="GitHubFlowVersion.exe" Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalGitHubFlowVersionPath" />
         </SearchPackagesDirectoryForToolPath>
         
-        <CalculateSemanticVersionWithGitHubFlowVersion ExePath="$(ToolsExternalGitVersionPath)" 
+        <CalculateSemanticVersionWithGitHubFlowVersion ExePath="$(ToolsExternalGitHubFlowVersionPath)" 
                                                        VersionFile="$(FileSemanticVersion)" 
                                                        Condition="!Exists('$(FileSemanticVersion)')" />
     </Target>

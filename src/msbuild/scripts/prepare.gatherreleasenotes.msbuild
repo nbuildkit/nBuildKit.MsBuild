@@ -66,24 +66,21 @@
         <Warning Text="YouTrack server URI not specified" Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
     </Target>
    
-    <PropertyGroup>
-        <FileGitReleaseNotes>GitReleaseNotes.exe</FileGitReleaseNotes>
-    </PropertyGroup>
     <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_Gather" Condition=" '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubToken)' != 'UNDEFINED' AND '$(YouTrackServer)' != 'UNDEFINED' AND '$(YouTrackUserName)' != 'UNDEFINED' AND '$(YouTrackPassword)' != 'UNDEFINED' ">
         <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
         
-        <FindToolFromPackages PackagesDir="$(DirPackages)" FileToLocate="$(FileGitReleaseNotes)">
-            <Output TaskParameter="Path" PropertyName="PathGitReleaseNotesExe" />
+        <FindToolFromPackages PackagesDir="$(DirPackages)" FileToLocate="GitReleaseNotes.exe">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalGitReleaseNotesPath" />
         </FindToolFromPackages>
         
         <Message Text="Gathering release notes for current release ..." />
-        <Exec Command="&quot;$(PathGitReleaseNotesExe)&quot; /IssueTracker YouTrack /Token $(GitHubToken) /Repo $(GitHubUserName)/apollo /Username $(YouTrackUserName) /Password $(YouTrackPassword) /YouTrackServer $(YouTrackServer) /ProjectId ap  /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /IssueTracker YouTrack /Token $(GitHubToken) /Repo $(GitHubUserName)/apollo /Username $(YouTrackUserName) /Password $(YouTrackPassword) /YouTrackServer $(YouTrackServer) /ProjectId ap  /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
               WorkingDirectory="$(DirWorkspace)" />
         
         <Message Text="Gathering release notes for all releases ..." />
-        <Exec Command="&quot;$(PathGitReleaseNotesExe)&quot; /IssueTracker YouTrack /Token $(GitHubToken) /Repo $(GitHubUserName)/apollo /Username $(YouTrackUserName) /Password $(YouTrackPassword) /YouTrackServer $(YouTrackServer) /ProjectId ap /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /IssueTracker YouTrack /Token $(GitHubToken) /Repo $(GitHubUserName)/apollo /Username $(YouTrackUserName) /Password $(YouTrackPassword) /YouTrackServer $(YouTrackServer) /ProjectId ap /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
               WorkingDirectory="$(DirWorkspace)" />
     </Target>
  </Project>
