@@ -208,46 +208,46 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_Build_Binaries">
         <MSBuild Projects="$(MsBuildBuildBinaries)" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
+                 Properties="Configuration=$(TestConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
         <MSBuild Projects="$(MsBuildBuildBinaries)" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
                  Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' " />
     </Target>
     
     <!-- Execute the unit tests -->
     <Target Name="_nBuildKit_Build_Test_Unit">
         <MSBuild Projects="$(DirMsBuildScripts)\test.unit.nunit.msbuild" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Properties="Configuration=$(TestConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetExecuteUnitTests)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsUnitTestNUnit)'))" />
         <MSBuild Projects="$(DirMsBuildScripts)\test.unit.mstest.msbuild" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
+                 Properties="Configuration=$(TestConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetExecuteUnitTests)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsUnitTestMsTest)'))" />
     </Target>
     
     <!-- Perform analysis on the binary files -->
     <Target Name="_nBuildKit_Build_Analyze_Binaries">
         <MSBuild Projects="$(DirMsBuildScripts)\analyze.binaries.moma.msbuild" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Properties="Configuration=$(TestConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeBinaries)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsAnalyzeBinariesMoma)'))" />
         <MSBuild Projects="$(DirMsBuildScripts)\analyze.binaries.fxcop.msbuild" 
-                 Properties="Configuration=$(TestConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Properties="Configuration=$(TestConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetAnalyzeBinaries)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsAnalyzeBinariesFxCop)'))" />
     </Target>
     
     <!-- Build the API documentation -->
     <Target Name="_nBuildKit_Build_Build_ApiDocumentation">
         <MSBuild Projects="$(DirMsBuildScripts)\build.apidocumentation.sandcastle.msbuild" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
     </Target>    
     
     <!-- Package the binaries -->
     <Target Name="_nBuildKit_Build_Package">
         <!-- Note that NuGet doesn't like putting files starting with 'package' in a nuget package -->
         <MSBuild Projects="$(DirMsBuildScripts)\pack.nuget.msbuild" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPackage)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPackNuGet)'))" />
         <MSBuild Projects="$(DirMsBuildScripts)\pack.zip.msbuild" 
-                 Properties="Configuration=$(ProductionConfiguration);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPackage)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPackZip)'))"/>
     </Target>
 </Project>
