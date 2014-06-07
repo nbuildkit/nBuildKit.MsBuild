@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_PushTo_Directory_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+    </PropertyGroup>
+    
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    
+    <Target Name="nBuildKit_PushTo_Directory_Run" DependsOnTargets="_nBuildKit_PushTo_Directory_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_PushTo_Directory_Push" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_PushTo_Directory_DisplayInfo">
+        <Message Text="Copying binaries to the remote file location..." Condition=" '$(ServerDeployPath)' != ''" />
+        <Message Text="No remote file location defined!" Condition=" '$(ServerDeployPath)' == ''" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Package_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="Deploying to: %(PushToDirectorySpecs.Identity)" />
+        <Message Text=" " />
+    </Target>
+    
+    <Target Name="_nBuildKit_PushTo_Directory_Push" 
+            Condition=" '$(ServerDeployPath)' != ''"
+            Outputs="%(PushToDirectorySpecs.Identity)">
+            
+        <CreateProperty Value="%(PushToDirectorySpecs.Identity)">
+            <Output TaskParameter="Value" PropertyName="TemplateText" />
+        </CreateProperty>
+        <CallTarget Targets="nBuildKit_Shared_TemplateText_Run" />
+
+        <ItemGroup>
+            <FilesToPush Include="%(PushToDirectorySpecs.IncludedFiles)"
+                         Exclude="%(PushToDirectorySpecs.ExcludedFiles)" />
+        </ItemGroup>
+        <MakeDir Directories="$(TemplateTextProcessed)" 
+                 Condition="!Exists('$(TemplateTextProcessed)')" />
+        <Copy SourceFiles="@(FilesToPush)" 
+              DestinationFolder="$(TemplateTextProcessed)" />
+    </Target>
+</Project>

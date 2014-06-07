@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Build configuration -->
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces Condition=" '$(PlatformWithoutSpaces)' == '' ">$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+    
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        
+        <!-- Files -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+    </PropertyGroup>
+    
+    <Import Project="$(MsBuildExtensionsPath)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
+            Condition="Exists('$(MsBuildExtensionsPath)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+    
+    <Target Name="nBuildKit_Shared_TemplateText_Run">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+            <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
+            <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
+            <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
+            <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+            <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
+        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        
+        <ItemGroup>
+            <TemplateTextTokens Include="VersionMajor">
+                <ReplacementValue>$(VersionMajor)</ReplacementValue>
+            </TemplateTextTokens>
+            <TemplateTextTokens Include="VersionMinor">
+                <ReplacementValue>$(VersionMinor)</ReplacementValue>
+            </TemplateTextTokens>
+            <TemplateTextTokens Include="VersionPatch">
+                <ReplacementValue>$(VersionPatch)</ReplacementValue>
+            </TemplateTextTokens>
+            <TemplateTextTokens Include="VersionBuild">
+                <ReplacementValue>$(VersionBuild)</ReplacementValue>
+            </TemplateTextTokens>
+            <TemplateTextTokens Include="VersionSemantic">
+                <ReplacementValue>$(VersionSemantic)</ReplacementValue>
+            </TemplateTextTokens>
+            <TemplateTextTokens Include="VersionSemanticFull">
+                <ReplacementValue>$(VersionSemanticFull)</ReplacementValue>
+            </TemplateTextTokens>
+            <TemplateTextTokens Include="Configuration">
+                <ReplacementValue>$(Configuration)</ReplacementValue>
+            </TemplateTextTokens>
+            <TemplateTextTokens Include="Platform">
+                <ReplacementValue>$(Platform)</ReplacementValue>
+            </TemplateTextTokens>
+            <TemplateTextTokens Include="PlatformWithoutSpaces">
+                <ReplacementValue>$(PlatformWithoutSpaces)</ReplacementValue>
+            </TemplateTextTokens>
+            <TemplateTextTokens Include="ProductName">
+                <ReplacementValue>$(ProductName)</ReplacementValue>
+            </TemplateTextTokens>
+        </ItemGroup>
+        <TemplateText Template="$(TemplateText)"
+                      Tokens="TemplateTextTokens">
+            <Output TaskParameter="Result" PropertyName="TemplateTextProcessed" />
+        </TemplateText>
+    </Target>
+</Project>
