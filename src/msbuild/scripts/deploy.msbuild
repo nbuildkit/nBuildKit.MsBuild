@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Deploy_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+    <PropertyGroup>
+        <DeployTargetPushTo>PushTo</DeployTargetPushTo>
+        <DeployTargetTag>Tag</DeployTargetTag>
+        
+        <DeployStepsPushToNuget>NuGetPush</DeployStepsPushToNuget>
+        <DeployStepsPushToDirectory>DirectoryCopy</DeployStepsPushToDirectory>
+        <DeployStepsTagGit>GitTag</DeployStepsTagGit>
+        <DeployStepsTagTfs>TfsTag</DeployStepsTagTfs>
+    </PropertyGroup>
+    <ItemGroup>
+        <DeployTargets Include="$(DeployTargetPushTo)">
+            <Order>1</Order>
+            <TargetToExecute>_nBuildKit_Deploy_PushTo</TargetToExecute>
+        </DeployTargets>
+        
+        <DeployTargets Include="$(DeployTargetTag)">
+            <Order>2</Order>
+            <TargetToExecute>_nBuildKit_Deploy_Tag</TargetToExecute>
+        </DeployTargets>
+    </ItemGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+            
+    <!-- Default values for all the properties in case they were not overriden -->
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">true</ShouldDisplayDebugLog>
+        
+        <!-- Configurations -->
+        <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
+        <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">release</ProductionConfiguration>
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        
+        <!-- Directory structure -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
+        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
+        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        
+        <!-- Files -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
+        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
+        
+        <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
+        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
+        <DefaultFiles>FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;</DefaultFiles>
+        <DefaultSwitches>ShouldDisplayDebugLog=$(ShouldDisplayDebugLog)</DefaultSwitches>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild')" />
+    
+    <Target Name="nBuildKit_Deploy_Run" DependsOnTargets="_nBuildKit_Deploy_OrderTargets;_nBuildKit_Deploy_DisplayInfo">
+        <!-- If there is no property file then we die -->
+        <Error Text="No build properties file was defined."
+               Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
+        
+        <!-- Execute all the build tasks in the given order -->
+        <CallTarget Targets="%(DeployTasksToExecute.TargetToExecute)" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Deploy_OrderTargets">
+        <!-- Generate the task list in the right order -->
+        <FindInList List="@(DeployTargets)" ItemSpecToFind="%(DeployStepsToExecute.Identity)">
+            <Output TaskParameter="ItemFound" ItemName="UnsortedDeployTasksToExecute" />
+        </FindInList>
+        <SortItemGroupByKey Items="@(UnsortedDeployTasksToExecute)">
+            <Output TaskParameter="SortedItems" ItemName="DeployTasksToExecute" />
+        </SortItemGroupByKey>
+    </Target>
+    
+    <Target Name="_nBuildKit_Deploy_DisplayInfo">
+        <Message Text="Deploying ..." />
+
+        <!-- Display all the configuration values here -->
+        <Message Text="Configuration values:"
+                 Condition="$(ShouldDisplayDebugLog)" />
+                 
+        <Message Text="TestConfiguration:       $(TestConfiguration)" 
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="ProductionConfiguration: $(ProductionConfiguration)" 
+                 Condition="$(ShouldDisplayDebugLog)" />
+                 
+        <Message Text=" "
+                 Condition="$(ShouldDisplayDebugLog)" />
+        
+        <!-- Display the targets that will be executed -->
+        <Message Text="Executing targets: @(BuildTasksToExecute->'%(identity)', '; ')" 
+                 Condition=" '@(BuildTasksToExecute)' != '' AND $(ShouldDisplayDebugLog) " />
+        <Message Text="Executing targets: NONE" 
+                 Condition=" '@(BuildTasksToExecute)' == '' AND $(ShouldDisplayDebugLog) " />
+                 
+        <Message Text=" "
+                 Condition="$(ShouldDisplayDebugLog)" />
+                 
+        <!-- Display the known directories -->
+        <Message Text="Project directory structure:"
+                 Condition="$(ShouldDisplayDebugLog)" />
+                 
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the source code is located at:           $(DirSrc)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the template files is located at:        $(DirTemplates)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)"
+                 Condition="$(ShouldDisplayDebugLog)" />
+    </Target>
+
+    <!-- Push the artifacts to the destinations -->
+    <PropertyGroup>
+        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Deploy_PushTo">
+        <MsBuild Projects="%(DeployStepsToExecute.PreInvokeScripts)"
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' " />
+    
+        <MSBuild Projects="$(DirMsBuildScripts)\pushto.nugetfeed.msbuild" 
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsPushToNuget)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\pushto.directory.msbuild" 
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsPushToDirectory)'))" />
+
+        <MsBuild Projects="%(DeployStepsToExecute.PostInvokeScripts)"
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' " />
+    </Target>
+    
+    <!-- Add one or more tags to the VCS -->
+    <Target Name="_nBuildKit_Deploy_Tag" DependsOnTargets="_DisplayInfo">
+        <MsBuild Projects="%(DeployStepsToExecute.PreInvokeScripts)"
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' " />
+        
+        <MSBuild Projects="$(DirMsBuildScripts)\tag.vcs.git.msbuild" 
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsTagGit)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\tag.vcs.tfs.msbuild" 
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsTagTfs)'))" />
+                 
+        <MsBuild Projects="%(DeployStepsToExecute.PostInvokeScripts)"
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' " />
+    </Target>
+</Project>
