@@ -99,11 +99,7 @@
         </ItemGroup>
         <ItemGroup Condition=" '@(OpenCoverFilters)' == '' ">
             <!-- NOTE: Use the ASCII encodings for * (%2A) to avoid MsBuild trying to make sense out of the text -->
-            <OpenCoverFilters Include="+[$(ProjectName)]%2A" />
-            <OpenCoverFilters Include="+[$(ProjectName).%2A]%2A" />
-            <OpenCoverFilters Include="-[%2A$(UnitTestAssemblyNamePrefix)%2A]%2A" />
-            <OpenCoverFilters Include="-[NUnit]%2A" />
-            <OpenCoverFilters Include="-[NUnit.%2A]%2A" />
+            <OpenCoverFilters Include="+[%2A]%2A" />
         </ItemGroup>
         
         <OpenCover OpenCoverExe="$(ToolsExternalOpenCoverPath)"
