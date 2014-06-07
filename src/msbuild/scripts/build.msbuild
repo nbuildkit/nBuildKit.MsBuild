@@ -15,7 +15,6 @@
         <BuildTargetPackage>Package</BuildTargetPackage>
         
         <BuildStepsPrepareRestoreNuGet>NuGetRestore</BuildStepsPrepareRestoreNuGet>
-        <BuildStepsPrepareVersion>SemanticVersion</BuildStepsPrepareVersion>
         <BuildStepsPrepareReleaseNotes>ReleaseNotes</BuildStepsPrepareReleaseNotes>
         <BuildStepsAnalyzeSourceCcm>Ccm</BuildStepsAnalyzeSourceCcm>
         <BuildStepsAnalyzeSourceSouceMonitor>SourceMonitor</BuildStepsAnalyzeSourceSouceMonitor>
@@ -189,8 +188,7 @@
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareRestoreNuGet)'))" />
         <MSBuild Projects="$(DirMsBuildScripts)\prepare.getversion.msbuild"
-                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareVersion)'))" />
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" />
         <MSBuild Projects="$(DirMsBuildScripts)\prepare.gatherreleasenotes.msbuild"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareReleaseNotes)'))" />
