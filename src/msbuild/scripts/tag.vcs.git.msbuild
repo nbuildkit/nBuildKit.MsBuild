@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Tag_Vcs_Git_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Build configuration -->
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        
+        <!-- Files -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
+        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
+        
+        <!-- Version number -->
+        <VersionSemantic>0</VersionSemantic>
+        
+        <!-- External tools -->
+        <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
+    </PropertyGroup>
+    
+    <Import Project="$(MsBuildExtensionsPath)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
+            Condition="Exists('$(MsBuildExtensionsPath)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+    
+    <Target Name="nBuildKit_Tag_Vcs_Git_Run" DependsOnTargets="_nBuildKit_Tag_Vcs_Git_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Tag_Vcs_Git_Tag" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Tag_Vcs_Git_DisplayInfo" DependsOnTargets="_nBuildKit_Tag_Vcs_Git_DebugLog">
+        <Message Text="Tagging release ..." />
+    </Target>
+    
+    <Target Name="_nBuildKit_Tag_Vcs_Git_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="Git command line executable is located at: $(ToolsExternalGitPath)" />
+        <Message Text=" " />
+        
+        <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)" />
+        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShort)" />
+        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFull)" />
+        <Message Text=" " />
+    </Target>
+    
+    <Target Name="_nBuildKit_Tag_Vcs_Git_Tag" >
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+    
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotes)'))" Condition="Exists('$(FileReleaseNotes)')">
+            <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
+        </CreateProperty>
+    
+        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;$(ReleaseNotes)&quot; &quot;$(VersionSemantic)&quot;"
+              WorkingDirectory="$(DirWorkspace)" />
+        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; push origin --tags"
+              WorkingDirectory="$(DirWorkspace)" />
+    </Target>
+ </Project>
