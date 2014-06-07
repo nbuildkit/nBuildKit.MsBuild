@@ -53,6 +53,10 @@
         <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
+        
+        <Message Text="The semantic version file is located at:    $(FileSemanticVersion)" />
+        <Message Text="The MsBuild XML version file is located at: $(FileVersionMsBuild)" Condition="Exists('$(FileVersionMsBuild)')" />
+        <Message Text=" " />
     </Target>
     
     <!-- Display info -->
