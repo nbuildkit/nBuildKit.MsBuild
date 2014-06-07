@@ -11,6 +11,7 @@
         
         <DeployStepsPushToNuget>NuGetPush</DeployStepsPushToNuget>
         <DeployStepsPushToDirectory>DirectoryCopy</DeployStepsPushToDirectory>
+        <DeployStepsPushToSymbolServer>SymbolServer</DeployStepsPushToSymbolServer>
         <DeployStepsTagGit>GitTag</DeployStepsTagGit>
         <DeployStepsTagTfs>TfsTag</DeployStepsTagTfs>
     </PropertyGroup>
@@ -146,6 +147,9 @@
         <MSBuild Projects="$(DirMsBuildScripts)\pushto.directory.msbuild" 
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
                  Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsPushToDirectory)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\pushto.symbolserver.msbuild" 
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsPushToSymbolServer)'))" />
 
         <MsBuild Projects="%(DeployStepsToExecute.PostInvokeScripts)"
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
