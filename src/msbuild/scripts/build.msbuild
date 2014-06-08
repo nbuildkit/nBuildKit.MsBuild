@@ -67,6 +67,9 @@
     
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
+        <!-- Product & Company information -->
+        <ProductName Condition=" '$(ProductName)' == '' ">Apollo</ProductName>
+    
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">true</ShouldDisplayDebugLog>
         <ShouldClean Condition=" '$(ShouldClean)' == '' ">true</ShouldClean>
@@ -88,9 +91,14 @@
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         
         <!-- Files -->
+        <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild>
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
         <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
         <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
+        <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirTemplates)\ccm.xml.in</FileTemplateCcm>
+        <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm>
+        <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor>
+        <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor>
         <FileSln Condition=" '$(FileSln)' == '' ">UNDEFINED</FileSln>
         
         <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
@@ -122,55 +130,56 @@
     </Target>
     
     
-    <Target Name="_nBuildKit_Build_DisplayInfo">
+    <Target Name="_nBuildKit_Build_DisplayInfo" DependsOnTargets="_nBuildKit_Build_DebugLog">
         <Message Text="Building ..." />
-
+    </Target>
+    
+    <Target Name="_nBuildKit_Build_DebugLog" Condition="$(ShouldDisplayDebugLog)">
         <!-- Display all the configuration values here -->
-        <Message Text="Configuration values:"
-                 Condition="$(ShouldDisplayDebugLog)" />
-                 
-        <Message Text="ShouldClean:             $(ShouldClean)" 
-                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="Configuration values:" />
+        <Message Text="ShouldClean:             $(ShouldClean)" />
         
-        <Message Text="TestConfiguration:       $(TestConfiguration)" 
-                 Condition="$(ShouldDisplayDebugLog)" />
-        <Message Text="ProductionConfiguration: $(ProductionConfiguration)" 
-                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="TestConfiguration:       $(TestConfiguration)" />
+        <Message Text="ProductionConfiguration: $(ProductionConfiguration)" />
+        <Message Text="Platform:                $(Platform)" />
                  
-        <Message Text=" "
-                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text=" " />
         
         <!-- Display the targets that will be executed -->
         <Message Text="Executing targets: @(BuildTasksToExecute->'%(identity)', '; ')" 
-                 Condition=" '@(BuildTasksToExecute)' != '' AND $(ShouldDisplayDebugLog) " />
+                 Condition=" '@(BuildTasksToExecute)' != ''" />
         <Message Text="Executing targets: NONE" 
-                 Condition=" '@(BuildTasksToExecute)' == '' AND $(ShouldDisplayDebugLog) " />
+                 Condition=" '@(BuildTasksToExecute)' == ''" />
                  
-        <Message Text=" "
-                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text=" " />
                  
         <!-- Display the known directories -->
-        <Message Text="Project directory structure:"
-                 Condition="$(ShouldDisplayDebugLog)" />
-                 
-        <Message Text="The workspace is located at:                                      $(DirWorkspace)"
-                 Condition="$(ShouldDisplayDebugLog)" />
-        <Message Text="The directory containing the build output is located at:          $(DirBuild)"
-                 Condition="$(ShouldDisplayDebugLog)" />
-        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)"
-                 Condition="$(ShouldDisplayDebugLog)" />
-        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)"
-                 Condition="$(ShouldDisplayDebugLog)" />
-        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)"
-                 Condition="$(ShouldDisplayDebugLog)" />
-        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)"
-                 Condition="$(ShouldDisplayDebugLog)" />
-        <Message Text="The directory containing the source code is located at:           $(DirSrc)"
-                 Condition="$(ShouldDisplayDebugLog)" />
-        <Message Text="The directory containing the template files is located at:        $(DirTemplates)"
-                 Condition="$(ShouldDisplayDebugLog)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)"
-                 Condition="$(ShouldDisplayDebugLog)" />
+        <Message Text="Project directory structure:"/>
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
+        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
+        <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
+        <Message Text="The directory containing the template files is located at:        $(DirTemplates)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="Project files:" />
+        <Message Text="The MsBuild XML version file is located at:                                  $(FileVersionMsBuild)" 
+                 Condition="Exists('$(FileVersionMsBuild)')" />
+        <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)" />
+        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShort)" />
+        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFull)" />
+        <Message Text="The CCM template file is located at:                                         $(FileTemplateCcm)" />
+        <Message Text="The CCM report file is located at:                                           $(FileReportCcm)" />
+        <Message Text="Solution file is located at:                                                 $(FileSln)" />
+        <Message Text=" " />
+        
+        <Message Text="External tools:" />
+        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetPath)" />
+        <Message Text=" " />
     </Target>
     
     <!-- Prepare the workspace and create the necessary files for the build -->
