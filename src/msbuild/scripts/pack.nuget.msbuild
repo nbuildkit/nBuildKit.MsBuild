@@ -51,7 +51,7 @@
             Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')"/>
             
     <Target Name="nBuildKit_Package_NuGet_Run" DependsOnTargets="_nBuildKit_Package_NuGet_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Package_NuGet_Build" />
+        <CallTarget Targets="_nBuildKit_Package_NuGet_Pack" />
     </Target>
     
     <Target Name="_nBuildKit_Package_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -109,8 +109,8 @@
         Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
         once for each entry in the NuGetPackagesSpecs ItemGroup.
     -->
-    <Target Name="_nBuildKit_Package_NuGet_Build" 
-            DependsOnTargets="_nBuildKit_Package_NuGet_DisplayInfo;_nBuildKit_Package_NuGet_GetDirectories;_nBuildKit_Package_NuGet_GetVersion;_nBuildKit_Package_NuGet_GetReleaseNotes"
+    <Target Name="_nBuildKit_Package_NuGet_Pack" 
+            DependsOnTargets="_nBuildKit_Package_NuGet_GetDirectories;_nBuildKit_Package_NuGet_GetVersion;_nBuildKit_Package_NuGet_GetReleaseNotes"
             Condition=" '@(NuGetPackageSpecs)' != '' "
             Outputs="%(NuGetPackageSpecs.Identity)">
         <Message Text="Creating NuGet package: %(NuGetPackageSpecs.Filename)" />
