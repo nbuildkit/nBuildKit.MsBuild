@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Analyze_Binaries_FxCop_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Build configuration -->
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        
+        <!-- Files -->
+        <FileProjectFxCop Condition=" '$(FileProjectFxCop)' == '' ">UNDEFINED</FileProjectFxCop>
+        <FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop>
+        
+        <!-- External tools -->
+        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir>
+    </PropertyGroup>
+   
+    <Import Project="$(MsBuildExtensionsPath)\SearchPackagesDirectoryForToolDirectory.msbuild" 
+            Condition="Exists('$(MsBuildExtensionsPath)\SearchPackagesDirectoryForToolDirectory.msbuild')" />
+    <Import Project="$(MsBuildExtensionsPath)\FxCop.msbuild"
+            Condition="Exists('$(MsBuildExtensionsPath)\FxCop.msbuild')"/>
+            
+    <Target Name="nBuildKit_Analyze_Binaries_FxCop_Run" 
+            DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Analyze_Binaries_FxCop_Analyze" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBin)" />
+        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="FxCop command line executable is located at: $(ToolsExternalFxCopDir)" />
+        <Message Text=" " />
+        
+        <Message Text="The FxCop project file is located at: $(FileProjectFxCop)" />
+        <Message Text="The FxCop report file is located at:  $(FileReportFxCop)" />
+        <Message Text=" " />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_DebugLog">
+        <Message Text="Running FxCop ..." />
+    </Target>
+    
+    <PropertyGroup>
+        <FileFxCopCmdExe>FxCopCmd.exe</FileFxCopCmdExe>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_Analyze">
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
+        
+        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" FileToLocate="$(FileFxCopCmdExe)" Condition=" '$(ToolsExternalFxCopDir)' == '' ">
+          <Output TaskParameter="Path" PropertyName="ToolsExternalFxCopDir" />
+        </SearchPackagesDirectoryForToolDirectory>
+            
+        <FxCop FxCopDir="$(ToolsExternalFxCopDir)"
+               FxCopOutputFile="$(FileReportFxCop)"
+               FxCopProjectFile="$(FileProjectFxCop)" />
+    </Target>
+ </Project>
