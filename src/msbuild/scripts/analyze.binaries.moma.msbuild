@@ -34,8 +34,8 @@
         <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma>
     </PropertyGroup>
     
-    <Import Project="$(MsBuildExtensionsPath)\SearchPackagesDirectoryForToolPath.msbuild" 
-            Condition="Exists('$(MsBuildExtensionsPath)\SearchPackagesDirectoryForToolPath.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
     
     <Target Name="nBuildKit_Analyze_Binaries_Moma_Run" 
             DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_DisplayInfo">

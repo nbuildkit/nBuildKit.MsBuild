@@ -34,10 +34,10 @@
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir>
     </PropertyGroup>
    
-    <Import Project="$(MsBuildExtensionsPath)\SearchPackagesDirectoryForToolDirectory.msbuild" 
-            Condition="Exists('$(MsBuildExtensionsPath)\SearchPackagesDirectoryForToolDirectory.msbuild')" />
-    <Import Project="$(MsBuildExtensionsPath)\FxCop.msbuild"
-            Condition="Exists('$(MsBuildExtensionsPath)\FxCop.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\FxCop.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\FxCop.msbuild')"/>
             
     <Target Name="nBuildKit_Analyze_Binaries_FxCop_Run" 
             DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_DisplayInfo">
