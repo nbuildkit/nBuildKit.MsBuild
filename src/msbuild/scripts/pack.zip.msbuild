@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Package_Zip_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Build configuration -->
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\Zip.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\Zip.msbuild')"/>
+            
+    <Target Name="nBuildKit_Package_Zip_Run" DependsOnTargets="_nBuildKit_Package_Zip_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Package_Zip_Pack" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Package_Zip_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Package_Zip_DisplayInfo" DependsOnTargets="_nBuildKit_Package_Zip_DebugLog">
+        <Message Text="Packing binaries ..." />
+    </Target>
+    
+    <!-- 
+        Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
+        once for each entry in the ArchivePackageSpecs ItemGroup.
+    -->
+    <Target Name="_nBuildKit_Package_Zip_Pack"
+            Condition=" '@(ArchivePackageSpecs)' != '' "
+            Outputs="%(ArchivePackageSpecs.Identity)">
+        <MakeDir Directories="$(DirBuildDeploy)" Condition="!Exists('$(DirBuildDeploy)')" />
+        
+        <ItemGroup>
+            <PackageFiles Include="%(ArchivePackageSpecs.IncludedFiles)"
+                          Exclude="%(ArchivePackageSpecs.ExcludedFiles)" />
+        </ItemGroup>
+    
+        <Message Text="Writing the following files to the archive: " />
+        <Message Text="%(PackageFiles.Identity)" />
+        <Zip InputFileNames="@(PackageFiles)"
+             BaseDirectory="%(ArchivePackageSpecs.DirBase)"
+             OutputFileName="%(ArchivePackageSpecs.Identity)"
+             OverwriteExistingFile="true" />
+    </Target>
+ </Project>
