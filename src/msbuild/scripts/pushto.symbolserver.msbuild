@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_PushTo_SymbolServer_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        
+        <!-- Server paths -->
+        <SymbolServerUrl Condition=" '$(SymbolServerUrl)' == '' "></SymbolServerUrl>
+    </PropertyGroup>
+    
+    <Target Name="nBuildKit_PushTo_SymbolServer_Run" DependsOnTargets="_nBuildKit_PushTo_SymbolServer_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_PushTo_SymbolServer_Push" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_PushTo_SymbolServer_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_SymbolServer_DebugLog">
+        <Message Text="Pushing NuGet symbol packages to the symbol server ..." Condition=" '$(SymbolServerUrl)' != ''" />
+        <Message Text="No symbol server path defined!" Condition=" '$(SymbolServerUrl)' == ''" />
+    </Target>
+    
+    <Target Name="_nBuildKit_PushTo_SymbolServer_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="Pushing symbol packages to: $(SymbolServerUrl)" />
+        <Message Text=" " />
+    </Target>
+    
+    <Target Name="_nBuildKit_PushTo_SymbolServer_Push" Condition=" '$(SymbolServerUrl)' != ''">
+        <ItemGroup Condition=" '@(SymbolPackagesToPush)' == '' ">
+            <SymbolPackagesToPush Include="$(DirBuildDeploy)\*.symbols.nupkg" />
+        </ItemGroup>
+        
+        <Copy SourceFiles="@(SymbolPackagesToPush)" 
+              DestinationFolder="$(SymbolServerUrl)\" />
+    </Target>
+</Project>
