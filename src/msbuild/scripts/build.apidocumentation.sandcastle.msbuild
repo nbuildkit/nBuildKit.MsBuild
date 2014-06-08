@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Build_ApiDocumentation_SandCastle_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Build configuration -->
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+        
+        <!-- Files -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\SetEnvironmentVariable.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\SetEnvironmentVariable.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')"/>
+
+    <Target Name="nBuildKit_Build_ApiDocumentation_SandCastle_Run" 
+            DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate" />
+        <CallTarget Targets="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithInstalledSandcastle" />
+        <CallTarget Targets="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithLocalSandcastle" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBin)" />
+        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
+        <Message Text="The directory containing the template files is located at:        $(DirTemplates)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="The semantic version file is located at:    $(FileSemanticVersion)" />
+        <Message Text="The sandcastle template file is located at: $(FileTemplateSandcastle)" />
+        <Message Text=" " />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DisplayInfo" DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog">
+        <Message Text="Building API documentation with SandCastle ..." />
+    </Target>
+    
+    <PropertyGroup>
+        <FileGeneratedSandcastle>$(DirBuildTemp)\sandcastle.shfbproj</FileGeneratedSandcastle>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate">
+        <CreateProperty Value="$(DXROOT)" Condition="Exists('$(DXROOT)')">
+            <Output TaskParameter="Value" PropertyName="DirSandcastle" />
+        </CreateProperty>
+        <Message Text="DirSandcastle = $(DirSandcastle)" />
+
+        <CreateProperty Value="$(SHFBROOT)" Condition="Exists('$(SHFBROOT)')">
+            <Output TaskParameter="Value" PropertyName="DirSandcastleHelpFileBuilder" />
+        </CreateProperty>
+        <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
+        
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+    
+        <ItemGroup>
+            <SandcastleTokens Include="DirShfbRoot">
+                <ReplacementValue>$(DirSandcastleHelpFileBuilder)</ReplacementValue>
+            </SandcastleTokens>
+            <SandcastleTokens Include="DirSandcastle">
+                <ReplacementValue>$(DirSandcastle)</ReplacementValue>
+            </SandcastleTokens>
+            <SandcastleTokens Include="DirDoc">
+                <ReplacementValue>$(DirBuildDoc)</ReplacementValue>
+            </SandcastleTokens>
+            <SandcastleTokens Include="DirLogs">
+                <ReplacementValue>$(DirBuildLogs)</ReplacementValue>
+            </SandcastleTokens>
+            <SandcastleTokens Include="DirBin">
+                <ReplacementValue>$(DirBuildBin)</ReplacementValue>
+            </SandcastleTokens>
+            <SandcastleTokens Include="Version">
+                <ReplacementValue>$(VersionSemantic)</ReplacementValue>
+            </SandcastleTokens>
+        </ItemGroup>
+        <TemplateFile Template="$(FileTemplateSandcastle)" OutputFileName="$(FileGeneratedSandcastle)" Tokens="@(SandcastleTokens)" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithInstalledSandcastle" 
+            DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate" 
+            Condition="Exists('$(DirSandcastle)')">
+        <Message Text="DirSandcastle = $(DirSandcastle)" />
+        <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
+        
+        <!-- Run sandcastle via msbuild -->
+        <Exec Command="&quot;$(MSBuildToolsPath)/msbuild.exe&quot; &quot;$(FileGeneratedSandcastle)&quot;" />
+    </Target>
+    
+    <PropertyGroup>
+        <FileSandcastleExe>BuildReflectionData.proj</FileSandcastleExe>
+        <FileSandcastleHelpFileBuilderExe>SandcastleBuilderGUI.exe</FileSandcastleHelpFileBuilderExe>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithLocalSandcastle" 
+            DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate" 
+            Condition="!Exists('$(DirSandcastle)')" >
+        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" FileToLocate="$(FileSandcastleExe)" Condition=" '$(DirSandcastle)' == '' ">
+          <Output TaskParameter="Path" PropertyName="DirSandcastle" />
+        </SearchPackagesDirectoryForToolDirectory>
+
+        <!-- 
+            We're coming up one directory too deep (i.e. getting packages\sandcastle.1.2.3.4\data 
+        -->
+        <PropertyGroup>
+            <DirSandcastle Condition=" '$(DirSandcastle)' != '' ">$([System.IO.Path]::GetDirectoryName($(DirSandcastle)))</DirSandcastle>
+        </PropertyGroup>
+        
+        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" FileToLocate="$(FileSandcastleHelpFileBuilderExe)">
+          <Output TaskParameter="Path" PropertyName="DirSandcastleHelpFileBuilder" />
+        </SearchPackagesDirectoryForToolDirectory>
+        
+        <Message Text="DirSandcastle = $(DirSandcastle)" />
+        <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
+        
+        <!-- 
+            Set an environment variable for the sandcastle process. Note that MsBuild itself won't be able to pick this 
+            variable up because MsBuild never reloads the Environment variables and the msbuild target
+            runs the same instance of msbuild
+        -->
+        <SetEnvironmentVariable Name="DXROOT" Value="$(DirSandcastle)" />
+        
+        <!-- 
+            Build reference data via msbuild. We need to do this via the 
+            Exec task because we need a child process so that the change in environment 
+            variables is picked up (MsBuild doesn't listen for changes in environment variables)
+        -->
+        <Exec Command="&quot;$(MSBuildToolsPath)/msbuild.exe&quot; &quot;$(DirSandcastle)\Data\BuildReflectionData.proj&quot; /p:ToolsRoot=$(DirSandcastle)" 
+              Condition="!Exists('$(DirSandcastle)\Data\Reflection')" />
+        
+        <!-- Run sandcastle via msbuild -->
+        <Exec Command="&quot;$(MSBuildToolsPath)/msbuild.exe&quot; &quot;$(FileGeneratedSandcastle)&quot; /p:SHFBROOT=$(DirSandcastleHelpFileBuilder)" />
+    </Target>
+ </Project>
