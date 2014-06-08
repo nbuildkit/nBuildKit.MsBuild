@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Define the overrides for the properties -->
+    <PropertyGroup>
+        <!-- Directory structure -->
+        <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirMsBuildExtensions>
+        
+        <!-- Files -->
+        <BuildPropertyFile>$(DirWorkspace)\build.props</BuildPropertyFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
+        <DirNBuildKit>$(DirMsBuildScripts)\src\msbuild\scripts</DirNBuildKit>
+    </PropertyGroup>
+    <Target Name="Run">
+        <MSBuild Projects="$(DirNBuildKit)\build.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions)" />
+    </Target>
+</Project>
