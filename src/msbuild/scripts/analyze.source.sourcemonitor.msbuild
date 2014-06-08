@@ -29,9 +29,6 @@
         <!-- Files -->
         <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor>
         <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor>
-        
-        <!-- External tools -->
-        <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
@@ -67,7 +64,7 @@
     
     <!-- Display info -->
     <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog">
-        <Message Text="Running CCM..." />
+        <Message Text="Running SourceMonitor ..." />
     </Target>
     
     <!-- Display info -->
