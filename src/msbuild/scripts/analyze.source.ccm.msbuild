@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Analyze_Source_Ccm_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
+        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+        
+        <!-- Files -->
+        <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirTemplates)\ccm.xml.in</FileTemplateCcm>
+        <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm>
+        
+        <!-- External tools -->
+        <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\Ccm.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\Ccm.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')"/>
+    
+    <Target Name="nBuildKit_Analyze_Source_Ccm_Run" 
+            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Analyze_Source_Ccm_Analyze" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
+        <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
+        <Message Text="The directory containing the template files is located at:        $(DirTemplates)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="The CCM template file is located at:    $(FileTemplateCcm)" />
+        <Message Text="The CCM report file is located at:      $(FileReportCcm)" />
+        <Message Text=" " />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DebugLog">
+        <Message Text="Running CCM..." />
+    </Target>
+    
+    <PropertyGroup>
+        <FileCcmExe>Ccm.exe</FileCcmExe>
+        <FileGeneratedCcm>$(DirBuildTemp)\ccm.input.xml</FileGeneratedCcm>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_Analyze">
+        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)')" />
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
+        
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="$(FileCcmExe)">
+          <Output TaskParameter="Path" PropertyName="PathCcmExe" />
+        </SearchPackagesDirectoryForToolPath>
+        
+        <ItemGroup>
+            <CcmTokens Include="DirSrc">
+                <ReplacementValue>$(DirSrc)</ReplacementValue>
+            </CcmTokens>
+        </ItemGroup>
+        <TemplateFile Template="$(FileTemplateCcm)" 
+                      OutputFileName="$(FileGeneratedCcm)" 
+                      Tokens="@(CcmTokens)" />
+    
+        <Ccm CcmExe="$(PathCcmExe)"
+             ConfigFile="$(FileGeneratedCcm)"
+             OutputFile="$(FileReportCcm)" />
+    </Target>
+ </Project>
