@@ -42,7 +42,7 @@
             DependsOnTargets="_nBuildKit_Prepare_GetVersion_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" />
-        <CallTarget Targets="_nBuildKit_Prepare_GetVersion_DisplaySemanticVersion" />
+        <CallTarget Targets="_nBuildKit_Prepare_GetVersion_PushToExternals" />
     </Target>
     
     <Target Name="_nBuildKit_Prepare_GetVersion_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -98,7 +98,7 @@
                                                        Condition="!Exists('$(FileSemanticVersion)')" />
     </Target>
     
-    <Target Name="_nBuildKit_Prepare_GetVersion_DisplaySemanticVersion">
+    <Target Name="_nBuildKit_Prepare_GetVersion_PushToExternals">
         <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
@@ -115,5 +115,19 @@
         <Message Text="Build:          $(VersionBuild)" />
         <Message Text="Short semantic: $(VersionSemantic)" />
         <Message Text="Full semantic:  $(VersionSemanticFull)" />
+        
+        <!-- Push to TeamCity -->
+        <!-- Note that we only need to push to TeamCity if we're not using GitHubFlowVersion because that already makes it happen -->
+        <Message Text="Pushing version number to TeamCity's build number ..." 
+                 Condition=" '$(TEAMCITY_VERSION )' != '' AND Exists('$(FileVersionMsBuild)')" />
+        <Message Text="##teamcity[buildNumber '$(VersionSemanticFull)']"
+                 Condition=" '$(TEAMCITY_VERSION )' != '' AND Exists('$(FileVersionMsBuild)')" />
+        
+        <!-- Push to AppVeyor -->
+        <!-- Note to make sure that the version that AppVeyor gets is unique we append the build number at the end. -->
+        <Message Text="Pushing version number to AppVeyor's build number ..." 
+                 Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' " />
+        <Exec Command="appveyor UpdateBuild -Version &quot;$(VersionSemanticFull)-$(APPVEYOR_BUILD_NUMBER)&quot;"
+              Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' " />
     </Target>
  </Project>
