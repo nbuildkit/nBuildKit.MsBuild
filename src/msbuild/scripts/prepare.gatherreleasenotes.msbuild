@@ -27,10 +27,9 @@
         
         <!-- Issue tracker -->
         <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
-        <GitHubToken Condition=" '$(GitHubToken)' == '' ">UNDEFINED</GitHubToken>
-        <YouTrackUserName Condition=" '$(YouTrackUserName)' == '' ">UNDEFINED</YouTrackUserName>
-        <YouTrackPassword Condition=" '$(YouTrackPassword)' == '' ">UNDEFINED</YouTrackPassword>
+        <GitHubRepository Condition=" '$(GitHubRepository)' == '' ">UNDEFINED</GitHubRepository>
         <YouTrackServer Condition=" '$(YouTrackServer)' == '' ">UNDEFINED</YouTrackServer>
+        <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId>
         
         <!-- Version number -->
         <VersionSemantic>0</VersionSemantic>
@@ -63,29 +62,48 @@
     <!-- Display info -->
     <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_GatherReleaseNotes_DebugLog">
         <Message Text="Gathering release notes ..." />
-        
-        <Warning Text="Github username not specified" Condition=" '$(GitHubUserName)' == 'UNDEFINED' " />
-        <Warning Text="Github token not specified" Condition=" '$(GitHubToken)' == 'UNDEFINED' " />
-        <Warning Text="YouTrack username not specified" Condition=" '$(YouTrackUserName)' == 'UNDEFINED' " />
-        <Warning Text="YouTrack password not specified" Condition=" '$(YouTrackPassword)' == 'UNDEFINED' " />
-        <Warning Text="YouTrack server URI not specified" Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
     </Target>
    
-    <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_Gather" Condition=" '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubToken)' != 'UNDEFINED' AND '$(YouTrackServer)' != 'UNDEFINED' AND '$(YouTrackUserName)' != 'UNDEFINED' AND '$(YouTrackPassword)' != 'UNDEFINED' ">
+    <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_Gather" Condition=" '$(GitHubUserName)' != 'UNDEFINED' ">
+        <Message Text="Gathering release note information from GitHub"
+                 Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
+        <CreateProperty Value="/IssueTracker GitHub"
+                        Condition=" '$(YouTrackServer)' == 'UNDEFINED' ">
+            <Output TaskParameter="Value" PropertyName="IssueTrackerConnection" />
+        </CreateProperty>
+        
+        <Message Text="Gathering release note information from YouTrack"
+                 Condition=" '$(YouTrackServer)' != 'UNDEFINED' " />
+        <CreateProperty Value="/IssueTracker YouTrack /Username $(IssueTrackerUserName) /Password %IssueTrackerPassword% /YouTrackServer $(YouTrackServer) /ProjectId $(IssueTrackerProjectId)" 
+                        Condition=" '$(YouTrackServer)' != 'UNDEFINED' ">
+            <Output TaskParameter="Value" PropertyName="IssueTrackerConnection" />
+        </CreateProperty>
+        
         <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
         
-        <FindToolFromPackages PackagesDir="$(DirPackages)" FileToLocate="GitReleaseNotes.exe">
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="GitReleaseNotes.exe">
             <Output TaskParameter="Path" PropertyName="ToolsExternalGitReleaseNotesPath" />
-        </FindToolFromPackages>
+        </SearchPackagesDirectoryForToolPath>
         
-        <Message Text="Gathering release notes for current release ..." />
-        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /IssueTracker YouTrack /Token $(GitHubToken) /Repo $(GitHubUserName)/apollo /Username $(YouTrackUserName) /Password $(YouTrackPassword) /YouTrackServer $(YouTrackServer) /ProjectId ap  /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
-              WorkingDirectory="$(DirWorkspace)" />
+        <Warning Text="Not enough information provided to gather the release notes ..." Condition=" '$(IssueTrackerConnection)' == '' " />
+        <Warning Text="Github username not specified" Condition="  '$(IssueTrackerConnection)' == '' AND '$(GitHubUserName)' == 'UNDEFINED' " />
+        <Warning Text="YouTrack server URI not specified" Condition="  '$(IssueTrackerConnection)' =='' AND '$(YouTrackServer)' == 'UNDEFINED' " />
+        <Warning Text="Issue tracker project ID not specified" Condition="  '$(IssueTrackerConnection)' == '' AND '$(IssueTrackerProjectId)' == 'UNDEFINED' " />
         
-        <Message Text="Gathering release notes for all releases ..." />
-        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /IssueTracker YouTrack /Token $(GitHubToken) /Repo $(GitHubUserName)/apollo /Username $(YouTrackUserName) /Password $(YouTrackPassword) /YouTrackServer $(YouTrackServer) /ProjectId ap /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
-              WorkingDirectory="$(DirWorkspace)" />
+        <Message Text="Gathering release notes for current release ..." 
+                 Condition=" '$(IssueTrackerConnection)' != '' " />
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
+              WorkingDirectory="$(DirWorkspace)"
+              Condition=" '$(IssueTrackerConnection)' != '' " 
+              ContinueOnError="true" />
+        
+        <Message Text="Gathering release notes for all releases ..." 
+                 Condition=" '$(IssueTrackerConnection)' != '' " />
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
+              WorkingDirectory="$(DirWorkspace)" 
+              Condition=" '$(IssueTrackerConnection)' != '' " 
+              ContinueOnError="true" />
     </Target>
  </Project>
