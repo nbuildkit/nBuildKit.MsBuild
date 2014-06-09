@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sourcemonitor_commands>
+   <write_log>true</write_log>
+
+   <!--
+     This command is typical for a project that does not yet exist.
+     The file name becomes the project name of the new project.
+   -->
+   <command>
+       <project_file>${ProjectFileName}</project_file>
+
+       <!--
+        For a new project, you must specify the language and the location
+        of the source code. You can also set the Modified Complexity option.
+       -->
+       <project_language>C#</project_language>
+       <modified_complexity>true</modified_complexity>
+       <source_directory>${DirSrc}</source_directory>
+       
+       <source_subdirectory_list>
+            <exclude_subdirectories>true</exclude_subdirectories>
+            <source_subtree>bin\</source_subtree>
+            <source_subdirectory>obj\</source_subdirectory>
+       </source_subdirectory_list>
+        
+       <include_subdirectories>true</include_subdirectories>
+       <parse_utf8_files>True</parse_utf8_files>
+       <checkpoint_name>Baseline</checkpoint_name>
+       <checkpoint_date>${Now}</checkpoint_date>
+
+       <!--
+        If you are creating a project that counts DOC comments separately, then you
+        can provide a number in the following element to specify the kind of
+        comments to ignore at the beginning and end of each source file:
+        1 => normal comments only
+        2 => DOC comments only
+        3 => both normal and DOC comments
+        For example,
+       -->
+        <ignore_headers_footers>2</ignore_headers_footers>.
+
+       <!--
+        Export of metrics data is supported for a single checkpoint per
+        command (the one identified in the <checkpoint_name> tag or one that
+        is automatically created as explained below). Exported metrics data
+        is specified by the export type: "1" for the project summary as XML,
+        "2" for checkpoint details as XML, or "3" project details as CSV.
+        You specify the type with a number 1, 2 or 3 in the element's
+        contents. All other text is ignored. The following examples are
+        all valid specification of export type 2:
+          <export_type>2 (project details as XML)</export_type>
+          <export_type>Project details as XML: 2</export_type>
+          <export_type>2</export_type>
+       -->
+       <export>
+           <export_insert>xml-stylesheet type='text/xsl' href='SourceMonitor.xslt'</export_insert>
+           <export_file>${FileOutputSourceMonitor}</export_file>
+           <export_type>1</export_type>
+       </export>
+   </command>
+</sourcemonitor_commands>
