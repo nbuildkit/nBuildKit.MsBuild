@@ -40,11 +40,13 @@
         <!-- Version number -->
         <VersionSemantic>0</VersionSemantic>
     </PropertyGroup>
-    
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+
+    <Import Project="$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild')"/>    
     <Import Project="$(DirMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\NuGetPack.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\NuGetPack.msbuild')"/>
     <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
@@ -99,8 +101,42 @@
         <Message Text="Version: $(VersionSemantic)" />
     </Target>
     
+    <PropertyGroup>
+        <FileReleaseNotesFullForNuGet>$(DirBuildTemp)\releasenotes_full_xmlsanitised.md</FileReleaseNotesFullForNuGet>
+    </PropertyGroup>
     <Target Name="_nBuildKit_Package_NuGet_GetReleaseNotes" Condition="Exists('$(FileReleaseNotesFull)')">
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFull)'))" Condition="Exists('$(FileReleaseNotesFull)')">
+        <Copy SourceFiles="$(FileReleaseNotesFull)"
+              DestinationFiles="$(FileReleaseNotesFullForNuGet)" />
+        
+        <!-- 
+            Replace the XML special tokens with their standard HTML form.
+            Note handle the & first so that we don't stuff up anything else ...
+            
+            Note: this is not the best way to handle this. Realistically we should run this 
+            through a proper translator.
+        -->
+        <ItemGroup>
+            <BaseConfigurationTokens Include="&amp;">
+                <ReplacementValue>&amp;amp;</ReplacementValue>
+            </BaseConfigurationTokens>
+            <BaseConfigurationTokens Include="&quot;">
+                <ReplacementValue>&amp;quot;</ReplacementValue>
+            </BaseConfigurationTokens>
+            <BaseConfigurationTokens Include="&apos;">
+                <ReplacementValue>&amp;apos;</ReplacementValue>
+            </BaseConfigurationTokens>
+            <BaseConfigurationTokens Include="&lt;">
+                <ReplacementValue>&amp;lt;</ReplacementValue>
+            </BaseConfigurationTokens>
+            <BaseConfigurationTokens Include="&gt;">
+                <ReplacementValue>&amp;gt;</ReplacementValue>
+            </BaseConfigurationTokens>
+        </ItemGroup>
+        
+        <FindAndReplaceInFile Input="$(FileReleaseNotesFullForNuGet)"
+                              Tokens="@(BaseConfigurationTokens)" />
+    
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFullForNuGet)'))">
             <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
         </CreateProperty>
     </Target>
