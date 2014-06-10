@@ -32,10 +32,10 @@
         <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\SetEnvironmentVariable.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\SetEnvironmentVariable.msbuild')"/>
     <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
@@ -46,6 +46,11 @@
         <CallTarget Targets="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate" />
         <CallTarget Targets="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithInstalledSandcastle" />
         <CallTarget Targets="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithLocalSandcastle" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DisplayInfo" DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog">
+        <Message Text="Building API documentation with SandCastle ..." />
     </Target>
     
     <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -62,11 +67,6 @@
         <Message Text="The semantic version file is located at:    $(FileSemanticVersion)" />
         <Message Text="The sandcastle template file is located at: $(FileTemplateSandcastle)" />
         <Message Text=" " />
-    </Target>
-    
-    <!-- Display info -->
-    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DisplayInfo" DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog">
-        <Message Text="Building API documentation with SandCastle ..." />
     </Target>
     
     <PropertyGroup>

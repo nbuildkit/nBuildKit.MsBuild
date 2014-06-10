@@ -27,9 +27,14 @@
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
     
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    
     <Import Project="$(DirMsBuildExtensions)\NuGetPush.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\NuGetPush.msbuild')"/>
-    
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
+            
     <Target Name="nBuildKit_PushTo_NuGet_Run" DependsOnTargets="_nBuildKit_PushTo_NuGet_DisplayInfo">
         <CallTarget Targets="_nBuildKit_PushTo_NuGet_Push" />
     </Target>
@@ -55,9 +60,28 @@
         <Message Text=" " />
     </Target>
     
-    <Target Name="_nBuildKit_PushTo_NuGet_Push" Condition=" '$(NuGetSourceUrl)' != ''">
-        <ItemGroup Condition=" '@(NuGetPackagesToPush)' == '' ">
-            <NuGetPackagesToPush Include="$(DirBuildDeploy)\*.nupkg" />
+    <Target Name="_nBuildKit_PushTo_NuGet_Push" 
+            Condition=" '$(NuGetSourceUrl)' != ''"
+            DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+        <TemplateText Template="@(NuGetPackagesToPush)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '@(NuGetPackagesToPush)' != '' ">
+            <Output TaskParameter="Result" PropertyName="NuGetPackagesToPushExpanded" />
+        </TemplateText>
+        
+        <!-- 
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(NuGetPackagesToPushExpanded.Split(';'))"
+            Condition=" '$(NuGetPackagesToPushExpanded)' != '' ">
+           <Output
+               TaskParameter="Include"
+               ItemName="NuGetPackagesToPush"/>
+        </CreateItem>
+        <ItemGroup Condition=" '$(NuGetPackagesToPushExpanded)' == '' " >
+            <NuGetPackagesToPush Include="$(DirBuildDeploy)\*.nupkg"/>
         </ItemGroup>
         
         <NuGetPush NuGetPath="$(ToolsExternalNuGetPath)"

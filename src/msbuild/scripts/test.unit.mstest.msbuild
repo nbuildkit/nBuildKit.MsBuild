@@ -32,7 +32,8 @@
         <FileReportMsTest Condition=" '$(FileReportMsTest)' == '' ">$(DirBuildLogs)\mstest.trx</FileReportMsTest>
         <FileReportOpenCoverXml Condition=" '$(FileReportOpenCoverXml)' == '' ">$(DirBuildLogs)\opencover.xml</FileReportOpenCoverXml>
         <FileReportOpenCoverCsv Condition=" '$(FileReportOpenCoverCsv)' == '' ">$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv>
-        <FileReportReportGeneratorXmlSummary Condition=" '$(FileReportReportGeneratorXmlSummary)' == '' ">$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
+        
+        <FileReportReportGeneratorXmlSummary>$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
         
         <!-- Unit tests -->
         <UnitTestAssemblyNamePrefix Condition=" '$(UnitTestAssemblyNamePrefix)' == '' " >test.unit</UnitTestAssemblyNamePrefix>
@@ -41,15 +42,20 @@
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    
     <Import Project="$(DirMsBuildExtensions)\OpenCover.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\OpenCover.msbuild')"/>
     <Import Project="$(DirMsBuildExtensions)\ReportGenerator.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\ReportGenerator.msbuild')"/>
     <Import Project="$(DirMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild')"/> 
-
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
+            
     <Target Name="nBuildKit_Test_Unit_MsTest_Run" DependsOnTargets="_nBuildKit_Test_Unit_MsTest_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Test_Unit_MsTest_Execute" />
     </Target>
@@ -59,7 +65,9 @@
         <Message Text="Running unit tests with MsTest ..." />
     </Target>
     
-    <Target Name="_nBuildKit_Test_Unit_MsTest_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Test_Unit_MsTest_DebugLog" 
+            Condition="$(ShouldDisplayDebugLog)"
+            DependsOnTargets="_nBuildKit_Test_Unit_MsTest_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                                     $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:                         $(DirBuild)" />
@@ -71,10 +79,30 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:                    $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="The OpenCover XML report will be located at:               $(FileReportOpenCoverXml)" />
-        <Message Text="The OpenCover CSV report will be located at:               $(FileReportOpenCoverCsv)" />
+        <Message Text="The MsTest report will be located at:                      $(FileReportMsTestExpanded)" />
+        <Message Text="The OpenCover XML report will be located at:               $(FileReportOpenCoverXmlExpanded)" />
+        <Message Text="The OpenCover CSV report will be located at:               $(FileReportOpenCoverCsvExpanded)" />
         <Message Text="The ReportGenerator XML summary report will be located at: $(FileReportReportGeneratorXmlSummary)" />
         <Message Text=" " />
+    </Target>
+    
+    <Target Name="_nBuildKit_Test_Unit_MsTest_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+        <Message Text="Resolving build templates ..." />
+        
+        <TemplateText Template="$(FileReportMsTest)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportMsTestExpanded" />
+        </TemplateText>
+        
+        <TemplateText Template="$(FileReportOpenCoverXml)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverXmlExpanded" />
+        </TemplateText>
+        
+        <TemplateText Template="$(FileReportOpenCoverCsv)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverCsvExpanded" />
+        </TemplateText>
     </Target>
     
     <Target Name="_nBuildKit_Test_Unit_MsTest_Execute">
@@ -105,18 +133,18 @@
         </ItemGroup>
                                   
         <OpenCover OpenCoverExe="$(ToolsExternalOpenCoverPath)"
-                   OpenCoverOutput="$(FileReportOpenCoverXml)"
+                   OpenCoverOutput="$(FileReportOpenCoverXmlExpanded)"
                    OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
                    OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
                    UnitTestExe="$(ToolsExternalNUnitConsolePath)"
-                   UnitTestArguments="@(TestAssemblies->'/testcontainer:%22%22%(FullPath)%22%22', ' ') /resultsfile:&quot;&quot;$(FileReportMsTest)&quot;&quot;"
+                   UnitTestArguments="@(TestAssemblies->'/testcontainer:%22%22%(FullPath)%22%22', ' ') /resultsfile:&quot;&quot;$(FileReportMsTestExpanded)&quot;&quot;"
                    BinDir="$(DirBuildBin)" />
         
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
-                         OpenCoverOutputFile="$(FileReportOpenCoverXml)"
+                         OpenCoverOutputFile="$(FileReportOpenCoverXmlExpanded)"
                          OutputDir="$(DirReportGeneratorOutput)" />
                          
         <ReportGeneratorOutputToCsv InputFile="$(FileReportReportGeneratorXmlSummary)"
-                                    OutputFile="$(FileReportOpenCoverCsv)" />
+                                    OutputFile="$(FileReportOpenCoverCsvExpanded)" />
     </Target>
  </Project>

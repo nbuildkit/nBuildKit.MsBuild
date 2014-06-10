@@ -24,6 +24,9 @@
     <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
             Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
     
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
+    
     <Target Name="nBuildKit_PushTo_Directory_Run" DependsOnTargets="_nBuildKit_PushTo_Directory_DisplayInfo">
         <CallTarget Targets="_nBuildKit_PushTo_Directory_Push" />
     </Target>
@@ -48,21 +51,46 @@
     </Target>
     
     <Target Name="_nBuildKit_PushTo_Directory_Push" 
+            DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize"
             Condition=" '$(ServerDeployPath)' != ''"
             Outputs="%(PushToDirectorySpecs.Identity)">
-            
-        <CreateProperty Value="%(PushToDirectorySpecs.Identity)">
-            <Output TaskParameter="Value" PropertyName="TemplateText" />
-        </CreateProperty>
-        <CallTarget Targets="nBuildKit_Shared_TemplateText_Run" />
-
-        <ItemGroup>
-            <FilesToPush Include="%(PushToDirectorySpecs.IncludedFiles)"
-                         Exclude="%(PushToDirectorySpecs.ExcludedFiles)" />
-        </ItemGroup>
-        <MakeDir Directories="$(TemplateTextProcessed)" 
-                 Condition="!Exists('$(TemplateTextProcessed)')" />
+        <Message Text="Resolving build templates for: %(PushToDirectorySpecs.Identity)" />
+        
+        <!-- Process the build templates in the input directories -->
+        <TemplateText Template="%(PushToDirectorySpecs.Identity)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="DirPushToSpecs" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the included files -->
+        <TemplateText Template="%(PushToDirectorySpecs.IncludedFiles)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(PushToDirectorySpecs.IncludedFiles)' != '' ">
+            <Output TaskParameter="Result" PropertyName="FilesPushToIncluded" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the excluded files -->
+        <TemplateText Template="%(PushToDirectorySpecs.ExcludedFiles)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(PushToDirectorySpecs.ExcludedFiles)' != '' ">
+            <Output TaskParameter="Result" PropertyName="FilesPushToExcluded" />
+        </TemplateText>        
+        
+        <!-- 
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(FilesPushToIncluded.Split(';'))"
+            Exclude="$(FilesPushToExcluded.Split(';'))">
+           <Output
+               TaskParameter="Include"
+               ItemName="FilesToPush"/>
+        </CreateItem>
+        
+        <MakeDir Directories="$(DirPushToSpecs)" 
+                 Condition="!Exists('$(DirPushToSpecs)')" />
         <Copy SourceFiles="@(FilesToPush)" 
-              DestinationFolder="$(TemplateTextProcessed)" />
+              DestinationFolder="$(DirPushToSpecs)" />
     </Target>
 </Project>

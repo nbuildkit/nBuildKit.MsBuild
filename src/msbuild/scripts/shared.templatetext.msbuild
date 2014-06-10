@@ -17,10 +17,10 @@
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
     </PropertyGroup>
     
-    <Import Project="$(MsBuildExtensionsPath)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(MsBuildExtensionsPath)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
-    
-    <Target Name="nBuildKit_Shared_TemplateText_Run">
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+            
+    <Target Name="nBuildKit_Shared_TemplateText_Initialize">
         <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
@@ -31,40 +31,36 @@
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
         
         <ItemGroup>
-            <TemplateTextTokens Include="VersionMajor">
+            <BuildTemplateTextTokens Include="VersionMajor">
                 <ReplacementValue>$(VersionMajor)</ReplacementValue>
-            </TemplateTextTokens>
-            <TemplateTextTokens Include="VersionMinor">
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="VersionMinor">
                 <ReplacementValue>$(VersionMinor)</ReplacementValue>
-            </TemplateTextTokens>
-            <TemplateTextTokens Include="VersionPatch">
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="VersionPatch">
                 <ReplacementValue>$(VersionPatch)</ReplacementValue>
-            </TemplateTextTokens>
-            <TemplateTextTokens Include="VersionBuild">
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="VersionBuild">
                 <ReplacementValue>$(VersionBuild)</ReplacementValue>
-            </TemplateTextTokens>
-            <TemplateTextTokens Include="VersionSemantic">
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="VersionSemantic">
                 <ReplacementValue>$(VersionSemantic)</ReplacementValue>
-            </TemplateTextTokens>
-            <TemplateTextTokens Include="VersionSemanticFull">
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="VersionSemanticFull">
                 <ReplacementValue>$(VersionSemanticFull)</ReplacementValue>
-            </TemplateTextTokens>
-            <TemplateTextTokens Include="Configuration">
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="Configuration">
                 <ReplacementValue>$(Configuration)</ReplacementValue>
-            </TemplateTextTokens>
-            <TemplateTextTokens Include="Platform">
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="Platform">
                 <ReplacementValue>$(Platform)</ReplacementValue>
-            </TemplateTextTokens>
-            <TemplateTextTokens Include="PlatformWithoutSpaces">
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="PlatformWithoutSpaces">
                 <ReplacementValue>$(PlatformWithoutSpaces)</ReplacementValue>
-            </TemplateTextTokens>
-            <TemplateTextTokens Include="ProductName">
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="ProductName">
                 <ReplacementValue>$(ProductName)</ReplacementValue>
-            </TemplateTextTokens>
+            </BuildTemplateTextTokens>
         </ItemGroup>
-        <TemplateText Template="$(TemplateText)"
-                      Tokens="TemplateTextTokens">
-            <Output TaskParameter="Result" PropertyName="TemplateTextProcessed" />
-        </TemplateText>
     </Target>
 </Project>

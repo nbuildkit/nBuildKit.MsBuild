@@ -28,12 +28,12 @@
         <VersionSemantic>0</VersionSemantic>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
             
     <Import Project="$(FileVersionMsBuild)"
             Condition="Exists('$(FileVersionMsBuild)')" />

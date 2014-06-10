@@ -28,19 +28,31 @@
         <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    
     <Import Project="$(DirMsBuildExtensions)\Ccm.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\Ccm.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')"/>
-    
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
+            
     <Target Name="nBuildKit_Analyze_Source_Ccm_Run" 
             DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Analyze_Source_Ccm_Analyze" />
     </Target>
+
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DebugLog">
+        <Message Text="Running CCM..." />
+    </Target>
     
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_DebugLog" 
+            Condition="$(ShouldDisplayDebugLog)"
+            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -53,13 +65,17 @@
         <Message Text=" " />
         
         <Message Text="The CCM template file is located at:    $(FileTemplateCcm)" />
-        <Message Text="The CCM report file is located at:      $(FileReportCcm)" />
+        <Message Text="The CCM report file is located at:      $(FileReportCcmExpanded)" />
         <Message Text=" " />
     </Target>
     
-    <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DebugLog">
-        <Message Text="Running CCM..." />
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+        <Message Text="Resolving build templates for: $(FileReportCcm)" />
+        
+        <TemplateText Template="$(FileReportCcm)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportCcmExpanded" />
+        </TemplateText>
     </Target>
     
     <PropertyGroup>
@@ -85,6 +101,6 @@
     
         <Ccm CcmExe="$(PathCcmExe)"
              ConfigFile="$(FileGeneratedCcm)"
-             OutputFile="$(FileReportCcm)" />
+             OutputFile="$(FileReportCcmExpanded)" />
     </Target>
  </Project>

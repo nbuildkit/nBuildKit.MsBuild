@@ -34,15 +34,27 @@
         <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma>
     </PropertyGroup>
     
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
-    
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
+            
     <Target Name="nBuildKit_Analyze_Binaries_Moma_Run" 
             DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Analyze_Binaries_Moma_Analyze" />
     </Target>
     
-    <Target Name="_nBuildKit_Analyze_Binaries_Moma_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Analyze_Binaries_Moma_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_DebugLog">
+        <Message Text="Running Moma ..." />
+    </Target>
+    
+    <Target Name="_nBuildKit_Analyze_Binaries_Moma_DebugLog" 
+            Condition="$(ShouldDisplayDebugLog)"
+            DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -53,13 +65,17 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="The Moma report file is located at:      $(FileReportMoma)" />
+        <Message Text="The Moma report file is located at:      $(FileReportMomaExpanded)" />
         <Message Text=" " />
     </Target>
     
-    <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Binaries_Moma_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_DebugLog">
-        <Message Text="Running Moma ..." />
+    <Target Name="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+        <Message Text="Resolving build templates for: $(FileReportMoma)" />
+        
+        <TemplateText Template="$(FileReportMoma)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportMomaExpanded" />
+        </TemplateText>
     </Target>
     
     <PropertyGroup>
@@ -80,7 +96,7 @@
             <MomaInputFiles Include="$(DirBuildBin)\*.exe"/>
         </ItemGroup>
         
-        <Exec Command="$(PathMomaExe) --nogui --out &quot;$(FileReportMoma)&quot; @(MomaFiles->'%22%(FullPath)%22', ' ')"
+        <Exec Command="$(PathMomaExe) --nogui --out &quot;$(FileReportMomaExpanded)&quot; @(MomaFiles->'%22%(FullPath)%22', ' ')"
               WorkingDirectory="$(DirBuildTemp)" />
     </Target>
  </Project>

@@ -26,11 +26,21 @@
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
     </PropertyGroup>
     
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\Zip.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\Zip.msbuild')"/>
             
     <Target Name="nBuildKit_Package_Zip_Run" DependsOnTargets="_nBuildKit_Package_Zip_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Package_Zip_Pack" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Package_Zip_DisplayInfo" DependsOnTargets="_nBuildKit_Package_Zip_DebugLog">
+        <Message Text="Packing binaries ..." />
     </Target>
     
     <Target Name="_nBuildKit_Package_Zip_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -42,30 +52,61 @@
         <Message Text=" " />
     </Target>
     
-    <!-- Display info -->
-    <Target Name="_nBuildKit_Package_Zip_DisplayInfo" DependsOnTargets="_nBuildKit_Package_Zip_DebugLog">
-        <Message Text="Packing binaries ..." />
-    </Target>
-    
     <!-- 
         Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
         once for each entry in the ArchivePackageSpecs ItemGroup.
     -->
     <Target Name="_nBuildKit_Package_Zip_Pack"
+            DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize"
             Condition=" '@(ArchivePackageSpecs)' != '' "
             Outputs="%(ArchivePackageSpecs.Identity)">
-        <MakeDir Directories="$(DirBuildDeploy)" Condition="!Exists('$(DirBuildDeploy)')" />
+        <Message Text="Resolving build templates for: %(ArchivePackageSpecs.Identity)" />
         
-        <ItemGroup>
-            <PackageFiles Include="%(ArchivePackageSpecs.IncludedFiles)"
-                          Exclude="%(ArchivePackageSpecs.ExcludedFiles)" />
-        </ItemGroup>
+        <!-- Process the build templates in the ZIP file path -->
+        <TemplateText Template="%(ArchivePackageSpecs.Identity)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileArchiveSpecs" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the base directory -->
+        <TemplateText Template="%(ArchivePackageSpecs.DirBase)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="DirPackageSpecsBase" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the included files -->
+        <TemplateText Template="%(ArchivePackageSpecs.IncludedFiles)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(ArchivePackageSpecs.IncludedFiles)' != '' ">
+            <Output TaskParameter="Result" PropertyName="FilesArchiveZipIncluded" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the excluded files -->
+        <TemplateText Template="%(ArchivePackageSpecs.ExcludedFiles)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(ArchivePackageSpecs.ExcludedFiles)' != '' ">
+            <Output TaskParameter="Result" PropertyName="FilesArchiveZipExcluded" />
+        </TemplateText>
+        
+        <MakeDir Directories="$(DirBuildDeploy)" Condition="!Exists('$(DirBuildDeploy)')" />
+       
+        <!-- 
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(FilesArchiveZipIncluded.Split(';'))"
+            Exclude="$(FilesArchiveZipExcluded.Split(';'))">
+           <Output
+               TaskParameter="Include"
+               ItemName="PackageFiles"/>
+        </CreateItem>
     
-        <Message Text="Writing the following files to the archive: " />
+        <Message Text="Creating $(FileArchiveSpecs) with the following files: " />
         <Message Text="%(PackageFiles.Identity)" />
         <Zip InputFileNames="@(PackageFiles)"
-             BaseDirectory="%(ArchivePackageSpecs.DirBase)"
-             OutputFileName="%(ArchivePackageSpecs.Identity)"
+             BaseDirectory="$(DirPackageSpecsBase)"
+             OutputFileName="$(FileArchiveSpecs)"
              OverwriteExistingFile="true" />
     </Target>
  </Project>
