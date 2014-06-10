@@ -36,9 +36,12 @@
         <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
     </PropertyGroup>
     
-    <Import Project="$(MsBuildExtensionsPath)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(MsBuildExtensionsPath)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
     
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
+            
     <Target Name="nBuildKit_Tag_Vcs_Git_Run" DependsOnTargets="_nBuildKit_Tag_Vcs_Git_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Tag_Vcs_Git_Tag" />
     </Target>
@@ -48,7 +51,9 @@
         <Message Text="Tagging release ..." />
     </Target>
     
-    <Target Name="_nBuildKit_Tag_Vcs_Git_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Tag_Vcs_Git_DebugLog" 
+            Condition="$(ShouldDisplayDebugLog)"
+            DependsOnTargets="_nBuildKit_Tag_Vcs_Git_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -60,9 +65,25 @@
         <Message Text=" " />
         
         <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)" />
-        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShort)" />
-        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFull)" />
+        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShortExpanded)" />
+        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFullExpanded)" />
         <Message Text=" " />
+    </Target>
+    
+    <Target Name="_nBuildKit_Tag_Vcs_Git_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+        <Message Text="Resolving build templates for: $(FileReleaseNotesShort) and $(FileReleaseNotesFull)" />
+        
+        <!-- Process the build templates in the short release notes file path -->
+        <TemplateText Template="$(FileReleaseNotesShort)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReleaseNotesShortExpanded" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the full release notes file path -->
+        <TemplateText Template="$(FileReleaseNotesFull)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReleaseNotesFullExpanded" />
+        </TemplateText>
     </Target>
     
     <Target Name="_nBuildKit_Tag_Vcs_Git_Tag" >
@@ -70,7 +91,7 @@
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
     
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotes)'))" Condition="Exists('$(FileReleaseNotes)')">
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShortExpanded)'))" Condition="Exists('$(FileReleaseNotesShortExpanded)')">
             <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
         </CreateProperty>
     

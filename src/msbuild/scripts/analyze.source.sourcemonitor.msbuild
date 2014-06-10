@@ -31,6 +31,9 @@
         <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor>
     </PropertyGroup>
     
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\SourceMonitor.msbuild"
@@ -39,13 +42,22 @@
             Condition="Exists('$(DirMsBuildExtensions)\SourceMonitorOutputToCsv.msbuild')"/>
     <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')"/>
-    
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
+            
     <Target Name="nBuildKit_Analyze_Source_SourceMonitor_Run" 
             DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Analyze_Source_SourceMonitor_Analyze" />
     </Target>
     
-    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog">
+        <Message Text="Running SourceMonitor ..." />
+    </Target>
+    
+    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog" 
+            Condition="$(ShouldDisplayDebugLog)" 
+            DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -58,18 +70,17 @@
         <Message Text=" " />
         
         <Message Text="The SourceMonitor template file is located at:    $(FileTemplateSourceMonitor)" />
-        <Message Text="The SourceMonitor report file is located at:      $(FileReportSourceMonitor)" />
+        <Message Text="The SourceMonitor report file is located at:      $(FileReportSourceMonitorExpanded)" />
         <Message Text=" " />
     </Target>
     
-    <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog">
-        <Message Text="Running SourceMonitor ..." />
-    </Target>
-    
-    <!-- Display info -->
-    <Target Name="_DisplayInfo">
-        <Message Text="Running SourceMonitor..." />
+    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+        <Message Text="Resolving build templates for: $(FileReportSourceMonitor)" />
+        
+        <TemplateText Template="$(FileReportSourceMonitor)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportSourceMonitorExpanded" />
+        </TemplateText>
     </Target>
     
     <PropertyGroup>
@@ -96,7 +107,7 @@
                 <ReplacementValue>$(Now)</ReplacementValue>
             </SourceMonitorTokens>
             <SourceMonitorTokens Include="FileOutputSourceMonitor">
-                <ReplacementValue>$(FileReportSourceMonitor)</ReplacementValue>
+                <ReplacementValue>$(FileReportSourceMonitorExpanded)</ReplacementValue>
             </SourceMonitorTokens>
         </ItemGroup>
         <TemplateFile Template="$(FileTemplateSourceMonitor)" OutputFileName="$(FileGeneratedSourceMonitor)" Tokens="@(SourceMonitorTokens)" />
@@ -105,7 +116,7 @@
                        ConfigFile="$(FileGeneratedSourceMonitor)" />
                        
         <SourceMonitorOutputToCsv ProjectName="$(ProductName)"
-                                  InputFile="$(FileReportSourceMonitor)"
+                                  InputFile="$(FileReportSourceMonitorExpanded)"
                                   OutputPath="$(DirBuildLogs)" />
     </Target>
  </Project>

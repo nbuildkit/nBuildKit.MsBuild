@@ -41,19 +41,32 @@
         <VersionSemantic>0</VersionSemantic>
     </PropertyGroup>
 
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    
     <Import Project="$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild')"/>    
     <Import Project="$(DirMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild')"/>
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\NuGetPack.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\NuGetPack.msbuild')"/>
     <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
             
     <Target Name="nBuildKit_Package_NuGet_Run" DependsOnTargets="_nBuildKit_Package_NuGet_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Package_NuGet_GetVersion" />
+        <CallTarget Targets="_nBuildKit_Package_NuGet_GetReleaseNotes" />
         <CallTarget Targets="_nBuildKit_Package_NuGet_Pack" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Package_NuGet_DisplayInfo" DependsOnTargets="_nBuildKit_Package_NuGet_DebugLog">
+        <Message Text="Creating NuGet package..." />
+        
+        <Error Text="No NuGet spec files are specified!"
+               Condition=" '@(NuGetPackageSpecs)' == '' "/>
     </Target>
     
     <Target Name="_nBuildKit_Package_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -73,24 +86,6 @@
                  Condition=" '@(NuGetPackageSpecs)' != '' "/>
         <Message Text="Template: %(NuGetPackageSpecs.Template) - Output: %(NuGetPackageSpecs.Identity)"
                  Condition=" '@(NuGetPackageSpecs)' != '' " />
-    </Target>
-    
-    <!-- Display info -->
-    <Target Name="_nBuildKit_Package_NuGet_DisplayInfo" DependsOnTargets="_nBuildKit_Package_NuGet_DebugLog">
-        <Message Text="Creating NuGet package..." />
-        
-        <Error Text="No NuGet spec files are specified!"
-               Condition=" '@(NuGetPackageSpecs)' == '' "/>
-    </Target>
-    
-    <!--  
-        MsBuild can't seem to handle using item metadata (NuGetPackageSpecs.Template) inside a property function
-        inside the Exists() function, so we'll split the process and do the transfer seperately.
-    -->
-    <Target Name="_nBuildKit_Package_NuGet_GetDirectories">
-        <ItemGroup>
-            <DirNuSpecTemp Include="$([System.IO.Path]::GetDirectoryName('%(NuGetPackageSpecs.Template)'))" />
-        </ItemGroup>
     </Target>
     
     <Target Name="_nBuildKit_Package_NuGet_GetVersion" Condition="Exists('$(FileSemanticVersion)')">
@@ -146,20 +141,66 @@
         once for each entry in the NuGetPackagesSpecs ItemGroup.
     -->
     <Target Name="_nBuildKit_Package_NuGet_Pack" 
-            DependsOnTargets="_nBuildKit_Package_NuGet_GetDirectories;_nBuildKit_Package_NuGet_GetVersion;_nBuildKit_Package_NuGet_GetReleaseNotes"
+            DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize"
             Condition=" '@(NuGetPackageSpecs)' != '' "
             Outputs="%(NuGetPackageSpecs.Identity)">
-        <Message Text="Creating NuGet package: %(NuGetPackageSpecs.Filename)" />
+        <Message Text="Resolving build templates for: %(NuGetPackageSpecs.Identity)" />
         
+        <!-- Process the build templates in the nuspec file path -->
+        <TemplateText Template="%(NuGetPackageSpecs.Identity)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileNuGetNuSpec" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the nuspec template file path -->
+        <TemplateText Template="%(NuGetPackageSpecs.Template)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileNuGetTemplate" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the included dependencies -->
+        <TemplateText Template="%(NuGetPackageSpecs.IncludedDependencies)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(NuGetPackageSpecs.IncludedDependencies)' != '' ">
+            <Output TaskParameter="Result" PropertyName="FilesNuGetDependenciesIncluded" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the excluded dependencies -->
+        <TemplateText Template="%(NuGetPackageSpecs.ExcludedDependencies)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(NuGetPackageSpecs.ExcludedDependencies)' != '' ">
+            <Output TaskParameter="Result" PropertyName="FilesNuGetDependenciesExcluded" />
+        </TemplateText>    
+        
+        <!--  
+            MsBuild can't seem to handle using item metadata (NuGetPackageSpecs.Template) inside a property function
+            inside the Exists() function, so we'll split the process and do the transfer seperately.
+        -->        
+        <ItemGroup>
+            <DirNuSpecTemp Include="$([System.IO.Path]::GetDirectoryName('$(FileNuGetTemplate)'))" />
+        </ItemGroup>
+        
+        <Message Text="Creating NuGet package from: $(FileNuGetNuSpec)" />
         <MakeDir Directories="%(DirNuSpecTemp.Identity)" 
                  Condition="!Exists('%(DirNuSpecTemp.Identity)')" />
         <MakeDir Directories="$(DirBuildDeploy)" 
                  Condition="!Exists('$(DirBuildDeploy)')" />
+
+        <Message Text="Included dependencies: $(FilesNuGetDependenciesIncluded)" />
+        <Message Text="Excluded dependencies: $(FilesNuGetDependenciesExcluded)" />
                  
-        <ItemGroup>
-            <PackageDependencies Include="%(NuGetPackageSpecs.IncludedDependencies)"
-                                 Exclude="%(NuGetPackageSpecs.ExcludedDependencies)" />
-        </ItemGroup>
+        <!-- 
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(FilesNuGetDependenciesIncluded.Split(';'))"
+            Exclude="$(FilesNuGetDependenciesExcluded.Split(';'))">
+           <Output
+               TaskParameter="Include"
+               ItemName="PackageDependencies"/>
+        </CreateItem>
+        
         <GatherNuGetDependenciesForProject Packages="@(PackageDependencies)" Condition=" '@(PackageDependencies)' != '' ">
             <Output TaskParameter="Dependencies" PropertyName="NuGetDependencies" />
         </GatherNuGetDependenciesForProject>
@@ -184,12 +225,12 @@
                 <ReplacementValue>$(NuGetDependencies)</ReplacementValue>
             </NuSpecTokens>
         </ItemGroup>
-        <TemplateFile Template="%(NuGetPackageSpecs.Template)" 
-                      OutputFileName="%(NuGetPackageSpecs.Identity)" 
+        <TemplateFile Template="$(FileNuGetTemplate)" 
+                      OutputFileName="$(FileNuGetNuSpec)" 
                       Tokens="@(NuSpecTokens)" />
         
         <NuGetPack NuGetPath="$(ToolsExternalNuGetPath)" 
-                   File="%(NuGetPackageSpecs.Identity)" 
+                   File="$(FileNuGetNuSpec)" 
                    OutputDirectory="$(DirBuildDeploy)" 
                    ShouldBuildSymbols="%(NuGetPackageSpecs.ShouldBuildSymbols)" />
     </Target>

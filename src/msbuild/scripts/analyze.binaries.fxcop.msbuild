@@ -34,17 +34,29 @@
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir>
     </PropertyGroup>
    
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild')" />
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+   
     <Import Project="$(DirMsBuildExtensions)\FxCop.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\FxCop.msbuild')"/>
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
             
     <Target Name="nBuildKit_Analyze_Binaries_FxCop_Run" 
             DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Analyze_Binaries_FxCop_Analyze" />
     </Target>
     
-    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_DebugLog">
+        <Message Text="Running FxCop ..." />
+    </Target>
+    
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DebugLog" \
+            Condition="$(ShouldDisplayDebugLog)"
+            DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -58,13 +70,17 @@
         <Message Text=" " />
         
         <Message Text="The FxCop project file is located at: $(FileProjectFxCop)" />
-        <Message Text="The FxCop report file is located at:  $(FileReportFxCop)" />
+        <Message Text="The FxCop report file is located at:  $(FileReportFxCopExpanded)" />
         <Message Text=" " />
     </Target>
     
-    <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_DebugLog">
-        <Message Text="Running FxCop ..." />
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+        <Message Text="Resolving build templates for: $(FileReportFxCop)" />
+        
+        <TemplateText Template="$(FileReportFxCop)"
+                      Tokens="@(BuildTemplateTextTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportFxCopExpanded" />
+        </TemplateText>
     </Target>
     
     <PropertyGroup>
@@ -78,7 +94,7 @@
         </SearchPackagesDirectoryForToolDirectory>
             
         <FxCop FxCopDir="$(ToolsExternalFxCopDir)"
-               FxCopOutputFile="$(FileReportFxCop)"
-               FxCopProjectFile="$(FileProjectFxCop)" />
+               FxCopProjectFile="$(FileProjectFxCop)"
+               FxCopOutputFile="$(FileReportFxCopExpanded)" />
     </Target>
  </Project>
