@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Prepare_VcsInfo_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        
+        <!-- Build configuration -->
+        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        
+        <!-- Files -->
+        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.txt</FileVcsInfo>
+        
+        <!-- External tools -->
+        <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\GitInfo.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GitInfo.msbuild')" />
+
+    <Target Name="nBuildKit_Prepare_VcsInfo_Run" DependsOnTargets="_nBuildKit_Prepare_VcsInfo_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Prepare_VcsInfo_DetermineWorkspaceType" />
+        <CallTarget Targets="_nBuildKit_Prepare_VcsInfo_GatherGitInfo" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Prepare_VcsInfo_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_VcsInfo_DebugLog">
+        <Message Text="Writing GIT workspace information to file ..." />
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_VcsInfo_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="GIT command line executable is located at: $(ToolsExternalGitPath)" />
+        <Message Text=" " />
+        
+        <Message Text="The VCS info file is located at: $(FileVcsInfo)" />
+        <Message Text=" " />
+        
+        <Message Text="The current workspace is a GIT workspace" Condition="Exists('$(DirWorkspace)\.git')" />
+        <Warning Text="The current workspace does not have any identifying VCS information. No VCS info file will be created" 
+                 Condition="!Exists('$(DirWorkspace)\.git')" />
+        <Message Text=" " />
+    </Target>
+
+    <PropertyGroup>
+        <IsGitWorkspace>false</IsGitWorkspace>
+        <IsTfsWorkspace>false</IsTfsWorkspace>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Prepare_VcsInfo_DetermineWorkspaceType">
+        <CreateProperty Value="true"
+                        Condition="Exists('$(DirWorkspace)\.git')">
+            <Output TaskParameter="Value" PropertyName="IsGitWorkspace" />
+        </CreateProperty>
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_VcsInfo_GatherGitInfo" Condition="$(IsGitWorkspace)">
+        <MakeDir Directories="$(DirBuildTemp)" 
+                 Condition="!Exists('$(DirBuildTemp)')" />
+        
+        <GitInfo LocalPath="$(DirWorkspace)">
+            <Output TaskParameter="CurrentRevision" PropertyName="GitCurrentRevision" />
+            <Output TaskParameter="CurrentBranch" PropertyName="GitCurrentBranch" />
+        </GitInfo>
+        
+        <ItemGroup>
+            <GitInfoItems Include="$(GitCurrentRevision)" />
+            <GitInfoItems Include="$(GitCurrentBranch)" />
+        </ItemGroup>
+        
+        <WriteLinesToFile File="$(FileVcsInfo)"
+                          Lines="@(GitInfoItems)"
+                          Overwrite="true" />
+    </Target>
+ </Project>
