@@ -107,10 +107,17 @@ test: off
 
 artifacts:
 
-  # pushing a single file
+  # pushing the VCS info file
+  - path: build\temp\vcs.info.txt
+  
+  # pushing the release notes files
+  - path: build\temp\releasenotes_full.md
+  - path: build\temp\releasenotes_short.md
+
+  # pushing all *.zip archive files
   - path: build\deploy\*.zip
 
-  # pushing all *.nupkg files in directory
+  # pushing all *.nupkg files
   - path: build\deploy\*.nupkg
 
 
