@@ -152,6 +152,7 @@
         $(BuildTargetPrepare)               - Performs preparation of workspace: deleting existing files, restoring nuget packages, generating version number files and release notes.
             $(BuildStepsPrepareRestoreNuGet)       - Restores the NuGet packages for the project.
             $(BuildStepsPrepareReleaseNotes)       - Gathers the release notes and stores them for later use during the build process
+            $(BuildStepsPrepareVcsInfo)            - Stores the Version Control System (VCS) information in a file for later use.
         $(BuildTargetAnalyzeSource)         - Performs static analysis of the source files through CCM and SourceMonitor.
             $(BuildStepsAnalyzeSourceCcm)          - Analyzes the source code files with CCM
             $(BuildStepsAnalyzeSourceSouceMonitor) - Analyzes the source code files with SourceMonitor
@@ -171,14 +172,14 @@
     -->
     <ItemGroup>
         <BuildStepsToExecute Include="$(BuildTargetPrepare)">
-            <Steps>$(BuildStepsPrepareRestoreNuGet);$(BuildStepsPrepareReleaseNotes)</Steps>
-            <!-- <PreInvokeScripts></PreInvokeScripts> -->
-            <!-- <PostInvokeScripts></PostInvokeScripts> -->
+            <Steps>$(BuildStepsPrepareRestoreNuGet);$(BuildStepsPrepareReleaseNotes);$(BuildStepsPrepareVcsInfo)</Steps>
+            <PreInvokeScripts></PreInvokeScripts>
+            <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildTargetPackage)">
             <Steps>$(BuildStepsPackNuGet);$(BuildStepsPackZip)</Steps>
-            <!-- <PreInvokeScripts></PreInvokeScripts> -->
-            <!-- <PostInvokeScripts></PostInvokeScripts> -->
+            <PreInvokeScripts></PreInvokeScripts>
+            <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
     </ItemGroup>
     
@@ -233,7 +234,7 @@
         <OpenCoverIgnoreAttributes Include="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
         -->
         
-        <!-- Defines the filters used by OpenCover. Allows build templates. -->
+        <!-- Defines the filters used by OpenCover. -->
         <!-- NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text -->
         <!-- 
         <OpenCoverFilters Include="+[$(ProductName)]%2A" />
@@ -293,21 +294,18 @@
             $(DeployStepsPushToDirectory)    - Pushes one or more artifacts to a directory
             $(DeployStepsPushToSymbolServer) - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
         $(DeployTargetTag)    - Adds one or more tags to the VCS
-            $(DeployStepsTagGit)          - Tags a revision in a GIT repository
-            $(DeployStepsTagTfs)          - Tags a revision in a TFS repository
         
         The order in which items are defined is irrelevant given that the build script will sort the steps in the right order.
     -->
     <ItemGroup>
         <DeployStepsToExecute Include="$(DeployTargetPushTo)">
             <Steps>$(DeployStepsPushToNuget)</Steps>
-            <!-- <PreInvokeScripts></PreInvokeScripts> -->
-            <!-- <PostInvokeScripts></PostInvokeScripts> -->
+            <PreInvokeScripts></PreInvokeScripts>
+            <PostInvokeScripts></PostInvokeScripts>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployTargetTag)">
-            <Steps>$(DeployStepsTagGit)</Steps>
-            <!-- <PreInvokeScripts></PreInvokeScripts> -->
-            <!-- <PostInvokeScripts></PostInvokeScripts> -->
+            <PreInvokeScripts></PreInvokeScripts>
+            <PostInvokeScripts></PostInvokeScripts>
         </DeployStepsToExecute>
     </ItemGroup>
     
