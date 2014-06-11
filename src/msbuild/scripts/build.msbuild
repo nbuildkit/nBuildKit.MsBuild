@@ -16,6 +16,7 @@
         
         <BuildStepsPrepareRestoreNuGet>NuGetRestore</BuildStepsPrepareRestoreNuGet>
         <BuildStepsPrepareReleaseNotes>ReleaseNotes</BuildStepsPrepareReleaseNotes>
+        <BuildStepsPrepareVcsInfo>VcsInfo</BuildStepsPrepareVcsInfo>
         <BuildStepsAnalyzeSourceCcm>Ccm</BuildStepsAnalyzeSourceCcm>
         <BuildStepsAnalyzeSourceSouceMonitor>SourceMonitor</BuildStepsAnalyzeSourceSouceMonitor>
         <BuildStepsAnalyzeBinariesMoma>Moma</BuildStepsAnalyzeBinariesMoma>
@@ -215,7 +216,10 @@
         <MSBuild Projects="$(DirMsBuildScripts)\prepare.gatherreleasenotes.msbuild"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareReleaseNotes)'))" />
-        
+        <MSBuild Projects="$(DirMsBuildScripts)\prepare.vcsinfo.msbuild"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareVcsInfo)'))" />
+                 
         <MsBuild Projects="%(BuildStepsToExecute.PostInvokeScripts)"
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' " />

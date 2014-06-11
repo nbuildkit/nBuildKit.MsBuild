@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Tag_Vcs_Git_Run"
+         DefaultTargets="nBuildKit_Tag_Vcs_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
@@ -34,6 +34,7 @@
         
         <!-- External tools -->
         <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
+        <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath>
     </PropertyGroup>
     
     <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
@@ -42,18 +43,20 @@
     <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
             
-    <Target Name="nBuildKit_Tag_Vcs_Git_Run" DependsOnTargets="_nBuildKit_Tag_Vcs_Git_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Tag_Vcs_Git_Tag" />
+    <Target Name="nBuildKit_Tag_Vcs_Run" DependsOnTargets="_nBuildKit_Tag_Vcs_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Tag_Vcs_DetermineWorkspaceType" />
+        <CallTarget Targets="_nBuildKit_Tag_Vcs_Git" />
+        <CallTarget Targets="_nBuildKit_Tag_Vcs_Tfs" />
     </Target>
     
     <!-- Display info -->
-    <Target Name="_nBuildKit_Tag_Vcs_Git_DisplayInfo" DependsOnTargets="_nBuildKit_Tag_Vcs_Git_DebugLog">
+    <Target Name="_nBuildKit_Tag_Vcs_DisplayInfo" DependsOnTargets="_nBuildKit_Tag_Vcs_DebugLog">
         <Message Text="Tagging release ..." />
     </Target>
     
-    <Target Name="_nBuildKit_Tag_Vcs_Git_DebugLog" 
+    <Target Name="_nBuildKit_Tag_Vcs_DebugLog" 
             Condition="$(ShouldDisplayDebugLog)"
-            DependsOnTargets="_nBuildKit_Tag_Vcs_Git_ReplaceBuildTemplates">
+            DependsOnTargets="_nBuildKit_Tag_Vcs_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -62,15 +65,21 @@
         <Message Text=" " />
         
         <Message Text="Git command line executable is located at: $(ToolsExternalGitPath)" />
+        <Message Text="TFS command line executable is located at: $(ToolsExternalTfsPath)" />
         <Message Text=" " />
         
         <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)" />
         <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShortExpanded)" />
         <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFullExpanded)" />
         <Message Text=" " />
+        
+        <Message Text="The current workspace is a GIT workspace" Condition="Exists('$(DirWorkspace)\.git')" />
+        <Warning Text="The current workspace does not have any identifying VCS information. No VCS info file will be created" 
+                 Condition="!Exists('$(DirWorkspace)\.git')" />
+        <Message Text=" " />
     </Target>
     
-    <Target Name="_nBuildKit_Tag_Vcs_Git_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+    <Target Name="_nBuildKit_Tag_Vcs_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
         <Message Text="Resolving build templates for: $(FileReleaseNotesShort) and $(FileReleaseNotesFull)" />
         
         <!-- Process the build templates in the short release notes file path -->
@@ -86,11 +95,24 @@
         </TemplateText>
     </Target>
     
-    <Target Name="_nBuildKit_Tag_Vcs_Git_Tag" >
+    <Target Name="_nBuildKit_Tag_Vcs_GetVersion">
         <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+    </Target>
     
+    <PropertyGroup>
+        <IsGitWorkspace>false</IsGitWorkspace>
+        <IsTfsWorkspace>false</IsTfsWorkspace>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Tag_Vcs_DetermineWorkspaceType">
+        <CreateProperty Value="true"
+                        Condition="Exists('$(DirWorkspace)\.git')">
+            <Output TaskParameter="Value" PropertyName="IsGitWorkspace" />
+        </CreateProperty>
+    </Target>
+    
+    <Target Name="_nBuildKit_Tag_Vcs_Git" Condition="$(IsGitWorkspace)" DependsOnTargets="_nBuildKit_Tag_Vcs_GetVersion">
         <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShortExpanded)'))" Condition="Exists('$(FileReleaseNotesShortExpanded)')">
             <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
         </CreateProperty>
@@ -99,5 +121,9 @@
               WorkingDirectory="$(DirWorkspace)" />
         <Exec Command="&quot;$(ToolsExternalGitPath)&quot; push origin --tags"
               WorkingDirectory="$(DirWorkspace)" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Tag_Vcs_Tfs" Condition="$(IsTfsWorkspace)" DependsOnTargets="_nBuildKit_Tag_Vcs_GetVersion">
+        <Exec Command="&quot;$(ExeTfsClient)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive" />
     </Target>
  </Project>
