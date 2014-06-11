@@ -30,7 +30,7 @@
         <GitHubRepository Condition=" '$(GitHubRepository)' == '' ">UNDEFINED</GitHubRepository>
         <YouTrackServer Condition=" '$(YouTrackServer)' == '' ">UNDEFINED</YouTrackServer>
         <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId>
-        <YouTrackFilter Condition=" '$(YouTrackFilter)' == '' ">UNDEFINED</YouTrackFilter>
+        <IssueFilter Condition=" '$(IssueFilter)' == '' ">UNDEFINED</IssueFilter>
         
         <!-- Version number -->
         <VersionSemantic>0</VersionSemantic>
@@ -67,7 +67,7 @@
         <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFullExpanded)" />
         <Message Text=" " />
         
-        <Message Text="The YouTrack filter is: $(YouTrackFilter)" Condition=" '$(YouTrackFilter)' != 'UNDEFINED' " />
+        <Message Text="The YouTrack filter is: $(IssueFilter)" Condition=" '$(IssueFilter)' != 'UNDEFINED' " />
         <Message Text=" " />
     </Target>
     
@@ -101,8 +101,8 @@
                         Condition=" '$(YouTrackServer)' != 'UNDEFINED' ">
             <Output TaskParameter="Value" PropertyName="IssueTrackerConnection" />
         </CreateProperty>
-        <CreateProperty Value="/YouTrackFilter $(YouTrackFilter)" 
-                        Condition=" '$(YouTrackServer)' != 'UNDEFINED' AND '$(YouTrackFilter)' != 'UNDEFINED' ">
+        <CreateProperty Value="/YouTrackFilter $(IssueFilter)" 
+                        Condition=" '$(YouTrackServer)' != 'UNDEFINED' AND '$(IssueFilter)' != 'UNDEFINED' ">
             <Output TaskParameter="Value" PropertyName="IssueTrackerFilter" />
         </CreateProperty>
         
