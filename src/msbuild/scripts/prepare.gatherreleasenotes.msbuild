@@ -30,6 +30,7 @@
         <GitHubRepository Condition=" '$(GitHubRepository)' == '' ">UNDEFINED</GitHubRepository>
         <YouTrackServer Condition=" '$(YouTrackServer)' == '' ">UNDEFINED</YouTrackServer>
         <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId>
+        <IssueFilter Condition=" '$(IssueFilter)' == '' ">UNDEFINED</IssueFilter>
         
         <!-- Version number -->
         <VersionSemantic>0</VersionSemantic>
@@ -65,6 +66,9 @@
         <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShortExpanded)" />
         <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFullExpanded)" />
         <Message Text=" " />
+        
+        <Message Text="The YouTrack filter is: $(IssueFilter)" Condition=" '$(IssueFilter)' != 'UNDEFINED' " />
+        <Message Text=" " />
     </Target>
     
     <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
@@ -97,6 +101,10 @@
                         Condition=" '$(YouTrackServer)' != 'UNDEFINED' ">
             <Output TaskParameter="Value" PropertyName="IssueTrackerConnection" />
         </CreateProperty>
+        <CreateProperty Value="/YouTrackFilter $(IssueFilter)" 
+                        Condition=" '$(YouTrackServer)' != 'UNDEFINED' AND '$(IssueFilter)' != 'UNDEFINED' ">
+            <Output TaskParameter="Value" PropertyName="IssueTrackerFilter" />
+        </CreateProperty>
         
         <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
@@ -113,14 +121,14 @@
         
         <Message Text="Gathering release notes for current release ..." 
                  Condition=" '$(IssueTrackerConnection)' != '' " />
-        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShortExpanded)&quot;"
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShortExpanded)&quot;"
               WorkingDirectory="$(DirWorkspace)"
               Condition=" '$(IssueTrackerConnection)' != '' " 
               ContinueOnError="true" />
         
         <Message Text="Gathering release notes for all releases ..." 
                  Condition=" '$(IssueTrackerConnection)' != '' " />
-        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFullExpanded)&quot;"
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFullExpanded)&quot;"
               WorkingDirectory="$(DirWorkspace)" 
               Condition=" '$(IssueTrackerConnection)' != '' " 
               ContinueOnError="true" />
