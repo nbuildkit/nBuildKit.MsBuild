@@ -2,9 +2,12 @@
 
 nBuildKit is a collection of tools and scripts that provide an easy way to set-up a complete build and deployment for a (.NET) project.
 
-## Build status
+## Continuous integration & deployment
+nBuildKit uses [AppVeyor](http://www.appveyor.com) for the continuous integration and deployment processes.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/yqpaush2xajbyn74)](https://ci.appveyor.com/project/pvandervelde/nbuildkit)
+* __Build:__ [![Build status](https://ci.appveyor.com/api/projects/status/yqpaush2xajbyn74)](https://ci.appveyor.com/project/pvandervelde/nbuildkit)
+
+* __Deployment status:__ [![Build status](https://ci.appveyor.com/api/projects/status/jcp6k51ntktugenm)](https://ci.appveyor.com/project/pvandervelde/nbuildkit-244)
 
 ## Set up
 
