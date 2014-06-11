@@ -12,8 +12,6 @@
         <DeployStepsPushToNuget>NuGetPush</DeployStepsPushToNuget>
         <DeployStepsPushToDirectory>DirectoryCopy</DeployStepsPushToDirectory>
         <DeployStepsPushToSymbolServer>SymbolServer</DeployStepsPushToSymbolServer>
-        <DeployStepsTagGit>GitTag</DeployStepsTagGit>
-        <DeployStepsTagTfs>TfsTag</DeployStepsTagTfs>
     </PropertyGroup>
     <ItemGroup>
         <DeployTargets Include="$(DeployTargetPushTo)">
@@ -177,12 +175,9 @@
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' " />
         
-        <MSBuild Projects="$(DirMsBuildScripts)\tag.vcs.git.msbuild" 
+        <MSBuild Projects="$(DirMsBuildScripts)\tag.vcs.msbuild" 
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsTagGit)'))" />
-        <MSBuild Projects="$(DirMsBuildScripts)\tag.vcs.tfs.msbuild" 
-                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsTagTfs)'))" />
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)'" />
                  
         <MsBuild Projects="%(DeployStepsToExecute.PostInvokeScripts)"
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
