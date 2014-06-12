@@ -26,8 +26,6 @@
         
         <!-- Files -->
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
-        <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
-        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
         
         <!-- Version number -->
         <VersionSemantic>0</VersionSemantic>
@@ -55,8 +53,7 @@
     </Target>
     
     <Target Name="_nBuildKit_Tag_Vcs_DebugLog" 
-            Condition="$(ShouldDisplayDebugLog)"
-            DependsOnTargets="_nBuildKit_Tag_Vcs_ReplaceBuildTemplates">
+            Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -69,30 +66,15 @@
         <Message Text=" " />
         
         <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)" />
-        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShortExpanded)" />
-        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFullExpanded)" />
         <Message Text=" " />
         
         <Message Text="The current workspace is a GIT workspace" Condition="Exists('$(DirWorkspace)\.git')" />
-        <Warning Text="The current workspace does not have any identifying VCS information. No VCS info file will be created" 
+        <Warning Text="The current workspace does not have any identifying VCS information. No tags will be applied" 
                  Condition="!Exists('$(DirWorkspace)\.git')" />
         <Message Text=" " />
-    </Target>
-    
-    <Target Name="_nBuildKit_Tag_Vcs_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
-        <Message Text="Resolving build templates for: $(FileReleaseNotesShort) and $(FileReleaseNotesFull)" />
         
-        <!-- Process the build templates in the short release notes file path -->
-        <TemplateText Template="$(FileReleaseNotesShort)"
-                      Tokens="@(BuildTemplateTextTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReleaseNotesShortExpanded" />
-        </TemplateText>
-        
-        <!-- Process the build templates in the full release notes file path -->
-        <TemplateText Template="$(FileReleaseNotesFull)"
-                      Tokens="@(BuildTemplateTextTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReleaseNotesFullExpanded" />
-        </TemplateText>
+        <Message Text="Pushing GIT tags to: $(GitRemoteRepository)" Condition="Exists('$(DirWorkspace)\.git')" />
+        <Message Text=" " />
     </Target>
     
     <Target Name="_nBuildKit_Tag_Vcs_GetVersion">
