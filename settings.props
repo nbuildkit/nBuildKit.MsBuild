@@ -14,6 +14,8 @@
         ${Platform}              - The platform name, e.g. Any CPU
         ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
         ${ProductName}           - The name of the product
+        ${ReleaseNotesShort}     - The contents of the short release notes
+        ${ReleaseNotesFull}      - The contents of the full release notes
     -->
     
     <!-- Overrides for the project specific properties -->
@@ -90,10 +92,10 @@
         <!-- The full path to the file that is used to store the version information during the build -->
         <!-- <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion> -->
         
-        <!-- The full path to the file that is used to store the release notes for the current release during the build. Allows build templates. -->
+        <!-- The full path to the file that is used to store the release notes for the current release during the build. -->
         <!-- <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort> -->
         
-        <!-- The full path to the file that is used to store the release notes for all the releases during the build. Allows build templates. -->
+        <!-- The full path to the file that is used to store the release notes for all the releases during the build. -->
         <!-- <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull> -->
         
         <!-- The full path to the template file that is used to provide the project information for CCM. -->
@@ -205,6 +207,7 @@
               YouTrackServer - The URL of the YouTrack server, e.g. http://myuser.myjetbrains.com/youtrack
         -->
         
+        <!-- The user name of the user who owns the repository on GitHub -->
         <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">pvandervelde</GitHubUserName>
         
         <!-- The repository that contains the source code for the current product -->
@@ -293,29 +296,45 @@
     
     <!--
         Define the steps taken during the deploy process. Available steps and their sub-steps are provided by the following properties:
-        $(DeployTargetPushTo) - Pushes the artifacts to one or more locations
-            $(DeployStepsPushToNuget)        - Pushes one or more artifacts to a NuGet feed
-            $(DeployStepsPushToDirectory)    - Pushes one or more artifacts to a directory
-            $(DeployStepsPushToSymbolServer) - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
         $(DeployTargetTag)    - Adds one or more tags to the VCS
+        $(DeployTargetPushTo) - Pushes the artifacts to one or more locations
+            $(DeployStepsPushToNuget)         - Pushes one or more artifacts to a NuGet feed
+            $(DeployStepsPushToDirectory)     - Pushes one or more artifacts to a directory
+            $(DeployStepsPushToSymbolServer)  - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
+            $(DeployStepsPushToGitHubRelease) - Pushes zero or more files to a GitHub release
         
         The order in which items are defined is irrelevant given that the build script will sort the steps in the right order.
     -->
     <ItemGroup>
-        <DeployStepsToExecute Include="$(DeployTargetPushTo)">
-            <Steps>$(DeployStepsPushToNuget)</Steps>
+        <DeployStepsToExecute Include="$(DeployTargetTag)">
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployTargetTag)">
+        <DeployStepsToExecute Include="$(DeployTargetPushTo)">
+            <Steps>$(DeployStepsPushToNuget);$(DeployStepsPushToGitHubRelease)</Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </DeployStepsToExecute>
     </ItemGroup>
     
+    <!-- Overrides for the repository information used to tag the current release -->
+    <PropertyGroup>
+        <!-- Uncomment to override the default settings -->
+    
+        <!-- Repository information -->
+        <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">https://%GitHubToken%:@github.com/$(GitHubUserName)/nBuildKit.git</GitRemoteRepository>
+    </PropertyGroup>
+    
     <!-- Overrides for the deployment properties -->
     <PropertyGroup>
         <!-- Uncomment to override the default settings -->
+        
+        <!-- 
+            The following properties have to be defined on via an environment variable (either local to the process that
+            executes the build, or global to the user):
+            - When pushing packages via NuGet
+              NuGetApiKey - The NuGet API key for the NuGet feed
+        -->
         
         <!-- The URL to which all NuGet packages should be pushed. By default it pushes to nuget.org -->
         <!-- <NuGetSourceUrl Condition=" '$(NuGetSourceUrl)' == '' "></NuGetSourceUrl> -->
@@ -347,6 +366,18 @@
             <ExcludedFiles></ExcludedFiles>
         </PushToDirectorySpecs>
         -->
+    </ItemGroup>
+    
+    <!-- 
+        The item group defining the files that should be pushed to a GitHub release
+    -->
+    <ItemGroup>
+        <PushToGitHubReleaseSpecs Include="${VersionSemantic} - My release">
+             <Repository>MyCoolProject</Repository>
+             <Description>${ReleaseNotesShort}</Description>
+             <IncludedFiles>$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip</IncludedFiles>
+             <ExcludedFiles></ExcludedFiles>
+        </PushToGitHubReleaseSpecs>
     </ItemGroup>
     
     <!-- 

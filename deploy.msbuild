@@ -3,15 +3,19 @@
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <!-- Configuration -->
-        <!-- Stuff here ... -->
+        <!-- Directory structure -->
+        <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirMsBuildExtensions>
+        
+        <!-- Files -->
+        <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
     </PropertyGroup>
 
     <PropertyGroup>
         <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
         <DirNBuildKit>$(DirMsBuildScripts)\src\msbuild\scripts</DirNBuildKit>
     </PropertyGroup>
-    <Target Name="Run" DependsOnTargets="_LocateNBuildKit">
-        <MSBuild Projects="$(DirNBuildKit)\deploy.msbuild" />
+    <Target Name="Run">
+        <MSBuild Projects="$(DirNBuildKit)\deploy.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions)" />
     </Target>
 </Project>
