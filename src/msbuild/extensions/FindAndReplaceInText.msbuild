@@ -1,0 +1,55 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="FindAndReplaceInText" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <Input ParameterType="System.String" Required="true" />
+            <Tokens ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <Output ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        const string MetadataValueTag = "ReplacementValue";
+                        
+                        var toReplace = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.InvariantCultureIgnoreCase);
+                        if (Tokens != null)
+                        {
+                            ITaskItem[] processedTokens = Tokens;
+                            for (int i = 0; i < processedTokens.Length; i++)
+                            {
+                                ITaskItem taskItem = processedTokens[i];
+                                if (!string.IsNullOrEmpty(taskItem.ItemSpec))
+                                {
+                                    toReplace.Add(taskItem.ItemSpec, taskItem.GetMetadata(MetadataValueTag));
+                                }
+                            }
+                        }
+
+                        Output = Input;
+                        foreach (var pair in toReplace)
+                        {
+                            if (Output.Contains(pair.Key))
+                            {
+                                Log.LogMessage("Replacing [" + pair.Key + "] with [" + pair.Value + "]");
+                                Output = Output.Replace(pair.Key, pair.Value);
+                            }
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>
