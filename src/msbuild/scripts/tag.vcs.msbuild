@@ -30,6 +30,9 @@
         <!-- Version number -->
         <VersionSemantic>0</VersionSemantic>
         
+        <!-- Repository information -->
+        <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">origin</GitRemoteRepository>
+        
         <!-- External tools -->
         <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
         <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath>
@@ -95,13 +98,14 @@
     </Target>
     
     <Target Name="_nBuildKit_Tag_Vcs_Git" Condition="$(IsGitWorkspace)" DependsOnTargets="_nBuildKit_Tag_Vcs_GetVersion">
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShortExpanded)'))" Condition="Exists('$(FileReleaseNotesShortExpanded)')">
-            <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
-        </CreateProperty>
-    
-        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;$(ReleaseNotes)&quot; &quot;$(VersionSemantic)&quot;"
+        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;Tagging $(VersionSemantic)&quot; &quot;$(VersionSemantic)&quot;"
               WorkingDirectory="$(DirWorkspace)" />
-        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; push origin --tags"
+              
+        <!-- 
+            Push the tags to the remote repository. Note that we suppress all the output because otherwise GIT echo's the repository URL it
+            pushes too which may have the GitHub token in there
+        -->
+        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; push --tags --repo $(GitRemoteRepository) &gt;nul 2&gt;&amp;1"
               WorkingDirectory="$(DirWorkspace)" />
     </Target>
     
