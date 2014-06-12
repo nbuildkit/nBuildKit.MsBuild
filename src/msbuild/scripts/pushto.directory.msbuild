@@ -33,8 +33,7 @@
     
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_Directory_DisplayInfo">
-        <Message Text="Copying binaries to the remote file location..." Condition=" '$(ServerDeployPath)' != ''" />
-        <Message Text="No remote file location defined!" Condition=" '$(ServerDeployPath)' == ''" />
+        <Message Text="Copying binaries to the remote file location..." />
     </Target>
     
     <Target Name="_nBuildKit_Package_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -52,7 +51,6 @@
     
     <Target Name="_nBuildKit_PushTo_Directory_Push" 
             DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize"
-            Condition=" '$(ServerDeployPath)' != ''"
             Outputs="%(PushToDirectorySpecs.Identity)">
         <Message Text="Resolving build templates for: %(PushToDirectorySpecs.Identity)" />
         

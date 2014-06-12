@@ -41,8 +41,8 @@
     
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_NuGet_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_NuGet_DebugLog">
-        <Message Text="Pushing NuGet packages to the feed..." Condition=" '$(NuGetSourceUrl)' != ''" />
-        <Message Text="No NuGet source defined!" Condition=" '$(NuGetSourceUrl)' == ''" />
+        <Message Text="Pushing NuGet packages to: $(NuGetSourceUrl)" Condition=" '$(NuGetSourceUrl)' != ''" />
+        <Message Text="No NuGet source defined, pushing to NuGet.org" Condition=" '$(NuGetSourceUrl)' == ''" />
     </Target>
     
     <Target Name="_nBuildKit_PushTo_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -61,7 +61,6 @@
     </Target>
     
     <Target Name="_nBuildKit_PushTo_NuGet_Push" 
-            Condition=" '$(NuGetSourceUrl)' != ''"
             DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
         <TemplateText Template="@(NuGetPackagesToPush)"
                       Tokens="@(BuildTemplateTextTokens)"

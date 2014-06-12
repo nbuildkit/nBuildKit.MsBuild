@@ -36,7 +36,7 @@
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_SymbolServer_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_SymbolServer_DebugLog">
         <Message Text="Pushing NuGet symbol packages to the symbol server ..." Condition=" '$(SymbolServerUrl)' != ''" />
-        <Message Text="No symbol server path defined!" Condition=" '$(SymbolServerUrl)' == ''" />
+        <Error Text="No symbol server path defined!" Condition=" '$(SymbolServerUrl)' == ''" />
     </Target>
     
     <Target Name="_nBuildKit_PushTo_SymbolServer_DebugLog" Condition="$(ShouldDisplayDebugLog)">
