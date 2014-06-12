@@ -15,11 +15,13 @@
         
         <!-- Files -->
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
+        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
-            
+    
     <Target Name="nBuildKit_Shared_TemplateText_Initialize">
         <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
@@ -29,6 +31,14 @@
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
             <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShort)'))" Condition="Exists('$(FileReleaseNotesShort)')">
+            <Output TaskParameter="Value" PropertyName="ReleaseNotesShort" />
+        </CreateProperty>
+        
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFull)'))" Condition="Exists('$(FileReleaseNotesFull)')">
+            <Output TaskParameter="Value" PropertyName="ReleaseNotesFull" />
+        </CreateProperty>
         
         <ItemGroup>
             <BuildTemplateTextTokens Include="VersionMajor">
@@ -60,6 +70,12 @@
             </BuildTemplateTextTokens>
             <BuildTemplateTextTokens Include="ProductName">
                 <ReplacementValue>$(ProductName)</ReplacementValue>
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="ReleaseNotesShort">
+                <ReplacementValue>$(ReleaseNotesShort)</ReplacementValue>
+            </BuildTemplateTextTokens>
+            <BuildTemplateTextTokens Include="ReleaseNotesFull">
+                <ReplacementValue>$(ReleaseNotesFull)</ReplacementValue>
             </BuildTemplateTextTokens>
         </ItemGroup>
     </Target>
