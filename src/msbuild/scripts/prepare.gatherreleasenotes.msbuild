@@ -106,16 +106,14 @@
                  Condition=" '$(IssueTrackerConnection)' != '' " />
         <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
               WorkingDirectory="$(DirWorkspace)"
-              Condition=" '$(IssueTrackerConnection)' != '' " 
-              ContinueOnError="true"
-              Condition=" '$(ShouldExecute)' == 'true' "/>
+              Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' " 
+              ContinueOnError="true"/>
         
         <Message Text="Gathering release notes for all releases ..." 
                  Condition=" '$(IssueTrackerConnection)' != '' " />
         <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
               WorkingDirectory="$(DirWorkspace)" 
-              Condition=" '$(IssueTrackerConnection)' != '' " 
-              ContinueOnError="true" 
-              Condition=" '$(ShouldExecute)' == 'true' "/>
+              Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' " 
+              ContinueOnError="true" />
     </Target>
  </Project>
