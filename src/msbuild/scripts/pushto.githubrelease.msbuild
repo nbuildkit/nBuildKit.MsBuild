@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
@@ -68,7 +69,8 @@
     </Target>
     
     <Target Name="_nBuildKit_PushTo_GitHubRelease_GetVersion">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)"
+                                                           Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
     </Target>
@@ -127,7 +129,8 @@
                              Repository="$(GitHubReleaseRepository)"
                              Tag="$(VersionSemantic)" 
                              ReleaseName="$(GitHubReleaseName)"
-                             ReleaseDescription="$(GitHubReleaseDescription)" />
+                             ReleaseDescription="$(GitHubReleaseDescription)" 
+                             Condition=" '$(ShouldExecute)' == 'true' "/>
         
         <!-- Upload the files -->
         <GitHubReleaseUpload GitHubReleasePath="$(ToolsExternalGitHubRelease)"
@@ -137,6 +140,6 @@
                              Tag="$(VersionSemantic)"
                              FileName="%(GitHubReleaseFiles.Filename)%(GitHubReleaseFiles.Extension)"
                              FilePath="%(GitHubReleaseFiles.FullPath)"
-                             Condition=" '@(GitHubReleaseFiles)' != '' " />
+                             Condition=" '@(GitHubReleaseFiles)' != '' AND '$(ShouldExecute)' == 'true' " />
     </Target>
 </Project>

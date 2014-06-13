@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -81,7 +82,8 @@
     </Target>
     
     <Target Name="_nBuildKit_Tag_Vcs_GetVersion">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)"
+                                                           Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
     </Target>
@@ -99,17 +101,20 @@
     
     <Target Name="_nBuildKit_Tag_Vcs_Git" Condition="$(IsGitWorkspace)" DependsOnTargets="_nBuildKit_Tag_Vcs_GetVersion">
         <Exec Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;Tagging $(VersionSemantic)&quot; &quot;$(VersionSemantic)&quot;"
-              WorkingDirectory="$(DirWorkspace)" />
+              WorkingDirectory="$(DirWorkspace)" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
               
         <!-- 
             Push the tags to the remote repository. Note that we suppress all the output because otherwise GIT echo's the repository URL it
             pushes too which may have the GitHub token in there
         -->
         <Exec Command="&quot;$(ToolsExternalGitPath)&quot; push --tags --repo $(GitRemoteRepository) &gt;nul 2&gt;&amp;1"
-              WorkingDirectory="$(DirWorkspace)" />
+              WorkingDirectory="$(DirWorkspace)" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
     
     <Target Name="_nBuildKit_Tag_Vcs_Tfs" Condition="$(IsTfsWorkspace)" DependsOnTargets="_nBuildKit_Tag_Vcs_GetVersion">
-        <Exec Command="&quot;$(ExeTfsClient)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive" />
+        <Exec Command="&quot;$(ExeTfsClient)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

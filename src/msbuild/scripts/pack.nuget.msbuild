@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -89,7 +90,7 @@
     </Target>
     
     <Target Name="_nBuildKit_Package_NuGet_GetVersion" Condition="Exists('$(FileSemanticVersion)')">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
         
@@ -101,7 +102,8 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Package_NuGet_GetReleaseNotes" Condition="Exists('$(FileReleaseNotesFull)')">
         <Copy SourceFiles="$(FileReleaseNotesFull)"
-              DestinationFiles="$(FileReleaseNotesFullForNuGet)" />
+              DestinationFiles="$(FileReleaseNotesFullForNuGet)"
+              Condition="Exists('$(FileReleaseNotesFull)') AND '$(ShouldExecute)' == 'true' "/>
         
         <!-- 
             Replace the XML special tokens with their standard HTML form.
@@ -129,9 +131,11 @@
         </ItemGroup>
         
         <FindAndReplaceInFile Input="$(FileReleaseNotesFullForNuGet)"
-                              Tokens="@(BaseConfigurationTokens)" />
+                              Tokens="@(BaseConfigurationTokens)"
+                              Condition="Exists('$(FileReleaseNotesFullForNuGet)') AND '$(ShouldExecute)' == 'true' "/>
     
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFullForNuGet)'))">
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFullForNuGet)'))"
+                        Condition="Exists('$(FileReleaseNotesFullForNuGet)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
         </CreateProperty>
     </Target>
@@ -177,14 +181,14 @@
             inside the Exists() function, so we'll split the process and do the transfer seperately.
         -->        
         <ItemGroup>
-            <DirNuSpecTemp Include="$([System.IO.Path]::GetDirectoryName('$(FileNuGetTemplate)'))" />
+            <DirNuSpecTemp Include="$([System.IO.Path]::GetDirectoryName('$(FileNuGetTemplate)'))" Condition="Exists('$(FileNuGetTemplate)')" />
         </ItemGroup>
         
         <Message Text="Creating NuGet package from: $(FileNuGetNuSpec)" />
         <MakeDir Directories="%(DirNuSpecTemp.Identity)" 
-                 Condition="!Exists('%(DirNuSpecTemp.Identity)')" />
+                 Condition="!Exists('%(DirNuSpecTemp.Identity)') AND  '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirBuildDeploy)" 
-                 Condition="!Exists('$(DirBuildDeploy)')" />
+                 Condition="!Exists('$(DirBuildDeploy)') AND  '$(ShouldExecute)' == 'true' " />
 
         <Message Text="Included dependencies: $(FilesNuGetDependenciesIncluded)" />
         <Message Text="Excluded dependencies: $(FilesNuGetDependenciesExcluded)" />
@@ -201,7 +205,7 @@
                ItemName="PackageDependencies"/>
         </CreateItem>
         
-        <GatherNuGetDependenciesForProject Packages="@(PackageDependencies)" Condition=" '@(PackageDependencies)' != '' ">
+        <GatherNuGetDependenciesForProject Packages="@(PackageDependencies)" Condition=" '@(PackageDependencies)' != '' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Dependencies" PropertyName="NuGetDependencies" />
         </GatherNuGetDependenciesForProject>
 
@@ -227,11 +231,13 @@
         </ItemGroup>
         <TemplateFile Template="$(FileNuGetTemplate)" 
                       OutputFileName="$(FileNuGetNuSpec)" 
-                      Tokens="@(NuSpecTokens)" />
+                      Tokens="@(NuSpecTokens)" 
+                      Condition=" '$(ShouldExecute)' == 'true' "/>
         
         <NuGetPack NuGetPath="$(ToolsExternalNuGetPath)" 
                    File="$(FileNuGetNuSpec)" 
                    OutputDirectory="$(DirBuildDeploy)" 
-                   ShouldBuildSymbols="%(NuGetPackageSpecs.ShouldBuildSymbols)" />
+                   ShouldBuildSymbols="%(NuGetPackageSpecs.ShouldBuildSymbols)" 
+                   Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

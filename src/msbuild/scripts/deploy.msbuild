@@ -33,6 +33,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">true</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Configurations -->
         <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
@@ -67,7 +68,7 @@
         <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
         <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
         <DefaultFiles>FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;</DefaultFiles>
-        <DefaultSwitches>ShouldDisplayDebugLog=$(ShouldDisplayDebugLog)</DefaultSwitches>
+        <DefaultSwitches>ShouldDisplayDebugLog=$(ShouldDisplayDebugLog);ShouldExecute=$(ShouldExecute)</DefaultSwitches>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild"

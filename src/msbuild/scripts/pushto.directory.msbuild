@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
@@ -87,8 +88,9 @@
         </CreateItem>
         
         <MakeDir Directories="$(DirPushToSpecs)" 
-                 Condition="!Exists('$(DirPushToSpecs)')" />
+                 Condition="!Exists('$(DirPushToSpecs)') AND '$(ShouldExecute)' == 'true' " />
         <Copy SourceFiles="@(FilesToPush)" 
-              DestinationFolder="$(DirPushToSpecs)" />
+              DestinationFolder="$(DirPushToSpecs)" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 </Project>

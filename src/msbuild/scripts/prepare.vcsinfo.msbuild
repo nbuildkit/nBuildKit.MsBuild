@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -77,9 +78,10 @@
     
     <Target Name="_nBuildKit_Prepare_VcsInfo_GatherGitInfo" Condition="$(IsGitWorkspace)">
         <MakeDir Directories="$(DirBuildTemp)" 
-                 Condition="!Exists('$(DirBuildTemp)')" />
+                 Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
         
-        <GitInfo LocalPath="$(DirWorkspace)">
+        <GitInfo LocalPath="$(DirWorkspace)"
+                 Condition=" '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="CurrentRevision" PropertyName="GitCurrentRevision" />
             <Output TaskParameter="CurrentBranch" PropertyName="GitCurrentBranch" />
         </GitInfo>
@@ -91,6 +93,7 @@
         
         <WriteLinesToFile File="$(FileVcsInfo)"
                           Lines="@(GitInfoItems)"
-                          Overwrite="true" />
+                          Overwrite="true" 
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

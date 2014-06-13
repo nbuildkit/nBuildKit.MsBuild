@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
@@ -106,13 +107,15 @@
         <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
               WorkingDirectory="$(DirWorkspace)"
               Condition=" '$(IssueTrackerConnection)' != '' " 
-              ContinueOnError="true" />
+              ContinueOnError="true"
+              Condition=" '$(ShouldExecute)' == 'true' "/>
         
         <Message Text="Gathering release notes for all releases ..." 
                  Condition=" '$(IssueTrackerConnection)' != '' " />
         <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
               WorkingDirectory="$(DirWorkspace)" 
               Condition=" '$(IssueTrackerConnection)' != '' " 
-              ContinueOnError="true" />
+              ContinueOnError="true" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

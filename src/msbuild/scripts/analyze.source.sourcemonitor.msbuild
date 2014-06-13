@@ -15,6 +15,7 @@
     
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
@@ -89,10 +90,12 @@
         <Now>$([System.DateTime]::Now.ToString("yyyy-MM-ddTHH:mm:ss"))</Now>
     </PropertyGroup>
     <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_Analyze">
-        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)')" />
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
+        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND  '$(ShouldExecute)' == 'true' " />
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND  '$(ShouldExecute)' == 'true' " />
     
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="$(FileSourceMonitorExe)">
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
+                                            FileToLocate="$(FileSourceMonitorExe)"
+                                            Condition=" '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="PathSourceMonitorExe" />
         </SearchPackagesDirectoryForToolPath>
     
@@ -110,13 +113,18 @@
                 <ReplacementValue>$(FileReportSourceMonitorExpanded)</ReplacementValue>
             </SourceMonitorTokens>
         </ItemGroup>
-        <TemplateFile Template="$(FileTemplateSourceMonitor)" OutputFileName="$(FileGeneratedSourceMonitor)" Tokens="@(SourceMonitorTokens)" />
+        <TemplateFile Template="$(FileTemplateSourceMonitor)" 
+                      OutputFileName="$(FileGeneratedSourceMonitor)" 
+                      Tokens="@(SourceMonitorTokens)" 
+                      Condition=" '$(ShouldExecute)' == 'true' "/>
     
         <SourceMonitor SourceMonitorExe="$(PathSourceMonitorExe)"
-                       ConfigFile="$(FileGeneratedSourceMonitor)" />
+                       ConfigFile="$(FileGeneratedSourceMonitor)" 
+                       Condition=" '$(ShouldExecute)' == 'true' "/>
                        
         <SourceMonitorOutputToCsv ProjectName="$(ProductName)"
                                   InputFile="$(FileReportSourceMonitorExpanded)"
-                                  OutputPath="$(DirBuildLogs)" />
+                                  OutputPath="$(DirBuildLogs)" 
+                                  Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

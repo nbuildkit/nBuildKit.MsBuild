@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -87,14 +88,17 @@
         <FileFxCopCmdExe>FxCopCmd.exe</FileFxCopCmdExe>
     </PropertyGroup>
     <Target Name="_nBuildKit_Analyze_Binaries_FxCop_Analyze">
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
         
-        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" FileToLocate="$(FileFxCopCmdExe)" Condition=" '$(ToolsExternalFxCopDir)' == '' ">
+        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" 
+                                                 FileToLocate="$(FileFxCopCmdExe)" 
+                                                 Condition=" '$(ToolsExternalFxCopDir)' == '' AND '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalFxCopDir" />
         </SearchPackagesDirectoryForToolDirectory>
             
         <FxCop FxCopDir="$(ToolsExternalFxCopDir)"
                FxCopProjectFile="$(FileProjectFxCop)"
-               FxCopOutputFile="$(FileReportFxCopExpanded)" />
+               FxCopOutputFile="$(FileReportFxCopExpanded)" 
+               Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

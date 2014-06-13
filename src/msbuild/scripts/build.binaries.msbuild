@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -72,17 +73,18 @@
     <Target Name="_nBuildKit_Build_Binaries_RestorePackages">
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)" 
                       PackageFile="$(FileSln)" 
-                      PackageDirectory="$(DirPackages)" />
+                      PackageDirectory="$(DirPackages)" 
+                      Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
     
     <!-- Build binaries -->
     <Target Name="_nBuildKit_Build_Binaries_Build">
-        <MSBuild Projects="$(FileSln)" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+        <MSBuild Projects="$(FileSln)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition=" '$(ShouldExecute)' == 'true' " />
     </Target>
     
     <!-- Copy code analysis logs -->
     <Target Name="_nBuildKit_Build_Binaries_CopyLogs">
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
         
         <ItemGroup>
             <LogFiles Include="$(DirBuildBin)\*.CodeAnalysisLog.xml" />
@@ -91,6 +93,7 @@
         <Move SourceFiles="@(LogFiles)" 
               DestinationFolder="$(DirBuildLogs)"
               OverwriteReadOnlyFiles="true"
-              ContinueOnError="true" />
+              ContinueOnError="true" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

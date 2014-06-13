@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         <ShouldClean Condition=" '$(ShouldClean)' == '' ">true</ShouldClean>
         
         <!-- Directories -->
@@ -58,7 +59,9 @@
         <ItemGroup>
             <BuildFilesToDelete Include="$(DirBuild)\**\*.*"/>
         </ItemGroup>
-        <Delete Files="@(BuildFilesToDelete)" ContinueOnError="True" />
+        <Delete Files="@(BuildFilesToDelete)" 
+                Condition=" '$(ShouldExecute)' == 'true' "
+                ContinueOnError="True" />
         
         <ItemGroup>
             <BuildDirectoriesToDelete Include="$(DirBuildDeploy)" />
@@ -67,6 +70,8 @@
             <BuildDirectoriesToDelete Include="$(DirBuildDeploy)" />
             <BuildDirectoriesToDelete Include="$(DirBuild)" />
         </ItemGroup>
-        <RemoveDir Directories="@(BuildDirectoriesToDelete)" ContinueOnError="True" />
+        <RemoveDir Directories="@(BuildDirectoriesToDelete)" 
+                   Condition=" '$(ShouldExecute)' == 'true' "
+                   ContinueOnError="True" />
     </Target>
  </Project>
