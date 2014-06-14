@@ -48,8 +48,8 @@
     
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_GitHubRelease_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_GitHubRelease_DebugLog">
-        <Message Text="Pushing artifacts to the GitHub release ..." Condition=" '$(NuGetSourceUrl)' != ''" />
-        <Message Text="No NuGet source defined!" Condition=" '$(NuGetSourceUrl)' == ''" />
+        <Message Text="Pushing artifacts to the GitHub release ..." Condition=" '@(PushToGitHubReleaseSpecs)' != '' " />
+        <Message Text="No releases defined!" Condition=" '@(PushToGitHubReleaseSpecs)' == '' " />
     </Target>
     
     <Target Name="_nBuildKit_PushTo_GitHubRelease_DebugLog" 
@@ -61,10 +61,10 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)" />
+        <Message Text="The semantic version file is located at: $(FileSemanticVersion)" />
         <Message Text=" " />
         
-        <Message Text="GitHubReleaseNotes command line executable is located at: $(ToolsExternalGitHubRelease)" />
+        <Message Text="GitHub-Release command line executable is located at: $(ToolsExternalGitHubRelease)" />
         <Message Text=" " />
     </Target>
     
