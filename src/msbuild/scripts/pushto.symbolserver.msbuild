@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
@@ -36,7 +37,7 @@
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_SymbolServer_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_SymbolServer_DebugLog">
         <Message Text="Pushing NuGet symbol packages to the symbol server ..." Condition=" '$(SymbolServerUrl)' != ''" />
-        <Message Text="No symbol server path defined!" Condition=" '$(SymbolServerUrl)' == ''" />
+        <Error Text="No symbol server path defined!" Condition=" '$(SymbolServerUrl)' == ''" />
     </Target>
     
     <Target Name="_nBuildKit_PushTo_SymbolServer_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -56,7 +57,7 @@
             DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
         <TemplateText Template="@(SymbolPackagesToPush)"
                       Tokens="@(BuildTemplateTextTokens)"
-                      Condition=" '@(SymbolPackagesToPush)' != '' ">
+                      Condition=" '@(SymbolPackagesToPush)' != '' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Result" PropertyName="SymbolPackagesToPushExpanded" />
         </TemplateText>
         
@@ -76,6 +77,7 @@
         </ItemGroup>
         
         <Copy SourceFiles="@(SymbolPackagesToPush)" 
-              DestinationFolder="$(SymbolServerUrl)\" />
+              DestinationFolder="$(SymbolServerUrl)\" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 </Project>

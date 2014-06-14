@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
@@ -85,7 +86,8 @@
         
         <WriteLinesToFile File="$(FileSemanticVersion)"
                           Lines="@(Items_SemanticVersion)"
-                          Overwrite="true" />
+                          Overwrite="true"
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" Condition="!Exists('$(FileVersionMsBuild)')">
@@ -95,11 +97,11 @@
         
         <CalculateSemanticVersionWithGitHubFlowVersion ExePath="$(ToolsExternalGitHubFlowVersionPath)" 
                                                        VersionFile="$(FileSemanticVersion)" 
-                                                       Condition="!Exists('$(FileSemanticVersion)')" />
+                                                       Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
     </Target>
     
     <Target Name="_nBuildKit_Prepare_GetVersion_PushToExternals">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" Condition="Exists('$(FileSemanticVersion)')">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
             <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
@@ -126,8 +128,8 @@
         <!-- Push to AppVeyor -->
         <!-- Note to make sure that the version that AppVeyor gets is unique we append the build number at the end. -->
         <Message Text="Pushing version number to AppVeyor's build number ..." 
-                 Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' " />
+                 Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND '$(ShouldExecute)' == 'true' " />
         <Exec Command="appveyor UpdateBuild -Version &quot;$(VersionSemanticFull)-$(APPVEYOR_BUILD_NUMBER)&quot;"
-              Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' " />
+              Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND '$(ShouldExecute)' == 'true' " />
     </Target>
  </Project>

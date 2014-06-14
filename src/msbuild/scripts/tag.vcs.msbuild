@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -26,11 +27,12 @@
         
         <!-- Files -->
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
-        <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
-        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
         
         <!-- Version number -->
         <VersionSemantic>0</VersionSemantic>
+        
+        <!-- Repository information -->
+        <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">origin</GitRemoteRepository>
         
         <!-- External tools -->
         <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
@@ -55,8 +57,7 @@
     </Target>
     
     <Target Name="_nBuildKit_Tag_Vcs_DebugLog" 
-            Condition="$(ShouldDisplayDebugLog)"
-            DependsOnTargets="_nBuildKit_Tag_Vcs_ReplaceBuildTemplates">
+            Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -69,34 +70,20 @@
         <Message Text=" " />
         
         <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)" />
-        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShortExpanded)" />
-        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFullExpanded)" />
         <Message Text=" " />
         
         <Message Text="The current workspace is a GIT workspace" Condition="Exists('$(DirWorkspace)\.git')" />
-        <Warning Text="The current workspace does not have any identifying VCS information. No VCS info file will be created" 
+        <Warning Text="The current workspace does not have any identifying VCS information. No tags will be applied" 
                  Condition="!Exists('$(DirWorkspace)\.git')" />
+        <Message Text=" " />
+        
+        <Message Text="Pushing GIT tags to: $(GitRemoteRepository)" Condition="Exists('$(DirWorkspace)\.git')" />
         <Message Text=" " />
     </Target>
     
-    <Target Name="_nBuildKit_Tag_Vcs_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
-        <Message Text="Resolving build templates for: $(FileReleaseNotesShort) and $(FileReleaseNotesFull)" />
-        
-        <!-- Process the build templates in the short release notes file path -->
-        <TemplateText Template="$(FileReleaseNotesShort)"
-                      Tokens="@(BuildTemplateTextTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReleaseNotesShortExpanded" />
-        </TemplateText>
-        
-        <!-- Process the build templates in the full release notes file path -->
-        <TemplateText Template="$(FileReleaseNotesFull)"
-                      Tokens="@(BuildTemplateTextTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReleaseNotesFullExpanded" />
-        </TemplateText>
-    </Target>
-    
     <Target Name="_nBuildKit_Tag_Vcs_GetVersion">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)"
+                                                           Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
     </Target>
@@ -113,17 +100,21 @@
     </Target>
     
     <Target Name="_nBuildKit_Tag_Vcs_Git" Condition="$(IsGitWorkspace)" DependsOnTargets="_nBuildKit_Tag_Vcs_GetVersion">
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShortExpanded)'))" Condition="Exists('$(FileReleaseNotesShortExpanded)')">
-            <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
-        </CreateProperty>
-    
-        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;$(ReleaseNotes)&quot; &quot;$(VersionSemantic)&quot;"
-              WorkingDirectory="$(DirWorkspace)" />
-        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; push origin --tags"
-              WorkingDirectory="$(DirWorkspace)" />
+        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;Tagging $(VersionSemantic)&quot; &quot;$(VersionSemantic)&quot;"
+              WorkingDirectory="$(DirWorkspace)" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
+              
+        <!-- 
+            Push the tags to the remote repository. Note that we suppress all the output because otherwise GIT echo's the repository URL it
+            pushes too which may have the GitHub token in there
+        -->
+        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; push --tags --repo $(GitRemoteRepository) &gt;nul 2&gt;&amp;1"
+              WorkingDirectory="$(DirWorkspace)" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
     
     <Target Name="_nBuildKit_Tag_Vcs_Tfs" Condition="$(IsTfsWorkspace)" DependsOnTargets="_nBuildKit_Tag_Vcs_GetVersion">
-        <Exec Command="&quot;$(ExeTfsClient)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive" />
+        <Exec Command="&quot;$(ExeTfsClient)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

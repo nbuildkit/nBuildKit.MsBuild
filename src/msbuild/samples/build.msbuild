@@ -9,6 +9,7 @@
         <!-- Files -->
         <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
         <NuGetPackageFile>$(DirWorkspace)\packages.config</NuGetPackageFile>
+        <FileNugetConfig>$(DirWorkspace)\nuget.config</FileNugetConfig>
         
         <!-- External tools -->
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
@@ -60,19 +61,19 @@
         </CreateProperty>
         
         <!-- Get the location of the packages directory from the local nuget.config file -->
-        <XmlPeek XmlInputPath="FileNugetConfig"
-                 Query="add[@key='repositorypath']@value"
+        <XmlPeek XmlInputPath="$(FileNugetConfig)"
+                 Query="//add[@key='repositorypath']/@value"
                  Condition="!Exists('$(DirPackages)')">
             <Output TaskParameter="Result" ItemName="DirNuGetPackages" />
         </XmlPeek>
         
         <!-- If the DirNuGetPackages has a root (i.e. a drive letter) then we assume it is an absolute path. Just use it that way. -->
-        <CreateProperty Value="$([System.IO.Path]::GetFullPath('@(DirNuGetPackages)'))" Condition=" '@(DirNuGetPackages)' != '' AND $([System.IO.Path]::IsPathRooted('$(DirNuGetPackages)'))">
+        <CreateProperty Value="$([System.IO.Path]::GetFullPath('%(DirNuGetPackages.Identity)'))" Condition=" '$(DirNuGetPackages)' != '' AND $([System.IO.Path]::IsPathRooted('%(DirNuGetPackages.Identity)'))">
             <Output TaskParameter="Value" PropertyName="DirPackages" />
         </CreateProperty>
         
         <!-- If the DirNuGetPackages has no root (i.e. no drive letter) then we assume it is a relative path. Base it on the directory that the nuget.config file is in. -->
-        <CreateProperty Value="$([System.IO.Path]::GetFullPath('$(DirMsBuildScripts)\@(DirNuGetPackages)'))" Condition=" '@(DirNuGetPackages)' != '' AND !$([System.IO.Path]::IsPathRooted('$(DirNuGetPackages)'))">
+        <CreateProperty Value="$([System.IO.Path]::GetFullPath('$(DirMsBuildScripts)\%(DirNuGetPackages.Identity)'))" Condition=" '@(DirNuGetPackages)' != '' AND !$([System.IO.Path]::IsPathRooted('%(DirNuGetPackages.Identity)'))">
             <Output TaskParameter="Value" PropertyName="DirPackages" />
         </CreateProperty>
         

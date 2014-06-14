@@ -43,6 +43,12 @@
                                 {
                                     builder.Append(string.Format("-Source \"{0}\" ", Source));
                                 }
+                                
+                                var apiKey = System.Environment.GetEnvironmentVariable("NuGetApiKey");
+                                if (!string.IsNullOrEmpty(apiKey))
+                                {
+                                    builder.Append(string.Format("-ApiKey \"{0}\" ", apiKey));
+                                }
                             }
                             
                             var info = new System.Diagnostics.ProcessStartInfo

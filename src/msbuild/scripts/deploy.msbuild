@@ -6,22 +6,23 @@
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
     </PropertyGroup>
     <PropertyGroup>
-        <DeployTargetPushTo>PushTo</DeployTargetPushTo>
         <DeployTargetTag>Tag</DeployTargetTag>
+        <DeployTargetPushTo>PushTo</DeployTargetPushTo>
         
         <DeployStepsPushToNuget>NuGetPush</DeployStepsPushToNuget>
         <DeployStepsPushToDirectory>DirectoryCopy</DeployStepsPushToDirectory>
         <DeployStepsPushToSymbolServer>SymbolServer</DeployStepsPushToSymbolServer>
+        <DeployStepsPushToGitHubRelease>GitHubRelease</DeployStepsPushToGitHubRelease>
     </PropertyGroup>
     <ItemGroup>
-        <DeployTargets Include="$(DeployTargetPushTo)">
+        <DeployTargets Include="$(DeployTargetTag)">
             <Order>1</Order>
-            <TargetToExecute>_nBuildKit_Deploy_PushTo</TargetToExecute>
+            <TargetToExecute>_nBuildKit_Deploy_Tag</TargetToExecute>
         </DeployTargets>
         
-        <DeployTargets Include="$(DeployTargetTag)">
+        <DeployTargets Include="$(DeployTargetPushTo)">
             <Order>2</Order>
-            <TargetToExecute>_nBuildKit_Deploy_Tag</TargetToExecute>
+            <TargetToExecute>_nBuildKit_Deploy_PushTo</TargetToExecute>
         </DeployTargets>
     </ItemGroup>
 
@@ -32,6 +33,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">true</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Configurations -->
         <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
@@ -66,7 +68,7 @@
         <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
         <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
         <DefaultFiles>FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;</DefaultFiles>
-        <DefaultSwitches>ShouldDisplayDebugLog=$(ShouldDisplayDebugLog)</DefaultSwitches>
+        <DefaultSwitches>ShouldDisplayDebugLog=$(ShouldDisplayDebugLog);ShouldExecute=$(ShouldExecute)</DefaultSwitches>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild"
@@ -145,10 +147,26 @@
         <Message Text=" " />
     </Target>
 
-    <!-- Push the artifacts to the destinations -->
     <PropertyGroup>
         <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
     </PropertyGroup>
+    
+    <!-- Add one or more tags to the VCS -->
+    <Target Name="_nBuildKit_Deploy_Tag">
+        <MsBuild Projects="%(DeployStepsToExecute.PreInvokeScripts)"
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' " />
+        
+        <MSBuild Projects="$(DirMsBuildScripts)\tag.vcs.msbuild" 
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)'" />
+                 
+        <MsBuild Projects="%(DeployStepsToExecute.PostInvokeScripts)"
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' " />
+    </Target>
+    
+    <!-- Push the artifacts to the destinations -->
     <Target Name="_nBuildKit_Deploy_PushTo">
         <MsBuild Projects="%(DeployStepsToExecute.PreInvokeScripts)"
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
@@ -163,24 +181,12 @@
         <MSBuild Projects="$(DirMsBuildScripts)\pushto.symbolserver.msbuild" 
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
                  Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsPushToSymbolServer)'))" />
-
-        <MsBuild Projects="%(DeployStepsToExecute.PostInvokeScripts)"
-                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' " />
-    </Target>
-    
-    <!-- Add one or more tags to the VCS -->
-    <Target Name="_nBuildKit_Deploy_Tag" DependsOnTargets="_DisplayInfo">
-        <MsBuild Projects="%(DeployStepsToExecute.PreInvokeScripts)"
-                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' " />
-        
-        <MSBuild Projects="$(DirMsBuildScripts)\tag.vcs.msbuild" 
-                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)'" />
+        <MSBuild Projects="$(DirMsBuildScripts)\pushto.githubrelease.msbuild" 
+                 Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)" 
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' AND $([System.String]::new('%(DeployStepsToExecute.Steps)').Contains('$(DeployStepsPushToGitHubRelease)'))" />
                  
         <MsBuild Projects="%(DeployStepsToExecute.PostInvokeScripts)"
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
-                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetTag)' " />
+                 Condition=" '%(DeployStepsToExecute.Identity)' == '$(DeployTargetPushTo)' " />
     </Target>
 </Project>

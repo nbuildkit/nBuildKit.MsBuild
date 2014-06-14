@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
@@ -58,6 +59,6 @@
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)" 
                       PackageFile="%(NuGetPackageFiles.FullPath)" 
                       PackageDirectory="$(DirPackages)"
-                      Condition=" '@(NuGetPackageFiles)' != '' "/>
+                      Condition=" '@(NuGetPackageFiles)' != '' AND '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

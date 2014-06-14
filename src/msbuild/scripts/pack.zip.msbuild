@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -88,7 +89,7 @@
             <Output TaskParameter="Result" PropertyName="FilesArchiveZipExcluded" />
         </TemplateText>
         
-        <MakeDir Directories="$(DirBuildDeploy)" Condition="!Exists('$(DirBuildDeploy)')" />
+        <MakeDir Directories="$(DirBuildDeploy)" Condition="!Exists('$(DirBuildDeploy)') AND '$(ShouldExecute)' == 'true' " />
        
         <!-- 
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
@@ -107,6 +108,7 @@
         <Zip InputFileNames="@(PackageFiles)"
              BaseDirectory="$(DirPackageSpecsBase)"
              OutputFileName="$(FileArchiveSpecs)"
-             OverwriteExistingFile="true" />
+             OverwriteExistingFile="true" 
+             Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
@@ -36,13 +37,10 @@
         <VersionSemantic>0</VersionSemantic>
     </PropertyGroup>
     
-    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
-            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
-    
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
-    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
             
     <Target Name="nBuildKit_Prepare_GatherReleaseNotes_Run" DependsOnTargets="_nBuildKit_Prepare_GatherReleaseNotes_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Prepare_GatherReleaseNotes_Gather" />
@@ -53,7 +51,8 @@
         <Message Text="Gathering release notes ..." />
     </Target>
     
-    <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_DebugLog" Condition="$(ShouldDisplayDebugLog)" DependsOnTargets="_nBuildKit_Prepare_GatherReleaseNotes_ReplaceBuildTemplates">
+    <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_DebugLog" 
+            Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -63,28 +62,12 @@
         <Message Text=" " />
         
         <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)" />
-        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShortExpanded)" />
-        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFullExpanded)" />
+        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShort)" />
+        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFull)" />
         <Message Text=" " />
         
         <Message Text="The YouTrack filter is: $(IssueFilter)" Condition=" '$(IssueFilter)' != 'UNDEFINED' " />
         <Message Text=" " />
-    </Target>
-    
-    <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
-        <Message Text="Resolving build templates for: $(FileReleaseNotesShort) and $(FileReleaseNotesFull)" />
-        
-        <!-- Process the build templates in the short release notes file path -->
-        <TemplateText Template="$(FileReleaseNotesShort)"
-                      Tokens="@(BuildTemplateTextTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReleaseNotesShortExpanded" />
-        </TemplateText>
-        
-        <!-- Process the build templates in the full release notes file path -->
-        <TemplateText Template="$(FileReleaseNotesFull)"
-                      Tokens="@(BuildTemplateTextTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReleaseNotesFullExpanded" />
-        </TemplateText>
     </Target>
    
     <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_Gather" Condition=" '$(GitHubUserName)' != 'UNDEFINED' ">
@@ -101,7 +84,7 @@
                         Condition=" '$(YouTrackServer)' != 'UNDEFINED' ">
             <Output TaskParameter="Value" PropertyName="IssueTrackerConnection" />
         </CreateProperty>
-        <CreateProperty Value="/YouTrackFilter $(IssueFilter)" 
+        <CreateProperty Value="/YouTrackFilter &quot;$(IssueFilter)&quot;" 
                         Condition=" '$(YouTrackServer)' != 'UNDEFINED' AND '$(IssueFilter)' != 'UNDEFINED' ">
             <Output TaskParameter="Value" PropertyName="IssueTrackerFilter" />
         </CreateProperty>
@@ -121,16 +104,16 @@
         
         <Message Text="Gathering release notes for current release ..." 
                  Condition=" '$(IssueTrackerConnection)' != '' " />
-        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShortExpanded)&quot;"
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
               WorkingDirectory="$(DirWorkspace)"
-              Condition=" '$(IssueTrackerConnection)' != '' " 
-              ContinueOnError="true" />
+              Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' " 
+              ContinueOnError="true"/>
         
         <Message Text="Gathering release notes for all releases ..." 
                  Condition=" '$(IssueTrackerConnection)' != '' " />
-        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFullExpanded)&quot;"
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
               WorkingDirectory="$(DirWorkspace)" 
-              Condition=" '$(IssueTrackerConnection)' != '' " 
+              Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' " 
               ContinueOnError="true" />
     </Target>
  </Project>

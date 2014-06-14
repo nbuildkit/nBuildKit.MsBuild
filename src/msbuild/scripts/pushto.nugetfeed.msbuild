@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
@@ -41,8 +42,8 @@
     
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_NuGet_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_NuGet_DebugLog">
-        <Message Text="Pushing NuGet packages to the feed..." Condition=" '$(NuGetSourceUrl)' != ''" />
-        <Message Text="No NuGet source defined!" Condition=" '$(NuGetSourceUrl)' == ''" />
+        <Message Text="Pushing NuGet packages to: $(NuGetSourceUrl)" Condition=" '$(NuGetSourceUrl)' != ''" />
+        <Message Text="No NuGet source defined, pushing to NuGet.org" Condition=" '$(NuGetSourceUrl)' == ''" />
     </Target>
     
     <Target Name="_nBuildKit_PushTo_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -61,11 +62,10 @@
     </Target>
     
     <Target Name="_nBuildKit_PushTo_NuGet_Push" 
-            Condition=" '$(NuGetSourceUrl)' != ''"
             DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
         <TemplateText Template="@(NuGetPackagesToPush)"
                       Tokens="@(BuildTemplateTextTokens)"
-                      Condition=" '@(NuGetPackagesToPush)' != '' ">
+                      Condition=" '@(NuGetPackagesToPush)' != '' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Result" PropertyName="NuGetPackagesToPushExpanded" />
         </TemplateText>
         
@@ -86,6 +86,7 @@
         
         <NuGetPush NuGetPath="$(ToolsExternalNuGetPath)"
                    Source="$(NuGetSourceUrl)"
-                   PackagesToPush="@(NuGetPackagesToPush)" />
+                   PackagesToPush="@(NuGetPackagesToPush)" 
+                   Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 </Project>

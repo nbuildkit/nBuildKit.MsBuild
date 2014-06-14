@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -25,7 +26,7 @@
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         
         <!-- Files -->
-        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.txt</FileVcsInfo>
+        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
         
         <!-- External tools -->
         <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
@@ -77,20 +78,24 @@
     
     <Target Name="_nBuildKit_Prepare_VcsInfo_GatherGitInfo" Condition="$(IsGitWorkspace)">
         <MakeDir Directories="$(DirBuildTemp)" 
-                 Condition="!Exists('$(DirBuildTemp)')" />
+                 Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
         
-        <GitInfo LocalPath="$(DirWorkspace)">
+        <GitInfo LocalPath="$(DirWorkspace)"
+                 Condition=" '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="CurrentRevision" PropertyName="GitCurrentRevision" />
             <Output TaskParameter="CurrentBranch" PropertyName="GitCurrentBranch" />
         </GitInfo>
         
         <ItemGroup>
-            <GitInfoItems Include="$(GitCurrentRevision)" />
-            <GitInfoItems Include="$(GitCurrentBranch)" />
+            <GitInfoItems Include="{" />
+            <GitInfoItems Include="    &quot;revision&quot;: &quot;$(GitCurrentRevision)&quot;," />
+            <GitInfoItems Include="    &quot;branch&quot;: &quot;$(GitCurrentBranch)&quot;" />
+            <GitInfoItems Include="}" />
         </ItemGroup>
         
         <WriteLinesToFile File="$(FileVcsInfo)"
                           Lines="@(GitInfoItems)"
-                          Overwrite="true" />
+                          Overwrite="true" 
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

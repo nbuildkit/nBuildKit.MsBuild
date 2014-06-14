@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_PushTo_GitHubRelease_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        
+        <!-- Files -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        
+        <!-- Issue tracker -->
+        <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
+        
+        <!-- External tools -->
+        <ToolsExternalGitHubRelease Condition=" '$(ToolsExternalGitHubRelease)' == '' ">github-release.exe</ToolsExternalGitHubRelease>
+    </PropertyGroup>
+    
+    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
+            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    
+    <Import Project="$(DirMsBuildExtensions)\GitHubReleaseCreate.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GitHubReleaseCreate.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\GitHubReleaseUpload.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GitHubReleaseUpload.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
+            
+    <Target Name="nBuildKit_PushTo_GitHubRelease_Run" DependsOnTargets="_nBuildKit_PushTo_GitHubRelease_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_PushTo_GitHubRelease_GetVersion" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateText_Initialize" />
+        <CallTarget Targets="_nBuildKit_PushTo_GitHubRelease_Push" />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_PushTo_GitHubRelease_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_GitHubRelease_DebugLog">
+        <Message Text="Pushing artifacts to the GitHub release ..." Condition=" '@(PushToGitHubReleaseSpecs)' != '' " />
+        <Message Text="No releases defined!" Condition=" '@(PushToGitHubReleaseSpecs)' == '' " />
+    </Target>
+    
+    <Target Name="_nBuildKit_PushTo_GitHubRelease_DebugLog" 
+            Condition="$(ShouldDisplayDebugLog)" >
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="The semantic version file is located at: $(FileSemanticVersion)" />
+        <Message Text=" " />
+        
+        <Message Text="GitHub-Release command line executable is located at: $(ToolsExternalGitHubRelease)" />
+        <Message Text=" " />
+    </Target>
+    
+    <Target Name="_nBuildKit_PushTo_GitHubRelease_GetVersion">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)"
+                                                           Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+    </Target>
+   
+    <Target Name="_nBuildKit_PushTo_GitHubRelease_Push" 
+            Condition=" '@(PushToGitHubReleaseSpecs)' != ''"
+            Outputs="%(PushToGitHubReleaseSpecs.Identity)">
+        <!-- Process the build templates in the name -->
+        <TemplateText Template="%(PushToGitHubReleaseSpecs.Identity)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(PushToGitHubReleaseSpecs.Identity)' != '' ">
+            <Output TaskParameter="Result" PropertyName="GitHubReleaseName" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the included files -->
+        <TemplateText Template="%(PushToGitHubReleaseSpecs.IncludedFiles)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(PushToGitHubReleaseSpecs.IncludedFiles)' != '' ">
+            <Output TaskParameter="Result" PropertyName="GitHubReleaseIncludedFiles" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the excluded files -->
+        <TemplateText Template="%(PushToGitHubReleaseSpecs.ExcludedFiles)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(PushToGitHubReleaseSpecs.ExcludedFiles)' != '' ">
+            <Output TaskParameter="Result" PropertyName="GitHubReleaseExcludedFiles" />
+        </TemplateText>
+        
+        <!-- Process the build templates in the description -->
+        <TemplateText Template="%(PushToGitHubReleaseSpecs.Description)"
+                      Tokens="@(BuildTemplateTextTokens)"
+                      Condition=" '%(PushToGitHubReleaseSpecs.Description)' != '' ">
+            <Output TaskParameter="Result" PropertyName="GitHubReleaseDescription" />
+        </TemplateText>
+        
+        <!-- 
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(GitHubReleaseIncludedFiles.Split(';'))"
+            Exclude="$(GitHubReleaseExcludedFiles.Split(';'))">
+           <Output
+               TaskParameter="Include"
+               ItemName="GitHubReleaseFiles"/>
+        </CreateItem>
+        
+        <CreateProperty Value="%(PushToGitHubReleaseSpecs.Repository)">
+            <Output TaskParameter="Value" PropertyName="GitHubReleaseRepository" />
+        </CreateProperty>
+        
+        <!-- Create the release -->
+        <GitHubReleaseCreate GitHubReleasePath="$(ToolsExternalGitHubRelease)"
+                             LocalPath="$(DirWorkspace)"
+                             UserName="$(GitHubUserName)"
+                             Repository="$(GitHubReleaseRepository)"
+                             Tag="$(VersionSemantic)" 
+                             ReleaseName="$(GitHubReleaseName)"
+                             ReleaseDescription="$(GitHubReleaseDescription)" 
+                             Condition=" '$(ShouldExecute)' == 'true' "/>
+        
+        <!-- Upload the files -->
+        <GitHubReleaseUpload GitHubReleasePath="$(ToolsExternalGitHubRelease)"
+                             LocalPath="$(DirWorkspace)"
+                             UserName="$(GitHubUserName)"
+                             Repository="$(GitHubReleaseRepository)"
+                             Tag="$(VersionSemantic)"
+                             FileName="%(GitHubReleaseFiles.Filename)%(GitHubReleaseFiles.Extension)"
+                             FilePath="%(GitHubReleaseFiles.FullPath)"
+                             Condition=" '@(GitHubReleaseFiles)' != '' AND '$(ShouldExecute)' == 'true' " />
+    </Target>
+</Project>

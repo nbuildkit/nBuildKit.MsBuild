@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -82,11 +83,13 @@
         <FileMomaExe>MoMA.exe</FileMomaExe>
     </PropertyGroup>
     <Target Name="_nBuildKit_Analyze_Binaries_Moma_Analyze">
-        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)')" />
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
-        <MakeDir Directories="$(DirReportMoma)" Condition="!Exists('$(DirReportMoma)')" />
+        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir Directories="$(DirReportMoma)" Condition="!Exists('$(DirReportMoma)') AND  '$(ShouldExecute)' == 'true' " />
         
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="$(FileMomaExe)">
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
+                                            FileToLocate="$(FileMomaExe)"
+                                            Condition=" '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="PathMomaExe" />
         </SearchPackagesDirectoryForToolPath>
         
@@ -97,6 +100,7 @@
         </ItemGroup>
         
         <Exec Command="$(PathMomaExe) --nogui --out &quot;$(FileReportMomaExpanded)&quot; @(MomaFiles->'%22%(FullPath)%22', ' ')"
-              WorkingDirectory="$(DirBuildTemp)" />
+              WorkingDirectory="$(DirBuildTemp)"
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

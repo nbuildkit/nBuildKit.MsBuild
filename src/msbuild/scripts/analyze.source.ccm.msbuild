@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
@@ -83,10 +84,12 @@
         <FileGeneratedCcm>$(DirBuildTemp)\ccm.input.xml</FileGeneratedCcm>
     </PropertyGroup>
     <Target Name="_nBuildKit_Analyze_Source_Ccm_Analyze">
-        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)')" />
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
+        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
         
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="$(FileCcmExe)">
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
+                                            FileToLocate="$(FileCcmExe)"
+                                            Condition=" '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="PathCcmExe" />
         </SearchPackagesDirectoryForToolPath>
         
@@ -97,10 +100,12 @@
         </ItemGroup>
         <TemplateFile Template="$(FileTemplateCcm)" 
                       OutputFileName="$(FileGeneratedCcm)" 
-                      Tokens="@(CcmTokens)" />
+                      Tokens="@(CcmTokens)"
+                      Condition=" '$(ShouldExecute)' == 'true' "/>
     
         <Ccm CcmExe="$(PathCcmExe)"
              ConfigFile="$(FileGeneratedCcm)"
-             OutputFile="$(FileReportCcmExpanded)" />
+             OutputFile="$(FileReportCcmExpanded)" 
+             Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

@@ -12,6 +12,7 @@
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -83,7 +84,8 @@
         </CreateProperty>
         <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
         
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
+                                                           Condition="Exists('$(FileVersionSemantic)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
     
@@ -107,7 +109,10 @@
                 <ReplacementValue>$(VersionSemantic)</ReplacementValue>
             </SandcastleTokens>
         </ItemGroup>
-        <TemplateFile Template="$(FileTemplateSandcastle)" OutputFileName="$(FileGeneratedSandcastle)" Tokens="@(SandcastleTokens)" />
+        <TemplateFile Template="$(FileTemplateSandcastle)" 
+                      OutputFileName="$(FileGeneratedSandcastle)" 
+                      Tokens="@(SandcastleTokens)" 
+                      Condition="Exists('$(FileTemplateSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
     
     <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithInstalledSandcastle" 
@@ -117,7 +122,8 @@
         <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
         
         <!-- Run sandcastle via msbuild -->
-        <Exec Command="&quot;$(MSBuildToolsPath)/msbuild.exe&quot; &quot;$(FileGeneratedSandcastle)&quot;" />
+        <Exec Command="&quot;$(MSBuildToolsPath)/msbuild.exe&quot; &quot;$(FileGeneratedSandcastle)&quot;"
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
     
     <PropertyGroup>
@@ -127,7 +133,9 @@
     <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithLocalSandcastle" 
             DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate" 
             Condition="!Exists('$(DirSandcastle)')" >
-        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" FileToLocate="$(FileSandcastleExe)" Condition=" '$(DirSandcastle)' == '' ">
+        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" 
+                                                 FileToLocate="$(FileSandcastleExe)" 
+                                                 Condition=" '$(DirSandcastle)' == '' AND  '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="DirSandcastle" />
         </SearchPackagesDirectoryForToolDirectory>
 
@@ -138,7 +146,9 @@
             <DirSandcastle Condition=" '$(DirSandcastle)' != '' ">$([System.IO.Path]::GetDirectoryName($(DirSandcastle)))</DirSandcastle>
         </PropertyGroup>
         
-        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" FileToLocate="$(FileSandcastleHelpFileBuilderExe)">
+        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" 
+                                                 FileToLocate="$(FileSandcastleHelpFileBuilderExe)"
+                                                 Condition=" '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="DirSandcastleHelpFileBuilder" />
         </SearchPackagesDirectoryForToolDirectory>
         
@@ -150,7 +160,7 @@
             variable up because MsBuild never reloads the Environment variables and the msbuild target
             runs the same instance of msbuild
         -->
-        <SetEnvironmentVariable Name="DXROOT" Value="$(DirSandcastle)" />
+        <SetEnvironmentVariable Name="DXROOT" Value="$(DirSandcastle)" Condition=" '$(ShouldExecute)' == 'true' " />
         
         <!-- 
             Build reference data via msbuild. We need to do this via the 
@@ -158,9 +168,10 @@
             variables is picked up (MsBuild doesn't listen for changes in environment variables)
         -->
         <Exec Command="&quot;$(MSBuildToolsPath)/msbuild.exe&quot; &quot;$(DirSandcastle)\Data\BuildReflectionData.proj&quot; /p:ToolsRoot=$(DirSandcastle)" 
-              Condition="!Exists('$(DirSandcastle)\Data\Reflection')" />
+              Condition="!Exists('$(DirSandcastle)\Data\Reflection') AND  '$(ShouldExecute)' == 'true' " />
         
         <!-- Run sandcastle via msbuild -->
-        <Exec Command="&quot;$(MSBuildToolsPath)/msbuild.exe&quot; &quot;$(FileGeneratedSandcastle)&quot; /p:SHFBROOT=$(DirSandcastleHelpFileBuilder)" />
+        <Exec Command="&quot;$(MSBuildToolsPath)/msbuild.exe&quot; &quot;$(FileGeneratedSandcastle)&quot; /p:SHFBROOT=$(DirSandcastleHelpFileBuilder)" 
+              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

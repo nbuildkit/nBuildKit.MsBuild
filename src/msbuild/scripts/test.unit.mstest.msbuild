@@ -10,8 +10,9 @@
             Condition="Exists('$(BuildPropertyFile)')" />
     
     <PropertyGroup>
-         <!-- Build flags -->
+        <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
     
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -106,15 +107,19 @@
     </Target>
     
     <Target Name="_nBuildKit_Test_Unit_MsTest_Execute">
-        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)')" />
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)')" />
-        <MakeDir Directories="$(ReportGeneratorOutputDir)" Condition="!Exists('$(ReportGeneratorOutputDir)')" />
+        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir Directories="$(ReportGeneratorOutputDir)" Condition="!Exists('$(ReportGeneratorOutputDir)') AND '$(ShouldExecute)' == 'true' " />
         
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="opencover.console.exe">
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
+                                            FileToLocate="opencover.console.exe"
+                                            Condition=" '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverPath" />
         </SearchPackagesDirectoryForToolPath>
         
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="ReportGenerator.exe">
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
+                                            FileToLocate="ReportGenerator.exe"
+                                            Condition=" '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
         </SearchPackagesDirectoryForToolPath>
         
@@ -138,13 +143,16 @@
                    OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
                    UnitTestExe="$(ToolsExternalNUnitConsolePath)"
                    UnitTestArguments="@(TestAssemblies->'/testcontainer:%22%22%(FullPath)%22%22', ' ') /resultsfile:&quot;&quot;$(FileReportMsTestExpanded)&quot;&quot;"
-                   BinDir="$(DirBuildBin)" />
+                   BinDir="$(DirBuildBin)" 
+                   Condition=" '$(ShouldExecute)' == 'true' "/>
         
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
                          OpenCoverOutputFile="$(FileReportOpenCoverXmlExpanded)"
-                         OutputDir="$(DirReportGeneratorOutput)" />
+                         OutputDir="$(DirReportGeneratorOutput)" 
+                         Condition=" '$(ShouldExecute)' == 'true' "/>
                          
         <ReportGeneratorOutputToCsv InputFile="$(FileReportReportGeneratorXmlSummary)"
-                                    OutputFile="$(FileReportOpenCoverCsvExpanded)" />
+                                    OutputFile="$(FileReportOpenCoverCsvExpanded)" 
+                                    Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
