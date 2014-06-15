@@ -80,7 +80,8 @@
         <MakeDir Directories="$(DirBuildTemp)" 
                  Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
         
-        <GitInfo LocalPath="$(DirWorkspace)"
+        <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
+                 LocalPath="$(DirWorkspace)"
                  Condition=" '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="CurrentRevision" PropertyName="GitCurrentRevision" />
             <Output TaskParameter="CurrentBranch" PropertyName="GitCurrentBranch" />
