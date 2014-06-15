@@ -84,6 +84,7 @@
                Condition=" '$(GitHubUserName)' == '' AND '$(ShouldExecute)' == 'true' " />
         
         <!-- Process the build templates in the name -->
+        <Message Text="Translating the release name. Currently at: %(PushToGitHubReleaseSpecs.Identity)" />
         <TemplateText Template="%(PushToGitHubReleaseSpecs.Identity)"
                       Tokens="@(BuildTemplateTextTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.Identity)' != '' ">
@@ -91,6 +92,7 @@
         </TemplateText>
         
         <!-- Process the build templates in the included files -->
+        <Message Text="Translating the included files. Currently at: %(PushToGitHubReleaseSpecs.IncludedFiles)" />
         <TemplateText Template="%(PushToGitHubReleaseSpecs.IncludedFiles)"
                       Tokens="@(BuildTemplateTextTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.IncludedFiles)' != '' ">
@@ -98,6 +100,7 @@
         </TemplateText>
         
         <!-- Process the build templates in the excluded files -->
+        <Message Text="Translating the excluded files. Currently at: %(PushToGitHubReleaseSpecs.ExcludedFiles)" />
         <TemplateText Template="%(PushToGitHubReleaseSpecs.ExcludedFiles)"
                       Tokens="@(BuildTemplateTextTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.ExcludedFiles)' != '' ">
@@ -105,11 +108,14 @@
         </TemplateText>
         
         <!-- Process the build templates in the description -->
+        <Message Text="Translating the description. Currently at: %(PushToGitHubReleaseSpecs.Description)" />
         <TemplateText Template="%(PushToGitHubReleaseSpecs.Description)"
                       Tokens="@(BuildTemplateTextTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.Description)' != '' ">
             <Output TaskParameter="Result" PropertyName="GitHubReleaseDescription" />
         </TemplateText>
+        <Error Text="No release description specified. Will not be able to push a release to GitHub."
+               Condition=" '$(GitHubReleaseDescription)' == '' AND '$(ShouldExecute)' == 'true' " />
         
         <!-- 
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
@@ -130,6 +136,11 @@
                Condition=" '$(GitHubReleaseRepository)' == '' AND '$(ShouldExecute)' == 'true' " />
         
         <!-- Create the release -->
+        <Message Text="Creating a release on GitHub with: " />
+        <Message Text="Repository:  $(GitHubUserName)/$(GitHubReleaseRepository)" />
+        <Message Text="Tag:         $(VersionSemantic)" />
+        <Message Text="Name:        $(GitHubReleaseName)" />
+        <Message Text="Description: $(GitHubReleaseDescription)" />
         <GitHubReleaseCreate GitHubReleasePath="$(ToolsExternalGitHubRelease)"
                              LocalPath="$(DirWorkspace)"
                              UserName="$(GitHubUserName)"
@@ -140,6 +151,8 @@
                              Condition=" '$(ShouldExecute)' == 'true' "/>
         
         <!-- Upload the files -->
+        <Message Text="Uploading files to release $(GitHubReleaseName) " />
+        <Message Text="%(GitHubReleaseFiles.FullPath)" />
         <GitHubReleaseUpload GitHubReleasePath="$(ToolsExternalGitHubRelease)"
                              LocalPath="$(DirWorkspace)"
                              UserName="$(GitHubUserName)"
