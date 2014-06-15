@@ -83,15 +83,23 @@
                TaskParameter="Include"
                ItemName="NuGetPackagesToPush"/>
         </CreateItem>
-        <ItemGroup Condition=" '$(NuGetPackagesToPushExpanded)' == '' " >
+        <Message Text="The following NuGet packages were specified in the settings file: "
+                 Condition=" '@(NuGetPackagesToPush)' != '' " />
+        <Message Text="%(NuGetPackagesToPush.Identity)"
+                 Condition=" '@(NuGetPackagesToPush)' != '' " />
+        <Message Text="No NuGet packages were specified in the settings file. Using default settings."
+                 Condition=" '@(NuGetPackagesToPush)' == '' " />
+        
+        <ItemGroup Condition=" '@(NuGetPackagesToPush)' == '' " >
             <NuGetPackagesToPush Include="$(DirBuildDeploy)\*.nupkg"/>
         </ItemGroup>
         <Error Text="There are no files to be pushed to the NuGet feed"
                Condition=" '@(NuGetPackagesToPush)' == '' AND '$(ShouldExecute)' == 'true' "/>
         
+        <Message Text="Pushing: %(NuGetPackagesToPush.Identity)" />
         <NuGetPush NuGetPath="$(ToolsExternalNuGetPath)"
                    Source="$(NuGetSourceUrl)"
                    PackagesToPush="@(NuGetPackagesToPush)" 
-                   Condition=" '$(ShouldExecute)' == 'true' "/>
+                   Condition=" '$(ShouldExecute)' == 'true' " />
     </Target>
 </Project>
