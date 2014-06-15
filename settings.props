@@ -363,7 +363,8 @@
         Allows build templates.
     -->
     <ItemGroup>
-        <!-- <NuGetPackagesToPush Include="" /> -->
+        <NuGetPackagesToPush Include="$(DirBuildDeploy)\*.nupkg"
+                             Exclude="$(DirBuildDeploy)\*.symbols.nupkg" />
     </ItemGroup>
     
     <!-- 
@@ -387,10 +388,10 @@
         The item group defining the files that should be pushed to a GitHub release
     -->
     <ItemGroup>
-        <PushToGitHubReleaseSpecs Include="${VersionSemantic} - My release">
-             <Repository>MyCoolProject</Repository>
+        <PushToGitHubReleaseSpecs Include="${VersionSemantic}">
+             <Repository>nBuildKit</Repository>
              <Description>${ReleaseNotesShort}</Description>
-             <IncludedFiles>$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip</IncludedFiles>
+             <IncludedFiles>$(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip</IncludedFiles>
              <ExcludedFiles></ExcludedFiles>
         </PushToGitHubReleaseSpecs>
     </ItemGroup>
