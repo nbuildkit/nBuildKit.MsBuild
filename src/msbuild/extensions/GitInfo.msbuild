@@ -8,7 +8,7 @@
                TaskFactory="CodeTaskFactory" 
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
         <ParameterGroup>
-            <GitExecutablePath Parameter="System.String" Required="true" />
+            <GitExecutablePath ParameterType="System.String" Required="true" />
             <LocalPath ParameterType="System.String" Required="true" />
             <CurrentRevision ParameterType="System.String" Output="true" />
             <CurrentBranch ParameterType="System.String" Output="true" />
@@ -22,7 +22,7 @@
                         {
                             var info = new System.Diagnostics.ProcessStartInfo
                                     {
-                                        FileName = "GitExecutablePath",
+                                        FileName = GitExecutablePath,
                                         Arguments = "rev-parse HEAD",
                                         WorkingDirectory = LocalPath,
                                         UseShellExecute = false,
