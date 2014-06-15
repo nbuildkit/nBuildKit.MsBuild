@@ -81,25 +81,25 @@
             Condition=" '$(NuGetPackagesToPushExpanded)' != '' ">
            <Output
                TaskParameter="Include"
-               ItemName="NuGetPackagesToPush"/>
+               ItemName="NuGetPackagesToPushLocal"/>
         </CreateItem>
         <Message Text="The following NuGet packages were specified in the settings file: "
-                 Condition=" '@(NuGetPackagesToPush)' != '' " />
-        <Message Text="%(NuGetPackagesToPush.Identity)"
-                 Condition=" '@(NuGetPackagesToPush)' != '' " />
+                 Condition=" '@(NuGetPackagesToPushLocal)' != '' " />
+        <Message Text="@(NuGetPackagesToPushLocal)"
+                 Condition=" '@(NuGetPackagesToPushLocal)' != '' " />
         <Message Text="No NuGet packages were specified in the settings file. Using default settings."
-                 Condition=" '@(NuGetPackagesToPush)' == '' " />
+                 Condition=" '@(NuGetPackagesToPushLocal)' == '' " />
         
-        <ItemGroup Condition=" '@(NuGetPackagesToPush)' == '' " >
-            <NuGetPackagesToPush Include="$(DirBuildDeploy)\*.nupkg"/>
+        <ItemGroup Condition=" '@(NuGetPackagesToPushLocal)' == '' " >
+            <NuGetPackagesToPushLocal Include="$(DirBuildDeploy)\*.nupkg"/>
         </ItemGroup>
         <Error Text="There are no files to be pushed to the NuGet feed"
-               Condition=" '@(NuGetPackagesToPush)' == '' AND '$(ShouldExecute)' == 'true' "/>
+               Condition=" '@(NuGetPackagesToPushLocal)' == '' AND '$(ShouldExecute)' == 'true' "/>
         
-        <Message Text="Pushing: %(NuGetPackagesToPush.Identity)" />
+        <Message Text="Pushing: @(NuGetPackagesToPushLocal)" />
         <NuGetPush NuGetPath="$(ToolsExternalNuGetPath)"
                    Source="$(NuGetSourceUrl)"
-                   PackagesToPush="@(NuGetPackagesToPush)" 
+                   PackagesToPush="@(NuGetPackagesToPushLocal)" 
                    Condition=" '$(ShouldExecute)' == 'true' " />
     </Target>
 </Project>
