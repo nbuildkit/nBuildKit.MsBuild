@@ -49,6 +49,9 @@
 
     <!-- NuGet restore -->
     <Target Name="_nBuildKit_Prepare_NuGet_Restore_Packages" DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo">
+        <Error Text="No NuGet executable defined. Will not be able to restore the packages."
+               Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+        
         <ItemGroup>
             <NuGetPackageFiles Include="$(DirWorkspace)\**\packages.config"
                                Exclude="$(DirPackages)\**\packages.config;$(DirBuild)\**\packages.config" />

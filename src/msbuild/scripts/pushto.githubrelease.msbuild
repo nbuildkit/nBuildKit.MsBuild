@@ -78,6 +78,13 @@
     <Target Name="_nBuildKit_PushTo_GitHubRelease_Push" 
             Condition=" '@(PushToGitHubReleaseSpecs)' != ''"
             Outputs="%(PushToGitHubReleaseSpecs.Identity)">
+        <Error Text="No GitHub-Release executable defined. Will not be able to push a release to GitHub."
+               Condition=" '$(ToolsExternalGitHubRelease)' == '' AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="No GitHub user name specified. Will not be able to push a release to GitHub."
+               Condition=" '$(GitHubUserName)' == '' AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="No GitHub repository specified. Will not be able to push a release to GitHub."
+               Condition=" '$(GitHubReleaseRepository)' == '' AND '$(ShouldExecute)' == 'true' " />
+        
         <!-- Process the build templates in the name -->
         <TemplateText Template="%(PushToGitHubReleaseSpecs.Identity)"
                       Tokens="@(BuildTemplateTextTokens)"

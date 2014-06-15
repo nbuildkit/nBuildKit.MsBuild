@@ -84,14 +84,21 @@
         <FileGeneratedCcm>$(DirBuildTemp)\ccm.input.xml</FileGeneratedCcm>
     </PropertyGroup>
     <Target Name="_nBuildKit_Analyze_Source_Ccm_Analyze">
+        <Error Text="The packages directory does not exist. Cannot search for the CCM executable."
+               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+        <Error Text="The CCM template file does not exist. Cannot execute source code analysis."
+               Condition="!Exists('$(FileTemplateCcm)') AND '$(ShouldExecute)' == 'true' "/>
+        
         <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="$(FileCcmExe)"
                                             Condition=" '$(ShouldExecute)' == 'true' ">
-          <Output TaskParameter="Path" PropertyName="PathCcmExe" />
+            <Output TaskParameter="Path" PropertyName="PathCcmExe" />
         </SearchPackagesDirectoryForToolPath>
+        <Error Text="Could not locate the CCM executable path. Cannot execute source code analysis."
+               Condition="!Exists('$(PathCcmExe)') AND '$(ShouldExecute)' == 'true' "/>
         
         <ItemGroup>
             <CcmTokens Include="DirSrc">

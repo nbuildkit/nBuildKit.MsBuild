@@ -100,18 +100,27 @@
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
         <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
         <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
+        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
         <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirTemplates)\ccm.xml.in</FileTemplateCcm>
         <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm>
         <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor>
         <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor>
         <FileSln Condition=" '$(FileSln)' == '' ">UNDEFINED</FileSln>
+        <FileReportMsTest Condition=" '$(FileReportMsTest)' == '' ">$(DirBuildLogs)\mstest.trx</FileReportMsTest>
+        <FileReportOpenCoverXml Condition=" '$(FileReportOpenCoverXml)' == '' ">$(DirBuildLogs)\opencover.xml</FileReportOpenCoverXml>
+        <FileReportOpenCoverCsv Condition=" '$(FileReportOpenCoverCsv)' == '' ">$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv>
         <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma>
         <FileProjectFxCop Condition=" '$(FileProjectFxCop)' == '' ">UNDEFINED</FileProjectFxCop>
         <FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop>
         <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle>
         
+        <!-- Unit tests -->
+        <UnitTestAssemblyNamePrefix Condition=" '$(UnitTestAssemblyNamePrefix)' == '' " >test.unit</UnitTestAssemblyNamePrefix>
+        
         <!-- External tools -->
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
+        <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir>
         
         <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
@@ -124,7 +133,6 @@
             Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild')" />
     
     <Target Name="nBuildKit_Build_Run" DependsOnTargets="_nBuildKit_Build_OrderTargets;_nBuildKit_Build_DisplayInfo">
-        <!-- If there is no property file then we die -->
         <Error Text="No build properties file was defined."
                Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
         
@@ -133,6 +141,9 @@
     </Target>
     
     <Target Name="_nBuildKit_Build_OrderTargets">
+        <Error Text="No build steps were defined."
+               Condition=" '@(BuildStepsToExecute)' == '' " />
+        
         <!-- Generate the task list in the right order -->
         <FindInList List="@(BuildTargets)" ItemSpecToFind="%(BuildStepsToExecute.Identity)">
             <Output TaskParameter="ItemFound" ItemName="UnsortedBuildTasksToExecute" />
@@ -185,16 +196,26 @@
         <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)" />
         <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShort)" />
         <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFull)" />
+        <Message Text="The VCS info file is located at:                                             $(FileVcsInfo)" />
         <Message Text="The CCM template file is located at:                                         $(FileTemplateCcm)" />
         <Message Text="The CCM report file is located at:                                           $(FileReportCcm)" />
+        <Message Text="The SourceMonitor template file is located at:                               $(FileTemplateSourceMonitor)" />
+        <Message Text="The SourceMonitor report file is located at:                                 $(FileReportSourceMonitor)" />
         <Message Text="Solution file is located at:                                                 $(FileSln)" />
-        <Message Text="The Moma report file is located at:                                          $(FileReportMoma)" />
+        <Message Text="The MsTest report will be located at:                                        $(FileReportMsTest)" />
+        <Message Text="The OpenCover XML report will be located at:                                 $(FileReportOpenCoverXml)" />
+        <Message Text="The OpenCover CSV report will be located at:                                 $(FileReportOpenCoverCsv)" />
+        <Message Text="The MoMA report file is located at:                                          $(FileReportMoma)" />
+        <Message Text="The FxCop project file is located at:                                        $(FileProjectFxCop)" />
+        <Message Text="The FxCop report file is located at:                                         $(FileReportFxCop)" />
         <Message Text="The sandcastle template file is located at:                                  $(FileTemplateSandcastle)" />
         <Message Text=" " />
         
         <Message Text="External tools:" />
-        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetPath)" />
-        <Message Text="FxCop command line executable is located at: $(ToolsExternalFxCopDir)" />
+        <Message Text="NuGet command line executable is located at:      $(ToolsExternalNuGetPath)" />
+        <Message Text="GIT command line executable is located at:        $(ToolsExternalGitPath)" />
+        <Message Text="The MsTest command line executable is located at: $(ToolsExternalMsTestPath)" />
+        <Message Text="FxCop command line executable is located at:      $(ToolsExternalFxCopDir)" />
         <Message Text=" " />
     </Target>
     

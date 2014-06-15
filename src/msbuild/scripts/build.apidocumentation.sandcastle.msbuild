@@ -74,6 +74,11 @@
         <FileGeneratedSandcastle>$(DirBuildTemp)\sandcastle.shfbproj</FileGeneratedSandcastle>
     </PropertyGroup>
     <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate">
+        <Warning Text="The semantic version file does not exist. Will not be able to obtain a version number."
+                 Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="The Sandcastle template file does not exist. Cannot generate documentation."
+               Condition="!Exists('$(FileTemplateSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
+        
         <CreateProperty Value="$(DXROOT)" Condition="Exists('$(DXROOT)')">
             <Output TaskParameter="Value" PropertyName="DirSandcastle" />
         </CreateProperty>
@@ -118,6 +123,9 @@
     <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithInstalledSandcastle" 
             DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate" 
             Condition="Exists('$(DirSandcastle)')">
+        <Error Text="The Sandcastle file does not exist. Cannot generate documentation."
+               Condition="!Exists('$(FileGeneratedSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
+        
         <Message Text="DirSandcastle = $(DirSandcastle)" />
         <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
         
@@ -133,11 +141,18 @@
     <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle__BuildWithLocalSandcastle" 
             DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate" 
             Condition="!Exists('$(DirSandcastle)')" >
+        <Error Text="The Sandcastle file does not exist. Cannot generate documentation."
+               Condition="!Exists('$(FileGeneratedSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
+        <Error Text="The packages directory does not exist. Cannot search for the Sandcastle transformations."
+               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+        
         <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" 
                                                  FileToLocate="$(FileSandcastleExe)" 
                                                  Condition=" '$(DirSandcastle)' == '' AND  '$(ShouldExecute)' == 'true' ">
-          <Output TaskParameter="Path" PropertyName="DirSandcastle" />
+            <Output TaskParameter="Path" PropertyName="DirSandcastle" />
         </SearchPackagesDirectoryForToolDirectory>
+        <Error Text="Could not locate the Sandcastle transformation path. Cannot generate the API documentation."
+               Condition="!Exists('$(DirSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
 
         <!-- 
             We're coming up one directory too deep (i.e. getting packages\sandcastle.1.2.3.4\data 
@@ -149,8 +164,10 @@
         <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" 
                                                  FileToLocate="$(FileSandcastleHelpFileBuilderExe)"
                                                  Condition=" '$(ShouldExecute)' == 'true' ">
-          <Output TaskParameter="Path" PropertyName="DirSandcastleHelpFileBuilder" />
+            <Output TaskParameter="Path" PropertyName="DirSandcastleHelpFileBuilder" />
         </SearchPackagesDirectoryForToolDirectory>
+        <Error Text="Could not locate the Sandcastle help file builder executable path. Cannot generate the API documentation."
+               Condition="!Exists('$(DirSandcastleHelpFileBuilder)') AND '$(ShouldExecute)' == 'true' "/>
         
         <Message Text="DirSandcastle = $(DirSandcastle)" />
         <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />

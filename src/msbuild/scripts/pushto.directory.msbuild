@@ -86,6 +86,8 @@
                TaskParameter="Include"
                ItemName="FilesToPush"/>
         </CreateItem>
+        <Error Text="There are no files to be pushed"
+               Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "/>
         
         <MakeDir Directories="$(DirPushToSpecs)" 
                  Condition="!Exists('$(DirPushToSpecs)') AND '$(ShouldExecute)' == 'true' " />

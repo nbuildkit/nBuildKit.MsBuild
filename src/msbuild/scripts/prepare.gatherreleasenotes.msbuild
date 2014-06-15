@@ -71,6 +71,9 @@
     </Target>
    
     <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_Gather" Condition=" '$(GitHubUserName)' != 'UNDEFINED' ">
+        <Error Text="The packages directory does not exist. Cannot search for the GitReleaseNotes executable."
+               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+        
         <Message Text="Gathering release note information from GitHub"
                  Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
         <CreateProperty Value="/IssueTracker GitHub"
@@ -89,13 +92,16 @@
             <Output TaskParameter="Value" PropertyName="IssueTrackerFilter" />
         </CreateProperty>
         
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
+                                                           Condition="Exists('$(FileSemanticVersion)')">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="GitReleaseNotes.exe">
             <Output TaskParameter="Path" PropertyName="ToolsExternalGitReleaseNotesPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Error Text="The GitReleaseNote executable does not exist. Cannot generate release notes."
+               Condition="!Exists('$(ToolsExternalGitReleaseNotesPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <Warning Text="Not enough information provided to gather the release notes ..." Condition=" '$(IssueTrackerConnection)' == '' " />
         <Warning Text="Github username not specified" Condition="  '$(IssueTrackerConnection)' == '' AND '$(GitHubUserName)' == 'UNDEFINED' " />

@@ -50,7 +50,7 @@
     
     <!-- Display info -->
     <Target Name="_nBuildKit_Analyze_Binaries_Moma_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_DebugLog">
-        <Message Text="Running Moma ..." />
+        <Message Text="Running MoMA ..." />
     </Target>
     
     <Target Name="_nBuildKit_Analyze_Binaries_Moma_DebugLog" 
@@ -66,7 +66,7 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="The Moma report file is located at:      $(FileReportMomaExpanded)" />
+        <Message Text="The MoMA report file is located at:      $(FileReportMomaExpanded)" />
         <Message Text=" " />
     </Target>
     
@@ -83,6 +83,9 @@
         <FileMomaExe>MoMA.exe</FileMomaExe>
     </PropertyGroup>
     <Target Name="_nBuildKit_Analyze_Binaries_Moma_Analyze">
+        <Error Text="The packages directory does not exist. Cannot search for the MoMA executable."
+               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+        
         <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirReportMoma)" Condition="!Exists('$(DirReportMoma)') AND  '$(ShouldExecute)' == 'true' " />
@@ -90,8 +93,10 @@
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="$(FileMomaExe)"
                                             Condition=" '$(ShouldExecute)' == 'true' ">
-          <Output TaskParameter="Path" PropertyName="PathMomaExe" />
+            <Output TaskParameter="Path" PropertyName="PathMomaExe" />
         </SearchPackagesDirectoryForToolPath>
+        <Error Text="Could not locate the MoMA executable path. Cannot execute analysis of binaries."
+               Condition="!Exists('$(PathMomaExe)') AND '$(ShouldExecute)' == 'true' "/>
         
         <ItemGroup Condition=" '@(MomaInputFiles)' == '' ">
             <MomaInputFiles Include="$(DirBuildBin)\*.dll"

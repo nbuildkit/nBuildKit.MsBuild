@@ -24,9 +24,6 @@
         <!-- Files -->
         <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild>
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
-        
-        <!-- Version number -->
-        <VersionSemantic>0</VersionSemantic>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild" 
@@ -66,6 +63,8 @@
     </Target>
     
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" Condition="Exists('$(FileVersionMsBuild)')">
+        <Message Text="Getting version from the MsBuild version file ..." />
+        
         <ItemGroup>
             <Items_SemanticVersion Include="{" />
             
@@ -91,9 +90,16 @@
     </Target>
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" Condition="!Exists('$(FileVersionMsBuild)')">
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="GitHubFlowVersion.exe" Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">
+        <Error Text="The packages directory does not exist. Cannot search for the GitHubFlowVersion executable."
+               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitHubFlowVersionPath)' == '' AND '$(ShouldExecute)' == 'true' "/>
+        
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
+                                            FileToLocate="GitHubFlowVersion.exe" 
+                                            Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalGitHubFlowVersionPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Error Text="Could not locate the GitHubFlowVersion executable path. Cannot get semantic version."
+               Condition="!Exists('$(ToolsExternalGitHubFlowVersionPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <CalculateSemanticVersionWithGitHubFlowVersion ExePath="$(ToolsExternalGitHubFlowVersionPath)" 
                                                        VersionFile="$(FileSemanticVersion)" 
@@ -121,15 +127,15 @@
         <!-- Push to TeamCity -->
         <!-- Note that we only need to push to TeamCity if we're not using GitHubFlowVersion because that already makes it happen -->
         <Message Text="Pushing version number to TeamCity's build number ..." 
-                 Condition=" '$(TEAMCITY_VERSION )' != '' AND Exists('$(FileVersionMsBuild)')" />
+                 Condition=" '$(TEAMCITY_VERSION )' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
         <Message Text="##teamcity[buildNumber '$(VersionSemanticFull)']"
-                 Condition=" '$(TEAMCITY_VERSION )' != '' AND Exists('$(FileVersionMsBuild)')" />
+                 Condition=" '$(TEAMCITY_VERSION )' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
         
         <!-- Push to AppVeyor -->
         <!-- Note to make sure that the version that AppVeyor gets is unique we append the build number at the end. -->
         <Message Text="Pushing version number to AppVeyor's build number ..." 
-                 Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND '$(ShouldExecute)' == 'true' " />
+                 Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
         <Exec Command="appveyor UpdateBuild -Version &quot;$(VersionSemanticFull)-$(APPVEYOR_BUILD_NUMBER)&quot;"
-              Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND '$(ShouldExecute)' == 'true' " />
+              Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
     </Target>
  </Project>

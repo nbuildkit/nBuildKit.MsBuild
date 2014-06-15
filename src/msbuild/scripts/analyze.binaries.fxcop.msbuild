@@ -67,11 +67,11 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="FxCop command line executable is located at: $(ToolsExternalFxCopDir)" />
-        <Message Text=" " />
-        
         <Message Text="The FxCop project file is located at: $(FileProjectFxCop)" />
         <Message Text="The FxCop report file is located at:  $(FileReportFxCopExpanded)" />
+        <Message Text=" " />
+        
+        <Message Text="FxCop command line executable is located at: $(ToolsExternalFxCopDir)" />
         <Message Text=" " />
     </Target>
     
@@ -88,13 +88,20 @@
         <FileFxCopCmdExe>FxCopCmd.exe</FileFxCopCmdExe>
     </PropertyGroup>
     <Target Name="_nBuildKit_Analyze_Binaries_FxCop_Analyze">
+        <Error Text="The packages directory does not exist. Cannot search for the FxCop executable."
+               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == '' AND '$(ShouldExecute)' == 'true' "/>
+        <Error Text="The FxCop project file does not exist. Cannot execute analysis of binaries."
+               Condition="!Exists('$(FileProjectFxCop)') AND '$(ShouldExecute)' == 'true' "/>
+        
         <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
         
         <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" 
                                                  FileToLocate="$(FileFxCopCmdExe)" 
                                                  Condition=" '$(ToolsExternalFxCopDir)' == '' AND '$(ShouldExecute)' == 'true' ">
-          <Output TaskParameter="Path" PropertyName="ToolsExternalFxCopDir" />
+            <Output TaskParameter="Path" PropertyName="ToolsExternalFxCopDir" />
         </SearchPackagesDirectoryForToolDirectory>
+        <Error Text="Could not locate the FxCop executable path. Cannot execute analysis of binaries."
+               Condition="!Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' "/>
             
         <FxCop FxCopDir="$(ToolsExternalFxCopDir)"
                FxCopProjectFile="$(FileProjectFxCop)"
