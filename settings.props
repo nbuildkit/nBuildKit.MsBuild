@@ -321,12 +321,13 @@
         The order in which items are defined is irrelevant given that the build script will sort the steps in the right order.
     -->
     <ItemGroup>
-        <DeployStepsToExecute Include="$(DeployTargetTag)">
+        <!--<DeployStepsToExecute Include="$(DeployTargetTag)">
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
-        </DeployStepsToExecute>
+        </DeployStepsToExecute>-->
         <DeployStepsToExecute Include="$(DeployTargetPushTo)">
-            <Steps>$(DeployStepsPushToNuget);$(DeployStepsPushToGitHubRelease)</Steps>
+            <!--<Steps>$(DeployStepsPushToNuget);$(DeployStepsPushToGitHubRelease)</Steps>-->
+            <Steps>$(DeployStepsPushToGitHubRelease)</Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </DeployStepsToExecute>

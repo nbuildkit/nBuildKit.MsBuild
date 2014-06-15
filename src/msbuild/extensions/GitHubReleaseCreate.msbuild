@@ -14,7 +14,7 @@
             <Repository ParameterType="System.String" Required="true" />
             <Tag ParameterType="System.String" Required="true" />
             <ReleaseName ParameterType="System.String" Required="true" />
-            <ReleaseDescription ParameterType="System.String" Required="true" />
+            <ReleaseDescription ParameterType="System.String" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -32,7 +32,10 @@
                             builder.Append(string.Format("--repo \"{0}\" ", Repository));
                             builder.Append(string.Format("--tag \"{0}\" ", Tag));
                             builder.Append(string.Format("--name \"{0}\" ", ReleaseName));
-                            builder.Append(string.Format("--description \"{0}\"", escapedDescription));
+                            if(!string.IsNullOrEmpty(escapedDescription))
+                            {
+                                builder.Append(string.Format("--description \"{0}\"", escapedDescription));
+                            }
                         }
                     
                         Log.LogMessage(MessageImportance.Normal, "Creating release on GitHub");
