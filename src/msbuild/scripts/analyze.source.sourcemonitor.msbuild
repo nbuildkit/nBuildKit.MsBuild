@@ -70,8 +70,8 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="The SourceMonitor template file is located at:    $(FileTemplateSourceMonitor)" />
-        <Message Text="The SourceMonitor report file is located at:      $(FileReportSourceMonitorExpanded)" />
+        <Message Text="The SourceMonitor template file is located at: $(FileTemplateSourceMonitor)" />
+        <Message Text="The SourceMonitor report file is located at:   $(FileReportSourceMonitorExpanded)" />
         <Message Text=" " />
     </Target>
     
@@ -90,14 +90,21 @@
         <Now>$([System.DateTime]::Now.ToString("yyyy-MM-ddTHH:mm:ss"))</Now>
     </PropertyGroup>
     <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_Analyze">
+        <Error Text="The packages directory does not exist. Cannot search for the SourceMonitor executable."
+               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+        <Error Text="The SourceMonitor template file does not exist. Cannot execute source code analysis."
+               Condition="!Exists('$(FileTemplateSourceMonitor)') AND '$(ShouldExecute)' == 'true' "/>
+        
         <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND  '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND  '$(ShouldExecute)' == 'true' " />
     
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="$(FileSourceMonitorExe)"
                                             Condition=" '$(ShouldExecute)' == 'true' ">
-          <Output TaskParameter="Path" PropertyName="PathSourceMonitorExe" />
+            <Output TaskParameter="Path" PropertyName="PathSourceMonitorExe" />
         </SearchPackagesDirectoryForToolPath>
+        <Error Text="Could not locate the SourceMonitor executable path. Cannot execute source code analysis."
+               Condition="!Exists('$(PathSourceMonitorExe)') AND '$(ShouldExecute)' == 'true' "/>
     
         <ItemGroup>
             <SourceMonitorTokens Include="ProjectFileName">
@@ -125,6 +132,6 @@
         <SourceMonitorOutputToCsv ProjectName="$(ProductName)"
                                   InputFile="$(FileReportSourceMonitorExpanded)"
                                   OutputPath="$(DirBuildLogs)" 
-                                  Condition=" '$(ShouldExecute)' == 'true' "/>
+                                  Condition="Exists('$(FileReportSourceMonitorExpanded)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

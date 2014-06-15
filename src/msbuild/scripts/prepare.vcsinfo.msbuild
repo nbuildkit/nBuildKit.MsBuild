@@ -53,10 +53,10 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="GIT command line executable is located at: $(ToolsExternalGitPath)" />
+        <Message Text="The VCS info file is located at: $(FileVcsInfo)" />
         <Message Text=" " />
         
-        <Message Text="The VCS info file is located at: $(FileVcsInfo)" />
+        <Message Text="GIT command line executable is located at: $(ToolsExternalGitPath)" />
         <Message Text=" " />
         
         <Message Text="The current workspace is a GIT workspace" Condition="Exists('$(DirWorkspace)\.git')" />
@@ -77,6 +77,9 @@
     </Target>
     
     <Target Name="_nBuildKit_Prepare_VcsInfo_GatherGitInfo" Condition="$(IsGitWorkspace)">
+        <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
+               Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+        
         <MakeDir Directories="$(DirBuildTemp)" 
                  Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
         

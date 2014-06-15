@@ -57,10 +57,10 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetPath)" />
+        <Message Text="Solution file is located at: $(FileSln)" />
         <Message Text=" " />
         
-        <Message Text="Solution file is located at: $(FileSln)" />
+        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetPath)" />
         <Message Text=" " />
     </Target>
    
@@ -71,6 +71,11 @@
     
     <!-- Run NuGet for the build -->
     <Target Name="_nBuildKit_Build_Binaries_RestorePackages">
+        <Error Text="No NuGet executable defined. Will not be able to restore the packages."
+               Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="The Visual Studio solution file does not point to a valid file."
+               Condition="!Exists('$(FileSln)') AND  '$(ShouldExecute)' == 'true' " />
+    
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)" 
                       PackageFile="$(FileSln)" 
                       PackageDirectory="$(DirPackages)" 
@@ -79,6 +84,9 @@
     
     <!-- Build binaries -->
     <Target Name="_nBuildKit_Build_Binaries_Build">
+        <Error Text="The Visual Studio solution file does not point to a valid file."
+               Condition="!Exists('$(FileSln)') AND '$(ShouldExecute)' == 'true' " />
+        
         <MSBuild Projects="$(FileSln)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition=" '$(ShouldExecute)' == 'true' " />
     </Target>
     

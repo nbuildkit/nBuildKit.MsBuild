@@ -54,15 +54,18 @@
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
         
-        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetPath)" />
+        <Message Text="Pushing NuGet packages to: $(NuGetSourceUrl)" />
         <Message Text=" " />
         
-        <Message Text="Pushing NuGet packages to: $(NuGetSourceUrl)" />
+        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetPath)" />
         <Message Text=" " />
     </Target>
     
     <Target Name="_nBuildKit_PushTo_NuGet_Push" 
             DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+        <Error Text="No NuGet executable defined. Will not be able to restore the packages."
+               Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+        
         <TemplateText Template="@(NuGetPackagesToPush)"
                       Tokens="@(BuildTemplateTextTokens)"
                       Condition=" '@(NuGetPackagesToPush)' != '' AND '$(ShouldExecute)' == 'true' ">
@@ -83,6 +86,8 @@
         <ItemGroup Condition=" '$(NuGetPackagesToPushExpanded)' == '' " >
             <NuGetPackagesToPush Include="$(DirBuildDeploy)\*.nupkg"/>
         </ItemGroup>
+        <Error Text="There are no files to be pushed to the NuGet feed"
+               Condition=" '@(NuGetPackagesToPush)' == '' AND '$(ShouldExecute)' == 'true' "/>
         
         <NuGetPush NuGetPath="$(ToolsExternalNuGetPath)"
                    Source="$(NuGetSourceUrl)"

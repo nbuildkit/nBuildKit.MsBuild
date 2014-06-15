@@ -97,6 +97,9 @@
     </Target>
     
     <Target Name="_nBuildKit_Test_Unit_NUnit_Execute">
+        <Error Text="The packages directory does not exist. Cannot search for the unit test executables."
+               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+        
         <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirReportGeneratorOutput)" Condition="!Exists('$(DirReportGeneratorOutput)') AND '$(ShouldExecute)' == 'true' " />
@@ -104,20 +107,26 @@
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="nunit-console-x86.exe"
                                             Condition=" '$(ShouldExecute)' == 'true' ">
-          <Output TaskParameter="Path" PropertyName="ToolsExternalNUnitConsolePath" />
+            <Output TaskParameter="Path" PropertyName="ToolsExternalNUnitConsolePath" />
         </SearchPackagesDirectoryForToolPath>
+        <Error Text="Could not locate the NUnit executable path. Cannot execute unit tests."
+               Condition="!Exists('$(ToolsExternalNUnitConsolePath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="opencover.console.exe"
                                             Condition=" '$(ShouldExecute)' == 'true' ">
-          <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverPath" />
+            <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Error Text="Could not locate the OpenCover executable path. Cannot execute unit tests."
+               Condition="!Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="ReportGenerator.exe"
                                             Condition=" '$(ShouldExecute)' == 'true' ">
-          <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
+            <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Warning Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports."
+                 Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <ItemGroup Condition=" '@(UnitTestAssemblies)' == '' ">
             <UnitTestAssemblies Include="$(DirBuildBin)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
@@ -143,10 +152,10 @@
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
                          OpenCoverOutputFile="$(FileReportOpenCoverXmlExpanded)"
                          OutputDir="$(DirReportGeneratorOutput)" 
-                         Condition=" '$(ShouldExecute)' == 'true' "/>
+                         Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
                          
         <ReportGeneratorOutputToCsv InputFile="$(FileReportReportGeneratorXmlSummary)"
                                     OutputFile="$(FileReportOpenCoverCsvExpanded)" 
-                                    Condition=" '$(ShouldExecute)' == 'true' "/>
+                                    Condition="Exists('$(FileReportReportGeneratorXmlSummary)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

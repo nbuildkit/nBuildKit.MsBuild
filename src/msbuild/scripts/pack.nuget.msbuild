@@ -90,7 +90,8 @@
     </Target>
     
     <Target Name="_nBuildKit_Package_NuGet_GetVersion" Condition="Exists('$(FileSemanticVersion)')">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
+                                                           Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
         
@@ -161,6 +162,8 @@
                       Tokens="@(BuildTemplateTextTokens)">
             <Output TaskParameter="Result" PropertyName="FileNuGetTemplate" />
         </TemplateText>
+        <Error Text="The NuGet template spec file does not exist. Cannot generate packages."
+               Condition="!Exists('$(FileNuGetTemplate)') AND '$(ShouldExecute)' == 'true' "/>
         
         <!-- Process the build templates in the included dependencies -->
         <TemplateText Template="%(NuGetPackageSpecs.IncludedDependencies)"
@@ -205,7 +208,8 @@
                ItemName="PackageDependencies"/>
         </CreateItem>
         
-        <GatherNuGetDependenciesForProject Packages="@(PackageDependencies)" Condition=" '@(PackageDependencies)' != '' AND '$(ShouldExecute)' == 'true' ">
+        <GatherNuGetDependenciesForProject Packages="@(PackageDependencies)" 
+                                           Condition=" '@(PackageDependencies)' != '' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Dependencies" PropertyName="NuGetDependencies" />
         </GatherNuGetDependenciesForProject>
 

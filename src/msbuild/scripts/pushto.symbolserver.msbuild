@@ -75,6 +75,8 @@
         <ItemGroup Condition=" '$(SymbolPackagesToPushExpanded)' == '' " >
             <SymbolPackagesToPush Include="$(DirBuildDeploy)\*.symbols.nupkg"/>
         </ItemGroup>
+        <Error Text="There are no files to be pushed to the symbol server"
+               Condition=" '@(SymbolPackagesToPush)' == '' AND '$(ShouldExecute)' == 'true' "/>
         
         <Copy SourceFiles="@(SymbolPackagesToPush)" 
               DestinationFolder="$(SymbolServerUrl)\" 

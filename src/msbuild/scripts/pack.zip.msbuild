@@ -102,6 +102,8 @@
                TaskParameter="Include"
                ItemName="PackageFiles"/>
         </CreateItem>
+        <Error Text="There are no files to be ZIP archived for $(FileArchiveSpecs)"
+               Condition=" '@(PackageFiles)' == '' AND '$(ShouldExecute)' == 'true' "/>
     
         <Message Text="Creating $(FileArchiveSpecs) with the following files: " />
         <Message Text="%(PackageFiles.Identity)" />

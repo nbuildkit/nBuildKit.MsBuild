@@ -75,7 +75,6 @@
             Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild')" />
     
     <Target Name="nBuildKit_Deploy_Run" DependsOnTargets="_nBuildKit_Deploy_OrderTargets;_nBuildKit_Deploy_DisplayInfo">
-        <!-- If there is no property file then we die -->
         <Error Text="No build properties file was defined."
                Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
         
@@ -84,6 +83,9 @@
     </Target>
     
     <Target Name="_nBuildKit_Deploy_OrderTargets">
+        <Error Text="No deploy steps were defined."
+               Condition=" '@(DeployStepsToExecute)' == '' " />
+               
         <!-- Generate the task list in the right order -->
         <FindInList List="@(DeployTargets)" ItemSpecToFind="%(DeployStepsToExecute.Identity)">
             <Output TaskParameter="ItemFound" ItemName="UnsortedDeployTasksToExecute" />
