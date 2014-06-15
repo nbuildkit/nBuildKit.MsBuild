@@ -101,7 +101,7 @@
     
     <Target Name="_nBuildKit_Tag_Vcs_Git" Condition="$(IsGitWorkspace)" DependsOnTargets="_nBuildKit_Tag_Vcs_GetVersion">
         <Error Text="The git executable does not exist. Cannot apply tags."
-               Condition="!Exists('$(ToolsExternalGitPath)') AND '$(ShouldExecute)' == 'true' "/>
+               Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "/>
         
         <Exec Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;Tagging $(VersionSemantic)&quot; &quot;$(VersionSemantic)&quot;"
               WorkingDirectory="$(DirWorkspace)" 
@@ -118,7 +118,7 @@
     
     <Target Name="_nBuildKit_Tag_Vcs_Tfs" Condition="$(IsTfsWorkspace)" DependsOnTargets="_nBuildKit_Tag_Vcs_GetVersion">
         <Error Text="The TFS executable does not exist. Cannot apply tags."
-               Condition="!Exists('$(ExeTfsClient)') AND '$(ShouldExecute)' == 'true' "/>
+               Condition=" '$(ExeTfsClient)' == '' AND '$(ShouldExecute)' == 'true' "/>
         
         <Exec Command="&quot;$(ExeTfsClient)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive" 
               Condition=" '$(ShouldExecute)' == 'true' "/>
