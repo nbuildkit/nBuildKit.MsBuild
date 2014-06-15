@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Nbuildkit by pvandervelde</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Nbuildkit</h1>
+        <h2>nBuildKit is a collection of tools and scripts that provide an easy way to set-up a complete build and deployment for a (.NET) project.</h2>
+        <a href="https://github.com/pvandervelde/nBuildKit" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="nbuildkit" class="anchor" href="#nbuildkit"><span class="octicon octicon-link"></span></a>nBuildKit</h1>
+
+<p>nBuildKit is a collection of tools and scripts that provide an easy way to set-up a complete build and deployment for a (.NET) project.</p>
+
+<h2>
+<a name="continuous-integration--deployment" class="anchor" href="#continuous-integration--deployment"><span class="octicon octicon-link"></span></a>Continuous integration &amp; deployment</h2>
+
+<p>nBuildKit uses <a href="http://www.appveyor.com">AppVeyor</a> for the continuous integration and deployment processes.</p>
+
+<ul>
+<li><p><strong>Build:</strong> <a href="https://ci.appveyor.com/project/pvandervelde/nbuildkit"><img src="https://ci.appveyor.com/api/projects/status/yqpaush2xajbyn74" alt="Build status"></a></p></li>
+<li><p><strong>Deployment status:</strong> <a href="https://ci.appveyor.com/project/pvandervelde/nbuildkit-244"><img src="https://ci.appveyor.com/api/projects/status/jcp6k51ntktugenm" alt="Build status"></a></p></li>
+</ul><h2>
+<a name="set-up" class="anchor" href="#set-up"><span class="octicon octicon-link"></span></a>Set up</h2>
+
+<p>Currently the only version available provides MsBuild scripts that run the build. In order to use this version take the following steps.</p>
+
+<ul>
+<li>Import the NuGet package as part of the project. Note that it does not need to be imported by a .NET project file as it does not add anything to the projects. Having a packages.config file at the root directory of the repository with the import line for <code>nBuildKit.MsBuild</code> will work fine.</li>
+<li>From the <a href="https://github.com/pvandervelde/nBuildKit/releases">releases page</a> download the latest <code>nbuildkit.msbuild.samples.zip</code> archive.</li>
+<li>Extract the <code>settings.props</code>, <code>build.msbuild</code> and <code>deploy.msbuild</code> from the ZIP archive and place them in the root directory of the repository.</li>
+<li>Update the <code>settings.props</code> file so that it matches your repository and environment.</li>
+<li>Execute a build.</li>
+</ul><h2>
+<a name="installation-instructions" class="anchor" href="#installation-instructions"><span class="octicon octicon-link"></span></a>Installation instructions</h2>
+
+<p>The MsBuild libraries are available on <a href="nuget.org">NuGet.org</a>. The ZIP archive containing the sample scripts can be found on the <a href="https://github.com/pvandervelde/nBuildKit/releases">releases page</a>.</p>
+
+<h2>
+<a name="how-to-build" class="anchor" href="#how-to-build"><span class="octicon octicon-link"></span></a>How to build</h2>
+
+<p>To build the project invoke MsBuild on the <code>build.msbuild</code> script in the repository root directory. This will package the scripts and create the NuGet packages and ZIP archives. Final artifacts will be placed in the <code>build\deploy</code> directory.</p>
+
+<p>The build script assumes that:</p>
+
+<ul>
+<li>The connection to the repository is available so that the version number can be obtained via <a href="https://github.com/JakeGinnivan/GitHubFlowVersion">GitHubFlowVersion</a>.</li>
+<li>The NuGet command line executable is available from the PATH</li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/pvandervelde/nBuildKit/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/pvandervelde/nBuildKit/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/pvandervelde/nBuildKit"></a> is maintained by <a href="https://github.com/pvandervelde">pvandervelde</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
