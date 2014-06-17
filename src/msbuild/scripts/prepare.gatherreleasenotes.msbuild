@@ -28,7 +28,7 @@
         
         <!-- Issue tracker -->
         <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
-        <GitHubRepository Condition=" '$(GitHubRepository)' == '' ">UNDEFINED</GitHubRepository>
+        <GitHubRepositoryName Condition=" '$(GitHubRepositoryName)' == '' ">UNDEFINED</GitHubRepositoryName>
         <YouTrackServer Condition=" '$(YouTrackServer)' == '' ">UNDEFINED</YouTrackServer>
         <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId>
         <IssueFilter Condition=" '$(IssueFilter)' == '' ">UNDEFINED</IssueFilter>
@@ -110,14 +110,14 @@
         
         <Message Text="Gathering release notes for current release ..." 
                  Condition=" '$(IssueTrackerConnection)' != '' " />
-        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepositoryName) $(IssueTrackerConnection) $(IssueTrackerFilter) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"
               WorkingDirectory="$(DirWorkspace)"
               Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' " 
               ContinueOnError="true"/>
         
         <Message Text="Gathering release notes for all releases ..." 
                  Condition=" '$(IssueTrackerConnection)' != '' " />
-        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepository) $(IssueTrackerConnection) $(IssueTrackerFilter) /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
+        <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepositoryName) $(IssueTrackerConnection) $(IssueTrackerFilter) /AllTags /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesFull)&quot;"
               WorkingDirectory="$(DirWorkspace)" 
               Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' " 
               ContinueOnError="true" />
