@@ -14,74 +14,16 @@
         <!-- External tools -->
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
+    
+    <Import Project="$(DirWorkspace)\shared.locatenbuildkit.msbuild"
+            Condition="Exists('$(DirWorkspace)\shared.locatenbuildkit.msbuild')" />
 
-    <Target Name="Run" DependsOnTargets="_RestoreGlobalNugetPackages;_LocateNBuildKit">
+    <Target Name="Run" DependsOnTargets="_RestoreGlobalNugetPackages;_nBuildKit_Shared_LocateNBuildKit_Locate">
         <MSBuild Projects="$(DirNBuildKit)\deploy.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile)" />
     </Target>
     
-    <Target Name="_RestoreGlobalNugetPackages" DependsOnTargets="_LocatePackages">
+    <Target Name="_RestoreGlobalNugetPackages" DependsOnTargets="_nBuildKit_Shared_LocateNBuildKit_LocatePackages">
         <Exec Command="&quot;$(ToolsExternalNuGetPath)&quot; restore $(NuGetPackageFile) -NoCache -NonInteractive -Verbosity detailed -PackagesDirectory &quot;$(DirPackages)&quot;"
               Condition="Exists('$(NuGetPackageFile)')" />
-    </Target>
-    
-    <PropertyGroup>
-        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
-    </PropertyGroup>
-    <PropertyGroup>
-        <FileProjectPackages>$(DirMsBuildScripts)\packages.config</FileProjectPackages>
-    </PropertyGroup>
-    <Target Name="_LocateNBuildKit" DependsOnTargets="_LocatePackages">
-        <!-- Get the version of nBuildKit that is expected from the project level packages file -->
-        <XmlPeek XmlInputPath="$(FileProjectPackages)"
-                 Query="//package[@id='nBuildKit.MsBuild']/@version"
-                 Condition="Exists('$(FileProjectPackages)')">
-            <Output TaskParameter="Result" ItemName="VersionNBuildKit" />
-        </XmlPeek>
-        <Message Text="Version: @(VersionNBuildKit)" />
-    
-        <!-- 
-            If the packages directory exists then we assume that nBuildKit is in there. If that is not the case we'll get a 
-            malformed path but that will lead to an error.
-        -->
-        <CreateProperty Value="$(DirPackages)\nBuildKit.MsBuild.%(VersionNBuildKit.Identity)" Condition="Exists('$(DirPackages)') AND !Exists('$(DirNBuildKit)')">
-            <Output TaskParameter="Value" PropertyName="DirNBuildKit" />
-        </CreateProperty>
-        
-        <Error Text="Unable to find the nBuildKit directory." 
-               Condition="!Exists('$(DirNBuildKit)')" />
-    </Target>
-    
-    <PropertyGroup>
-        <DirDefaultPackages>$(DirMsBuildScripts)\packages</DirDefaultPackages>
-    </PropertyGroup>
-    <Target Name="_LocatePackages">
-        <!-- Determine if a packages folder exists at the same level as this script. If so use that  -->
-        <CreateProperty Value="$(DirDefaultPackages)" Condition="Exists('$(DirDefaultPackages)')">
-            <Output TaskParameter="Value" PropertyName="DirPackages" />
-        </CreateProperty>
-        
-        <!-- Get the location of the packages directory from the local nuget.config file -->
-        <XmlPeek XmlInputPath="$(FileNugetConfig)"
-                 Query="//add[@key='repositorypath']/@value"
-                 Condition="!Exists('$(DirPackages)')">
-            <Output TaskParameter="Result" ItemName="DirNuGetPackages" />
-        </XmlPeek>
-        
-        <!-- If the DirNuGetPackages has a root (i.e. a drive letter) then we assume it is an absolute path. Just use it that way. -->
-        <CreateProperty Value="$([System.IO.Path]::GetFullPath('%(DirNuGetPackages.Identity)'))" Condition=" '$(DirNuGetPackages)' != '' AND $([System.IO.Path]::IsPathRooted('%(DirNuGetPackages.Identity)'))">
-            <Output TaskParameter="Value" PropertyName="DirPackages" />
-        </CreateProperty>
-        
-        <!-- If the DirNuGetPackages has no root (i.e. no drive letter) then we assume it is a relative path. Base it on the directory that the nuget.config file is in. -->
-        <CreateProperty Value="$([System.IO.Path]::GetFullPath('$(DirMsBuildScripts)\%(DirNuGetPackages.Identity)'))" Condition=" '@(DirNuGetPackages)' != '' AND !$([System.IO.Path]::IsPathRooted('%(DirNuGetPackages.Identity)'))">
-            <Output TaskParameter="Value" PropertyName="DirPackages" />
-        </CreateProperty>
-        
-        <Message Text="Package directory at: $(DirPackages)"
-                 Condition=" '$(DirPackages)' != '' " />
-        
-        <!-- No packages folder found. Note this and move on -->
-        <Warning Text="Unable to find the packages folder." 
-                 Condition=" '$(DirPackages)' == '' " />
     </Target>
 </Project>
