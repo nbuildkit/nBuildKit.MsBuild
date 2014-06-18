@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Import the common properties -->
+    <Import Project="$(MSBuildProjectDirectory)\nbuildkit.common.targets" />
+    
+    <PropertyGroup>
+        <!-- Build configuration -->
+        <WarningLevel>$(CSharpWarningLevel)</WarningLevel>
+        <ErrorReport>prompt</ErrorReport>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+    
+    <!-- Load StyleCop if desired -->
+    <PropertyGroup>
+        <DirTools>$(DirWorkspace)\tools</DirTools>
+        <DirExternalToolsStyleCop>$(DirTools)\StyleCop</DirExternalToolsStyleCop>
+    </PropertyGroup>
+    <Import Project="$(DirExternalToolsStyleCop)\StyleCop.targets" Condition="" />
+    <PropertyGroup Condition="">
+        <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
+    </PropertyGroup>
+</Project>
