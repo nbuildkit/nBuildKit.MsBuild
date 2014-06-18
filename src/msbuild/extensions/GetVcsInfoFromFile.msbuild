@@ -1,0 +1,54 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="GetVcsInfoFromFile" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <InfoFile ParameterType="System.String" Required="true" />
+            <Revision ParameterType="System.String" Output="true" />
+            <Branch ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        try
+                        {
+                            string text;
+                            using (var reader = new System.IO.StreamReader(InfoFile))
+                            {
+                                text = reader.ReadToEnd();
+                            }
+
+                            const string revisionStart = "\"revision\": \"";
+                            var index = text.IndexOf(revisionStart);
+                            Revision = text.Substring(
+                                index + revisionStart.Length,
+                                text.IndexOf("\",", index) - (index + revisionStart.Length));
+
+                            const string branchStart = "\"branch\": \"";
+                            index = text.IndexOf(branchStart);
+                            Branch = text.Substring(
+                                index + branchStart.Length,
+                                text.IndexOf("\",", index) - (index + branchStart.Length));
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+                        
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>
