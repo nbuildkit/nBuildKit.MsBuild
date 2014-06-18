@@ -67,7 +67,10 @@
         <!-- <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">deploy</ProductionConfiguration> -->
 
         <!-- The platform for which the binaries will be build -->
-        <!-- <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform> -->
+        <!-- 
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform> 
+        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
+        -->
     </PropertyGroup>
     
     
@@ -79,6 +82,19 @@
         
         <!-- The directory that will contain all the files generated during the build process -->
         <!-- <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild> -->
+        
+        <!-- 
+            The directory that will contain all the binaries generated during the build process. 
+            Note that there may be configuration and platform specific sub-directories.
+        -->
+        <!-- <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuild> --->
+        
+        <!-- 
+            The directory where the current binaries are placed after being generated. 
+            Note that $(Platform) and $(Configuration) do not have to be defined in this settings file. They may be provided
+            externally as long as they are provided before the settings file is loaded!
+        -->
+        <!-- <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig> -->
         
         <!-- The directory that will contain all the generated artifacts during the build process -->
         <!-- <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy> -->
@@ -259,6 +275,92 @@
         <!-- <FileSln Condition=" '$(FileSln)' == '' ">$(DirSrc)\myproject.sln</FileSln> -->
     </PropertyGroup>
     
+    <!-- Build configuration -->
+    <PropertyGroup>
+        <CSharpWarningLevel>4</CSharpWarningLevel>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    </PropertyGroup>
+    
+    <!-- Execute code analysis after the build -->
+    <PropertyGroup>
+        <ShouldPerformCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == '' ">true</ShouldPerformCodeAnalysis>
+        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND !$(IsTest)">$(SolutionDir)\codeanalysis.base.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND $(IsTest)">$(SolutionDir)\codeanalysis.test.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisCulture Condition="$(ShouldPerformCodeAnalysis)">en-US</CodeAnalysisCulture>
+    </PropertyGroup>
+    
+    <!-- Generate the XML documentation file -->
+    <PropertyGroup>
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <DocumentationFile Condition="$(GenerateDocumentation) AND !$(IsTest)">$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
+    </PropertyGroup>
+    
+    <!-- Strong name the binaries -->
+    <PropertyGroup>
+        <ShouldSign Condition=" '$(ShouldSign)' == '' ">true</ShouldSign>
+        <SignAssembly Condition="$(ShouldSign)">true</SignAssembly>
+        <DelaySign Condition="$(ShouldSign)">false</DelaySign>
+        <AssemblyOriginatorKeyFile Condition="$(ShouldSign)">$(SOFTWARE_SIGNING_KEY_PATH)</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+    
+    <!-- Debug settings -->
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <RunCodeAnalysis>$(ShouldDoCodeAnalysis)</RunCodeAnalysis>
+    </PropertyGroup>
+    
+    <!-- Release settings -->
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <RunCodeAnalysis>$(ShouldDoCodeAnalysis)</RunCodeAnalysis>
+    </PropertyGroup>
+    
+    <!-- List of all files that should be generated and their template files -->
+    <ItemGroup>
+        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.VersionNumber.cs">
+            <Template>$(DirTemplates)\AssemblyInfo.VersionNumber.cs.in</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.BuildInformation.cs">
+            <Template>$(DirTemplates)\AssemblyInfo.BuildInformation.cs.in</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.InternalsVisibleTo.cs">
+            <Template>$(DirTemplates)\AssemblyInfo.InternalsVisibleTo.cs.in</Template>
+        </FilesToGenerate>
+    </ItemGroup>
+    
+    <!-- 
+        Additional items that should be available for the template replacement.
+        Currently already available are:
+        ${VersionMajor}          - The major version number
+        ${VersionMinor}          - The minor version number
+        ${VersionPatch}          - The patch version number
+        ${VersionBuild}          - The build number of the version
+        ${VersionSemantic}       - The semantic version, e.g. 1.2.3
+        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3+001
+        
+        ${Configuration}         - The configuration, e.g. Release
+        ${Platform}              - The platform name, e.g. Any CPU
+        ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
+        
+        ${VcsRevision}           - The current VCS revision 'number'
+        
+        ${Now}                   - The current date and time
+        ${Date}                  - The current date
+        ${DayOfMonth}            - The current day of the month
+        ${Month}                 - The current month
+        ${Year}                  - The current year
+    -->
+    <ItemGroup>
+        <TemplateGenerationTokens Include="">
+            <ReplacementValue></ReplacementValue>
+        </TemplateGenerationTokens>
+    </ItemGroup>
+    
     
     <!-- 
         **** UNIT TESTS ****
@@ -278,7 +380,7 @@
     </PropertyGroup>
     <ItemGroup>
         <!-- The files that contain the unit test cases. Allows build templates. -->
-        <!-- <UnitTestAssemblies Include="$(DirBuildBin)\**\$(UnitTestAssemblyNamePrefix)*.dll" /> -->
+        <!-- <UnitTestAssemblies Include="$(DirBuildBinPlatformConfig)\**\$(UnitTestAssemblyNamePrefix)*.dll" /> -->
         
         <!-- Defines the attributes that indicate code that should be ignored by OpenCover -->
         <!-- 
@@ -306,9 +408,9 @@
     <ItemGroup>
         <!-- The locations of the files that should be analyzed by MoMA (Mono Migration Analyzer).  -->
         <!--
-        <MomaInputFiles Include="$(DirBuildBin)\*.dll"
-                        Exclude="$(DirBuildBin)\Test.*.dll" />
-        <MomaInputFiles Include="$(DirBuildBin)\*.exe"/>
+        <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
+                        Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
+        <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
         -->
     </ItemGroup>
     
@@ -368,9 +470,9 @@
     -->
     <ItemGroup>
         <ArchivePackageSpecs Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
-            <DirBase>$(DirBuildBin)</DirBase>
-            <IncludedFiles>$(DirBuildBin)\*.dll;$(DirBuildBin)\*.pdb</IncludedFiles>
-            <ExcludedFiles>$(DirBuildBin)\myfile.dll;$(DirBuildBin)\myfile.pdb</ExcludedFiles>
+            <DirBase>$(DirBuildBinPlatformConfig)</DirBase>
+            <IncludedFiles>$(DirBuildBinPlatformConfig)\*.dll;$(DirBuildBinPlatformConfig)\*.pdb</IncludedFiles>
+            <ExcludedFiles>$(DirBuildBinPlatformConfig)\myfile.dll;$(DirBuildBinPlatformConfig)\myfile.pdb</ExcludedFiles>
         </ArchivePackageSpecs>
     </ItemGroup>
     
