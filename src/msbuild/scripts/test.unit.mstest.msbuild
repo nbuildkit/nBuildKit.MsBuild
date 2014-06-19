@@ -25,9 +25,12 @@
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirReportGeneratorOutput Condition=" '$(DirReportGeneratorOutput)' == '' ">$(DirBuildLogs)\coverage</DirReportGeneratorOutput>
+        
+        <!-- nBuildKit directories -->
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
         
         <!-- Files -->
         <FileReportMsTest Condition=" '$(FileReportMsTest)' == '' ">$(DirBuildLogs)\mstest.trx</FileReportMsTest>
@@ -43,8 +46,8 @@
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
     </PropertyGroup>
     
-    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
-            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild')" />
     
     <Import Project="$(DirMsBuildExtensions)\OpenCover.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\OpenCover.msbuild')"/>

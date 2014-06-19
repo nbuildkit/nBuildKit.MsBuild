@@ -19,11 +19,14 @@
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        
+        <!-- nBuildKit directories -->
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
     </PropertyGroup>
     
-    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
-            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild')" />
     
     <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />

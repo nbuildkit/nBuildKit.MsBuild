@@ -29,7 +29,10 @@
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+        
+        <!-- nBuildKit directories -->
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
         
         <!-- External tools -->
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
@@ -42,8 +45,8 @@
         <VersionSemantic>0</VersionSemantic>
     </PropertyGroup>
 
-    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
-            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild')" />
     
     <Import Project="$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild')"/>    
@@ -181,7 +184,7 @@
         
         <!--  
             MsBuild can't seem to handle using item metadata (NuGetPackageSpecs.Template) inside a property function
-            inside the Exists() function, so we'll split the process and do the transfer seperately.
+            inside the Exists() function, so we'll split the process and do the transfer separately.
         -->        
         <ItemGroup>
             <DirNuSpecTemp Include="$([System.IO.Path]::GetDirectoryName('$(FileNuGetTemplate)'))" Condition="Exists('$(FileNuGetTemplate)')" />

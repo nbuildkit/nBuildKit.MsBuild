@@ -24,8 +24,11 @@
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        
+        <!-- nBuildKit directories -->
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
         
         <!-- Files -->
         <FileProjectFxCop Condition=" '$(FileProjectFxCop)' == '' ">UNDEFINED</FileProjectFxCop>
@@ -35,8 +38,8 @@
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir>
     </PropertyGroup>
    
-    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
-            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild')" />
    
     <Import Project="$(DirMsBuildExtensions)\FxCop.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\FxCop.msbuild')"/>

@@ -25,9 +25,11 @@
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
+        
+        <!-- nBuildKit directories -->
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         
         <!-- Files -->
         <FileSln Condition=" '$(FileSln)' == '' ">UNDEFINED</FileSln>
@@ -87,7 +89,9 @@
         <Error Text="The Visual Studio solution file does not point to a valid file."
                Condition="!Exists('$(FileSln)') AND '$(ShouldExecute)' == 'true' " />
         
-        <MSBuild Projects="$(FileSln)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition=" '$(ShouldExecute)' == 'true' " />
+        <MSBuild Projects="$(FileSln)" 
+                 Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile)" 
+                 Condition=" '$(ShouldExecute)' == 'true' " />
     </Target>
     
     <!-- Copy code analysis logs -->
