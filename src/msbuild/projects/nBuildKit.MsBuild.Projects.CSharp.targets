@@ -25,7 +25,8 @@
         <DirTools>$(DirWorkspace)\tools</DirTools>
         <DirExternalToolsStyleCop>$(DirTools)\StyleCop</DirExternalToolsStyleCop>
     </PropertyGroup>
-    <Import Project="$(DirExternalToolsStyleCop)\StyleCop.targets" Condition="" />
+    <Import Project="$(DirExternalToolsStyleCop)\StyleCop.targets" 
+            Condition="Exists('$(DirExternalToolsStyleCop)\StyleCop.targets')" />
     <PropertyGroup Condition="">
         <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     </PropertyGroup>
