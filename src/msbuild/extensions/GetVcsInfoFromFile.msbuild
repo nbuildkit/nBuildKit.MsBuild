@@ -29,13 +29,13 @@
                             var index = text.IndexOf(revisionStart);
                             Revision = text.Substring(
                                 index + revisionStart.Length,
-                                text.IndexOf("\",", index) - (index + revisionStart.Length));
+                                text.IndexOf("\"", index + revisionStart.Length) - (index + revisionStart.Length));
 
                             const string branchStart = "\"branch\": \"";
                             index = text.IndexOf(branchStart);
                             Branch = text.Substring(
                                 index + branchStart.Length,
-                                text.IndexOf("\",", index) - (index + branchStart.Length));
+                                text.IndexOf("\"", index + branchStart.Length) - (index + branchStart.Length));
                         }
                         catch(Exception e)
                         {
