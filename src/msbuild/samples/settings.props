@@ -131,6 +131,7 @@
             $(BuildStepsPrepareRestoreNuGet)       - Restores the NuGet packages for the project.
             $(BuildStepsPrepareReleaseNotes)       - Gathers the release notes and stores them for later use during the build process
             $(BuildStepsPrepareVcsInfo)            - Stores the Version Control System (VCS) information in a file for later use.
+            $(BuildStepsPrepareGenerateFiles)      - Generates one or more files from a set of template files.
         $(BuildTargetAnalyzeSource)         - Performs static analysis of the source files through CCM and SourceMonitor.
             $(BuildStepsAnalyzeSourceCcm)          - Analyzes the source code files with CCM
             $(BuildStepsAnalyzeSourceSouceMonitor) - Analyzes the source code files with SourceMonitor
@@ -150,7 +151,7 @@
     -->
     <ItemGroup>
         <BuildStepsToExecute Include="$(BuildTargetPrepare)">
-            <Steps>$(BuildStepsPrepareRestoreNuGet);$(BuildStepsPrepareReleaseNotes);$(BuildStepsPrepareVcsInfo)</Steps>
+            <Steps>$(BuildStepsPrepareRestoreNuGet);$(BuildStepsPrepareReleaseNotes);$(BuildStepsPrepareVcsInfo);$(BuildStepsPrepareGenerateFiles)</Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
@@ -244,6 +245,52 @@
     
     
     <!-- 
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!-- List of all files that should be generated and their template files -->
+    <ItemGroup>
+        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.VersionNumber.cs">
+            <Template>$(DirTemplates)\AssemblyInfo.VersionNumber.cs.in</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.BuildInformation.cs">
+            <Template>$(DirTemplates)\AssemblyInfo.BuildInformation.cs.in</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.InternalsVisibleTo.cs">
+            <Template>$(DirTemplates)\AssemblyInfo.InternalsVisibleTo.cs.in</Template>
+        </FilesToGenerate>
+    </ItemGroup>
+    
+    <!-- 
+        Additional items that should be available for the template replacement.
+        Currently already available are:
+        ${VersionMajor}          - The major version number
+        ${VersionMinor}          - The minor version number
+        ${VersionPatch}          - The patch version number
+        ${VersionBuild}          - The build number of the version
+        ${VersionSemantic}       - The semantic version, e.g. 1.2.3
+        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3+001
+        
+        ${Configuration}         - The configuration, e.g. Release
+        ${Platform}              - The platform name, e.g. Any CPU
+        ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
+        
+        ${VcsRevision}           - The current VCS revision 'number'
+        ${VcsBranch}             - The name of the current VCS branch
+        
+        ${Now}                   - The current date and time
+        ${Date}                  - The current date
+        ${DayOfMonth}            - The current day of the month
+        ${Month}                 - The current month
+        ${Year}                  - The current year
+    -->
+    <ItemGroup>
+        <TemplateGenerationTokens Include="">
+            <ReplacementValue></ReplacementValue>
+        </TemplateGenerationTokens>
+    </ItemGroup>
+    
+    
+    <!-- 
         **** SOURCE ANALYSIS - CCM ****
     -->
     <PropertyGroup>
@@ -319,48 +366,6 @@
         <Optimize>true</Optimize>
         <RunCodeAnalysis>$(ShouldDoCodeAnalysis)</RunCodeAnalysis>
     </PropertyGroup>
-    
-    <!-- List of all files that should be generated and their template files -->
-    <ItemGroup>
-        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.VersionNumber.cs">
-            <Template>$(DirTemplates)\AssemblyInfo.VersionNumber.cs.in</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.BuildInformation.cs">
-            <Template>$(DirTemplates)\AssemblyInfo.BuildInformation.cs.in</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.InternalsVisibleTo.cs">
-            <Template>$(DirTemplates)\AssemblyInfo.InternalsVisibleTo.cs.in</Template>
-        </FilesToGenerate>
-    </ItemGroup>
-    
-    <!-- 
-        Additional items that should be available for the template replacement.
-        Currently already available are:
-        ${VersionMajor}          - The major version number
-        ${VersionMinor}          - The minor version number
-        ${VersionPatch}          - The patch version number
-        ${VersionBuild}          - The build number of the version
-        ${VersionSemantic}       - The semantic version, e.g. 1.2.3
-        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3+001
-        
-        ${Configuration}         - The configuration, e.g. Release
-        ${Platform}              - The platform name, e.g. Any CPU
-        ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
-        
-        ${VcsRevision}           - The current VCS revision 'number'
-        ${VcsBranch}             - The name of the current VCS branch
-        
-        ${Now}                   - The current date and time
-        ${Date}                  - The current date
-        ${DayOfMonth}            - The current day of the month
-        ${Month}                 - The current month
-        ${Year}                  - The current year
-    -->
-    <ItemGroup>
-        <TemplateGenerationTokens Include="">
-            <ReplacementValue></ReplacementValue>
-        </TemplateGenerationTokens>
-    </ItemGroup>
     
     <!-- 
         Additional scripts that need to be executed prior to the start of the Visual Studio clean process and the 

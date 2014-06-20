@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Prepare_GenerateFiles_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)')" />
+    
+    <PropertyGroup>
+        <!-- Build flags -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
+        
+        <!-- Directories -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        
+        <!-- nBuildKit directories -->
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        
+        <!-- Files -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild')" />
+    <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')" />
+            
+    <Target Name="nBuildKit_Prepare_GenerateFiles_Run" 
+            DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Prepare_GenerateFiles_GenerateFiles" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_GenerateFiles_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:" />
+        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
+        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
+        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text=" " />
+        
+        <Message Text="The semantic version file is located at: $(FileSemanticVersion)" />
+        <Message Text="The VCS info file is located at:         $(FileVcsInfo)" />
+        <Message Text=" " />
+    </Target>
+    
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Prepare_GenerateFiles_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DebugLog">
+        <Message Text="Getting version ..." />
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_GenerateFiles_GetVersionFromFile" >
+        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
+                                                           Condition="Exists('$(FileSemanticVersion)')">
+            <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
+            <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
+            <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
+            <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+            <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
+        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        
+        <Message Text="Version: $(VersionSemantic)" />
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_GenerateFiles_GetVcsInfoFromFile">
+        <GetVcsInfoFromFile InfoFile="$(FileVcsInfo)"
+                            Condition="Exists('$(FileVcsInfo)')">
+            <Output TaskParameter="Revision" PropertyName="VcsRevision" />
+            <Output TaskParameter="Branch" PropertyName="VcsBranch" />
+        </GetVcsInfoFromFile>
+    </Target>
+    
+    <!-- Generate the required files -->
+    <Target Name="_nBuildKit_Prepare_GenerateFiles_GenerateFiles"
+            DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_GetVersionFromFile;_nBuildKit_Prepare_GenerateFiles_GetVcsInfoFromFile"
+            Outputs="%(FilesToGenerate.Identity)">
+        <Message Text="Generating file %(FilesToGenerate.Identity)" />
+        
+        <!--  
+            MsBuild can't seem to handle using item metadata (FilesToGenerate.FullPath) inside a property function
+            inside the Exists() function, so we'll split the process and do the transfer separately.
+        -->        
+        <ItemGroup>
+            <DirFilesToGenerateTemp Include="$([System.IO.Path]::GetDirectoryName('%(FilesToGenerate.FullPath)'))" />
+        </ItemGroup>
+        
+        <MakeDir Directories="%(DirFilesToGenerateTemp.Identity)" 
+                 Condition="!Exists('%(DirFilesToGenerateTemp.Identity)')" />
+        
+        <ItemGroup>
+            <TemplateGenerationTokens Include="VersionMajor">
+                <ReplacementValue>$(VersionMajor)</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="VersionMinor">
+                <ReplacementValue>$(VersionMinor)</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="VersionPatch">
+                <ReplacementValue>$(VersionPatch)</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="VersionBuild">
+                <ReplacementValue>$(VersionBuild)</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="VersionSemantic">
+                <ReplacementValue>$(VersionSemantic)</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="VersionSemanticFull">
+                <ReplacementValue>$(VersionSemanticFull)</ReplacementValue>
+            </TemplateGenerationTokens>
+            
+            <TemplateGenerationTokens Include="Configuration">
+                <ReplacementValue>$(Configuration)</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="Platform">
+                <ReplacementValue>$(Platform)</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="PlatformWithoutSpaces">
+                <ReplacementValue>$(PlatformWithoutSpaces)</ReplacementValue>
+            </TemplateGenerationTokens>
+            
+            <TemplateGenerationTokens Include="VcsRevision">
+                <ReplacementValue>$(VcsRevision)</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="VcsBranch">
+                <ReplacementValue>$(VcsBranch)</ReplacementValue>
+            </TemplateGenerationTokens>
+            
+            <TemplateGenerationTokens Include="Now">
+                <ReplacementValue>$([System.DateTime]::Now.ToString("o"))</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="Date">
+                <ReplacementValue>$([System.DateTime]::Now.ToString("yyyy/MM/dd"))</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="DayOfMonth">
+                <ReplacementValue>$([System.DateTime]::Now.ToString("dd"))</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="Month">
+                <ReplacementValue>$([System.DateTime]::Now.ToString("MM"))</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="Year">
+                <ReplacementValue>$([System.DateTime]::Now.ToString("yyyy"))</ReplacementValue>
+            </TemplateGenerationTokens>
+        </ItemGroup>
+        <TemplateFile Template="%(FilesToGenerate.Template)" 
+                      OutputFileName="%(FilesToGenerate.Identity)" 
+                      Tokens="@(TemplateGenerationTokens)"
+                      Condition="!Exists('%(FilesToGenerate.FullPath)')"/>
+    </Target>
+ </Project>
