@@ -44,12 +44,12 @@
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
         
-        <DirNBuildKitMsBuild>$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)</DirNBuildKitMsBuild>
-        <DirNBuildKitMsBuildProjects>$(DirPackages)\nBuildKit.MsBuild.Projects.Common.$(NBuildKitVersion)</DirNBuildKitMsBuildProjects>
+        <DirNBuildKitMsBuild>$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildProjects>$(DirPackages)\nBuildKit.MsBuild.Projects.Common.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjects>
         <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(DirNBuildKitMsBuild)</DirMsBuildShared>
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirMsBuildExtensions>
         
-        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
+        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirTemplates=$(DirTemplates);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
         <DefaultFiles>FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;</DefaultFiles>
         
         <!-- 
@@ -82,7 +82,7 @@
             $(CleanDependsOn);
         </CleanDependsOn>
     </PropertyGroup>
-    <Target Name="_nBuildKit_Projects_Common_CleanGeneratedFiles" DependsOnTargets="VerifyProperties">
+    <Target Name="_nBuildKit_Projects_Common_CleanGeneratedFiles" DependsOnTargets="nBuildKit_Projects_Common_VerifyProperties">
         <ItemGroup>
             <GeneratedFilesToDelete Include="%(FilesToGenerate.FullPath)" />
         </ItemGroup>
@@ -92,7 +92,7 @@
     <!-- Handle any external pre-clean steps -->
     <Target Name="_nBuildKit_Projects_Common_ExternalPreClean"
             Condition=" '@(PreCleanScripts)' != '' ">
-        <MSBuild Projects="%(PreCleanScripts.FullPath)" Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);" />
+        <MSBuild Projects="%(PreCleanScripts.FullPath)" Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)" />
     </Target>
     
     
@@ -105,13 +105,14 @@
         </BuildDependsOn>
     </PropertyGroup>
     <Target Name="_nBuildKit_Projects_Common_GenerateFiles"
+            DependsOnTargets="nBuildKit_Projects_Common_VerifyProperties"
             Condition="!Exists('$(FileSemanticVersion)')">
-        <MSBuild Projects="$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile);DirWorkspace=$(DirWorkspace);FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;" />
+        <MSBuild Projects="$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)" />
     </Target>
 
     <!-- Handle any external pre-build steps -->
     <Target Name="_nBuildKit_Projects_Common_ExternalPreBuild"
             Condition=" '@(PreCompilationScripts)' != '' ">
-        <MSBuild Projects="%(PreCompilationScripts.FullPath)" Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);" />
+        <MSBuild Projects="%(PreCompilationScripts.FullPath)" Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)" />
     </Target>
 </Project>
