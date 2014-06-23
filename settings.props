@@ -28,6 +28,21 @@
         -->
         <ProductName Condition=" '$(ProductName)' == '' ">nBuildKit</ProductName>
         
+        <!-- 
+            The first year the product was available / created. This is used for:
+            * Copyrights 
+        -->
+        <ProductStartingYear Condition=" '$(ProductStartingYear)' == '' ">2014</ProductStartingYear>
+        
+        <!-- 
+            The name of the company. This is used for:
+            * Copyrights
+        -->
+        <CompanyName Condition=" '$(CompanyName)' == '' ">nBuildKit</CompanyName>
+    </PropertyGroup>
+    
+    <!-- Overrides for the VCS specific properties -->
+    <PropertyGroup>
         <!-- The user name of the user who owns the repository on GitHub -->
         <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">pvandervelde</GitHubUserName>
         
@@ -131,6 +146,7 @@
             $(BuildStepsPrepareRestoreNuGet)       - Restores the NuGet packages for the project.
             $(BuildStepsPrepareReleaseNotes)       - Gathers the release notes and stores them for later use during the build process
             $(BuildStepsPrepareVcsInfo)            - Stores the Version Control System (VCS) information in a file for later use.
+            $(BuildStepsPrepareGenerateFiles)      - Generates one or more files from a set of template files.
         $(BuildTargetAnalyzeSource)         - Performs static analysis of the source files through CCM and SourceMonitor.
             $(BuildStepsAnalyzeSourceCcm)          - Analyzes the source code files with CCM
             $(BuildStepsAnalyzeSourceSouceMonitor) - Analyzes the source code files with SourceMonitor
@@ -150,10 +166,35 @@
     -->
     <ItemGroup>
         <BuildStepsToExecute Include="$(BuildTargetPrepare)">
-            <Steps>$(BuildStepsPrepareRestoreNuGet);$(BuildStepsPrepareReleaseNotes);$(BuildStepsPrepareVcsInfo)</Steps>
+            <Steps>$(BuildStepsPrepareRestoreNuGet);$(BuildStepsPrepareReleaseNotes);$(BuildStepsPrepareVcsInfo);$(BuildStepsPrepareGenerateFiles)</Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
+        <!--
+        <BuildStepsToExecute Include="$(BuildTargetAnalyzeSource)">
+            <Steps>$(BuildStepsAnalyzeSourceCcm);$(BuildStepsAnalyzeSourceSouceMonitor)</Steps>
+            <PreInvokeScripts></PreInvokeScripts>
+            <PostInvokeScripts></PostInvokeScripts>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildTargetBuildBinaries)">
+            <PreInvokeScripts></PreInvokeScripts>
+            <PostInvokeScripts></PostInvokeScripts>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildTargetExecuteUnitTests)">
+            <Steps>$(BuildStepsUnitTestNUnit)</Steps>
+            <PreInvokeScripts></PreInvokeScripts>
+            <PostInvokeScripts></PostInvokeScripts>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildTargetAnalyzeBinaries)">
+            <Steps>$(BuildStepsAnalyzeBinariesMoma);$(BuildStepsAnalyzeBinariesFxCop)</Steps>
+            <PreInvokeScripts></PreInvokeScripts>
+            <PostInvokeScripts></PostInvokeScripts>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildTargetBuildApiDocumentation)">
+            <PreInvokeScripts></PreInvokeScripts>
+            <PostInvokeScripts></PostInvokeScripts>
+        </BuildStepsToExecute>
+        -->
         <BuildStepsToExecute Include="$(BuildTargetPackage)">
             <Steps>$(BuildStepsPackNuGet);$(BuildStepsPackZip)</Steps>
             <PreInvokeScripts></PreInvokeScripts>
@@ -221,6 +262,51 @@
     
     
     <!-- 
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!-- List of all files that should be generated and their template files -->
+    <ItemGroup>
+        <FilesToGenerate Include="$(DirBuildTemp)\nBuildKit.MsBuild.Projects.Common.targets">
+            <Template>$(DirSrc)\msbuild\projects\nBuildKit.MsBuild.Projects.Common.targets</Template>
+        </FilesToGenerate>
+    </ItemGroup>
+    
+    <!-- 
+        Additional items that should be available for the template replacement.
+        Currently already available are:
+        ${VersionMajor}          - The major version number
+        ${VersionMinor}          - The minor version number
+        ${VersionPatch}          - The patch version number
+        ${VersionBuild}          - The build number of the version
+        ${VersionSemantic}       - The semantic version, e.g. 1.2.3
+        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3+001
+        
+        ${Configuration}         - The configuration, e.g. Release
+        ${Platform}              - The platform name, e.g. Any CPU
+        ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
+        
+        ${VcsRevision}           - The current VCS revision 'number'
+        ${VcsBranch}             - The name of the current VCS branch
+        
+        ${Now}                   - The current date and time
+        ${Date}                  - The current date
+        ${DayOfMonth}            - The current day of the month
+        ${Month}                 - The current month
+        ${Year}                  - The current year
+        
+        ${Company}               - The name of the company
+        ${StartingYear}          - The year the current product was created / released.
+    -->
+    <ItemGroup>
+        <!--
+        <TemplateGenerationTokens Include="">
+            <ReplacementValue></ReplacementValue>
+        </TemplateGenerationTokens>
+        -->
+    </ItemGroup>
+    
+    
+    <!-- 
         **** SOURCE ANALYSIS - CCM ****
     -->
     <PropertyGroup>
@@ -250,14 +336,33 @@
     <PropertyGroup>
         <!-- The solution file -->
         <!-- <FileSln Condition=" '$(FileSln)' == '' ">$(DirSrc)\myproject.sln</FileSln> -->
+        
+        <!-- A flag that indicates whether an AssemblyInfo file with the version numbers should be generated -->
+        <ShouldGenerateAssemblyVersionInfo>false</ShouldGenerateAssemblyVersionInfo>
+        
+        <!-- 
+            A flag that indicates whether an AssemblyInfo file with the build information should be generated.
+            Build information includes:
+            - Copyright
+            - Build configuration (e.g. Debug)
+            - Build date and time
+            - Build number and VCS revision number
+        -->
+        <ShouldGenerateAssemblyBuildInfo>false</ShouldGenerateAssemblyBuildInfo>
+        
+        <!-- 
+            A flag that indicates whether the current project is a Test project. 
+            This value is used here just so that there is a value when no other value is specified. Do not comment this
+            value out unless you know what you are doing!
+        -->
+        <IsTest Condition=" '$(IsTest)' == '' ">false</IsTest>
     </PropertyGroup>
     
     <!-- Build configuration -->
     <PropertyGroup>
         <!--
-        <CSharpWarningLevel>4</CSharpWarningLevel>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
         -->
     </PropertyGroup>
     
@@ -309,49 +414,26 @@
         -->
     </PropertyGroup>
     
-    <!-- List of all files that should be generated and their template files -->
-    <ItemGroup>
-        <!--
-        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.VersionNumber.cs">
-            <Template>$(DirTemplates)\AssemblyInfo.VersionNumber.cs.in</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.BuildInformation.cs">
-            <Template>$(DirTemplates)\AssemblyInfo.BuildInformation.cs.in</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.InternalsVisibleTo.cs">
-            <Template>$(DirTemplates)\AssemblyInfo.InternalsVisibleTo.cs.in</Template>
-        </FilesToGenerate>
-        -->
-    </ItemGroup>
+    <!-- C# specific configuration -->
+    <PropertyGroup>
+        <!-- <CSharpWarningLevel>4</CSharpWarningLevel> -->
+    </PropertyGroup>
     
-    <!-- 
-        Additional items that should be available for the template replacement.
-        Currently already available are:
-        ${VersionMajor}          - The major version number
-        ${VersionMinor}          - The minor version number
-        ${VersionPatch}          - The patch version number
-        ${VersionBuild}          - The build number of the version
-        ${VersionSemantic}       - The semantic version, e.g. 1.2.3
-        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3+001
-        
-        ${Configuration}         - The configuration, e.g. Release
-        ${Platform}              - The platform name, e.g. Any CPU
-        ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
-        
-        ${VcsRevision}           - The current VCS revision 'number'
-        ${VcsBranch}             - The name of the current VCS branch
-        
-        ${Now}                   - The current date and time
-        ${Date}                  - The current date
-        ${DayOfMonth}            - The current day of the month
-        ${Month}                 - The current month
-        ${Year}                  - The current year
-    -->
+    <!-- The collection of assemblies that should be provided in the InternalsVisibleTo attributes -->
     <ItemGroup>
         <!--
-        <TemplateGenerationTokens Include="">
-            <ReplacementValue></ReplacementValue>
-        </TemplateGenerationTokens>
+        <InternalsVisibleTo Include="MyTestProject">
+            <Projects>MyProject</Projects>
+            <KeyFile>$(MyKeyFileReference)</KeyFile>
+        </InternalsVisibleTo>
+        <InternalsVisibleTo Include="SomeExternalAssembly">
+            <Projects>MyProject</Projects>
+            <AssemblyFromPackage>SomeExternalAssembly.dll</AssemblyFromPackage>
+        </InternalsVisibleTo>
+        <InternalsVisibleTo Include="SomeOtherExternalAssemblyThatDoesNotExistOnDisk">
+            <Projects>MyProject</Projects>
+            <PublicKey>$(TheFullPublicKeyForTheExternalAssemblyThatDoesNotExistOnDisk)</PublicKey>
+        </InternalsVisibleTo>
         -->
     </ItemGroup>
     
@@ -461,6 +543,10 @@
     <ItemGroup>
         <NuGetPackageSpecs Include="$(DirBuildTemp)\nbuildkit.msbuild.nuspec">
             <Template>$(DirTemplates)\nbuildkit.msbuild.nuspec.in</Template>
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirBuildTemp)\nbuildkit.msbuild.projects.common.nuspec">
+            <Template>$(DirTemplates)\nbuildkit.msbuild.projects.common.nuspec.in</Template>
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirBuildTemp)\nbuildkit.msbuild.projects.csharp.nuspec">
