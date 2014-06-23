@@ -28,6 +28,21 @@
         -->
         <ProductName Condition=" '$(ProductName)' == '' ">MyProduct</ProductName>
         
+        <!-- 
+            The first year the product was available / created. This is used for:
+            * Copyrights 
+        -->
+        <ProductStartingYear Condition=" '$(ProductStartingYear)' == '' ">UNDEFINED</ProductStartingYear>
+        
+        <!-- 
+            The name of the company. This is used for:
+            * Copyrights
+        -->
+        <CompanyName Condition=" '$(CompanyName)' == '' ">UNDEFINED</CompanyName>
+    </PropertyGroup>
+    
+    <!-- Overrides for the VCS specific properties -->
+    <PropertyGroup>
         <!-- The user name of the user who owns the repository on GitHub -->
         <!-- <GitHubUserName Condition=" '$(GitHubUserName)' == '' "></GitHubUserName> -->
         
@@ -249,12 +264,6 @@
     -->
     <!-- List of all files that should be generated and their template files -->
     <ItemGroup>
-        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.VersionNumber.cs">
-            <Template>$(DirTemplates)\AssemblyInfo.VersionNumber.cs.in</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.BuildInformation.cs">
-            <Template>$(DirTemplates)\AssemblyInfo.BuildInformation.cs.in</Template>
-        </FilesToGenerate>
         <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.InternalsVisibleTo.cs">
             <Template>$(DirTemplates)\AssemblyInfo.InternalsVisibleTo.cs.in</Template>
         </FilesToGenerate>
@@ -282,6 +291,9 @@
         ${DayOfMonth}            - The current day of the month
         ${Month}                 - The current month
         ${Year}                  - The current year
+        
+        ${Company}               - The name of the company
+        ${StartingYear}          - The year the current product was created / released.
     -->
     <ItemGroup>
         <TemplateGenerationTokens Include="">

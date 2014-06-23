@@ -149,6 +149,13 @@
             <TemplateGenerationTokens Include="Year">
                 <ReplacementValue>$([System.DateTime]::Now.ToString("yyyy"))</ReplacementValue>
             </TemplateGenerationTokens>
+            
+            <TemplateGenerationTokens Include="Company">
+                <ReplacementValue>$(CompanyName)</ReplacementValue>
+            </TemplateGenerationTokens>
+            <TemplateGenerationTokens Include="StartingYear">
+                <ReplacementValue>$(ProductStartingYear)</ReplacementValue>
+            </TemplateGenerationTokens>
         </ItemGroup>
         <TemplateFile Template="%(FilesToGenerate.Template)" 
                       OutputFileName="%(FilesToGenerate.Identity)" 
