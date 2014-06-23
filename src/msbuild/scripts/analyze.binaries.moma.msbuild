@@ -3,11 +3,15 @@
          DefaultTargets="nBuildKit_Analyze_Binaries_Moma_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsAnalyzeBinariesMoma>true</ExistsAnalyzeBinariesMoma>
+        
+        <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
     </PropertyGroup>
 
     <Import Project="$(BuildPropertyFile)"
-            Condition="Exists('$(BuildPropertyFile)')" />
+            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
     
     <PropertyGroup>
         <!-- Build flags -->
@@ -25,8 +29,11 @@
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        
+        <!-- nBuildKit directories -->
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
         
         <!-- Report directories -->
         <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma>
@@ -35,13 +42,13 @@
         <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma>
     </PropertyGroup>
     
-    <Import Project="$(MSBuildProjectDirectory)\shared.templatetext.msbuild" 
-            Condition="Exists('$(MSBuildProjectDirectory)\shared.templatetext.msbuild')" />
+    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
             
     <Target Name="nBuildKit_Analyze_Binaries_Moma_Run" 
             DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_DisplayInfo">

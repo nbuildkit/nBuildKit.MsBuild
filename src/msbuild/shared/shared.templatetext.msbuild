@@ -2,6 +2,11 @@
 <Project ToolsVersion="4.0"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedTemplateText>true</ExistsSharedTemplateText>
+    </PropertyGroup>
+    
+    <PropertyGroup>
         <!-- Build flags -->
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
@@ -11,7 +16,6 @@
         <PlatformWithoutSpaces Condition=" '$(PlatformWithoutSpaces)' == '' ">$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
     
         <!-- Directories -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
@@ -23,7 +27,7 @@
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
     
     <Target Name="nBuildKit_Shared_TemplateText_Initialize">
         <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 

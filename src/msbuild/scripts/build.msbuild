@@ -3,6 +3,11 @@
          DefaultTargets="nBuildKit_Build_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <!-- Note the current script is not meant to be imported! -->
+        <ExistsBuild>true</ExistsBuild>
+        
+        <!-- The full path to the settings file that contains all the settings for the build process -->    
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
     </PropertyGroup>
     <PropertyGroup>
@@ -17,6 +22,7 @@
         <BuildStepsPrepareRestoreNuGet>NuGetRestore</BuildStepsPrepareRestoreNuGet>
         <BuildStepsPrepareReleaseNotes>ReleaseNotes</BuildStepsPrepareReleaseNotes>
         <BuildStepsPrepareVcsInfo>VcsInfo</BuildStepsPrepareVcsInfo>
+        <BuildStepsPrepareGenerateFiles>GenerateFiles</BuildStepsPrepareGenerateFiles>
         <BuildStepsAnalyzeSourceCcm>Ccm</BuildStepsAnalyzeSourceCcm>
         <BuildStepsAnalyzeSourceSouceMonitor>SourceMonitor</BuildStepsAnalyzeSourceSouceMonitor>
         <BuildStepsAnalyzeBinariesMoma>Moma</BuildStepsAnalyzeBinariesMoma>
@@ -64,7 +70,7 @@
     </ItemGroup>
 
     <Import Project="$(BuildPropertyFile)"
-            Condition="Exists('$(BuildPropertyFile)')" />
+            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
     
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
@@ -90,6 +96,8 @@
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+        
+        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         
         <!-- Report directories -->
@@ -123,14 +131,17 @@
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir>
         
-        <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
-        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
+        <!-- 
+            Each build file needs to have the paths passed in so that the default directory paths are always known.
+            To prevent having to provide them in a lengthy line each time we'll store them here 
+        -->
+        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirTemplates=$(DirTemplates);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
         <DefaultFiles>FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;</DefaultFiles>
         <DefaultSwitches>ShouldDisplayDebugLog=$(ShouldDisplayDebugLog);ShouldExecute=$(ShouldExecute)</DefaultSwitches>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild') AND '$(ExistsExtensionsSortItemGroupByKey)' != 'true' " />
     
     <Target Name="nBuildKit_Build_Run" DependsOnTargets="_nBuildKit_Build_OrderTargets;_nBuildKit_Build_DisplayInfo">
         <Error Text="No build properties file was defined."
@@ -241,6 +252,9 @@
         <MSBuild Projects="$(DirMsBuildScripts)\prepare.vcsinfo.msbuild"
                  Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
                  Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareVcsInfo)'))" />
+        <MSBuild Projects="$(DirMsBuildScripts)\prepare.generatefiles.msbuild"
+                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"
+                 Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildTargetPrepare)' AND $([System.String]::new('%(BuildStepsToExecute.Steps)').Contains('$(BuildStepsPrepareGenerateFiles)'))" />
                  
         <MsBuild Projects="%(BuildStepsToExecute.PostInvokeScripts)"
                  Properties="Configuration=$(ProductionConfiguration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultSwitches);$(DefaultPathProperties);$(DefaultFiles)"

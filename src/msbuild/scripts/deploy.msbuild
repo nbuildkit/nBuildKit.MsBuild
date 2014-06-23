@@ -3,6 +3,11 @@
          DefaultTargets="nBuildKit_Deploy_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <!-- Note the current script is not meant to be imported! -->
+        <ExistsDeploy>true</ExistsDeploy>
+        
+        <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
     </PropertyGroup>
     <PropertyGroup>
@@ -27,7 +32,7 @@
     </ItemGroup>
 
     <Import Project="$(BuildPropertyFile)"
-            Condition="Exists('$(BuildPropertyFile)')" />
+            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
             
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
@@ -49,6 +54,8 @@
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+        
+        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         
         <!-- Server paths -->
@@ -65,14 +72,17 @@
         <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
         <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath>
         
-        <!-- Each build file needs to have the paths passed in, to prevent having to provide them in a lengthy line each time we'll store them here -->
-        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
+        <!-- 
+            Each build file needs to have the paths passed in so that the default directory paths are always known.
+            To prevent having to provide them in a lengthy line each time we'll store them here 
+        -->
+        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirTemplates=$(DirTemplates);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
         <DefaultFiles>FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;</DefaultFiles>
         <DefaultSwitches>ShouldDisplayDebugLog=$(ShouldDisplayDebugLog);ShouldExecute=$(ShouldExecute)</DefaultSwitches>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild') AND '$(ExistsExtensionsSortItemGroupByKey)' != 'true' " />
     
     <Target Name="nBuildKit_Deploy_Run" DependsOnTargets="_nBuildKit_Deploy_OrderTargets;_nBuildKit_Deploy_DisplayInfo">
         <Error Text="No build properties file was defined."

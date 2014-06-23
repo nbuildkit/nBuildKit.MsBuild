@@ -3,11 +3,15 @@
          DefaultTargets="nBuildKit_Build_Binaries_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildBinaries>true</ExistsBuildBinaries>
+        
+        <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
     </PropertyGroup>
 
     <Import Project="$(BuildPropertyFile)"
-            Condition="Exists('$(BuildPropertyFile)')" />
+            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
     
     <PropertyGroup>
         <!-- Build flags -->
@@ -25,9 +29,11 @@
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
+        
+        <!-- nBuildKit directories -->
+        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         
         <!-- Files -->
         <FileSln Condition=" '$(FileSln)' == '' ">UNDEFINED</FileSln>
@@ -37,7 +43,7 @@
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\NuGetRestore.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\NuGetRestore.msbuild')"/>
+            Condition="Exists('$(DirMsBuildExtensions)\NuGetRestore.msbuild') AND '$(ExistsExtensionsNuGetRestore)' != 'true' "/>
     
     <Target Name="nBuildKit_Build_Binaries_Run" DependsOnTargets="_nBuildKit_Build_Binaries_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Build_Binaries_RestorePackages" />
@@ -87,7 +93,9 @@
         <Error Text="The Visual Studio solution file does not point to a valid file."
                Condition="!Exists('$(FileSln)') AND '$(ShouldExecute)' == 'true' " />
         
-        <MSBuild Projects="$(FileSln)" Properties="Configuration=$(Configuration);Platform=$(Platform)" Condition=" '$(ShouldExecute)' == 'true' " />
+        <MSBuild Projects="$(FileSln)" 
+                 Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile)" 
+                 Condition=" '$(ShouldExecute)' == 'true' " />
     </Target>
     
     <!-- Copy code analysis logs -->

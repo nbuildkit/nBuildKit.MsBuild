@@ -5,52 +5,58 @@
 <Project ToolsVersion="4.0" 
          DefaultTargets="Build" 
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  
-  <UsingTask TaskName="Zip" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <InputFileNames ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-      <BaseDirectory ParameterType="System.String" Required="false" />
-      <OutputFileName ParameterType="System.String" Required="true" />
-      <OverwriteExistingFile ParameterType="System.Boolean" Required="false" />
-    </ParameterGroup>
-    <Task>
-      <Reference Include="System.IO.Compression" />
-      <Using Namespace="System.IO.Compression" />
-      <Code Type="Fragment" Language="cs">
-      <![CDATA[        
-        const int BufferSize = 64 * 1024;
+  <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsZip>true</ExistsExtensionsZip>
+    </PropertyGroup>
+    
+    <UsingTask TaskName="Zip" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <InputFileNames ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <BaseDirectory ParameterType="System.String" Required="false" />
+            <OutputFileName ParameterType="System.String" Required="true" />
+            <OverwriteExistingFile ParameterType="System.Boolean" Required="false" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.IO.Compression" />
+            <Using Namespace="System.IO.Compression" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[        
+                    const int BufferSize = 64 * 1024;
 
-        var buffer = new byte[BufferSize];
-        var fileMode = OverwriteExistingFile ? FileMode.Create : FileMode.CreateNew;
+                    var buffer = new byte[BufferSize];
+                    var fileMode = OverwriteExistingFile ? FileMode.Create : FileMode.CreateNew;
 
-        using (var outputFileStream = new FileStream(OutputFileName, fileMode))
-        {
-          using (var archive = new ZipArchive(outputFileStream, ZipArchiveMode.Create))
-          {
-            foreach (var inputFileName in InputFileNames.Select(f => f.ItemSpec))
-            {
-              var path = Path.GetFullPath(inputFileName);
-              var relativePath = !string.IsNullOrEmpty(BaseDirectory) 
-                ? path.Substring(BaseDirectory.Length).TrimStart(Path.DirectorySeparatorChar)
-                : Path.GetFileName(path);
-              var archiveEntry = archive.CreateEntry(relativePath);
+                    using (var outputFileStream = new FileStream(OutputFileName, fileMode))
+                    {
+                        using (var archive = new ZipArchive(outputFileStream, ZipArchiveMode.Create))
+                        {
+                            foreach (var inputFileName in InputFileNames.Select(f => f.ItemSpec))
+                            {
+                                var path = Path.GetFullPath(inputFileName);
+                                var relativePath = !string.IsNullOrEmpty(BaseDirectory) 
+                                    ? path.Substring(BaseDirectory.Length).TrimStart(Path.DirectorySeparatorChar)
+                                    : Path.GetFileName(path);
+                                var archiveEntry = archive.CreateEntry(relativePath);
 
-              using (var fs = new FileStream(inputFileName, FileMode.Open))
-              {
-                using (var zipStream = archiveEntry.Open())
-                {
-                  int bytesRead = -1;
-                  while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
-                  {
-                    zipStream.Write(buffer, 0, bytesRead);
-                  }
-                }
-              }
-            }
-          }
-        }        
-      ]]>
-      </Code>
-    </Task>
-  </UsingTask>
+                                using (var fs = new FileStream(inputFileName, FileMode.Open))
+                                {
+                                    using (var zipStream = archiveEntry.Open())
+                                    {
+                                        int bytesRead = -1;
+                                        while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
+                                        {
+                                            zipStream.Write(buffer, 0, bytesRead);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }        
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
 </Project>

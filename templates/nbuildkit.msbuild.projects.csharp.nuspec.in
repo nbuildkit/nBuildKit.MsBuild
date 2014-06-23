@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>nBuildKit.MsBuild.Projects.CSharp</id>
+    <version>${Version}</version>
+    <authors>P. van der Velde</authors>
+    <owners>P. van der Velde</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/pvandervelde/nBuildKit</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Provides default properties and build tasks used to unify the settings of a set of C# projects in a Visual Studio solution.
+    </description>
+    <releaseNotes>
+      ${ReleaseNotes}
+    </releaseNotes>
+    <dependencies>
+      ${Dependencies}
+      <dependency id="nBuildKit.MsBuild.Projects.Common" version="[${Version}]" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="${DirSrc}\msbuild\projects\nBuildKit.MsBuild.Projects.CSharp.targets" target="build" />
+    <file src="${DirSrc}\templates\AssemblyInfo.VersionNumber.cs.in" target="build\templates" />
+    <file src="${DirSrc}\templates\AssemblyInfo.BuildInformation.cs.in" target="build\templates" />
+    <file src="${DirSrc}\templates\AssemblyInfo.InternalsVisibleTo.cs.in" target="build\templates" />
+  </files>
+</package>

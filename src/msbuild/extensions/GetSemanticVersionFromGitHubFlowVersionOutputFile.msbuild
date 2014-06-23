@@ -4,6 +4,11 @@
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
          ToolsVersion="4.0">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile>true</ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile>
+    </PropertyGroup>
+    
     <UsingTask TaskName="GetSemanticVersionFromGitHubFlowVersionOutputFile" 
                TaskFactory="CodeTaskFactory" 
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
@@ -33,31 +38,31 @@
                             var index = text.IndexOf(fullSemVersionStart);
                             VersionSemanticFull = text.Substring(
                                 index + fullSemVersionStart.Length,
-                                text.IndexOf("\",", index) - (index + fullSemVersionStart.Length));
+                                text.IndexOf("\"", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length));
 
                             const string majorVersionStart = "\"GitHubFlowVersion_Major\": \"";
                             index = text.IndexOf(majorVersionStart);
                             VersionMajor = text.Substring(
                                 index + majorVersionStart.Length,
-                                text.IndexOf("\",", index) - (index + majorVersionStart.Length));
+                                text.IndexOf("\"", index + majorVersionStart.Length) - (index + majorVersionStart.Length));
 
                             const string minorVersionStart = "\"GitHubFlowVersion_Minor\": \"";
                             index = text.IndexOf(minorVersionStart);
                             VersionMinor = text.Substring(
                                 index + minorVersionStart.Length,
-                                text.IndexOf("\",", index) - (index + minorVersionStart.Length));
+                                text.IndexOf("\"", index + minorVersionStart.Length) - (index + minorVersionStart.Length));
 
                             const string patchVersionStart = "\"GitHubFlowVersion_Patch\": \"";
                             index = text.IndexOf(patchVersionStart);
                             VersionPatch = text.Substring(
                                 index + patchVersionStart.Length,
-                                text.IndexOf("\",", index) - (index + patchVersionStart.Length));
+                                text.IndexOf("\"", index + patchVersionStart.Length) - (index + patchVersionStart.Length));
 
                             const string buildVersionStart = "\"GitHubFlowVersion_NumCommitsSinceRelease\": \"";
                             index = text.IndexOf(buildVersionStart);
                             VersionBuild = text.Substring(
                                 index + buildVersionStart.Length,
-                                text.IndexOf("\",", index) - (index + buildVersionStart.Length));
+                                text.IndexOf("\"", index + buildVersionStart.Length) - (index + buildVersionStart.Length));
                                 
                             VersionSemantic = string.Format(
                                 "{0}.{1}.{2}",

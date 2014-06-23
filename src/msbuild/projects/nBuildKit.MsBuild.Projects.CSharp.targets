@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsProjectCSharp>true</ExistsProjectCSharp>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <DirNBuildKitMsBuildProjectsCSharp>$(DirPackages)\nBuildKit.MsBuild.Projects.CSharp.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjectsCSharp>
+        <DirNBuildKitMsBuildProjectsCSharpTemplates>$(DirNBuildKitMsBuildProjectsCSharp)\templates</DirNBuildKitMsBuildProjectsCSharpTemplates>
+    
+        <!-- Build configuration -->
+        <WarningLevel>$(CSharpWarningLevel)</WarningLevel>
+        <ErrorReport>prompt</ErrorReport>
+    </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild') AND '$(ExistsExtensionsGenerateInternalsVisibleToAttributes)' != 'true' " />
+    
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <PlatformTarget>$(PlatformWithoutSpaces)</PlatformTarget>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <PlatformTarget>$(PlatformWithoutSpaces)</PlatformTarget>
+        <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.VersionNumber.cs"
+                         Condition="$(ShouldGenerateAssemblyVersionInfo)">
+            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\AssemblyInfo.VersionNumber.cs.in</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.BuildInformation.cs"
+                         Condition="$(ShouldGenerateAssemblyBuildInfo)">
+            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\AssemblyInfo.BuildInformation.cs.in</Template>
+        </FilesToGenerate>
+    </ItemGroup>
+    
+    <!-- Load StyleCop if desired -->
+    <PropertyGroup>
+        <DirTools>$(DirWorkspace)\tools</DirTools>
+        <DirExternalToolsStyleCop>$(DirTools)\StyleCop</DirExternalToolsStyleCop>
+    </PropertyGroup>
+    <Import Project="$(DirExternalToolsStyleCop)\StyleCop.targets" 
+            Condition="Exists('$(DirExternalToolsStyleCop)\StyleCop.targets')" />
+    <PropertyGroup Condition="">
+        <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
+    </PropertyGroup>
+    
+    <!-- Clean up all the files we generate ourselves -->
+    <PropertyGroup>
+        <CleanDependsOn>
+            _nBuildKit_Projects_CSharp_CleanGeneratedFiles;
+            $(CleanDependsOn);
+        </CleanDependsOn>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Projects_CSharp_CleanGeneratedFiles" 
+            Condition="Exists('$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.InternalsVisibleTo.cs')">
+        <ItemGroup>
+            <GeneratedFilesToDelete Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.InternalsVisibleTo.cs" />
+        </ItemGroup>
+        <Delete Files="@(GeneratedFilesToDelete)" />
+    </Target>
+    
+    <PropertyGroup>
+        <FileSNExe>NotSet</FileSNExe>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Projects_CSharp_GetSnPath">
+        <GetFrameworkSdkPath>
+            <Output TaskParameter="Path" PropertyName="WindowsSdkPath" />
+        </GetFrameworkSdkPath>
+        
+        <PropertyGroup>
+            <FileSNExe>$(WindowsSdkPath)bin\sn.exe</FileSNExe>
+        </PropertyGroup>
+        
+        <!-- For .NET 4.5 there is nothing in the WindowsSdkPath dir but there is in the deeper folder called 'NETFX 4.0 Tools'. -->
+        <!-- For .NET 4.5.1 there is nothing in the WindowsSdkPath dir but there is in the deeper folder called 'NETFX 4.5.1 Tools'. -->
+        <PropertyGroup>
+            <FileSNExe Condition="!Exists($(FileSNExe)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe</FileSNExe>
+            <FileSNExe Condition="!Exists($(FileSNExe)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe</FileSNExe>
+        </PropertyGroup>
+        <Message Text="sn.exe at: $(FileSNExe)" />
+    </Target>
+    
+    <PropertyGroup>
+        <BuildDependsOn>
+            _nBuildKit_Projects_CSharp_PrepareGenerateInternalsVisibleTo;
+            $(BuildDependsOn);
+        </BuildDependsOn>
+    </PropertyGroup>
+    <PropertyGroup>
+        <InternalsVisibleToTemplate>[assembly: InternalsVisibleTo("${AssemblyName}, PublicKey=${Key}&quot;)]</InternalsVisibleToTemplate>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Projects_CSharp_PrepareGenerateInternalsVisibleTo"
+            DependsOnTargets="_nBuildKit_Projects_CSharp_GetSnPath"
+            Condition=" '@(InternalsVisibleTo)' != '' ">
+        <GenerateInternalsVisibleToAttributes SnExe="$(FileSNExe)"
+                                              Project="$(AssemblyName)"
+                                              AttributeTemplate="$(InternalsVisibleToTemplate)" 
+                                              DirPackages="$(DirPackages)"
+                                              DirTemp="$(DirBuildTemp)"
+                                              Items="@(InternalsVisibleTo)"
+                                              Condition=" '@(InternalsVisibleTo)' != '' ">
+            <Output TaskParameter="Result" PropertyName="InternalsVisibleToAttributes" />
+        </GenerateInternalsVisibleToAttributes>
+        
+        <CreateItem
+            Include="InternalsVisibleToAttributes"
+            AdditionalMetadata="ReplacementValue=$(InternalsVisibleToAttributes)"
+            Condition=" '$(InternalsVisibleToAttributes)' != '' ">
+           <Output
+               TaskParameter="Include"
+               ItemName="TemplateGenerationTokens"/>
+        </CreateItem>
+        
+        <CreateItem
+            Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.InternalsVisibleTo.cs"
+            AdditionalMetadata="Template=$(DirNBuildKitMsBuildProjectsCSharpTemplates)\AssemblyInfo.InternalsVisibleTo.cs.in"
+            Condition=" '$(InternalsVisibleToAttributes)' != '' ">
+           <Output
+               TaskParameter="Include"
+               ItemName="FilesToGenerate"/>
+        </CreateItem>
+    </Target>
+</Project>
