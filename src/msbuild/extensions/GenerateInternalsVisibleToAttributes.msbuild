@@ -1,0 +1,269 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="GenerateInternalsVisibleToAttributes" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <SnExe ParameterType="System.String" Required="true" />
+            <Project ParameterType="System.String" Required="true" />
+            <AttributeTemplate ParameterType="System.String" Required="true" />
+            <DirPackages ParameterType="System.String" Required="true" />
+            <DirTemp ParameterType="System.String" Required="true" />
+            <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <Result ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        if (Items == null)
+                        {
+                            Log.LogError("No InternalsVisibleTo attributes to generate!");
+                            return false;
+                        }
+                    
+                        const string MetadataValueTag = "ReplacementValue";
+                        var _regex = new System.Text.RegularExpressions.Regex(
+                            "(?<token>\\$\\{(?<identifier>\\w*)\\})",
+                            System.Text.RegularExpressions.RegexOptions.IgnoreCase 
+                            | System.Text.RegularExpressions.RegexOptions.Multiline 
+                            | System.Text.RegularExpressions.RegexOptions.Compiled 
+                            | System.Text.RegularExpressions.RegexOptions.Singleline);
+                    
+                        var builder = new System.Text.StringBuilder();
+                        
+                        ITaskItem[] processedItems = Items;
+                        for (int i = 0; i < processedItems.Length; i++)
+                        {
+                            ITaskItem taskItem = processedItems[i];
+                            
+                            // Expecting that the taskItems have:
+                            // - taskItem.ItemSpec:            Name of the assembly to include in the attribute
+                            // - taskItem.Projects:            Semi-colon separated list of projects for which the assembly should be added to the internals visible to list
+                            // - taskItem.KeyFile:             The full path to the key file that contains the strong name public key
+                            // - taskItem.AssemblyFromPackage: The file name of the assembly that should be included, noting that this assembly is found in the packages directory
+                            // - taskItem.PublicKey:           The full public key of the assembly
+                            if (!string.IsNullOrEmpty(taskItem.ItemSpec))
+                            {
+                                var projects = taskItem.GetMetadata("Projects");
+                                if (string.IsNullOrEmpty(projects) || !projects.Contains(Project))
+                                {
+                                    continue;
+                                }
+                                
+                                Log.LogMessage(MessageImportance.Normal, "Adding InternalsVisibleTo attribute for: " + taskItem.ItemSpec); 
+                                
+                                var key = string.Empty;
+                                
+                                var publicKey = taskItem.GetMetadata("PublicKey");
+                                if (!string.IsNullOrEmpty(publicKey))
+                                {
+                                    Log.LogMessage(MessageImportance.Normal, "Using provided public key: " + publicKey); 
+                                    key = publicKey;
+                                }
+                                else
+                                {
+                                    var keyFile = taskItem.GetMetadata("KeyFile");
+                                    if (!string.IsNullOrEmpty(keyFile))
+                                    {
+                                        Log.LogMessage(MessageImportance.Normal, "Extracting public key from key file: " + keyFile); 
+                                        
+                                        if (!System.IO.Directory.Exists(DirTemp))
+                                        {
+                                            System.IO.Directory.CreateDirectory(DirTemp);
+                                        }
+                                        
+                                        var publicKeyFile = System.IO.Path.Combine(DirTemp, (System.IO.Path.GetRandomFileName()));
+                                        {
+                                            var publicKeyInfo = new System.Diagnostics.ProcessStartInfo
+                                                {
+                                                    FileName = SnExe,
+                                                    Arguments = string.Format("-p \"{0}\" \"{1}\"", keyFile, publicKeyFile),
+                                                    UseShellExecute = false,
+                                                    RedirectStandardOutput = true,
+                                                    RedirectStandardError = true,
+                                                };
+
+                                            var publicKeyProcess = new System.Diagnostics.Process();
+                                            publicKeyProcess.StartInfo = publicKeyInfo;
+                                            publicKeyProcess.OutputDataReceived +=
+                                                (s, e) =>
+                                                {
+                                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                                    {
+                                                        Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                                    }
+                                                };
+                                            publicKeyProcess.ErrorDataReceived +=
+                                                (s, e) =>
+                                                {
+                                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                                    {
+                                                        Log.LogError(e.Data);
+                                                    }
+                                                };
+                                            publicKeyProcess.Start();
+
+                                            publicKeyProcess.BeginOutputReadLine();
+                                            publicKeyProcess.BeginErrorReadLine();
+                                            publicKeyProcess.WaitForExit();
+                                        }
+
+                                        var text = new System.Text.StringBuilder();
+                                        {
+                                            var info = new System.Diagnostics.ProcessStartInfo
+                                            {
+                                                FileName = SnExe,
+                                                Arguments = string.Format("-tp \"{0}\"", publicKeyFile),
+                                                UseShellExecute = false,
+                                                RedirectStandardOutput = true,
+                                                RedirectStandardError = true,
+                                            };
+
+                                            var process = new System.Diagnostics.Process();
+                                            process.StartInfo = info;
+                                            process.OutputDataReceived +=
+                                                (s, e) =>
+                                                {
+                                                    text.Append(e.Data);
+                                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                                    {
+                                                        Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                                    }
+                                                };
+                                            process.ErrorDataReceived +=
+                                                (s, e) =>
+                                                {
+                                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                                    {
+                                                        Log.LogError(e.Data);
+                                                    }
+                                                };
+                                            process.Start();
+
+                                            process.BeginOutputReadLine();
+                                            process.BeginErrorReadLine();
+                                            process.WaitForExit();
+                                        }
+                                        
+                                        var publicKeyText = text.ToString();
+                                        if (string.IsNullOrEmpty(publicKeyText))
+                                        {
+                                            Log.LogError("Failed to extract public key from key file.");
+                                            continue;
+                                        }
+
+                                        const string startString = "Public key (hash algorithm: sha1):";
+                                        const string endString = "Public key token is";
+                                        var startIndex = publicKeyText.IndexOf(startString);
+                                        var endIndex = publicKeyText.IndexOf(endString);
+                                        key = publicKeyText.Substring(startIndex + startString.Length, endIndex - (startIndex + startString.Length));
+                                    }
+                                    else
+                                    {
+                                        var assemblyFromPackage = taskItem.GetMetadata("AssemblyFromPackage");
+                                        if (!string.IsNullOrEmpty(assemblyFromPackage))
+                                        {
+                                            var assemblyPath = System.IO.Directory.EnumerateFiles(DirPackages, assemblyFromPackage, SearchOption.AllDirectories)
+                                                .OrderBy(k => System.IO.Path.GetDirectoryName(k))
+                                                .LastOrDefault();
+                                            if (string.IsNullOrEmpty(assemblyPath))
+                                            {
+                                                Log.LogError("Failed to find the full path of: " + assemblyFromPackage);
+                                                continue;
+                                            }
+                                                
+                                            var info = new System.Diagnostics.ProcessStartInfo
+                                                {
+                                                    FileName = SnExe,
+                                                    Arguments = string.Format("-Tp \"{0}\"", assemblyPath),
+                                                    UseShellExecute = false,
+                                                    RedirectStandardOutput = true,
+                                                    RedirectStandardError = true,
+                                                };
+
+                                            var text = new System.Text.StringBuilder();
+                                            var process = new System.Diagnostics.Process();
+                                            process.StartInfo = info;
+                                            process.OutputDataReceived +=
+                                                (s, e) =>
+                                                {
+                                                    text.Append(e.Data);
+                                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                                    {
+                                                        Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                                    }
+                                                };
+                                            process.ErrorDataReceived +=
+                                                (s, e) =>
+                                                {
+                                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                                    {
+                                                        Log.LogError(e.Data);
+                                                    }
+                                                };
+                                            process.Start();
+
+                                            process.BeginOutputReadLine();
+                                            process.BeginErrorReadLine();
+                                            process.WaitForExit();
+                                            
+                                            var publicKeyText = text.ToString();
+                                            if (string.IsNullOrEmpty(publicKeyText))
+                                            {
+                                                Log.LogError("Failed to extract public key from assembly.");
+                                                continue;
+                                            }
+
+                                            const string startString = "Public key (hash algorithm: sha1):";
+                                            const string endString = "Public key token is";
+                                            var startIndex = publicKeyText.IndexOf(startString);
+                                            var endIndex = publicKeyText.IndexOf(endString);
+                                            key = publicKeyText.Substring(startIndex + startString.Length, endIndex - (startIndex + startString.Length));
+                                        }
+                                    }
+                                }
+                                
+                                if (string.IsNullOrEmpty(key))
+                                {
+                                    Log.LogError("Failed to find public key for: " + taskItem.ItemSpec);
+                                    continue;
+                                }
+                                
+                                var tokenPairs = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.InvariantCultureIgnoreCase)
+                                    {
+                                        { "AssemblyName", taskItem.ItemSpec },
+                                        { "Key", key },
+                                    };
+                                var attributeText = _regex.Replace(
+                                    AttributeTemplate,
+                                    m => 
+                                    {
+                                        var output = m.Value;
+                                        if (tokenPairs.ContainsKey(m.Groups[2].Value))
+                                        {
+                                            output = tokenPairs[m.Groups[2].Value];
+                                        }
+                                        return output;
+                                    });
+                                builder.AppendLine(attributeText);
+                            }
+                        }
+
+                        Result = builder.ToString();
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>
