@@ -2,6 +2,11 @@
 <Project ToolsVersion="4.0"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsProjectCSharp>true</ExistsProjectCSharp>
+    </PropertyGroup>
+    
+    <PropertyGroup>
         <DirNBuildKitMsBuildProjectsCSharp>$(DirPackages)\nBuildKit.MsBuild.Projects.CSharp.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjectsCSharp>
         <DirNBuildKitMsBuildProjectsCSharpTemplates>$(DirNBuildKitMsBuildProjectsCSharp)\templates</DirNBuildKitMsBuildProjectsCSharpTemplates>
     
@@ -11,7 +16,7 @@
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild') AND '$(ExistsExtensionsGenerateInternalsVisibleToAttributes)' != 'true' " />
     
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <PlatformTarget>$(PlatformWithoutSpaces)</PlatformTarget>

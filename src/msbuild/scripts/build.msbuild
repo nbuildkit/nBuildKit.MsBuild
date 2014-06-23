@@ -3,6 +3,11 @@
          DefaultTargets="nBuildKit_Build_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <!-- Note the current script is not meant to be imported! -->
+        <ExistsBuild>true</ExistsBuild>
+        
+        <!-- The full path to the settings file that contains all the settings for the build process -->    
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
     </PropertyGroup>
     <PropertyGroup>
@@ -65,7 +70,7 @@
     </ItemGroup>
 
     <Import Project="$(BuildPropertyFile)"
-            Condition="Exists('$(BuildPropertyFile)')" />
+            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
     
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
@@ -136,7 +141,7 @@
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild') AND '$(ExistsExtensionsSortItemGroupByKey)' != 'true' " />
     
     <Target Name="nBuildKit_Build_Run" DependsOnTargets="_nBuildKit_Build_OrderTargets;_nBuildKit_Build_DisplayInfo">
         <Error Text="No build properties file was defined."

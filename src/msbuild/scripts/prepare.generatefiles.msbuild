@@ -3,11 +3,15 @@
          DefaultTargets="nBuildKit_Prepare_GenerateFiles_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsPrepareGenerateFiles>true</ExistsPrepareGenerateFiles>
+        
+        <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
     </PropertyGroup>
 
     <Import Project="$(BuildPropertyFile)"
-            Condition="Exists('$(BuildPropertyFile)')" />
+            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
     
     <PropertyGroup>
         <!-- Build flags -->
@@ -28,11 +32,11 @@
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild') AND '$(ExistsExtensionsGetVcsInfoFromFile)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild')" />
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
             
     <Target Name="nBuildKit_Prepare_GenerateFiles_Run" 
             DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DisplayInfo">

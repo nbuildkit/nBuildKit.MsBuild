@@ -6,6 +6,11 @@
         <NBuildKitVersion>${VersionSemantic}</NBuildKitVersion>
     </PropertyGroup>
     <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsProjectCommon>true</ExistsProjectCommon>
+    </PropertyGroup>
+    
+    <PropertyGroup>
         <!-- 
             We can't search for the 'settings.props' file because MsBuild won't let us dynamically load files,
             so we have to make some assumptions about the location of the file when working from Visual Studio.
@@ -27,7 +32,7 @@
     </PropertyGroup>
 
     <Import Project="$(BuildPropertyFile)"
-            Condition="Exists('$(BuildPropertyFile)')" />
+            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
             
     <!-- Default settings -->
     <PropertyGroup>
@@ -66,11 +71,11 @@
     </PropertyGroup>
     
     <Import Project="$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild')" />
+            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild') AND '$(ExistsPrepareGenerateFiles)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\prepare.getversion.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.getversion.msbuild')" />
+            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild')" />
+            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
             
     <Target Name="nBuildKit_Projects_Common_VerifyProperties">
         <Error Text="$(BuildPropertyFile) not found"

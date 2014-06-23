@@ -4,6 +4,11 @@
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
          ToolsVersion="4.0">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsFindAndReplaceInFile>true</ExistsExtensionsFindAndReplaceInFile>
+    </PropertyGroup>
+    
     <UsingTask TaskName="FindAndReplaceInFile" 
                TaskFactory="CodeTaskFactory" 
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
