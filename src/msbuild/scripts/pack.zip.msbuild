@@ -26,7 +26,8 @@
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
         <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
         
         <!-- nBuildKit directories -->
@@ -34,8 +35,8 @@
         <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
@@ -65,33 +66,33 @@
         once for each entry in the ArchivePackageSpecs ItemGroup.
     -->
     <Target Name="_nBuildKit_Pack_Zip_Pack"
-            DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Condition=" '@(ArchivePackageSpecs)' != '' "
             Outputs="%(ArchivePackageSpecs.Identity)">
         <Message Text="Resolving build templates for: %(ArchivePackageSpecs.Identity)" />
         
         <!-- Process the build templates in the ZIP file path -->
         <TemplateText Template="%(ArchivePackageSpecs.Identity)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileArchiveSpecs" />
         </TemplateText>
         
         <!-- Process the build templates in the base directory -->
         <TemplateText Template="%(ArchivePackageSpecs.DirBase)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="DirPackageSpecsBase" />
         </TemplateText>
         
         <!-- Process the build templates in the included files -->
         <TemplateText Template="%(ArchivePackageSpecs.IncludedFiles)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(ArchivePackageSpecs.IncludedFiles)' != '' ">
             <Output TaskParameter="Result" PropertyName="FilesArchiveZipIncluded" />
         </TemplateText>
         
         <!-- Process the build templates in the excluded files -->
         <TemplateText Template="%(ArchivePackageSpecs.ExcludedFiles)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(ArchivePackageSpecs.ExcludedFiles)' != '' ">
             <Output TaskParameter="Result" PropertyName="FilesArchiveZipExcluded" />
         </TemplateText>

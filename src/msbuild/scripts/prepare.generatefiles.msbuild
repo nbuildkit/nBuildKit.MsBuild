@@ -31,10 +31,9 @@
         <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild') AND '$(ExistsExtensionsGetVcsInfoFromFile)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
     <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
             
@@ -61,31 +60,9 @@
         <Message Text="Getting version ..." />
     </Target>
     
-    <Target Name="_nBuildKit_Prepare_GenerateFiles_GetVersionFromFile" >
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
-                                                           Condition="Exists('$(FileSemanticVersion)')">
-            <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
-            <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
-            <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
-            <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
-            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
-            <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
-        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
-        
-        <Message Text="Version: $(VersionSemantic)" />
-    </Target>
-    
-    <Target Name="_nBuildKit_Prepare_GenerateFiles_GetVcsInfoFromFile">
-        <GetVcsInfoFromFile InfoFile="$(FileVcsInfo)"
-                            Condition="Exists('$(FileVcsInfo)')">
-            <Output TaskParameter="Revision" PropertyName="VcsRevision" />
-            <Output TaskParameter="Branch" PropertyName="VcsBranch" />
-        </GetVcsInfoFromFile>
-    </Target>
-    
     <!-- Generate the required files -->
     <Target Name="_nBuildKit_Prepare_GenerateFiles_GenerateFiles"
-            DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_GetVersionFromFile;_nBuildKit_Prepare_GenerateFiles_GetVcsInfoFromFile"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Outputs="%(FilesToGenerate.Identity)"
             Condition=" '@(FilesToGenerate)' != '' ">
         <Message Text="Generating file %(FilesToGenerate.Identity)" />
@@ -101,69 +78,9 @@
         <MakeDir Directories="%(DirFilesToGenerateTemp.Identity)" 
                  Condition="!Exists('%(DirFilesToGenerateTemp.Identity)')" />
         
-        <ItemGroup>
-            <TemplateGenerationTokens Include="VersionMajor">
-                <ReplacementValue>$(VersionMajor)</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="VersionMinor">
-                <ReplacementValue>$(VersionMinor)</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="VersionPatch">
-                <ReplacementValue>$(VersionPatch)</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="VersionBuild">
-                <ReplacementValue>$(VersionBuild)</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="VersionSemantic">
-                <ReplacementValue>$(VersionSemantic)</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="VersionSemanticFull">
-                <ReplacementValue>$(VersionSemanticFull)</ReplacementValue>
-            </TemplateGenerationTokens>
-            
-            <TemplateGenerationTokens Include="Configuration">
-                <ReplacementValue>$(Configuration)</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="Platform">
-                <ReplacementValue>$(Platform)</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="PlatformWithoutSpaces">
-                <ReplacementValue>$(PlatformWithoutSpaces)</ReplacementValue>
-            </TemplateGenerationTokens>
-            
-            <TemplateGenerationTokens Include="VcsRevision">
-                <ReplacementValue>$(VcsRevision)</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="VcsBranch">
-                <ReplacementValue>$(VcsBranch)</ReplacementValue>
-            </TemplateGenerationTokens>
-            
-            <TemplateGenerationTokens Include="Now">
-                <ReplacementValue>$([System.DateTime]::Now.ToString("o"))</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="Date">
-                <ReplacementValue>$([System.DateTime]::Now.ToString("yyyy/MM/dd"))</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="DayOfMonth">
-                <ReplacementValue>$([System.DateTime]::Now.ToString("dd"))</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="Month">
-                <ReplacementValue>$([System.DateTime]::Now.ToString("MM"))</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="Year">
-                <ReplacementValue>$([System.DateTime]::Now.ToString("yyyy"))</ReplacementValue>
-            </TemplateGenerationTokens>
-            
-            <TemplateGenerationTokens Include="Company">
-                <ReplacementValue>$(CompanyName)</ReplacementValue>
-            </TemplateGenerationTokens>
-            <TemplateGenerationTokens Include="StartingYear">
-                <ReplacementValue>$(ProductStartingYear)</ReplacementValue>
-            </TemplateGenerationTokens>
-        </ItemGroup>
         <TemplateFile Template="%(FilesToGenerate.Template)" 
                       OutputFileName="%(FilesToGenerate.Identity)" 
-                      Tokens="@(TemplateGenerationTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition="!Exists('%(FilesToGenerate.FullPath)')"/>
     </Target>
  </Project>

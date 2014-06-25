@@ -26,7 +26,8 @@
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
@@ -46,8 +47,8 @@
         <UnitTestAssemblyNamePrefix Condition=" '$(UnitTestAssemblyNamePrefix)' == '' " >test.unit</UnitTestAssemblyNamePrefix>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\OpenCover.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\OpenCover.msbuild') AND '$(ExistsExtensionsOpenCover)' != 'true' "/>
@@ -75,7 +76,7 @@
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                                     $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:                         $(DirBuild)" />
-        <Message Text="The directory containing the generated binaries is located at:                   $(DirBuildBin)" />
+        <Message Text="The directory containing the generated binaries is located at:                   $(DirBuildBinPlatformConfig)" />
         <Message Text="The directory containing the build logs is located at:                           $(DirBuildLogs)" />
         <Message Text="The directory containing the OpenCover unit test coverage reports is located at: $(DirReportGeneratorOutput)" />
         <Message Text="The directory containing the temporary build files is located at:                $(DirBuildTemp)" />
@@ -89,16 +90,17 @@
         <Message Text=" " />
     </Target>
     
-    <Target Name="_nBuildKit_Test_Unit_NUnit_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+    <Target Name="_nBuildKit_Test_Unit_NUnit_ReplaceBuildTemplates" 
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Message Text="Resolving build templates ..." />
         
         <TemplateText Template="$(FileReportOpenCoverXml)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportOpenCoverXmlExpanded" />
         </TemplateText>
         
         <TemplateText Template="$(FileReportOpenCoverCsv)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportOpenCoverCsvExpanded" />
         </TemplateText>
     </Target>
@@ -136,7 +138,7 @@
                  Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <ItemGroup Condition=" '@(UnitTestAssemblies)' == '' ">
-            <UnitTestAssemblies Include="$(DirBuildBin)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
+            <UnitTestAssemblies Include="$(DirBuildBinPlatformConfig)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
         </ItemGroup>
         <ItemGroup Condition=" '@(OpenCoverIgnoreAttributes)' == '' ">
             <OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
@@ -153,7 +155,7 @@
                    OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
                    UnitTestExe="$(ToolsExternalNUnitConsolePath)"
                    UnitTestArguments="/framework:net-4.5 /result:&quot;nunit-console.xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:single @(UnitTestAssemblies->'%22%(FullPath)%22', ' ')"
-                   BinDir="$(DirBuildBin)" 
+                   BinDir="$(DirBuildBinPlatformConfig)" 
                    Condition=" '$(ShouldExecute)' == 'true' "/>
         
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"

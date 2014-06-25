@@ -29,8 +29,8 @@
         <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
@@ -58,26 +58,26 @@
     </Target>
     
     <Target Name="_nBuildKit_PushTo_Directory_Push" 
-            DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Outputs="%(PushToDirectorySpecs.Identity)">
         <Message Text="Resolving build templates for: %(PushToDirectorySpecs.Identity)" />
         
         <!-- Process the build templates in the input directories -->
         <TemplateText Template="%(PushToDirectorySpecs.Identity)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="DirPushToSpecs" />
         </TemplateText>
         
         <!-- Process the build templates in the included files -->
         <TemplateText Template="%(PushToDirectorySpecs.IncludedFiles)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToDirectorySpecs.IncludedFiles)' != '' ">
             <Output TaskParameter="Result" PropertyName="FilesPushToIncluded" />
         </TemplateText>
         
         <!-- Process the build templates in the excluded files -->
         <TemplateText Template="%(PushToDirectorySpecs.ExcludedFiles)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToDirectorySpecs.ExcludedFiles)' != '' ">
             <Output TaskParameter="Result" PropertyName="FilesPushToExcluded" />
         </TemplateText>        

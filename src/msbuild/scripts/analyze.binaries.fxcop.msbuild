@@ -26,7 +26,8 @@
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         
@@ -42,8 +43,8 @@
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir>
     </PropertyGroup>
    
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
    
     <Import Project="$(DirMsBuildExtensions)\FxCop.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\FxCop.msbuild') AND '$(ExistsExtensionsFxCop)' != 'true' "/>
@@ -68,7 +69,7 @@
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBin)" />
+        <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBinPlatformConfig)" />
         <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
         <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
@@ -82,11 +83,11 @@
         <Message Text=" " />
     </Target>
     
-    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Message Text="Resolving build templates for: $(FileReportFxCop)" />
         
         <TemplateText Template="$(FileReportFxCop)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportFxCopExpanded" />
         </TemplateText>
     </Target>

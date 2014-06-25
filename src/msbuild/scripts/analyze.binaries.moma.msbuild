@@ -26,7 +26,8 @@
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
@@ -42,8 +43,8 @@
         <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
@@ -66,7 +67,7 @@
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBin)" />
+        <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBinPlatformConfig)" />
         <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
         <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
         <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
@@ -77,11 +78,11 @@
         <Message Text=" " />
     </Target>
     
-    <Target Name="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+    <Target Name="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Message Text="Resolving build templates for: $(FileReportMoma)" />
         
         <TemplateText Template="$(FileReportMoma)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportMomaExpanded" />
         </TemplateText>
     </Target>
@@ -106,9 +107,9 @@
                Condition="!Exists('$(PathMomaExe)') AND '$(ShouldExecute)' == 'true' "/>
         
         <ItemGroup Condition=" '@(MomaInputFiles)' == '' ">
-            <MomaInputFiles Include="$(DirBuildBin)\*.dll"
-                            Exclude="$(DirBuildBin)\Test.*.dll" />
-            <MomaInputFiles Include="$(DirBuildBin)\*.exe"/>
+            <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
+                            Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
+            <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
         </ItemGroup>
         
         <Exec Command="$(PathMomaExe) --nogui --out &quot;$(FileReportMomaExpanded)&quot; @(MomaFiles->'%22%(FullPath)%22', ' ')"
