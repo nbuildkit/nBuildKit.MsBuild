@@ -49,8 +49,8 @@
         <VersionSemantic>0</VersionSemantic>
     </PropertyGroup>
 
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild') AND '$(ExistsExtensionsFindAndReplaceInFile)' != 'true' "/>    
@@ -153,20 +153,20 @@
         once for each entry in the NuGetPackagesSpecs ItemGroup.
     -->
     <Target Name="_nBuildKit_Pack_NuGet_Pack" 
-            DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Condition=" '@(NuGetPackageSpecs)' != '' "
             Outputs="%(NuGetPackageSpecs.Identity)">
         <Message Text="Resolving build templates for: %(NuGetPackageSpecs.Identity)" />
         
         <!-- Process the build templates in the nuspec file path -->
         <TemplateText Template="%(NuGetPackageSpecs.Identity)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileNuGetNuSpec" />
         </TemplateText>
         
         <!-- Process the build templates in the nuspec template file path -->
         <TemplateText Template="%(NuGetPackageSpecs.Template)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileNuGetTemplate" />
         </TemplateText>
         <Error Text="The NuGet template spec file does not exist. Cannot generate packages."
@@ -174,14 +174,14 @@
         
         <!-- Process the build templates in the included dependencies -->
         <TemplateText Template="%(NuGetPackageSpecs.IncludedDependencies)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(NuGetPackageSpecs.IncludedDependencies)' != '' ">
             <Output TaskParameter="Result" PropertyName="FilesNuGetDependenciesIncluded" />
         </TemplateText>
         
         <!-- Process the build templates in the excluded dependencies -->
         <TemplateText Template="%(NuGetPackageSpecs.ExcludedDependencies)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(NuGetPackageSpecs.ExcludedDependencies)' != '' ">
             <Output TaskParameter="Result" PropertyName="FilesNuGetDependenciesExcluded" />
         </TemplateText>    
@@ -221,28 +221,13 @@
         </GatherNuGetDependenciesForProject>
 
         <ItemGroup>
-            <NuSpecTokens Include="Version">
-                <ReplacementValue>$(VersionSemantic)</ReplacementValue>
-            </NuSpecTokens>
-            <NuSpecTokens Include="DirBin">
-                <ReplacementValue>$(DirBuildBin)</ReplacementValue>
-            </NuSpecTokens>
-            <NuSpecTokens Include="DirSrc">
-                <ReplacementValue>$(DirSrc)</ReplacementValue>
-            </NuSpecTokens>
-            <NuSpecTokens Include="DirTemp">
-                <ReplacementValue>$(DirBuildTemp)</ReplacementValue>
-            </NuSpecTokens>
-            <NuSpecTokens Include="ReleaseNotes">
-                <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
-            </NuSpecTokens>
-            <NuSpecTokens Include="Dependencies">
+            <TemplateTokens Include="Dependencies">
                 <ReplacementValue>$(NuGetDependencies)</ReplacementValue>
-            </NuSpecTokens>
+            </TemplateTokens>
         </ItemGroup>
         <TemplateFile Template="$(FileNuGetTemplate)" 
                       OutputFileName="$(FileNuGetNuSpec)" 
-                      Tokens="@(NuSpecTokens)" 
+                      Tokens="@(TemplateTokens)" 
                       Condition=" '$(ShouldExecute)' == 'true' "/>
         
         <NuGetPack NuGetPath="$(ToolsExternalNuGetPath)" 

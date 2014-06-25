@@ -27,6 +27,8 @@
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
+        <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
@@ -38,6 +40,9 @@
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
         <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle>
     </PropertyGroup>
+    
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
@@ -79,7 +84,8 @@
     <PropertyGroup>
         <FileGeneratedSandcastle>$(DirBuildTemp)\sandcastle.shfbproj</FileGeneratedSandcastle>
     </PropertyGroup>
-    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate">
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_GenerateTemplate"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Warning Text="The semantic version file does not exist. Will not be able to obtain a version number."
                  Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="The Sandcastle template file does not exist. Cannot generate documentation."
@@ -101,28 +107,19 @@
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
     
         <ItemGroup>
-            <SandcastleTokens Include="DirShfbRoot">
+            <TemplateTokens Include="DirShfbRoot">
                 <ReplacementValue>$(DirSandcastleHelpFileBuilder)</ReplacementValue>
-            </SandcastleTokens>
-            <SandcastleTokens Include="DirSandcastle">
+            </TemplateTokens>
+            <TemplateTokens Include="DirSandcastle">
                 <ReplacementValue>$(DirSandcastle)</ReplacementValue>
-            </SandcastleTokens>
-            <SandcastleTokens Include="DirDoc">
+            </TemplateTokens>
+            <TemplateTokens Include="DirDoc">
                 <ReplacementValue>$(DirBuildDoc)</ReplacementValue>
-            </SandcastleTokens>
-            <SandcastleTokens Include="DirLogs">
-                <ReplacementValue>$(DirBuildLogs)</ReplacementValue>
-            </SandcastleTokens>
-            <SandcastleTokens Include="DirBin">
-                <ReplacementValue>$(DirBuildBin)</ReplacementValue>
-            </SandcastleTokens>
-            <SandcastleTokens Include="Version">
-                <ReplacementValue>$(VersionSemantic)</ReplacementValue>
-            </SandcastleTokens>
+            </TemplateTokens>
         </ItemGroup>
         <TemplateFile Template="$(FileTemplateSandcastle)" 
                       OutputFileName="$(FileGeneratedSandcastle)" 
-                      Tokens="@(SandcastleTokens)" 
+                      Tokens="@(TemplateTokens)" 
                       Condition="Exists('$(FileTemplateSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
     

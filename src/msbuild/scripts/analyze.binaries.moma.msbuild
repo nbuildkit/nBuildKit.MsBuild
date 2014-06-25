@@ -42,8 +42,8 @@
         <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
@@ -77,11 +77,11 @@
         <Message Text=" " />
     </Target>
     
-    <Target Name="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+    <Target Name="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Message Text="Resolving build templates for: $(FileReportMoma)" />
         
         <TemplateText Template="$(FileReportMoma)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportMomaExpanded" />
         </TemplateText>
     </Target>

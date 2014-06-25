@@ -36,8 +36,8 @@
         <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\Ccm.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\Ccm.msbuild') AND '$(ExistsExtensionsCcm)' != 'true' "/>
@@ -77,11 +77,12 @@
         <Message Text=" " />
     </Target>
     
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates" 
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Message Text="Resolving build templates for: $(FileReportCcm)" />
         
         <TemplateText Template="$(FileReportCcm)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportCcmExpanded" />
         </TemplateText>
     </Target>
@@ -107,14 +108,9 @@
         <Error Text="Could not locate the CCM executable path. Cannot execute source code analysis."
                Condition="!Exists('$(PathCcmExe)') AND '$(ShouldExecute)' == 'true' "/>
         
-        <ItemGroup>
-            <CcmTokens Include="DirSrc">
-                <ReplacementValue>$(DirSrc)</ReplacementValue>
-            </CcmTokens>
-        </ItemGroup>
         <TemplateFile Template="$(FileTemplateCcm)" 
                       OutputFileName="$(FileGeneratedCcm)" 
-                      Tokens="@(CcmTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '$(ShouldExecute)' == 'true' "/>
     
         <Ccm CcmExe="$(PathCcmExe)"

@@ -50,8 +50,8 @@
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\OpenCover.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\OpenCover.msbuild') AND '$(ExistsExtensionsOpenCover)' != 'true' "/>
@@ -97,21 +97,22 @@
         <Message Text=" " />
     </Target>
     
-    <Target Name="_nBuildKit_Test_Unit_MsTest_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+    <Target Name="_nBuildKit_Test_Unit_MsTest_ReplaceBuildTemplates" 
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Message Text="Resolving build templates ..." />
         
         <TemplateText Template="$(FileReportMsTest)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportMsTestExpanded" />
         </TemplateText>
         
         <TemplateText Template="$(FileReportOpenCoverXml)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportOpenCoverXmlExpanded" />
         </TemplateText>
         
         <TemplateText Template="$(FileReportOpenCoverCsv)"
-                      Tokens="@(BuildTemplateTextTokens)">
+                      Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportOpenCoverCsvExpanded" />
         </TemplateText>
     </Target>

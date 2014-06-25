@@ -35,8 +35,8 @@
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\NuGetPush.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\NuGetPush.msbuild') AND '$(ExistsExtensionsNuGetPush)' != 'true' "/>
@@ -69,12 +69,12 @@
     </Target>
     
     <Target Name="_nBuildKit_PushTo_NuGet_Push" 
-            DependsOnTargets="nBuildKit_Shared_TemplateText_Initialize">
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Error Text="No NuGet executable defined. Will not be able to restore the packages."
                Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
         
         <TemplateText Template="@(NuGetPackagesToPush)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '@(NuGetPackagesToPush)' != '' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Result" PropertyName="NuGetPackagesToPushExpanded" />
         </TemplateText>

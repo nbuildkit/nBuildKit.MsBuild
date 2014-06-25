@@ -37,8 +37,8 @@
         <ToolsExternalGitHubRelease Condition=" '$(ToolsExternalGitHubRelease)' == '' ">github-release.exe</ToolsExternalGitHubRelease>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildShared)\shared.templatetext.msbuild" 
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetext.msbuild') AND '$(ExistsSharedTemplateText)' != 'true' " />
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
     <Import Project="$(DirMsBuildExtensions)\GitHubReleaseCreate.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\GitHubReleaseCreate.msbuild') AND '$(ExistsExtensionsGitHubReleaseCreate)' != 'true' " />
@@ -49,7 +49,7 @@
             
     <Target Name="nBuildKit_PushTo_GitHubRelease_Run" DependsOnTargets="_nBuildKit_PushTo_GitHubRelease_DisplayInfo">
         <CallTarget Targets="_nBuildKit_PushTo_GitHubRelease_GetVersion" />
-        <CallTarget Targets="nBuildKit_Shared_TemplateText_Initialize" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Initialize" />
         <CallTarget Targets="_nBuildKit_PushTo_GitHubRelease_Push" />
     </Target>
     
@@ -93,7 +93,7 @@
         <!-- Process the build templates in the name -->
         <Message Text="Translating the release name. Currently at: %(PushToGitHubReleaseSpecs.Identity)" />
         <TemplateText Template="%(PushToGitHubReleaseSpecs.Identity)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.Identity)' != '' ">
             <Output TaskParameter="Result" PropertyName="GitHubReleaseName" />
         </TemplateText>
@@ -101,7 +101,7 @@
         <!-- Process the build templates in the included files -->
         <Message Text="Translating the included files. Currently at: %(PushToGitHubReleaseSpecs.IncludedFiles)" />
         <TemplateText Template="%(PushToGitHubReleaseSpecs.IncludedFiles)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.IncludedFiles)' != '' ">
             <Output TaskParameter="Result" PropertyName="GitHubReleaseIncludedFiles" />
         </TemplateText>
@@ -109,7 +109,7 @@
         <!-- Process the build templates in the excluded files -->
         <Message Text="Translating the excluded files. Currently at: %(PushToGitHubReleaseSpecs.ExcludedFiles)" />
         <TemplateText Template="%(PushToGitHubReleaseSpecs.ExcludedFiles)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.ExcludedFiles)' != '' ">
             <Output TaskParameter="Result" PropertyName="GitHubReleaseExcludedFiles" />
         </TemplateText>
@@ -117,7 +117,7 @@
         <!-- Process the build templates in the description -->
         <Message Text="Translating the description. Currently at: %(PushToGitHubReleaseSpecs.Description)" />
         <TemplateText Template="%(PushToGitHubReleaseSpecs.Description)"
-                      Tokens="@(BuildTemplateTextTokens)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.Description)' != '' ">
             <Output TaskParameter="Result" PropertyName="GitHubReleaseDescription" />
         </TemplateText>
