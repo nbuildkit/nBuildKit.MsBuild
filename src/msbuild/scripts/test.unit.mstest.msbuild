@@ -26,7 +26,8 @@
         <!-- Directories -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin\$(PlatformWithoutSpaces)\$(Configuration)</DirBuildBin>
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
@@ -79,7 +80,7 @@
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                                     $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:                         $(DirBuild)" />
-        <Message Text="The directory containing the generated binaries is located at:                   $(DirBuildBin)" />
+        <Message Text="The directory containing the generated binaries is located at:                   $(DirBuildBinPlatformConfig)" />
         <Message Text="The directory containing the build logs is located at:                           $(DirBuildLogs)" />
         <Message Text="The directory containing the OpenCover unit test coverage reports is located at: $(DirReportGeneratorOutput)" />
         <Message Text="The directory containing the temporary build files is located at:                $(DirBuildTemp)" />
@@ -144,7 +145,7 @@
                  Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <ItemGroup Condition=" '@(UnitTestAssemblies)' == '' ">
-            <UnitTestAssemblies Include="$(DirBuildBin)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
+            <UnitTestAssemblies Include="$(DirBuildBinPlatformConfig)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
         </ItemGroup>
         <ItemGroup Condition=" '@(OpenCoverIgnoreAttributes)' == '' ">
             <OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
@@ -163,7 +164,7 @@
                    OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
                    UnitTestExe="$(ToolsExternalMsTestPath)"
                    UnitTestArguments="@(TestAssemblies->'/testcontainer:%22%22%(FullPath)%22%22', ' ') /resultsfile:&quot;&quot;$(FileReportMsTestExpanded)&quot;&quot;"
-                   BinDir="$(DirBuildBin)" 
+                   BinDir="$(DirBuildBinPlatformConfig)" 
                    Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
