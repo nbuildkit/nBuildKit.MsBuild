@@ -283,8 +283,13 @@
     -->
     <!-- List of all files that should be generated and their template files -->
     <ItemGroup>
-        <FilesToGenerate Include="$(DirBuildTemp)\AssemblyInfo.InternalsVisibleTo.cs">
-            <Template>$(DirTemplates)\AssemblyInfo.InternalsVisibleTo.cs.in</Template>
+        <FilesToGenerate Include="$(DirBuildTemp)\MyFile.txt">
+            <Template>$(DirTemplates)\MyTemplatefile.txt.in</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\MyOtherFile.txt">
+            <Template>$(DirTemplates)\MyOtherTemplatefile.txt.in</Template>
+            <Token>MyAdditionalTemplateParameter</Token>
+            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
         </FilesToGenerate>
     </ItemGroup>
     
@@ -293,9 +298,9 @@
         The default templates, as indicated at the top of this file, are always available.
     -->
     <ItemGroup>
-        <TemplateGenerationTokens Include="">
+        <TemplateTokens Include="">
             <ReplacementValue></ReplacementValue>
-        </TemplateGenerationTokens>
+        </TemplateTokens>
     </ItemGroup>
     
     

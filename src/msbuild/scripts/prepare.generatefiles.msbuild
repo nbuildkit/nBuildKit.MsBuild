@@ -78,6 +78,18 @@
         <MakeDir Directories="%(DirFilesToGenerateTemp.Identity)" 
                  Condition="!Exists('%(DirFilesToGenerateTemp.Identity)')" />
         
+        <!-- 
+            It seems MsBuild can't handle batched metadata in conditions either, so make a property and then use that.
+        -->
+        <CreateProperty Value="%(FilesToGenerate.Token)">
+            <Output TaskParameter="Value" PropertyName="AdditionalToken" />
+        </CreateProperty>
+        <ItemGroup Condition=" '$(AdditionalToken)' != '' ">
+            <TemplateTokens Include="%(FilesToGenerate.Token)">
+                <ReplacementValue>%(FilesToGenerate.ReplacementValue)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+        
         <TemplateFile Template="%(FilesToGenerate.Template)" 
                       OutputFileName="%(FilesToGenerate.Identity)" 
                       Tokens="@(TemplateTokens)"
