@@ -66,63 +66,11 @@
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
         <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
         
-        <!-- Override the default output paths so that they go into a single directory -->
-        <OutputPath>$(DirBuildBinPlatformConfig)</OutputPath>
+        <!-- 
+            Override the default output paths so that they go into a single directory. Use OutDir for that because the individual projects use OutputPath to hint at the 
+            path they want. OutDir overrides that.
+        -->
+        <OutDir>$(DirBuildBinPlatformConfig)</OutDir>
         <IntermediateOutputPath>$([System.IO.Path]::GetFullPath('$(DirBuildTemp)\bin\obj\$(AssemblyName)\$(Platform)\$(Configuration)\'))</IntermediateOutputPath>
     </PropertyGroup>
-    
-    <Import Project="$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild') AND '$(ExistsPrepareGenerateFiles)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\prepare.getversion.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
-            
-    <Target Name="nBuildKit_Projects_Common_VerifyProperties">
-        <Error Text="$(BuildPropertyFile) not found"
-                Condition="!Exists('$(BuildPropertyFile)')" />
-    </Target>
-    
-    <!-- Clean up all the files we generate ourselves -->
-    <PropertyGroup>
-        <CleanDependsOn>
-            _nBuildKit_Projects_Common_CleanGeneratedFiles;
-            _nBuildKit_Projects_Common_ExternalPreClean;
-            $(CleanDependsOn);
-        </CleanDependsOn>
-    </PropertyGroup>
-    <Target Name="_nBuildKit_Projects_Common_CleanGeneratedFiles" DependsOnTargets="nBuildKit_Projects_Common_VerifyProperties">
-        <ItemGroup>
-            <GeneratedFilesToDelete Include="%(FilesToGenerate.FullPath)" />
-        </ItemGroup>
-        <Delete Files="@(GeneratedFilesToDelete)" />
-    </Target>
-    
-    <!-- Handle any external pre-clean steps -->
-    <Target Name="_nBuildKit_Projects_Common_ExternalPreClean"
-            Condition=" '@(PreCleanScripts)' != '' ">
-        <MSBuild Projects="%(PreCleanScripts.FullPath)" Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)" />
-    </Target>
-    
-    
-    <!-- Generate the required files -->
-    <PropertyGroup>
-        <BuildDependsOn>
-            _nBuildKit_Projects_Common_GenerateFiles;
-            _nBuildKit_Projects_Common_ExternalPreBuild;
-            $(BuildDependsOn);
-        </BuildDependsOn>
-    </PropertyGroup>
-    <Target Name="_nBuildKit_Projects_Common_GenerateFiles"
-            DependsOnTargets="nBuildKit_Projects_Common_VerifyProperties">
-        <CallTarget Targets="nBuildKit_Prepare_GetVersion_Run" />
-        <CallTarget Targets="nBuildKit_Prepare_VcsInfo_Run" />
-        <CallTarget Targets="nBuildKit_Prepare_GenerateFiles_Run" />
-    </Target>
-
-    <!-- Handle any external pre-build steps -->
-    <Target Name="_nBuildKit_Projects_Common_ExternalPreBuild"
-            Condition=" '@(PreCompilationScripts)' != '' ">
-        <MSBuild Projects="%(PreCompilationScripts.FullPath)" Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)" />
-    </Target>
 </Project>
