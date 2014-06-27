@@ -3,21 +3,40 @@
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!-- 
-        Certain items in this settings file allow replacement of the following build templates:
+        Certain properties and items in this settings file allow replacement of the following templates:
         ${VersionMajor}          - The major version number
         ${VersionMinor}          - The minor version number
         ${VersionPatch}          - The patch version number
         ${VersionBuild}          - The build number of the version
         ${VersionSemantic}       - The semantic version, e.g. 1.2.3
         ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3+001
+        
         ${Configuration}         - The configuration, e.g. Release
         ${Platform}              - The platform name, e.g. Any CPU
         ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
-        ${ProductName}           - The name of the product
+        
+        ${VcsRevision}           - The current VCS revision 'number'
+        ${VcsBranch}             - The name of the current VCS branch
+        
         ${ReleaseNotesShort}     - The contents of the short release notes
         ${ReleaseNotesFull}      - The contents of the full release notes
+        
+        ${Now}                   - The current date and time
+        ${Date}                  - The current date
+        ${DayOfMonth}            - The current day of the month
+        ${Month}                 - The current month
+        ${Year}                  - The current year
+        
+        ${ProductName}           - The name of the product
+        ${Company}               - The name of the company
+        ${StartingYear}          - The year the current product was created / released.
+        
+        ${DirBin}                - The full path to the directory that contains the binaries
+        ${DirDeploy}             - The full path to the directory that contains the artifacts
+        ${DirLogs}               - The full path to the directory that contain the build logs
+        ${DirSrc}                - The full path to the directory that contains the source files
+        ${DirTemp}               - The full path to the directory that contains the temporary build files
     -->
-    
     <!-- Overrides for the project specific properties -->
     <PropertyGroup>
         <!-- 
@@ -266,42 +285,51 @@
     -->
     <!-- List of all files that should be generated and their template files -->
     <ItemGroup>
-        <FilesToGenerate Include="$(DirBuildTemp)\nBuildKit.MsBuild.Projects.Common.targets">
-            <Template>$(DirSrc)\msbuild\projects\nBuildKit.MsBuild.Projects.Common.targets</Template>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common\common.props">
+            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common\install.ps1">
+            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
+            <Token>TargetsFile</Token>
+            <ReplacementValue>common</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common\uninstall.ps1">
+            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
+            <Token>TargetsFile</Token>
+            <ReplacementValue>common</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common\nbuildkit.common.readme.txt">
+            <Template>$(DirSrc)\msbuild\projects\readme.txt</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.Common</ReplacementValue>
+        </FilesToGenerate>
+        
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\install.ps1">
+            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
+            <Token>TargetsFile</Token>
+            <ReplacementValue>csharp</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\uninstall.ps1">
+            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
+            <Token>TargetsFile</Token>
+            <ReplacementValue>csharp</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\nbuildkit.csharp.readme.txt">
+            <Template>$(DirSrc)\msbuild\projects\readme.txt</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </FilesToGenerate>
     </ItemGroup>
     
     <!-- 
         Additional items that should be available for the template replacement.
-        Currently already available are:
-        ${VersionMajor}          - The major version number
-        ${VersionMinor}          - The minor version number
-        ${VersionPatch}          - The patch version number
-        ${VersionBuild}          - The build number of the version
-        ${VersionSemantic}       - The semantic version, e.g. 1.2.3
-        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3+001
-        
-        ${Configuration}         - The configuration, e.g. Release
-        ${Platform}              - The platform name, e.g. Any CPU
-        ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
-        
-        ${VcsRevision}           - The current VCS revision 'number'
-        ${VcsBranch}             - The name of the current VCS branch
-        
-        ${Now}                   - The current date and time
-        ${Date}                  - The current date
-        ${DayOfMonth}            - The current day of the month
-        ${Month}                 - The current month
-        ${Year}                  - The current year
-        
-        ${Company}               - The name of the company
-        ${StartingYear}          - The year the current product was created / released.
+        The default templates, as indicated at the top of this file, are always available.
     -->
     <ItemGroup>
         <!--
-        <TemplateGenerationTokens Include="">
+        <TemplateTokens Include="">
             <ReplacementValue></ReplacementValue>
-        </TemplateGenerationTokens>
+        </TemplateTokens>
         -->
     </ItemGroup>
     
