@@ -61,12 +61,14 @@
     <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
             
-    <Target Name="nBuildKit_Test_Unit_NUnit_Run" DependsOnTargets="_nBuildKit_Test_Unit_NUnit_DisplayInfo">
+    <Target Name="nBuildKit_Test_Unit_NUnit_Run" 
+            DependsOnTargets="_nBuildKit_Test_Unit_NUnit_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Test_Unit_NUnit_Execute" />
     </Target>
     
     <!-- Display info -->
-    <Target Name="_nBuildKit_Test_Unit_NUnit_DisplayInfo" DependsOnTargets="_nBuildKit_Test_Unit_NUnit_DebugLog">
+    <Target Name="_nBuildKit_Test_Unit_NUnit_DisplayInfo" 
+            DependsOnTargets="_nBuildKit_Test_Unit_NUnit_DebugLog">
         <Message Text="Running unit tests with NUnit ..." />
     </Target>
     
@@ -105,7 +107,8 @@
         </TemplateText>
     </Target>
     
-    <Target Name="_nBuildKit_Test_Unit_NUnit_Execute">
+    <Target Name="_nBuildKit_Test_Unit_NUnit_Execute"
+            DependsOnTargets="_nBuildKit_Test_Unit_NUnit_ReplaceBuildTemplates">
         <Error Text="The packages directory does not exist. Cannot search for the unit test executables."
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         

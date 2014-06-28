@@ -57,7 +57,8 @@
     </Target>
     
     <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Binaries_Moma_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_DebugLog">
+    <Target Name="_nBuildKit_Analyze_Binaries_Moma_DisplayInfo" 
+            DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_DebugLog">
         <Message Text="Running MoMA ..." />
     </Target>
     
@@ -90,7 +91,8 @@
     <PropertyGroup>
         <FileMomaExe>MoMA.exe</FileMomaExe>
     </PropertyGroup>
-    <Target Name="_nBuildKit_Analyze_Binaries_Moma_Analyze">
+    <Target Name="_nBuildKit_Analyze_Binaries_Moma_Analyze"
+            DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates">
         <Error Text="The packages directory does not exist. Cannot search for the MoMA executable."
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         

@@ -62,11 +62,13 @@
     </Target>
     
     <!-- Display info -->
-    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DisplayInfo" DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog">
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DisplayInfo" 
+            DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog">
         <Message Text="Building API documentation with SandCastle ..." />
     </Target>
     
-    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog" 
+            Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuildBinPlatformConfig)" />

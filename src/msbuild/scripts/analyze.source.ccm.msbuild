@@ -54,7 +54,8 @@
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DebugLog">
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_DisplayInfo" 
+            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DebugLog">
         <Message Text="Running CCM..." />
     </Target>
     
@@ -91,7 +92,8 @@
         <FileCcmExe>Ccm.exe</FileCcmExe>
         <FileGeneratedCcm>$(DirBuildTemp)\ccm.input.xml</FileGeneratedCcm>
     </PropertyGroup>
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_Analyze">
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_Analyze"
+            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates">
         <Error Text="The packages directory does not exist. Cannot search for the CCM executable."
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="The CCM template file does not exist. Cannot execute source code analysis."

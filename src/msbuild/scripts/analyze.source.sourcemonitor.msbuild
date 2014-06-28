@@ -59,7 +59,8 @@
     </Target>
     
     <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog">
+    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DisplayInfo" 
+            DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog">
         <Message Text="Running SourceMonitor ..." />
     </Target>
     
@@ -97,7 +98,8 @@
         <FileGeneratedSourceMonitor>$(DirBuildTemp)\sourcemonitor.xml</FileGeneratedSourceMonitor>
         <Now>$([System.DateTime]::Now.ToString("yyyy-MM-ddTHH:mm:ss"))</Now>
     </PropertyGroup>
-    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_Analyze">
+    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_Analyze"
+            DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_ReplaceBuildTemplates">
         <Error Text="The packages directory does not exist. Cannot search for the SourceMonitor executable."
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="The SourceMonitor template file does not exist. Cannot execute source code analysis."
