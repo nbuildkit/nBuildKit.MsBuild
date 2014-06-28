@@ -27,7 +27,7 @@
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
-        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         
