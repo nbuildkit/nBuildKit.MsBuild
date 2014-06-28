@@ -25,14 +25,14 @@
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
-        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
-        
+
         <!-- nBuildKit directories -->
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
+        <DirMsBuildTemplates Condition=" '$(DirMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirMsBuildTemplates>
         
         <!-- Files -->
-        <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirTemplates)\ccm.xml.in</FileTemplateCcm>
+        <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirMsBuildTemplates)\ccm.xml.in</FileTemplateCcm>
         <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm>
     </PropertyGroup>
     
@@ -69,8 +69,8 @@
         <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
         <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
         <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
-        <Message Text="The directory containing the template files is located at:        $(DirTemplates)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text="The directory containing the nBuildKit templates is located at:   $(DirMsBuildTemplates)" />
         <Message Text=" " />
         
         <Message Text="The CCM template file is located at:    $(FileTemplateCcm)" />

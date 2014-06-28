@@ -41,8 +41,10 @@
     <PropertyGroup>
         <!-- 
             The name of the product. This is used for:
+            * Copyrights
             * CCM
             * SourceMonitor
+            * API documentation
             * Deployment directory naming
         -->
         <ProductName Condition=" '$(ProductName)' == '' ">MyProduct</ProductName>
@@ -56,8 +58,14 @@
         <!-- 
             The name of the company. This is used for:
             * Copyrights
+            * API documentation
         -->
         <CompanyName Condition=" '$(CompanyName)' == '' ">UNDEFINED</CompanyName>
+        
+        <!-- 
+            The email address that is specified in the documentation.
+        -->
+        <EmailDocumentation Condition=" '$(EmailDocumentation)' == '' ">UNDEFINED</EmailDocumentation>
     </PropertyGroup>
     
     <!-- Overrides for the VCS specific properties -->
@@ -298,9 +306,11 @@
         The default templates, as indicated at the top of this file, are always available.
     -->
     <ItemGroup>
+        <!--
         <TemplateTokens Include="">
             <ReplacementValue></ReplacementValue>
         </TemplateTokens>
+        -->
     </ItemGroup>
     
     
@@ -430,8 +440,10 @@
         - Full path to the settings property file (i.e. the current file)
     -->
     <ItemGroup>
+        <!--
         <PreCleanScripts Include="" />
         <PreCompilationScripts Include="" />
+        -->
     </ItemGroup>
     
     

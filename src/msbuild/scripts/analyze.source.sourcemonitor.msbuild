@@ -28,14 +28,14 @@
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
-        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
         
         <!-- nBuildKit directories -->
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
+        <DirMsBuildTemplates Condition=" '$(DirMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirMsBuildTemplates>
         
         <!-- Files -->
-        <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor>
+        <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirMsBuildTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor>
         <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor>
     </PropertyGroup>
     
@@ -74,8 +74,8 @@
         <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
         <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
         <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
-        <Message Text="The directory containing the template files is located at:        $(DirTemplates)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text="The directory containing the nBuildKit templates is located at:   $(DirMsBuildTemplates)" />
         <Message Text=" " />
         
         <Message Text="The SourceMonitor template file is located at: $(FileTemplateSourceMonitor)" />
@@ -117,9 +117,6 @@
                Condition="!Exists('$(PathSourceMonitorExe)') AND '$(ShouldExecute)' == 'true' "/>
     
         <ItemGroup>
-            <TemplateTokens Include="ProjectFileName">
-                <ReplacementValue>$(DirBuildTemp)\sourcemonitor.smp</ReplacementValue>
-            </TemplateTokens>
             <TemplateTokens Include="FileOutputSourceMonitor">
                 <ReplacementValue>$(FileReportSourceMonitorExpanded)</ReplacementValue>
             </TemplateTokens>

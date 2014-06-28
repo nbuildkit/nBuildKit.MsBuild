@@ -32,14 +32,14 @@
         <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
         
         <!-- nBuildKit directories -->
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirMsBuildTemplates Condition=" '$(DirMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirMsBuildTemplates>
         
         <!-- Files -->
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
-        <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle>
+        <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirMsBuildTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
@@ -75,8 +75,8 @@
         <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBin)" />
         <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
         <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
-        <Message Text="The directory containing the template files is located at:        $(DirTemplates)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text="The directory containing the nBuildKit templates is located at:   $(DirMsBuildTemplates)" />
         <Message Text=" " />
         
         <Message Text="The semantic version file is located at:    $(FileSemanticVersion)" />
@@ -118,6 +118,9 @@
             </TemplateTokens>
             <TemplateTokens Include="DirDoc">
                 <ReplacementValue>$(DirBuildDoc)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="DocumentationFeedbackEmail">
+                <ReplacementValue>$(EmailDocumentation)</ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
         <TemplateFile Template="$(FileTemplateSandcastle)" 
