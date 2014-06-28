@@ -32,7 +32,11 @@
                             builder.Append(string.Format("-showunvisited "));
                             builder.Append(string.Format("-returntargetcode:3000 "));
                             builder.Append(string.Format("-target:\"{0}\" ", UnitTestExe));
-                            builder.Append(string.Format("-targetdir:\"{0}\" ", BinDir));
+                            
+                            // Make sure we remove the back-slash because if we don't then
+                            // the closing quote will be eaten by the command line parser. Note that
+                            // this is only necessary because we're dealing with a directory
+                            builder.Append(string.Format("-targetdir:\"{0}\" ", BinDir.TrimEnd('\\')));
                             builder.Append(string.Format("-targetargs:\"{0}\" ", UnitTestArguments));
                             builder.Append(string.Format("-output:\"{0}\" ", OpenCoverOutput));
                             builder.Append(string.Format("-filter:\"{0}\" ", OpenCoverFilters));

@@ -31,7 +31,10 @@
                                 builder.Append("-Symbols ");
                             }
                             
-                            builder.Append(string.Format("-OutputDirectory \"{0}\" ", OutputDirectory));
+                            // Make sure we remove the back-slash because if we don't then
+                            // the closing quote will be eaten by the command line parser. Note that
+                            // this is only necessary because we're dealing with a directory
+                            builder.Append(string.Format("-OutputDirectory \"{0}\" ", OutputDirectory.TrimEnd('\\')));
                         }
                         
                         var info = new System.Diagnostics.ProcessStartInfo

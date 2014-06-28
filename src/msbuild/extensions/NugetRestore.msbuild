@@ -33,7 +33,11 @@
                         {
                             builder.Append(string.Format("restore \"{0}\" ", PackageFile));
                             builder.Append("-NonInteractive -Verbosity detailed -NoCache ");
-                            builder.Append(string.Format("-PackagesDirectory \"{0}\" ", PackageDirectory));
+                            
+                            // Make sure we remove the back-slash because if we don't then
+                            // the closing quote will be eaten by the command line parser. Note that
+                            // this is only necessary because we're dealing with a directory
+                            builder.Append(string.Format("-PackagesDirectory \"{0}\" ", PackageDirectory.TrimEnd('\\')));
                         }
 
                         var info = new System.Diagnostics.ProcessStartInfo
