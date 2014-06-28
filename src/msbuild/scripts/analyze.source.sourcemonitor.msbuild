@@ -22,7 +22,7 @@
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>

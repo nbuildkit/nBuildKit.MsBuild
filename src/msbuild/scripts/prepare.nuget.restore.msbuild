@@ -19,7 +19,7 @@
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         

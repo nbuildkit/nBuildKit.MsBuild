@@ -24,7 +24,7 @@
         <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
         
         <!-- Directories -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
         <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
