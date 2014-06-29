@@ -22,11 +22,15 @@
         </XmlPeek>
         <Message Text="Version: @(VersionNBuildKit)" />
     
+        <CreateProperty Value="%(VersionNBuildKit.Identity)">
+            <Output TaskParameter="Value" PropertyName="NBuildKitVersion" />
+        </CreateProperty>
+    
         <!-- 
             If the packages directory exists then we assume that nBuildKit is in there. If that is not the case we'll get a 
             malformed path but that will lead to an error.
         -->
-        <CreateProperty Value="$(DirPackages)\nBuildKit.MsBuild.%(VersionNBuildKit.Identity)\build" Condition="Exists('$(DirPackages)') AND !Exists('$(DirNBuildKit)')">
+        <CreateProperty Value="$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build" Condition="Exists('$(DirPackages)') AND !Exists('$(DirNBuildKit)')">
             <Output TaskParameter="Value" PropertyName="DirNBuildKit" />
         </CreateProperty>
         
