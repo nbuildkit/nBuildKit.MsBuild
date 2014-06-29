@@ -7,8 +7,9 @@
         <!-- Directory structure -->
         <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
         
-        <DirMsBuildShared>$(DirWorkspace)\src\msbuild\shared</DirMsBuildShared>
         <DirMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirMsBuildExtensions>
+        <DirMsBuildShared>$(DirWorkspace)\src\msbuild\shared</DirMsBuildShared>
+        <DirMsBuildTemplates>$(DirWorkspace)\src\templates</DirMsBuildTemplates>
         
         <!-- Files -->
         <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
@@ -19,6 +20,6 @@
         <DirNBuildKit>$(DirMsBuildScripts)\src\msbuild\scripts</DirNBuildKit>
     </PropertyGroup>
     <Target Name="Run">
-        <MSBuild Projects="$(DirNBuildKit)\build.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions);DirMsBuildShared=$(DirMsBuildShared)" />
+        <MSBuild Projects="$(DirNBuildKit)\build.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions);DirMsBuildShared=$(DirMsBuildShared);DirMsBuildTemplates=$(DirMsBuildTemplates)" />
     </Target>
 </Project>
