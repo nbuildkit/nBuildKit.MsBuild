@@ -1,0 +1,110 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <UsingTask TaskName="PublicKeySignatureFromKeyFile" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <SnExe ParameterType="System.String" Required="true" />
+            <DirTemp ParameterType="System.String" Required="true" />
+            <Input ParameterType="System.String" Required="true" />
+            <PublicKey ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var publicKeyFile = System.IO.Path.Combine(DirTemp, (System.IO.Path.GetRandomFileName()));
+                        {
+                            var publicKeyInfo = new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = SnExe,
+                                Arguments = string.Format("-p \"{0}\" \"{1}\"", Input, publicKeyFile),
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+                            };
+
+                            var publicKeyProcess = new System.Diagnostics.Process();
+                            publicKeyProcess.StartInfo = publicKeyInfo;
+                            publicKeyProcess.OutputDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                    }
+                                };
+                            publicKeyProcess.ErrorDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogError(e.Data);
+                                    }
+                                };
+                            publicKeyProcess.Start();
+
+                            publicKeyProcess.BeginOutputReadLine();
+                            publicKeyProcess.BeginErrorReadLine();
+                            publicKeyProcess.WaitForExit();
+                        }
+
+                        var text = new System.Text.StringBuilder();
+                        {
+                            var info = new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = SnExe,
+                                Arguments = string.Format("-tp \"{0}\"", publicKeyFile),
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+                            };
+
+                            var process = new System.Diagnostics.Process();
+                            process.StartInfo = info;
+                            process.OutputDataReceived +=
+                                (s, e) =>
+                                {
+                                    text.Append(e.Data);
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                    }
+                                };
+                            process.ErrorDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogError(e.Data);
+                                    }
+                                };
+                            process.Start();
+
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
+                            process.WaitForExit();
+                        }
+
+                        const string startString = "Public key (hash algorithm: sha1):";
+                        const string endString = "Public key token is";
+                        var publicKeyText = text.ToString();
+                        var startIndex = publicKeyText.IndexOf(startString);
+                        var endIndex = publicKeyText.IndexOf(endString);
+                        PublicKey = publicKeyText.Substring(startIndex + startString.Length, endIndex - (startIndex + startString.Length));
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>
