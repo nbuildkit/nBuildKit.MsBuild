@@ -25,8 +25,12 @@
                         var builder = new System.Text.StringBuilder();
                         {
                             builder.Append(string.Format("-reports:\"{0}\" ", OpenCoverOutputFile));
-                            builder.Append(string.Format("-targetdir:\"{0}\" ", OutputDir));
-                            builder.Append(string.Format("-reporttypes:Html;XmlSummary"));
+                            builder.Append(string.Format("-reporttypes:Html;XmlSummary "));
+                            
+                            // Make sure we remove the back-slash because if we don't then
+                            // the closing quote will be eaten by the command line parser. Note that
+                            // this is only necessary because we're dealing with a directory
+                            builder.Append(string.Format("-targetdir:\"{0}\" ", OutputDir.TrimEnd('\\')));
                         }
 
                         var info = new System.Diagnostics.ProcessStartInfo

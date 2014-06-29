@@ -19,20 +19,20 @@
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         
         <!-- Directories -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
-        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
-        
+
         <!-- nBuildKit directories -->
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
         <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
+        <DirMsBuildTemplates Condition=" '$(DirMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirMsBuildTemplates>
         
         <!-- Files -->
-        <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirTemplates)\ccm.xml.in</FileTemplateCcm>
+        <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirMsBuildTemplates)\ccm.xml.in</FileTemplateCcm>
         <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm>
     </PropertyGroup>
     
@@ -54,7 +54,8 @@
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DebugLog">
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_DisplayInfo" 
+            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DebugLog">
         <Message Text="Running CCM..." />
     </Target>
     
@@ -68,8 +69,8 @@
         <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
         <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
         <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
-        <Message Text="The directory containing the template files is located at:        $(DirTemplates)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text="The directory containing the nBuildKit templates is located at:   $(DirMsBuildTemplates)" />
         <Message Text=" " />
         
         <Message Text="The CCM template file is located at:    $(FileTemplateCcm)" />
@@ -91,7 +92,8 @@
         <FileCcmExe>Ccm.exe</FileCcmExe>
         <FileGeneratedCcm>$(DirBuildTemp)\ccm.input.xml</FileGeneratedCcm>
     </PropertyGroup>
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_Analyze">
+    <Target Name="_nBuildKit_Analyze_Source_Ccm_Analyze"
+            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates">
         <Error Text="The packages directory does not exist. Cannot search for the CCM executable."
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="The CCM template file does not exist. Cannot execute source code analysis."

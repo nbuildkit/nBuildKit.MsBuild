@@ -48,8 +48,12 @@
         <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
         
+        <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(DirSrc)</SolutionDir>
+        
         <DirNBuildKitMsBuild>$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
         <DirNBuildKitMsBuildProjectsCommon>$(DirPackages)\nBuildKit.MsBuild.Projects.Common.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjectsCommon>
+        <DirNBuildKitMsBuildProjectsCommonTemplates>$(DirNBuildKitMsBuildProjectsCommon)\templates</DirNBuildKitMsBuildProjectsCommonTemplates>
+        
         <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(DirNBuildKitMsBuild)</DirMsBuildShared>
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirMsBuildExtensions>
         

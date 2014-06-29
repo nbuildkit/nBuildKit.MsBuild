@@ -21,27 +21,25 @@
         <RootNamespace>Documentation</RootNamespace>
         <Name>Documentation</Name>
         <!-- SHFB properties -->
-        <OutputPath>${DirDoc}\Help\</OutputPath>
-        <HtmlHelpName>UNDEFINED</HtmlHelpName>
+        <OutputPath>${DirDoc}\Api\</OutputPath>
+        <HtmlHelpName>${ProductName}</HtmlHelpName>
         <BuildLogFile>${DirLogs}\doc.sandcastle.log</BuildLogFile>
         <FrameworkVersion>3.5</FrameworkVersion>
         <HelpFileFormat>Website</HelpFileFormat>
-        <CopyrightText>Copyright %28c%29 - UNDEFINED</CopyrightText>
-        <HelpTitle>UNDEFINED</HelpTitle>
+        <CopyrightText>Copyright %28c%29 - ${CompanyName}</CopyrightText>
+        <HelpTitle>${ProductName} API documentation</HelpTitle>
         <Preliminary>True</Preliminary>
         <PresentationStyle>Prototype</PresentationStyle>
         <SdkLinkTarget>Self</SdkLinkTarget>
         <ShowFeedbackControl>True</ShowFeedbackControl>
         <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
         <DocumentationSources>
-            <!-- 
-            <DocumentationSource sourceFile="${DirBin}\myfile.dll" />
-            <DocumentationSource sourceFile="${DirBin}\myfile.xml" />
-            -->
+            <DocumentationSource sourceFile="${DirBin}\Apollo.Core.Extensions.dll" />
+            <DocumentationSource sourceFile="${DirBin}\Apollo.Core.Extensions.xml" />
         </DocumentationSources>
-        <FeedbackEMailAddress>UNDEFINED</FeedbackEMailAddress>
+        <FeedbackEMailAddress>${DocumentationFeedbackEmail}</FeedbackEMailAddress>
         <FeedbackEMailLinkText>Send feedback</FeedbackEMailLinkText>
-        <FooterText>All items copyright %28c%29 - UNDEFINED</FooterText>
+        <FooterText>All items copyright %28c%29 - ${CompanyName}</FooterText>
         <SyntaxFilters>CSharp, VisualBasic, CPlusPlus, FSharp, XamlUsage</SyntaxFilters>
         <MissingTags>Summary, Parameter, Returns, Namespace, TypeParameter, IncludeTargets</MissingTags>
         <ApiFilter />

@@ -19,7 +19,7 @@
             Condition="Exists('$(DirWorkspace)\shared.locatenbuildkit.msbuild')" />
 
     <Target Name="Run" DependsOnTargets="_RestoreGlobalNugetPackages;_nBuildKit_Shared_LocateNBuildKit_Locate">
-        <MSBuild Projects="$(DirNBuildKit)\deploy.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile)" />
+        <MSBuild Projects="$(DirNBuildKit)\deploy.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)" />
     </Target>
     
     <Target Name="_RestoreGlobalNugetPackages" DependsOnTargets="_nBuildKit_Shared_LocateNBuildKit_LocatePackages">

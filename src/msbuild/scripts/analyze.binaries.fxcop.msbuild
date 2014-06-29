@@ -24,10 +24,10 @@
         <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
         
         <!-- Directories -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
-        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
         
@@ -59,7 +59,8 @@
     </Target>
     
     <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DisplayInfo" DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_DebugLog">
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DisplayInfo" 
+            DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_DebugLog">
         <Message Text="Running FxCop ..." />
     </Target>
     
@@ -95,7 +96,8 @@
     <PropertyGroup>
         <FileFxCopCmdExe>FxCopCmd.exe</FileFxCopCmdExe>
     </PropertyGroup>
-    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_Analyze">
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_Analyze"
+            DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates">
         <Error Text="The packages directory does not exist. Cannot search for the FxCop executable."
                Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == '' AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="The FxCop project file does not exist. Cannot execute analysis of binaries."

@@ -25,6 +25,18 @@
     </PropertyGroup>
     
     <ItemGroup>
+        <FilesToGenerate Include="$(SolutionDir)\CompanyInformation.cs"
+                         Condition="$(ShouldGenerateCompanyAndProductInfo)">
+            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\CompanyInformation.cs.in</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(SolutionDir)\ProductInformation.cs"
+                         Condition="$(ShouldGenerateCompanyAndProductInfo)">
+            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\ProductInformation.cs.in</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.Company.cs"
+                         Condition="$(ShouldGenerateAssemblyCompanyInfo)">
+            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\AssemblyInfo.Company.cs.in</Template>
+        </FilesToGenerate>
         <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.VersionNumber.cs"
                          Condition="$(ShouldGenerateAssemblyVersionInfo)">
             <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\AssemblyInfo.VersionNumber.cs.in</Template>

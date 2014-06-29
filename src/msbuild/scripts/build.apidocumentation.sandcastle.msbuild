@@ -24,22 +24,22 @@
         <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
         
         <!-- Directories -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
-        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
         <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
         <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
         
         <!-- nBuildKit directories -->
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
+        <DirMsBuildTemplates Condition=" '$(DirMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirMsBuildTemplates>
         
         <!-- Files -->
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
-        <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle>
+        <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirMsBuildTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
@@ -62,19 +62,21 @@
     </Target>
     
     <!-- Display info -->
-    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DisplayInfo" DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog">
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DisplayInfo" 
+            DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog">
         <Message Text="Building API documentation with SandCastle ..." />
     </Target>
     
-    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog" 
+            Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuildBinPlatformConfig)" />
         <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBin)" />
         <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
         <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
-        <Message Text="The directory containing the template files is located at:        $(DirTemplates)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text="The directory containing the nBuildKit templates is located at:   $(DirMsBuildTemplates)" />
         <Message Text=" " />
         
         <Message Text="The semantic version file is located at:    $(FileSemanticVersion)" />
@@ -116,6 +118,9 @@
             </TemplateTokens>
             <TemplateTokens Include="DirDoc">
                 <ReplacementValue>$(DirBuildDoc)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="DocumentationFeedbackEmail">
+                <ReplacementValue>$(EmailDocumentation)</ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
         <TemplateFile Template="$(FileTemplateSandcastle)" 

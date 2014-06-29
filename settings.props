@@ -41,8 +41,10 @@
     <PropertyGroup>
         <!-- 
             The name of the product. This is used for:
+            * Copyrights
             * CCM
             * SourceMonitor
+            * API documentation
             * Deployment directory naming
         -->
         <ProductName Condition=" '$(ProductName)' == '' ">nBuildKit</ProductName>
@@ -56,8 +58,14 @@
         <!-- 
             The name of the company. This is used for:
             * Copyrights
+            * API documentation
         -->
-        <CompanyName Condition=" '$(CompanyName)' == '' ">nBuildKit</CompanyName>
+        <CompanyName Condition=" '$(CompanyName)' == '' ">UNDEFINED</CompanyName>
+        
+        <!-- 
+            The email address that is specified in the documentation.
+        -->
+        <EmailDocumentation Condition=" '$(EmailDocumentation)' == '' ">UNDEFINED</EmailDocumentation>
     </PropertyGroup>
     
     <!-- Overrides for the VCS specific properties -->
