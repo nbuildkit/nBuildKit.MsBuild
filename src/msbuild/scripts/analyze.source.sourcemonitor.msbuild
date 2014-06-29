@@ -15,7 +15,7 @@
     
     <PropertyGroup>
         <!-- Product & Company information -->
-        <ProductName Condition=" '$(ProductName)' == '' ">Apollo</ProductName>
+        <ProductNameInFilePath Condition=" '$(ProductNameInFilePath)' == '' ">UNDEFINED</ProductNameInFilePath>
     
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
@@ -130,7 +130,7 @@
                        ConfigFile="$(FileGeneratedSourceMonitor)" 
                        Condition=" '$(ShouldExecute)' == 'true' "/>
                        
-        <SourceMonitorOutputToCsv ProjectName="$(ProductName)"
+        <SourceMonitorOutputToCsv ProjectName="$(ProductNameInFilePath)"
                                   InputFile="$(FileReportSourceMonitorExpanded)"
                                   OutputPath="$(DirBuildLogs)" 
                                   Condition="Exists('$(FileReportSourceMonitorExpanded)') AND '$(ShouldExecute)' == 'true' "/>
