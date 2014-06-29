@@ -230,12 +230,20 @@
     -->
     <ItemGroup>
         <BuildStepsToExecute Include="$(BuildTargetPrepare)">
-            <Steps>$(BuildStepsPrepareRestoreNuGet);$(BuildStepsPrepareReleaseNotes);$(BuildStepsPrepareVcsInfo);$(BuildStepsPrepareGenerateFiles)</Steps>
+            <Steps>
+                $(BuildStepsPrepareRestoreNuGet);
+                $(BuildStepsPrepareReleaseNotes);
+                $(BuildStepsPrepareVcsInfo);
+                $(BuildStepsPrepareGenerateFiles)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildTargetAnalyzeSource)">
-            <Steps>$(BuildStepsAnalyzeSourceCcm);$(BuildStepsAnalyzeSourceSouceMonitor)</Steps>
+            <Steps>
+                $(BuildStepsAnalyzeSourceCcm);
+                $(BuildStepsAnalyzeSourceSouceMonitor)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
@@ -244,12 +252,17 @@
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildTargetExecuteUnitTests)">
-            <Steps>$(BuildStepsUnitTestNUnit)</Steps>
+            <Steps>
+                $(BuildStepsUnitTestNUnit)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildTargetAnalyzeBinaries)">
-            <Steps>$(BuildStepsAnalyzeBinariesMoma);$(BuildStepsAnalyzeBinariesFxCop)</Steps>
+            <Steps>
+                $(BuildStepsAnalyzeBinariesMoma);
+                $(BuildStepsAnalyzeBinariesFxCop)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
@@ -258,7 +271,10 @@
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildTargetPackage)">
-            <Steps>$(BuildStepsPackNuGet);$(BuildStepsPackZip)</Steps>
+            <Steps>
+                $(BuildStepsPackNuGet);
+                $(BuildStepsPackZip)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
@@ -578,8 +594,11 @@
         <NuGetPackageSpecs Include="$(DirBuildTemp)\myproject.nuspec">
             <Template>$(DirTemplates)\myproject.nuspec.in</Template>
             <ShouldBuildSymbols>true</ShouldBuildSymbols>
-            <IncludedDependencies>$(DirSrc)\MyProject\packages.config</IncludedDependencies>
-            <ExcludedDependencies></ExcludedDependencies>
+            <IncludedDependencies>
+                $(DirSrc)\MyProject\packages.config
+            </IncludedDependencies>
+            <ExcludedDependencies>
+            </ExcludedDependencies>
         </NuGetPackageSpecs>
     </ItemGroup>
     
@@ -598,8 +617,14 @@
     <ItemGroup>
         <ArchivePackageSpecs Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
             <DirBase>$(DirBuildBinPlatformConfig)</DirBase>
-            <IncludedFiles>$(DirBuildBinPlatformConfig)\*.dll;$(DirBuildBinPlatformConfig)\*.pdb</IncludedFiles>
-            <ExcludedFiles>$(DirBuildBinPlatformConfig)\myfile.dll;$(DirBuildBinPlatformConfig)\myfile.pdb</ExcludedFiles>
+            <IncludedFiles>
+                $(DirBuildBinPlatformConfig)\*.dll;
+                $(DirBuildBinPlatformConfig)\*.pdb
+            </IncludedFiles>
+            <ExcludedFiles>
+                $(DirBuildBinPlatformConfig)\myfile.dll;
+                $(DirBuildBinPlatformConfig)\myfile.pdb
+            </ExcludedFiles>
         </ArchivePackageSpecs>
     </ItemGroup>
     
@@ -654,7 +679,12 @@
             <PostInvokeScripts></PostInvokeScripts>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployTargetPushTo)">
-            <Steps>$(DeployStepsPushToNuget);$(DeployStepsPushToDirectory);$(DeployStepsPushToSymbolServer);$(DeployStepsPushToGitHubRelease)</Steps>
+            <Steps>
+                $(DeployStepsPushToNuget);
+                $(DeployStepsPushToDirectory);
+                $(DeployStepsPushToSymbolServer);
+                $(DeployStepsPushToGitHubRelease)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </DeployStepsToExecute>
@@ -674,9 +704,12 @@
     -->
     <ItemGroup>
         <!--
-        <PushToDirectorySpecs Include="\\MyServer\${ProductName}\${VersionSemantic}">
-            <IncludedFiles>$(DirSrc)\Nuclei.Fusion\packages.config</IncludedFiles>
-            <ExcludedFiles></ExcludedFiles>
+        <PushToDirectorySpecs Include="\\MyServer\${ProductNameInFilePath}\${VersionSemantic}">
+            <IncludedFiles>
+                $(DirSrc)\Nuclei.Fusion\packages.config
+            </IncludedFiles>
+            <ExcludedFiles>
+            </ExcludedFiles>
         </PushToDirectorySpecs>
         -->
     </ItemGroup>
@@ -716,8 +749,11 @@
         <PushToGitHubReleaseSpecs Include="${VersionSemantic} - My release">
              <Repository>MyCoolProject</Repository>
              <Description>${ReleaseNotesShort}</Description>
-             <IncludedFiles>$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip</IncludedFiles>
-             <ExcludedFiles></ExcludedFiles>
+             <IncludedFiles>
+                $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+             </IncludedFiles>
+             <ExcludedFiles>
+             </ExcludedFiles>
         </PushToGitHubReleaseSpecs>
     </ItemGroup>
     
