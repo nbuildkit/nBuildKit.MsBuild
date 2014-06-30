@@ -13,15 +13,9 @@
         <!-- Build configuration -->
         <WarningLevel>$(CSharpWarningLevel)</WarningLevel>
         <ErrorReport>prompt</ErrorReport>
-    </PropertyGroup>
-    
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <PlatformTarget>$(PlatformWithoutSpaces)</PlatformTarget>
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <PlatformTarget>$(PlatformWithoutSpaces)</PlatformTarget>
         <DefineConstants>TRACE</DefineConstants>
+        <DefineConstants Condition=" '$(Configuration)' == 'Debug' ">DEBUG;$(DefineConstants)</DefineConstants>
     </PropertyGroup>
     
     <ItemGroup>
