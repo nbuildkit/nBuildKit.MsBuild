@@ -68,13 +68,6 @@
         
         <!-- Define the directory where all the binary files need to end up -->
         <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
-        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
-        
-        <!-- 
-            Override the default output paths so that they go into a single directory. Use OutDir for that because the individual projects use OutputPath to hint at the 
-            path they want. OutDir overrides that.
-        -->
-        <OutDir>$(DirBuildBinPlatformConfig)</OutDir>
-        <IntermediateOutputPath>$([System.IO.Path]::GetFullPath('$(DirBuildTemp)\bin\obj\$(AssemblyName)\$(Platform)\$(Configuration)\'))</IntermediateOutputPath>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
     </PropertyGroup>
 </Project>
