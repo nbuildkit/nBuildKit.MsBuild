@@ -22,6 +22,10 @@
         -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\settings.props'))</BuildPropertyFile>
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\settings.props'))</BuildPropertyFile>
+        
+        <!-- Directory structure -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirWorkspace Condition="!Exists('$(DirWorkspace)')">$(SolutionDir)</DirWorkspace>
 
         <!-- Once we have the settings file we can calculate the workspace directory -->
         <!-- 
@@ -36,10 +40,6 @@
             
     <!-- Default settings -->
     <PropertyGroup>
-        <!-- Directory structure -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
-        <DirWorkspace Condition="!Exists('$(DirWorkspace)')">$(SolutionDir)</DirWorkspace>
-        
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
