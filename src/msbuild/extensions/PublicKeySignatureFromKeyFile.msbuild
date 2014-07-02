@@ -19,84 +19,94 @@
                     public override bool Execute()
                     {
                         var publicKeyFile = System.IO.Path.Combine(DirTemp, (System.IO.Path.GetRandomFileName()));
+                        try
                         {
-                            var publicKeyInfo = new System.Diagnostics.ProcessStartInfo
                             {
-                                FileName = SnExe,
-                                Arguments = string.Format("-p \"{0}\" \"{1}\"", Input, publicKeyFile),
-                                UseShellExecute = false,
-                                RedirectStandardOutput = true,
-                                RedirectStandardError = true,
-                            };
-
-                            var publicKeyProcess = new System.Diagnostics.Process();
-                            publicKeyProcess.StartInfo = publicKeyInfo;
-                            publicKeyProcess.OutputDataReceived +=
-                                (s, e) =>
+                                var publicKeyInfo = new System.Diagnostics.ProcessStartInfo
                                 {
-                                    if (!string.IsNullOrWhiteSpace(e.Data))
-                                    {
-                                        Log.LogMessage(MessageImportance.Normal, e.Data); 
-                                    }
+                                    FileName = SnExe,
+                                    Arguments = string.Format("-p \"{0}\" \"{1}\"", Input, publicKeyFile),
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
                                 };
-                            publicKeyProcess.ErrorDataReceived +=
-                                (s, e) =>
-                                {
-                                    if (!string.IsNullOrWhiteSpace(e.Data))
-                                    {
-                                        Log.LogError(e.Data);
-                                    }
-                                };
-                            publicKeyProcess.Start();
 
-                            publicKeyProcess.BeginOutputReadLine();
-                            publicKeyProcess.BeginErrorReadLine();
-                            publicKeyProcess.WaitForExit();
+                                var publicKeyProcess = new System.Diagnostics.Process();
+                                publicKeyProcess.StartInfo = publicKeyInfo;
+                                publicKeyProcess.OutputDataReceived +=
+                                    (s, e) =>
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(e.Data))
+                                        {
+                                            Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                        }
+                                    };
+                                publicKeyProcess.ErrorDataReceived +=
+                                    (s, e) =>
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(e.Data))
+                                        {
+                                            Log.LogError(e.Data);
+                                        }
+                                    };
+                                publicKeyProcess.Start();
+
+                                publicKeyProcess.BeginOutputReadLine();
+                                publicKeyProcess.BeginErrorReadLine();
+                                publicKeyProcess.WaitForExit();
+                            }
+
+                            var text = new System.Text.StringBuilder();
+                            {
+                                var info = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = SnExe,
+                                    Arguments = string.Format("-tp \"{0}\"", publicKeyFile),
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+
+                                var process = new System.Diagnostics.Process();
+                                process.StartInfo = info;
+                                process.OutputDataReceived +=
+                                    (s, e) =>
+                                    {
+                                        text.Append(e.Data);
+                                        if (!string.IsNullOrWhiteSpace(e.Data))
+                                        {
+                                            Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                        }
+                                    };
+                                process.ErrorDataReceived +=
+                                    (s, e) =>
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(e.Data))
+                                        {
+                                            Log.LogError(e.Data);
+                                        }
+                                    };
+                                process.Start();
+
+                                process.BeginOutputReadLine();
+                                process.BeginErrorReadLine();
+                                process.WaitForExit();
+                            }
+
+                            const string startString = "Public key (hash algorithm: sha1):";
+                            const string endString = "Public key token is";
+                            var publicKeyText = text.ToString();
+                            var startIndex = publicKeyText.IndexOf(startString);
+                            var endIndex = publicKeyText.IndexOf(endString);
+                            PublicKey = publicKeyText.Substring(startIndex + startString.Length, endIndex - (startIndex + startString.Length));
                         }
-
-                        var text = new System.Text.StringBuilder();
+                        finally
                         {
-                            var info = new System.Diagnostics.ProcessStartInfo
+                            if (System.IO.File.Exists(publicKeyFile))
                             {
-                                FileName = SnExe,
-                                Arguments = string.Format("-tp \"{0}\"", publicKeyFile),
-                                UseShellExecute = false,
-                                RedirectStandardOutput = true,
-                                RedirectStandardError = true,
-                            };
-
-                            var process = new System.Diagnostics.Process();
-                            process.StartInfo = info;
-                            process.OutputDataReceived +=
-                                (s, e) =>
-                                {
-                                    text.Append(e.Data);
-                                    if (!string.IsNullOrWhiteSpace(e.Data))
-                                    {
-                                        Log.LogMessage(MessageImportance.Normal, e.Data); 
-                                    }
-                                };
-                            process.ErrorDataReceived +=
-                                (s, e) =>
-                                {
-                                    if (!string.IsNullOrWhiteSpace(e.Data))
-                                    {
-                                        Log.LogError(e.Data);
-                                    }
-                                };
-                            process.Start();
-
-                            process.BeginOutputReadLine();
-                            process.BeginErrorReadLine();
-                            process.WaitForExit();
+                                System.IO.File.Delete(publicKeyFile);
+                            }
                         }
-
-                        const string startString = "Public key (hash algorithm: sha1):";
-                        const string endString = "Public key token is";
-                        var publicKeyText = text.ToString();
-                        var startIndex = publicKeyText.IndexOf(startString);
-                        var endIndex = publicKeyText.IndexOf(endString);
-                        PublicKey = publicKeyText.Substring(startIndex + startString.Length, endIndex - (startIndex + startString.Length));
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
                         // from a task's constructor or property setter. As long as this task is written to always log an error

@@ -28,26 +28,52 @@
         ${Year}                  - The current year
         
         ${ProductName}           - The name of the product
-        ${Company}               - The name of the company
-        ${StartingYear}          - The year the current product was created / released.
+        ${ProductNameInFilePath} - The product name written in a way that it can be used in the file path
+        ${ProductDescription}    - The (short) description of the product
+        ${ProductNamespace}      - The namespace in which all the code for the product is placed
+        ${ProductStartingYear}   - The year the current product was created / released.
+        
+        ${CompanyName}           - The name of the company
+        ${CompanyNameInFilePath} - The name of the company written in a way that it can be used in the file path
+        ${CompanyUrl}            - The URL of the company website
         
         ${DirBin}                - The full path to the directory that contains the binaries
         ${DirDeploy}             - The full path to the directory that contains the artifacts
         ${DirLogs}               - The full path to the directory that contain the build logs
         ${DirSrc}                - The full path to the directory that contains the source files
         ${DirTemp}               - The full path to the directory that contains the temporary build files
+        
+        ${VersionNBuildKit}      - The semantic version of nBuildKit that was used for the current build
     -->
     <!-- Overrides for the project specific properties -->
     <PropertyGroup>
         <!-- 
             The name of the product. This is used for:
             * Copyrights
-            * CCM
-            * SourceMonitor
             * API documentation
-            * Deployment directory naming
         -->
         <ProductName Condition=" '$(ProductName)' == '' ">nBuildKit</ProductName>
+        
+        <!-- 
+            The name of the product that can be used as part of a file path. This is used for:
+            * CCM
+            * SourceMonitor
+            * Deployment directory naming
+        -->
+        <ProductNameInFilePath Condition=" '$(ProductNameInFilePath)' == '' ">nbuildkit</ProductNameInFilePath>
+        
+        <!-- 
+            The description of the product. This is used for:
+            * Installer information
+        -->
+        <ProductDescription>
+            nBuildKit is a collection of tools and scripts that provide an easy way to set-up a complete build and deployment for a (.NET) project.
+        </ProductDescription>
+        
+        <!-- 
+            The namespace in which all the code for the product is placed.
+        -->
+        <ProductNamespace Condition=" '$(ProductNamespace)' == '' ">NBuildKit</ProductNamespace>
         
         <!-- 
             The first year the product was available / created. This is used for:
@@ -60,7 +86,18 @@
             * Copyrights
             * API documentation
         -->
-        <CompanyName Condition=" '$(CompanyName)' == '' ">UNDEFINED</CompanyName>
+        <CompanyName Condition=" '$(CompanyName)' == '' ">P. van der Velde</CompanyName>
+        
+        <!-- 
+            The name of the company that can be used as a part of a file path. This is used for:
+            * Installer file paths
+        -->
+        <CompanyNameInFilePath Condition=" '$(CompanyNameInFilePath)' == '' ">pvandervelde</CompanyNameInFilePath>
+        
+        <!-- 
+            The URL of the company website
+        -->
+        <CompanyUrl Condition=" '$(CompanyUrl)' == '' ">https://github.com/pvandervelde/nBuildKit</CompanyUrl>
         
         <!-- 
             The email address that is specified in the documentation.
@@ -193,13 +230,21 @@
     -->
     <ItemGroup>
         <BuildStepsToExecute Include="$(BuildTargetPrepare)">
-            <Steps>$(BuildStepsPrepareRestoreNuGet);$(BuildStepsPrepareReleaseNotes);$(BuildStepsPrepareVcsInfo);$(BuildStepsPrepareGenerateFiles)</Steps>
+            <Steps>
+                $(BuildStepsPrepareRestoreNuGet);
+                $(BuildStepsPrepareReleaseNotes);
+                $(BuildStepsPrepareVcsInfo);
+                $(BuildStepsPrepareGenerateFiles)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
         <!--
         <BuildStepsToExecute Include="$(BuildTargetAnalyzeSource)">
-            <Steps>$(BuildStepsAnalyzeSourceCcm);$(BuildStepsAnalyzeSourceSouceMonitor)</Steps>
+            <Steps>
+                $(BuildStepsAnalyzeSourceCcm);
+                $(BuildStepsAnalyzeSourceSouceMonitor)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
@@ -208,12 +253,17 @@
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildTargetExecuteUnitTests)">
-            <Steps>$(BuildStepsUnitTestNUnit)</Steps>
+            <Steps>
+                $(BuildStepsUnitTestNUnit)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildTargetAnalyzeBinaries)">
-            <Steps>$(BuildStepsAnalyzeBinariesMoma);$(BuildStepsAnalyzeBinariesFxCop)</Steps>
+            <Steps>
+                $(BuildStepsAnalyzeBinariesMoma);
+                $(BuildStepsAnalyzeBinariesFxCop)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
@@ -223,7 +273,10 @@
         </BuildStepsToExecute>
         -->
         <BuildStepsToExecute Include="$(BuildTargetPackage)">
-            <Steps>$(BuildStepsPackNuGet);$(BuildStepsPackZip)</Steps>
+            <Steps>
+                $(BuildStepsPackNuGet);
+                $(BuildStepsPackZip)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </BuildStepsToExecute>
@@ -312,6 +365,22 @@
             <ReplacementValue>nBuildKit.MsBuild.Projects.Common</ReplacementValue>
         </FilesToGenerate>
         
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common.net\install.ps1">
+            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
+            <Token>TargetsFile</Token>
+            <ReplacementValue>common.net</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common.net\uninstall.ps1">
+            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
+            <Token>TargetsFile</Token>
+            <ReplacementValue>common.net</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common.net\nbuildkit.common.net.readme.txt">
+            <Template>$(DirSrc)\msbuild\projects\readme.txt</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.Common.Net</ReplacementValue>
+        </FilesToGenerate>
+        
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\install.ps1">
             <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
             <Token>TargetsFile</Token>
@@ -326,6 +395,22 @@
             <Template>$(DirSrc)\msbuild\projects\readme.txt</Template>
             <Token>PackageName</Token>
             <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
+        </FilesToGenerate>
+        
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\install.ps1">
+            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
+            <Token>TargetsFile</Token>
+            <ReplacementValue>wix</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\uninstall.ps1">
+            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
+            <Token>TargetsFile</Token>
+            <ReplacementValue>wix</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\nbuildkit.wix.readme.txt">
+            <Template>$(DirSrc)\msbuild\projects\readme.txt</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.WiX</ReplacementValue>
         </FilesToGenerate>
     </ItemGroup>
     
@@ -373,18 +458,26 @@
         <!-- The solution file -->
         <!-- <FileSln Condition=" '$(FileSln)' == '' ">$(DirSrc)\myproject.sln</FileSln> -->
         
+        <!-- A flag that indicates whether the source files with the company and product information should be generated -->
+        <ShouldGenerateCompanyAndProductInfo>false</ShouldGenerateCompanyAndProductInfo>
+        
+        <!-- A flag that indicates whether an AssemblyInfo file with the company and copyright information should be generated -->
+        <ShouldGenerateAssemblyCompanyInfo>false</ShouldGenerateAssemblyCompanyInfo>
+        
         <!-- A flag that indicates whether an AssemblyInfo file with the version numbers should be generated -->
         <ShouldGenerateAssemblyVersionInfo>false</ShouldGenerateAssemblyVersionInfo>
         
         <!-- 
             A flag that indicates whether an AssemblyInfo file with the build information should be generated.
             Build information includes:
-            - Copyright
             - Build configuration (e.g. Debug)
             - Build date and time
             - Build number and VCS revision number
         -->
         <ShouldGenerateAssemblyBuildInfo>false</ShouldGenerateAssemblyBuildInfo>
+        
+        <!-- A flag that indicates whether an application manifest file should be generated for executables -->
+        <ShouldGenerateApplicationManifest>false</ShouldGenerateApplicationManifest>
         
         <!-- 
             A flag that indicates whether the current project is a Test project. 
@@ -459,15 +552,21 @@
     <ItemGroup>
         <!--
         <InternalsVisibleTo Include="MyTestProject">
-            <Projects>MyProject</Projects>
+            <Projects>
+                MyProject
+            </Projects>
             <KeyFile>$(MyKeyFileReference)</KeyFile>
         </InternalsVisibleTo>
         <InternalsVisibleTo Include="SomeExternalAssembly">
-            <Projects>MyProject</Projects>
+            <Projects>
+                MyProject
+            </Projects>
             <AssemblyFromPackage>SomeExternalAssembly.dll</AssemblyFromPackage>
         </InternalsVisibleTo>
         <InternalsVisibleTo Include="SomeOtherExternalAssemblyThatDoesNotExistOnDisk">
-            <Projects>MyProject</Projects>
+            <Projects>
+                MyProject
+            </Projects>
             <PublicKey>$(TheFullPublicKeyForTheExternalAssemblyThatDoesNotExistOnDisk)</PublicKey>
         </InternalsVisibleTo>
         -->
@@ -518,8 +617,8 @@
         <!-- Defines the filters used by OpenCover. -->
         <!-- NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text -->
         <!--
-        <OpenCoverFilters Include="+[$(ProductName)]%2A" />
-        <OpenCoverFilters Include="+[$(ProductName).%2A]%2A" />
+        <OpenCoverFilters Include="+[$(ProductNamespace)]%2A" />
+        <OpenCoverFilters Include="+[$(ProductNamespace).%2A]%2A" />
         <OpenCoverFilters Include="-[%2A$(UnitTestAssemblyNamePrefix)%2A]%2A" />
         <OpenCoverFilters Include="-[NUnit]%2A" />
         <OpenCoverFilters Include="-[NUnit.%2A]%2A" />
@@ -585,8 +684,16 @@
             <Template>$(DirTemplates)\nbuildkit.msbuild.projects.common.nuspec.in</Template>
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirBuildTemp)\nbuildkit.msbuild.projects.common.net.nuspec">
+            <Template>$(DirTemplates)\nbuildkit.msbuild.projects.common.net.nuspec.in</Template>
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirBuildTemp)\nbuildkit.msbuild.projects.csharp.nuspec">
             <Template>$(DirTemplates)\nbuildkit.msbuild.projects.csharp.nuspec.in</Template>
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirBuildTemp)\nbuildkit.msbuild.projects.wix.nuspec">
+            <Template>$(DirTemplates)\nbuildkit.msbuild.projects.wix.nuspec.in</Template>
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
     </ItemGroup>
@@ -606,8 +713,12 @@
     <ItemGroup>
         <ArchivePackageSpecs Include="$(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip">
             <DirBase>$(DirSrc)\msbuild\samples</DirBase>
-            <IncludedFiles>$(DirSrc)\msbuild\samples\**\*.*;$(DirSrc)\msbuild\shared\shared.locatenbuildkit.msbuild</IncludedFiles>
-            <ExcludedFiles></ExcludedFiles>
+            <IncludedFiles>
+                $(DirSrc)\msbuild\samples\**\*.*;
+                $(DirSrc)\msbuild\shared\shared.locatenbuildkit.msbuild
+            </IncludedFiles>
+            <ExcludedFiles>
+            </ExcludedFiles>
         </ArchivePackageSpecs>
     </ItemGroup>
     
@@ -662,7 +773,10 @@
             <PostInvokeScripts></PostInvokeScripts>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployTargetPushTo)">
-            <Steps>$(DeployStepsPushToNuget);$(DeployStepsPushToGitHubRelease)</Steps>
+            <Steps>
+                $(DeployStepsPushToNuget);
+                $(DeployStepsPushToGitHubRelease)
+            </Steps>
             <PreInvokeScripts></PreInvokeScripts>
             <PostInvokeScripts></PostInvokeScripts>
         </DeployStepsToExecute>
@@ -683,8 +797,11 @@
     <ItemGroup>
         <!--
         <PushToDirectorySpecs Include="\\MyServer\${ProductName}\${VersionSemantic}">
-            <IncludedFiles>$(DirSrc)\Nuclei.Fusion\packages.config</IncludedFiles>
-            <ExcludedFiles></ExcludedFiles>
+            <IncludedFiles>
+                $(DirSrc)\Nuclei.Fusion\packages.config
+            </IncludedFiles>
+            <ExcludedFiles>
+            </ExcludedFiles>
         </PushToDirectorySpecs>
         -->
     </ItemGroup>
@@ -723,10 +840,13 @@
     -->
     <ItemGroup>
         <PushToGitHubReleaseSpecs Include="${VersionSemantic}">
-             <Repository>nBuildKit</Repository>
-             <Description>${ReleaseNotesShort}</Description>
-             <IncludedFiles>$(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip</IncludedFiles>
-             <ExcludedFiles></ExcludedFiles>
+            <Repository>nBuildKit</Repository>
+            <Description>${ReleaseNotesShort}</Description>
+            <IncludedFiles>
+                $(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip
+            </IncludedFiles>
+            <ExcludedFiles>
+            </ExcludedFiles>
         </PushToGitHubReleaseSpecs>
     </ItemGroup>
     

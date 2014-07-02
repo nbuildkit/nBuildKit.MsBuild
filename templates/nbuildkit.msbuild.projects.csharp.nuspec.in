@@ -3,10 +3,10 @@
     <metadata>
         <id>nBuildKit.MsBuild.Projects.CSharp</id>
         <version>${VersionSemantic}</version>
-        <authors>P. van der Velde</authors>
-        <owners>P. van der Velde</owners>
+        <authors>${CompanyName}</authors>
+        <owners>${CompanyName}</owners>
         <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-        <projectUrl>https://github.com/pvandervelde/nBuildKit</projectUrl>
+        <projectUrl>${CompanyUrl}</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>
             Provides default properties and build tasks used to unify the settings of a set of C# projects in a Visual Studio solution.
@@ -16,7 +16,7 @@
         </releaseNotes>
         <dependencies>
             ${Dependencies}
-            <dependency id="nBuildKit.MsBuild.Projects.Common" version="[${VersionSemantic}]" />
+            <dependency id="nBuildKit.MsBuild.Projects.Common.Net" version="[${VersionSemantic}]" />
         </dependencies>
     </metadata>
     <files>
@@ -25,6 +25,7 @@
         <file src="${DirTemp}\msbuild\projects\csharp\nbuildkit.csharp.readme.txt" target="content" />
         <file src="${DirTemp}\msbuild\projects\csharp\install.ps1" target="tools" />
         <file src="${DirTemp}\msbuild\projects\csharp\uninstall.ps1" target="tools" />
+        
         <file src="${DirSrc}\templates\AssemblyInfo.Company.cs.in" target="build\templates" />
         <file src="${DirSrc}\templates\AssemblyInfo.VersionNumber.cs.in" target="build\templates" />
         <file src="${DirSrc}\templates\AssemblyInfo.BuildInformation.cs.in" target="build\templates" />

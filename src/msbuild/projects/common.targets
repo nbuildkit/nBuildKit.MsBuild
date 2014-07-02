@@ -13,9 +13,6 @@
             Condition="Exists('$(DirNBuildKitMsBuild)\prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
-            
-    <Import Project="$(DirMsBuildExtensions)\PublicKeySignatureFromKeyFile.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\PublicKeySignatureFromKeyFile.msbuild') AND '$()' != 'true' " />
     
     <!-- Clean up all the files we generate ourselves -->
     <PropertyGroup>
@@ -39,65 +36,9 @@
     </Target>
     
     
-    <!-- Locate the installed version of sn.exe -->
-    <PropertyGroup>
-        <FileSNExe>NotSet</FileSNExe>
-    </PropertyGroup>
-    <Target Name="_nBuildKit_Projects_Common_GetSnPath">
-        <GetFrameworkSdkPath>
-            <Output TaskParameter="Path" PropertyName="WindowsSdkPath" />
-        </GetFrameworkSdkPath>
-        
-        <PropertyGroup>
-            <FileSNExe>$(WindowsSdkPath)bin\sn.exe</FileSNExe>
-        </PropertyGroup>
-        
-        <!-- For .NET 4.5 there is nothing in the WindowsSdkPath dir but there is in the deeper folder called 'NETFX 4.0 Tools'. -->
-        <!-- For .NET 4.5.1 there is nothing in the WindowsSdkPath dir but there is in the deeper folder called 'NETFX 4.5.1 Tools'. -->
-        <PropertyGroup>
-            <FileSNExe Condition="!Exists($(FileSNExe)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe</FileSNExe>
-            <FileSNExe Condition="!Exists($(FileSNExe)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe</FileSNExe>
-        </PropertyGroup>
-        <Message Text="sn.exe at: $(FileSNExe)" />
-    </Target>
-    
-    <Target Name="_nBuildKit_Projects_Common_PrepareGenerateApplicationManifest"
-            DependsOnTargets="_nBuildKit_Projects_Common_GetSnPath"
-            Condition=" '$(ShouldGenerateApplicationManifest)' == 'true' AND ( '$(OutputType)' == 'WinExe' OR '$(OutputType)' == 'Exe' )">
-        <PublicKeySignatureFromKeyFile SnExe="$(FileSNExe)" 
-                                       DirTemp="$(DirBuildTemp)" 
-                                       Input="$(AssemblyOriginatorKeyFile)">
-            <Output TaskParameter="PublicKey" PropertyName="PublicKeyTokenLocal" />
-        </PublicKeySignatureFromKeyFile>
-        
-        <CreateItem
-            Include="ProjectName"
-            AdditionalMetadata="ReplacementValue=$(AssemblyName)">
-           <Output
-               TaskParameter="Include"
-               ItemName="TemplateTokens"/>
-        </CreateItem>
-        <CreateItem
-            Include="PublicKeyToken"
-            AdditionalMetadata="ReplacementValue=$(PublicKeyTokenLocal)">
-           <Output
-               TaskParameter="Include"
-               ItemName="TemplateTokens"/>
-        </CreateItem>
-        
-        <CreateItem
-            Include="$(MSBuildProjectDirectory)\$(AssemblyName).exe.manifest"
-            AdditionalMetadata="Template=$(DirNBuildKitMsBuildProjectsCommonTemplates)\app.manifest.in">
-           <Output
-               TaskParameter="Include"
-               ItemName="FilesToGenerate"/>
-        </CreateItem>
-    </Target>
-    
     <!-- Generate the required files -->
     <PropertyGroup>
         <BuildDependsOn>
-            _nBuildKit_Projects_Common_PrepareGenerateApplicationManifest;
             _nBuildKit_Projects_Common_GenerateFiles;
             _nBuildKit_Projects_Common_ExternalPreBuild;
             $(BuildDependsOn);
