@@ -41,6 +41,9 @@
         
         <!-- Version number -->
         <VersionSemantic>0</VersionSemantic>
+        
+        <!-- External tools -->
+        <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
@@ -74,11 +77,14 @@
         
         <Message Text="The YouTrack filter is: $(IssueFilter)" Condition=" '$(IssueFilter)' != 'UNDEFINED' " />
         <Message Text=" " />
+        
+        <Message Text="GitReleaseNotes command line executable is located at: $(ToolsExternalGitReleaseNotesPath)" />
+        <Message Text=" " />
     </Target>
    
     <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_Gather" Condition=" '$(GitHubUserName)' != 'UNDEFINED' ">
         <Error Text="The packages directory does not exist. Cannot search for the GitReleaseNotes executable."
-               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
         
         <Message Text="Gathering release note information from GitHub"
                  Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
@@ -103,7 +109,9 @@
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromGitHubFlowVersionOutputFile>
         
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" FileToLocate="GitReleaseNotes.exe">
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
+                                            FileToLocate="GitReleaseNotes.exe"
+                                            Condition=" '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalGitReleaseNotesPath" />
         </SearchPackagesDirectoryForToolPath>
         <Error Text="The GitReleaseNote executable does not exist. Cannot generate release notes."

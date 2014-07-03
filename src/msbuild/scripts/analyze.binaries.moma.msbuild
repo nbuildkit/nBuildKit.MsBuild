@@ -41,6 +41,9 @@
         
         <!-- Files -->
         <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma>
+        
+        <!-- External tools -->
+        <ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
@@ -77,6 +80,9 @@
         
         <Message Text="The MoMA report file is located at:      $(FileReportMomaExpanded)" />
         <Message Text=" " />
+        
+        <Message Text="MoMA command line executable is located at: $(ToolsExternalMomaPath)" />
+        <Message Text=" " />
     </Target>
     
     <Target Name="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
@@ -102,11 +108,11 @@
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="$(FileMomaExe)"
-                                            Condition=" '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="Path" PropertyName="PathMomaExe" />
+                                            Condition=" '$(ToolsExternalMomaPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalMomaPath" />
         </SearchPackagesDirectoryForToolPath>
         <Error Text="Could not locate the MoMA executable path. Cannot execute analysis of binaries."
-               Condition="!Exists('$(PathMomaExe)') AND '$(ShouldExecute)' == 'true' "/>
+               Condition="!Exists('$(ToolsExternalMomaPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <ItemGroup Condition=" '@(MomaInputFiles)' == '' ">
             <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
@@ -114,7 +120,7 @@
             <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
         </ItemGroup>
         
-        <Exec Command="$(PathMomaExe) --nogui --out &quot;$(FileReportMomaExpanded)&quot; @(MomaFiles->'%22%(FullPath)%22', ' ')"
+        <Exec Command="$(ToolsExternalMomaPath) --nogui --out &quot;$(FileReportMomaExpanded)&quot; @(MomaFiles->'%22%(FullPath)%22', ' ')"
               WorkingDirectory="$(DirBuildTemp)"
               Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>

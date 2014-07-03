@@ -30,6 +30,9 @@
         <!-- Files -->
         <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild>
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        
+        <!-- External Tools -->
+        <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild" 
@@ -60,6 +63,9 @@
         
         <Message Text="The semantic version file is located at:    $(FileSemanticVersion)" />
         <Message Text="The MsBuild XML version file is located at: $(FileVersionMsBuild)" Condition="Exists('$(FileVersionMsBuild)')" />
+        <Message Text=" " />
+        
+        <Message Text="GitHubFlowVersion command line executable is located at: $(ToolsExternalGitHubFlowVersionPath)" />
         <Message Text=" " />
     </Target>
     
@@ -97,11 +103,11 @@
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" Condition="!Exists('$(FileVersionMsBuild)')">
         <Error Text="The packages directory does not exist. Cannot search for the GitHubFlowVersion executable."
-               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitHubFlowVersionPath)' == '' AND '$(ShouldExecute)' == 'true' "/>
+               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitHubFlowVersionPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="GitHubFlowVersion.exe" 
-                                            Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">
+                                            Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == 'UNDEFINED' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalGitHubFlowVersionPath" />
         </SearchPackagesDirectoryForToolPath>
         <Error Text="Could not locate the GitHubFlowVersion executable path. Cannot get semantic version."
