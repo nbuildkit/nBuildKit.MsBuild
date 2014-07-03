@@ -29,7 +29,10 @@
             <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe</ToolsExternalSnPath>
             <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe</ToolsExternalSnPath>
         </PropertyGroup>
-        <Message Text="sn.exe at: $(ToolsExternalSnPath)" />
+        <Message Text="The sn executable was found at: $(ToolsExternalSnPath)"
+                 Condition="Exists('$(ToolsExternalSnPath)')" />
+        <Error Text="Could not locate the sn executable path. Cannot execute unit tests."
+               Condition="!Exists('$(ToolsExternalSnPath)')"/>
     </Target>
     
     <PropertyGroup>

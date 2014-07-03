@@ -110,6 +110,8 @@
                                                  Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalFxCopDir" />
         </SearchPackagesDirectoryForToolDirectory>
+        <Message Text="The FxCop directory was found at: $(ToolsExternalFxCopDir)"
+                 Condition="Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the FxCop executable path. Cannot execute analysis of binaries."
                Condition="!Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' "/>
             

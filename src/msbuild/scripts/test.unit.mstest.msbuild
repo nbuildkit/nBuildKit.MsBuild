@@ -140,6 +140,8 @@
                                             Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Message Text="The OpenCover executable was found at: $(ToolsExternalOpenCoverPath)"
+                 Condition="Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the OpenCover executable path. Cannot execute unit tests."
                Condition="!Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
         
@@ -148,6 +150,8 @@
                                             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Message Text="The ReportGenerator executable was found at: $(ToolsExternalReportGeneratorPath)"
+                 Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
         <Warning Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports."
                  Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
         

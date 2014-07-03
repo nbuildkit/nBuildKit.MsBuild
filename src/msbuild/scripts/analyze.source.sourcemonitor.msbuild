@@ -118,6 +118,8 @@
                                             Condition=" '$(ToolsExternalSourceMonitorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalSourceMonitorPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Message Text="The SourceMonitor executable was found at: $(ToolsExternalSourceMonitorPath)"
+                 Condition="Exists('$(ToolsExternalSourceMonitorPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the SourceMonitor executable path. Cannot execute source code analysis."
                Condition="!Exists('$(ToolsExternalSourceMonitorPath)') AND '$(ShouldExecute)' == 'true' "/>
     

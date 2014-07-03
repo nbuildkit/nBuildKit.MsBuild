@@ -111,6 +111,8 @@
                                             Condition=" '$(ToolsExternalMomaPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalMomaPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Message Text="The MoMA executable was found at: $(ToolsExternalMomaPath)"
+                 Condition="Exists('$(ToolsExternalMomaPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the MoMA executable path. Cannot execute analysis of binaries."
                Condition="!Exists('$(ToolsExternalMomaPath)') AND '$(ShouldExecute)' == 'true' "/>
         

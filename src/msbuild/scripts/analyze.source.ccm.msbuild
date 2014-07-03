@@ -113,6 +113,8 @@
                                             Condition=" '$(ToolsExternalCcmPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalCcmPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Message Text="The CCM executable was found at: $(ToolsExternalCcmPath)"
+                 Condition="Exists('$(ToolsExternalCcmPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the CCM executable path. Cannot execute source code analysis."
                Condition="!Exists('$(ToolsExternalCcmPath)') AND '$(ShouldExecute)' == 'true' "/>
         

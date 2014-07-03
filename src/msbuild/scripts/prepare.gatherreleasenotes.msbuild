@@ -114,6 +114,8 @@
                                             Condition=" '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalGitReleaseNotesPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Message Text="The GitReleaseNote executable was found at: $(ToolsExternalGitReleaseNotesPath)"
+                 Condition="Exists('$(ToolsExternalGitReleaseNotesPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="The GitReleaseNote executable does not exist. Cannot generate release notes."
                Condition="!Exists('$(ToolsExternalGitReleaseNotesPath)') AND '$(ShouldExecute)' == 'true' "/>
         
