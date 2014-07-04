@@ -40,7 +40,7 @@
         <FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop>
         
         <!-- External tools -->
-        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir>
+        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir>
     </PropertyGroup>
    
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
@@ -99,7 +99,7 @@
     <Target Name="_nBuildKit_Analyze_Binaries_FxCop_Analyze"
             DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates">
         <Error Text="The packages directory does not exist. Cannot search for the FxCop executable."
-               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == '' AND '$(ShouldExecute)' == 'true' "/>
+               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="The FxCop project file does not exist. Cannot execute analysis of binaries."
                Condition="!Exists('$(FileProjectFxCop)') AND '$(ShouldExecute)' == 'true' "/>
         
@@ -107,9 +107,11 @@
         
         <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" 
                                                  FileToLocate="$(FileFxCopCmdExe)" 
-                                                 Condition=" '$(ToolsExternalFxCopDir)' == '' AND '$(ShouldExecute)' == 'true' ">
+                                                 Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalFxCopDir" />
         </SearchPackagesDirectoryForToolDirectory>
+        <Message Text="The FxCop directory was found at: $(ToolsExternalFxCopDir)"
+                 Condition="Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the FxCop executable path. Cannot execute analysis of binaries."
                Condition="!Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' "/>
             

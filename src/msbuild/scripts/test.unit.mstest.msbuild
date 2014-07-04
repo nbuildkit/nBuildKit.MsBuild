@@ -49,6 +49,8 @@
     
         <!-- External tools -->
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath>
+        <ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
@@ -96,7 +98,9 @@
         <Message Text="The ReportGenerator XML summary report will be located at: $(FileReportReportGeneratorXmlSummary)" />
         <Message Text=" " />
         
-        <Message Text="The MsTest command line executable is located at: $(ToolsExternalMsTestPath)" />
+        <Message Text="The MsTest command line executable is located at:      $(ToolsExternalMsTestPath)" />
+        <Message Text="OpenCover command line executable is located at:       $(ToolsExternalOpenCoverPath)" />
+        <Message Text="ReportGenerator command line executable is located at: $(ToolsExternalReportGeneratorPath)" />
         <Message Text=" " />
     </Target>
     
@@ -133,17 +137,21 @@
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="opencover.console.exe"
-                                            Condition=" '$(ShouldExecute)' == 'true' ">
+                                            Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Message Text="The OpenCover executable was found at: $(ToolsExternalOpenCoverPath)"
+                 Condition="Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the OpenCover executable path. Cannot execute unit tests."
                Condition="!Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="ReportGenerator.exe"
-                                            Condition=" '$(ShouldExecute)' == 'true' ">
+                                            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Message Text="The ReportGenerator executable was found at: $(ToolsExternalReportGeneratorPath)"
+                 Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
         <Warning Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports."
                  Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
         

@@ -160,6 +160,8 @@
                                                  Condition=" '$(DirSandcastle)' == '' AND  '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="DirSandcastle" />
         </SearchPackagesDirectoryForToolDirectory>
+        <Message Text="The Sandcastle directory was found at: $(DirSandCastle)"
+                 Condition="Exists('$(DirSandcastle)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the Sandcastle transformation path. Cannot generate the API documentation."
                Condition="!Exists('$(DirSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
 
@@ -175,6 +177,8 @@
                                                  Condition=" '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="DirSandcastleHelpFileBuilder" />
         </SearchPackagesDirectoryForToolDirectory>
+        <Message Text="The Sandcastle help file builder executable was found at: $(DirSandcastleHelpFileBuilder)"
+                 Condition="Exists('$(DirSandcastleHelpFileBuilder)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the Sandcastle help file builder executable path. Cannot generate the API documentation."
                Condition="!Exists('$(DirSandcastleHelpFileBuilder)') AND '$(ShouldExecute)' == 'true' "/>
         

@@ -34,6 +34,9 @@
         <!-- Files -->
         <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirMsBuildTemplates)\ccm.xml.in</FileTemplateCcm>
         <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm>
+        
+        <!-- External tools -->
+        <ToolsExternalCcmPath Condition=" '$(ToolsExternalCcmPath)' == '' ">UNDEFINED</ToolsExternalCcmPath>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
@@ -76,6 +79,9 @@
         <Message Text="The CCM template file is located at:    $(FileTemplateCcm)" />
         <Message Text="The CCM report file is located at:      $(FileReportCcmExpanded)" />
         <Message Text=" " />
+        
+        <Message Text="CCM command line executable is located at: $(ToolsExternalCcmPath)" />
+        <Message Text=" " />
     </Target>
     
     <Target Name="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates" 
@@ -104,18 +110,20 @@
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="$(FileCcmExe)"
-                                            Condition=" '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="Path" PropertyName="PathCcmExe" />
+                                            Condition=" '$(ToolsExternalCcmPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalCcmPath" />
         </SearchPackagesDirectoryForToolPath>
+        <Message Text="The CCM executable was found at: $(ToolsExternalCcmPath)"
+                 Condition="Exists('$(ToolsExternalCcmPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the CCM executable path. Cannot execute source code analysis."
-               Condition="!Exists('$(PathCcmExe)') AND '$(ShouldExecute)' == 'true' "/>
+               Condition="!Exists('$(ToolsExternalCcmPath)') AND '$(ShouldExecute)' == 'true' "/>
         
         <TemplateFile Template="$(FileTemplateCcm)" 
                       OutputFileName="$(FileGeneratedCcm)" 
                       Tokens="@(TemplateTokens)"
                       Condition=" '$(ShouldExecute)' == 'true' "/>
     
-        <Ccm CcmExe="$(PathCcmExe)"
+        <Ccm CcmExe="$(ToolsExternalCcmPath)"
              ConfigFile="$(FileGeneratedCcm)"
              OutputFile="$(FileReportCcmExpanded)" 
              Condition=" '$(ShouldExecute)' == 'true' "/>

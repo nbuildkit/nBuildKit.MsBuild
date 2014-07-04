@@ -43,7 +43,7 @@
     <Target Name="_nBuildKit_Projects_CSharp_PrepareGenerateInternalsVisibleTo"
             DependsOnTargets="_nBuildKit_Projects_Common_GetSnPath"
             Condition=" '@(InternalsVisibleTo)' != '' ">
-        <GenerateInternalsVisibleToAttributes SnExe="$(FileSNExe)"
+        <GenerateInternalsVisibleToAttributes SnExe="$(ToolsExternalSnPath)"
                                               Project="$(AssemblyName)"
                                               AttributeTemplate="$(InternalsVisibleToTemplate)" 
                                               DirPackages="$(DirPackages)"

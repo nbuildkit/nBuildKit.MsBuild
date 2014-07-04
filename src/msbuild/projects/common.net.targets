@@ -12,7 +12,7 @@
     
     <!-- Locate the installed version of sn.exe -->
     <PropertyGroup>
-        <FileSNExe>NotSet</FileSNExe>
+        <ToolsExternalSnPath>NotSet</ToolsExternalSnPath>
     </PropertyGroup>
     <Target Name="_nBuildKit_Projects_Common_GetSnPath">
         <GetFrameworkSdkPath>
@@ -20,16 +20,19 @@
         </GetFrameworkSdkPath>
         
         <PropertyGroup>
-            <FileSNExe>$(WindowsSdkPath)bin\sn.exe</FileSNExe>
+            <ToolsExternalSnPath>$(WindowsSdkPath)bin\sn.exe</ToolsExternalSnPath>
         </PropertyGroup>
         
         <!-- For .NET 4.5 there is nothing in the WindowsSdkPath dir but there is in the deeper folder called 'NETFX 4.0 Tools'. -->
         <!-- For .NET 4.5.1 there is nothing in the WindowsSdkPath dir but there is in the deeper folder called 'NETFX 4.5.1 Tools'. -->
         <PropertyGroup>
-            <FileSNExe Condition="!Exists($(FileSNExe)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe</FileSNExe>
-            <FileSNExe Condition="!Exists($(FileSNExe)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe</FileSNExe>
+            <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe</ToolsExternalSnPath>
+            <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe</ToolsExternalSnPath>
         </PropertyGroup>
-        <Message Text="sn.exe at: $(FileSNExe)" />
+        <Message Text="The sn executable was found at: $(ToolsExternalSnPath)"
+                 Condition="Exists('$(ToolsExternalSnPath)')" />
+        <Error Text="Could not locate the sn executable path. Cannot execute unit tests."
+               Condition="!Exists('$(ToolsExternalSnPath)')"/>
     </Target>
     
     <PropertyGroup>
@@ -41,7 +44,7 @@
     <Target Name="_nBuildKit_Projects_Common_PrepareGenerateApplicationManifest"
             DependsOnTargets="_nBuildKit_Projects_Common_GetSnPath"
             Condition=" '$(ShouldGenerateApplicationManifest)' == 'true' AND ( '$(OutputType)' == 'WinExe' OR '$(OutputType)' == 'Exe' )">
-        <PublicKeySignatureFromKeyFile SnExe="$(FileSNExe)" 
+        <PublicKeySignatureFromKeyFile SnExe="$(ToolsExternalSnPath)" 
                                        DirTemp="$(DirBuildTemp)" 
                                        Input="$(AssemblyOriginatorKeyFile)">
             <Output TaskParameter="PublicKey" PropertyName="PublicKeyTokenLocal" />
