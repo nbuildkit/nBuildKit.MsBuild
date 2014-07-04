@@ -874,7 +874,8 @@
         <!-- <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath> -->
         
         <!-- The full path to the github-release command line executable. -->
-        <!-- <ToolsExternalGitHubRelease Condition=" '$(ToolsExternalGitHubRelease)' == '' ">github-release.exe</ToolsExternalGitHubRelease> -->
+        <!-- On the build server the GitHubReleasePath environment variable is set to the directory that contains the github release executable. -->
+        <ToolsExternalGitHubRelease>$(GitHubReleasePath)\github-release.exe</ToolsExternalGitHubRelease>
     
         <!-- The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable. -->
         <!-- <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath> -->
