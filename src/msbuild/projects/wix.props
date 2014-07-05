@@ -47,15 +47,15 @@
     
     <ItemGroup>
         <FilesToGenerate Include="$(SolutionDir)\CompanyInformation.wxi"
-                         Condition="$(ShouldGenerateCompanyAndProductInfo)">
+                         Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsWixTemplates)\CompanyInformation.wxi.in</Template>
         </FilesToGenerate>
         <FilesToGenerate Include="$(SolutionDir)\ProductInformation.wxi"
-                         Condition="$(ShouldGenerateCompanyAndProductInfo)">
+                         Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsWixTemplates)\ProductInformation.wxi.in</Template>
         </FilesToGenerate>
         <FilesToGenerate Include="$(MSBuildProjectDirectory)\VersionNumber.wxi"
-                         Condition="$(ShouldGenerateAssemblyCompanyInfo)">
+                         Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsWixTemplates)\VersionNumber.wxi.in</Template>
         </FilesToGenerate>
     </ItemGroup>
