@@ -141,9 +141,9 @@
         <!-- Push to TeamCity -->
         <!-- Note that we only need to push to TeamCity if we're not using GitHubFlowVersion because that already makes it happen -->
         <Message Text="Pushing version number to TeamCity's build number ..." 
-                 Condition=" '$(TEAMCITY_VERSION )' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
+                 Condition=" '$(TEAMCITY_VERSION)' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
         <Message Text="##teamcity[buildNumber '$(VersionSemanticFull)']"
-                 Condition=" '$(TEAMCITY_VERSION )' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
+                 Condition=" '$(TEAMCITY_VERSION)' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
         
         <!-- Push to AppVeyor -->
         <!-- Note to make sure that the version that AppVeyor gets is unique we append the build number at the end. -->
