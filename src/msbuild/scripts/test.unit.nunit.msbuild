@@ -127,7 +127,7 @@
         <MakeDir Directories="$(DirReportGeneratorOutput)" Condition="!Exists('$(DirReportGeneratorOutput)') AND '$(ShouldExecute)' == 'true' " />
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
-                                            FileToLocate="nunit-console-x86.exe"
+                                            FileToLocate="nunit-console.exe"
                                             Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalNUnitConsolePath" />
         </SearchPackagesDirectoryForToolPath>
