@@ -31,15 +31,15 @@
                         var gitPassword = System.Environment.GetEnvironmentVariable("GitPassword");
                         var builder = new System.Text.StringBuilder();
                         {
-                            if (!string.IsNullOrEmpty(RemoteProjectUrl))
-                            {
-                                builder.Append(string.Format("/url \"{0}\" ", RemoteProjectUrl));
-                            }
-                            
                             if (!string.IsNullOrEmpty(UserName))
                             {
                                 builder.Append(string.Format("/u \"{0}\" ", UserName));
                                 builder.Append(string.Format("/p \"{0}\" ", gitPassword));
+                            }
+                            
+                            if (!string.IsNullOrEmpty(RemoteRepositoryUrl) && !string.IsNullOrEmpty(UserName))
+                            {
+                                builder.Append(string.Format("/url \"{0}\" ", RemoteRepositoryUrl));
                             }
                         }
                     
@@ -89,35 +89,40 @@
                         try
                         {
                             string versionText = text.ToString();
-                            const string fullSemVersionStart = "\"FullSemVer\": \"";
+                            const string fullSemVersionStart = "\"FullSemVer\":";
                             var index = versionText.IndexOf(fullSemVersionStart);
                             VersionSemanticFull = versionText.Substring(
-                                index + fullSemVersionStart.Length,
-                                versionText.IndexOf("\"", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length));
+                                    index + fullSemVersionStart.Length,
+                                    versionText.IndexOf(",", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length))
+                                .Trim('"');
 
-                            const string majorVersionStart = "\"Major\": \"";
+                            const string majorVersionStart = "\"Major\":";
                             index = versionText.IndexOf(majorVersionStart);
                             VersionMajor = versionText.Substring(
-                                index + majorVersionStart.Length,
-                                versionText.IndexOf("\"", index + majorVersionStart.Length) - (index + majorVersionStart.Length));
+                                    index + majorVersionStart.Length,
+                                    versionText.IndexOf(",", index + majorVersionStart.Length) - (index + majorVersionStart.Length))
+                                .Trim('"');
 
-                            const string minorVersionStart = "\"Minor\": \"";
+                            const string minorVersionStart = "\"Minor\":";
                             index = versionText.IndexOf(minorVersionStart);
                             VersionMinor = versionText.Substring(
-                                index + minorVersionStart.Length,
-                                versionText.IndexOf("\"", index + minorVersionStart.Length) - (index + minorVersionStart.Length));
+                                    index + minorVersionStart.Length,
+                                    versionText.IndexOf(",", index + minorVersionStart.Length) - (index + minorVersionStart.Length))
+                                .Trim('"');
 
-                            const string patchVersionStart = "\"Patch\": \"";
+                            const string patchVersionStart = "\"Patch\":";
                             index = versionText.IndexOf(patchVersionStart);
                             VersionPatch = versionText.Substring(
-                                index + patchVersionStart.Length,
-                                versionText.IndexOf("\"", index + patchVersionStart.Length) - (index + patchVersionStart.Length));
+                                    index + patchVersionStart.Length,
+                                    versionText.IndexOf(",", index + patchVersionStart.Length) - (index + patchVersionStart.Length))
+                                .Trim('"');
 
-                            const string buildVersionStart = "\"BuildMetaData\": \"";
+                            const string buildVersionStart = "\"BuildMetaData\":";
                             index = versionText.IndexOf(buildVersionStart);
                             VersionBuild = versionText.Substring(
-                                index + buildVersionStart.Length,
-                                versionText.IndexOf("\"", index + buildVersionStart.Length) - (index + buildVersionStart.Length));
+                                    index + buildVersionStart.Length,
+                                    versionText.IndexOf(",", index + buildVersionStart.Length) - (index + buildVersionStart.Length))
+                                .Trim('"');
                                 
                             VersionSemantic = string.Format(
                                 "{0}.{1}.{2}",
