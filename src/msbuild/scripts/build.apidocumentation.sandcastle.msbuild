@@ -45,8 +45,8 @@
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
             Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\SetEnvironmentVariable.msbuild"
@@ -104,10 +104,10 @@
         </CreateProperty>
         <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
         
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
-                                                           Condition="Exists('$(FileVersionSemantic)') AND '$(ShouldExecute)' == 'true' ">
+        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)" 
+                                    Condition="Exists('$(FileVersionSemantic)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
-        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        </GetSemanticVersionFromFile>
     
         <ItemGroup>
             <TemplateTokens Include="DirShfbRoot">

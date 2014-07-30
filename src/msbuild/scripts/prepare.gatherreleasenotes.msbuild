@@ -46,8 +46,8 @@
         <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
             
@@ -104,10 +104,10 @@
             <Output TaskParameter="Value" PropertyName="IssueTrackerFilter" />
         </CreateProperty>
         
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
-                                                           Condition="Exists('$(FileSemanticVersion)')">
+        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)" 
+                                    Condition="Exists('$(FileSemanticVersion)')">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
-        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        </GetSemanticVersionFromFile>
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="GitReleaseNotes.exe"

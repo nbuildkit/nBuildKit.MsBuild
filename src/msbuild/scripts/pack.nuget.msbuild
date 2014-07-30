@@ -98,10 +98,10 @@
     </Target>
     
     <Target Name="_nBuildKit_Pack_NuGet_GetVersion" Condition="Exists('$(FileSemanticVersion)')">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
-                                                           Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
+        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)" 
+                                    Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
-        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        </GetSemanticVersionFromFile>
         
         <Message Text="Version: $(VersionSemantic)" />
     </Target>
