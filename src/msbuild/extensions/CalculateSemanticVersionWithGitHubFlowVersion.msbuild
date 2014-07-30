@@ -14,6 +14,7 @@
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
         <ParameterGroup>
             <ExePath ParameterType="System.String" Required="true" />
+            <TempDir ParameterType="System.String" Required="true" />
             <VersionMajor ParameterType="System.String" Output="true" />
             <VersionMinor ParameterType="System.String" Output="true" />
             <VersionPatch ParameterType="System.String" Output="true" />
@@ -26,9 +27,11 @@
                 <![CDATA[
                     public override bool Execute()
                     {
+                        var versionFile = Path.Combine(TempDir, "githubflowversion.json");
                         var info = new System.Diagnostics.ProcessStartInfo
                         {
                             FileName = ExePath,
+                            Arguments = string.Format("/ToFile \"{0}\"", versionFile),
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
                             RedirectStandardError = true,
@@ -45,7 +48,7 @@
                             {
                                 if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
-                                    text.Append(e.Data);
+                                    Log.LogMessage(e.Data);
                                 }
                             };
                         process.ErrorDataReceived +=
@@ -70,42 +73,47 @@
                         
                         try
                         {
-                            string versionText = text.ToString();
+                            string fileText;
+                            using (var reader = new System.IO.StreamReader(versionFile))
+                            {
+                                fileText = reader.ReadToEnd();
+                            }
+
                             const string fullSemVersionStart = "\"GitHubFlowVersion_FullSemVer\": \"";
-                            var index = versionText.IndexOf(fullSemVersionStart);
-                            VersionSemanticFull = versionText.Substring(
+                            var index = fileText.IndexOf(fullSemVersionStart);
+                            VersionSemanticFull = fileText.Substring(
                                 index + fullSemVersionStart.Length,
-                                versionText.IndexOf("\"", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length));
+                                fileText.IndexOf("\"", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length));
+                                
+                            const string semVersionStart = "\"GitHubFlowVersion_SemVer\": \"";
+                            index = fileText.IndexOf(semVersionStart);
+                            VersionSemantic = fileText.Substring(
+                                index + semVersionStart.Length,
+                                fileText.IndexOf("\"", index + semVersionStart.Length) - (index + semVersionStart.Length));
 
                             const string majorVersionStart = "\"GitHubFlowVersion_Major\": \"";
-                            index = versionText.IndexOf(majorVersionStart);
-                            VersionMajor = versionText.Substring(
+                            index = fileText.IndexOf(majorVersionStart);
+                            VersionMajor = fileText.Substring(
                                 index + majorVersionStart.Length,
-                                versionText.IndexOf("\"", index + majorVersionStart.Length) - (index + majorVersionStart.Length));
+                                fileText.IndexOf("\"", index + majorVersionStart.Length) - (index + majorVersionStart.Length));
 
                             const string minorVersionStart = "\"GitHubFlowVersion_Minor\": \"";
-                            index = versionText.IndexOf(minorVersionStart);
-                            VersionMinor = versionText.Substring(
+                            index = fileText.IndexOf(minorVersionStart);
+                            VersionMinor = fileText.Substring(
                                 index + minorVersionStart.Length,
-                                versionText.IndexOf("\"", index + minorVersionStart.Length) - (index + minorVersionStart.Length));
+                                fileText.IndexOf("\"", index + minorVersionStart.Length) - (index + minorVersionStart.Length));
 
                             const string patchVersionStart = "\"GitHubFlowVersion_Patch\": \"";
-                            index = versionText.IndexOf(patchVersionStart);
-                            VersionPatch = versionText.Substring(
+                            index = fileText.IndexOf(patchVersionStart);
+                            VersionPatch = fileText.Substring(
                                 index + patchVersionStart.Length,
-                                versionText.IndexOf("\"", index + patchVersionStart.Length) - (index + patchVersionStart.Length));
+                                fileText.IndexOf("\"", index + patchVersionStart.Length) - (index + patchVersionStart.Length));
 
                             const string buildVersionStart = "\"GitHubFlowVersion_NumCommitsSinceRelease\": \"";
-                            index = versionText.IndexOf(buildVersionStart);
-                            VersionBuild = versionText.Substring(
+                            index = fileText.IndexOf(buildVersionStart);
+                            VersionBuild = fileText.Substring(
                                 index + buildVersionStart.Length,
-                                versionText.IndexOf("\"", index + buildVersionStart.Length) - (index + buildVersionStart.Length));
-                                
-                            VersionSemantic = string.Format(
-                                "{0}.{1}.{2}",
-                                VersionMajor,
-                                VersionMinor,
-                                VersionPatch);
+                                fileText.IndexOf("\"", index + buildVersionStart.Length) - (index + buildVersionStart.Length));
                         }
                         catch(Exception e)
                         {
