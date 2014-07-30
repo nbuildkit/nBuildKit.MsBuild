@@ -14,17 +14,24 @@
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
         <ParameterGroup>
             <ExePath ParameterType="System.String" Required="true" />
-            <VersionFile ParameterType="System.String" Required="true" />
+            <TempDir ParameterType="System.String" Required="true" />
+            <VersionMajor ParameterType="System.String" Output="true" />
+            <VersionMinor ParameterType="System.String" Output="true" />
+            <VersionPatch ParameterType="System.String" Output="true" />
+            <VersionBuild ParameterType="System.String" Output="true" />
+            <VersionSemantic ParameterType="System.String" Output="true" />
+            <VersionSemanticFull ParameterType="System.String" Output="true" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
                 <![CDATA[
                     public override bool Execute()
                     {
+                        var versionFile = Path.Combine(TempDir, "githubflowversion.json");
                         var info = new System.Diagnostics.ProcessStartInfo
                         {
                             FileName = ExePath,
-                            Arguments = string.Format("/ToFile \"{0}\"", VersionFile),
+                            Arguments = string.Format("/ToFile \"{0}\"", versionFile),
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
                             RedirectStandardError = true,
@@ -33,6 +40,7 @@
                         Log.LogMessage(MessageImportance.Normal, ExePath);
                         Log.LogMessage(MessageImportance.Normal, info.Arguments);
                         
+                        var text = new System.Text.StringBuilder();
                         var process = new System.Diagnostics.Process();
                         process.StartInfo = info;
                         process.OutputDataReceived +=
@@ -40,7 +48,7 @@
                             {
                                 if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
-                                    Log.LogMessage(MessageImportance.Normal, e.Data);
+                                    Log.LogMessage(e.Data);
                                 }
                             };
                         process.ErrorDataReceived +=
@@ -61,6 +69,55 @@
                         {
                             Log.LogError("Failed to get semantic version information");
                             return false;
+                        }
+                        
+                        try
+                        {
+                            string fileText;
+                            using (var reader = new System.IO.StreamReader(versionFile))
+                            {
+                                fileText = reader.ReadToEnd();
+                            }
+
+                            const string fullSemVersionStart = "\"GitHubFlowVersion_FullSemVer\": \"";
+                            var index = fileText.IndexOf(fullSemVersionStart);
+                            VersionSemanticFull = fileText.Substring(
+                                index + fullSemVersionStart.Length,
+                                fileText.IndexOf("\"", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length));
+                                
+                            const string semVersionStart = "\"GitHubFlowVersion_SemVer\": \"";
+                            index = fileText.IndexOf(semVersionStart);
+                            VersionSemantic = fileText.Substring(
+                                index + semVersionStart.Length,
+                                fileText.IndexOf("\"", index + semVersionStart.Length) - (index + semVersionStart.Length));
+
+                            const string majorVersionStart = "\"GitHubFlowVersion_Major\": \"";
+                            index = fileText.IndexOf(majorVersionStart);
+                            VersionMajor = fileText.Substring(
+                                index + majorVersionStart.Length,
+                                fileText.IndexOf("\"", index + majorVersionStart.Length) - (index + majorVersionStart.Length));
+
+                            const string minorVersionStart = "\"GitHubFlowVersion_Minor\": \"";
+                            index = fileText.IndexOf(minorVersionStart);
+                            VersionMinor = fileText.Substring(
+                                index + minorVersionStart.Length,
+                                fileText.IndexOf("\"", index + minorVersionStart.Length) - (index + minorVersionStart.Length));
+
+                            const string patchVersionStart = "\"GitHubFlowVersion_Patch\": \"";
+                            index = fileText.IndexOf(patchVersionStart);
+                            VersionPatch = fileText.Substring(
+                                index + patchVersionStart.Length,
+                                fileText.IndexOf("\"", index + patchVersionStart.Length) - (index + patchVersionStart.Length));
+
+                            const string buildVersionStart = "\"GitHubFlowVersion_NumCommitsSinceRelease\": \"";
+                            index = fileText.IndexOf(buildVersionStart);
+                            VersionBuild = fileText.Substring(
+                                index + buildVersionStart.Length,
+                                fileText.IndexOf("\"", index + buildVersionStart.Length) - (index + buildVersionStart.Length));
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
                         }
                         
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 

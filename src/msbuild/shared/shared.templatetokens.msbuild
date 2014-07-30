@@ -27,21 +27,21 @@
         <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild') AND '$(ExistsExtensionsGetVcsInfoFromFile)' != 'true' " />
     
     <Target Name="nBuildKit_Shared_TemplateTokens_Initialize">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
-                                                           Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
+        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)" 
+                                    Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
             <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
             <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
             <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
-        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        </GetSemanticVersionFromFile>
         
         <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShort)'))" 
                         Condition="Exists('$(FileReleaseNotesShort)') AND '$(ShouldExecute)' == 'true' ">
