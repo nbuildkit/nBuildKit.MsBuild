@@ -94,8 +94,8 @@
     </Target>
     
     <Target Name="_nBuildKit_Prepare_GetVersion_GetToolPaths" Condition="!Exists('$(FileVersionMsBuild)')">
-        <Error Text="The packages directory does not exist. Cannot search for the GitVersion executable."
-               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
+        <Error Text="The packages directory does not exist. Cannot search for the GitVersion or the GitHubFlowVersion executables."
+               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' AND '$(ToolsExternalGitHubFlowVersionPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="GitVersion.exe" 
@@ -155,7 +155,7 @@
             
             <Items_SemanticVersion Include="    &quot;FullSemVer&quot;: &quot;$(VersionSemanticFull)&quot;," />
             <Items_SemanticVersion Include="    &quot;SemVer&quot;: &quot;$(VersionSemantic)&quot;," />
-            <Items_SemanticVersion Include="    &quot;Major``&quot;: &quot;$(VersionMajor)&quot;," />
+            <Items_SemanticVersion Include="    &quot;Major&quot;: &quot;$(VersionMajor)&quot;," />
             <Items_SemanticVersion Include="    &quot;Minor&quot;: &quot;$(VersionMinor)&quot;," />
             <Items_SemanticVersion Include="    &quot;Patch&quot;: &quot;$(VersionPatch)&quot;," />
             <Items_SemanticVersion Include="    &quot;Build&quot;: &quot;$(VersionBuild)&quot;," />
