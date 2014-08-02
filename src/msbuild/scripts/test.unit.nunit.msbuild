@@ -122,8 +122,17 @@
         <Error Text="The packages directory does not exist. Cannot search for the unit test executables."
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         
-        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverCsvExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+
+        <!-- This directory is always present although users may change the location -->
         <MakeDir Directories="$(DirReportGeneratorOutput)" Condition="!Exists('$(DirReportGeneratorOutput)') AND '$(ShouldExecute)' == 'true' " />
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 

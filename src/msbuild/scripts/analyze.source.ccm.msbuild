@@ -105,9 +105,13 @@
         <Error Text="The CCM template file does not exist. Cannot execute source code analysis."
                Condition="!Exists('$(FileTemplateCcm)') AND '$(ShouldExecute)' == 'true' "/>
         
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportCcmExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />        
         <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
-        
+                
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="$(FileCcmExe)"
                                             Condition=" '$(ToolsExternalCcmPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">

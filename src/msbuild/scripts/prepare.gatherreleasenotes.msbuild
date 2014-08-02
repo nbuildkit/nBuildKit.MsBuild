@@ -124,6 +124,18 @@
         <Warning Text="YouTrack server URI not specified" Condition="  '$(IssueTrackerConnection)' =='' AND '$(YouTrackServer)' == 'UNDEFINED' " />
         <Warning Text="Issue tracker project ID not specified" Condition="  '$(IssueTrackerConnection)' == '' AND '$(IssueTrackerProjectId)' == 'UNDEFINED' " />
         
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesShort)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+                 
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesFull)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        
         <Message Text="Gathering release notes for current release ..." 
                  Condition=" '$(IssueTrackerConnection)' != '' " />
         <Exec Command="&quot;$(ToolsExternalGitReleaseNotesPath)&quot; /Token %GitHubToken% /Repo $(GitHubRepositoryName) $(IssueTrackerConnection) $(IssueTrackerFilter) /Version $(VersionSemantic) /OutputFile &quot;$(FileReleaseNotesShort)&quot;"

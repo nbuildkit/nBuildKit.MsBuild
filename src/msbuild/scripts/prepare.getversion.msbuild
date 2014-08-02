@@ -167,7 +167,11 @@
     <Target Name="_nBuildKit_Prepare_GetVersion_WriteVersionsToFile">
         <Message Text="Writing the versions to file ..." />
         
-        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileSemanticVersion)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
         
         <ItemGroup>
             <Items_SemanticVersion Include="{" />

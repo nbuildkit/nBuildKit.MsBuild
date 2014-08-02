@@ -97,7 +97,11 @@
             <Output TaskParameter="Result" PropertyName="FilesArchiveZipExcluded" />
         </TemplateText>
         
-        <MakeDir Directories="$(DirBuildDeploy)" Condition="!Exists('$(DirBuildDeploy)') AND '$(ShouldExecute)' == 'true' " />
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileArchiveSpecs)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
        
         <!-- 
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
