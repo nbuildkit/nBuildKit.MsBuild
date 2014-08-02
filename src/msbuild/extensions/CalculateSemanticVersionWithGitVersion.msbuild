@@ -95,6 +95,13 @@
                                     index + fullSemVersionStart.Length,
                                     versionText.IndexOf(",", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length))
                                 .Trim('"');
+                                
+                            const string semVersionStart = "\"MajorMinorPatch\":";
+                            index = versionText.IndexOf(semVersionStart);
+                            VersionSemantic = versionText.Substring(
+                                    index + semVersionStart.Length,
+                                    versionText.IndexOf(",", index + semVersionStart.Length) - (index + semVersionStart.Length))
+                                .Trim('"');
 
                             const string majorVersionStart = "\"Major\":";
                             index = versionText.IndexOf(majorVersionStart);
@@ -123,12 +130,6 @@
                                     index + buildVersionStart.Length,
                                     versionText.IndexOf(",", index + buildVersionStart.Length) - (index + buildVersionStart.Length))
                                 .Trim('"');
-                                
-                            VersionSemantic = string.Format(
-                                "{0}.{1}.{2}",
-                                VersionMajor,
-                                VersionMinor,
-                                VersionPatch);
                         }
                         catch(Exception e)
                         {
