@@ -300,6 +300,22 @@
             The following properties can be defined on the command line or via the current script:
               GitUserName - The user name of the user who owns the GitHub repository
         -->
+        <!-- <GitUserName Condition=" '$(GitUserName)' == '' ">UNDEFINED</GitUserName> -->
+        
+        <!-- 
+            The full directory path to the script that handles custom generation of the version numbers. 
+            
+            The script is expected be a custom implementation of the CalculateCustomVersion.msbuild script.
+            The script file can be called anything as long as it contains an inline task
+            called CalculateCustomVersion that takes no parameters and returns the version number parts as follows:
+                VersionMajor - The major component of the version number.
+                VersionMinor - The minor component of the version number.
+                VersionPatch - The patch component of the version number.
+                VersionBuild - The build component of the version number.
+                VersionSemantic - The short semantic version, normally made up of MAJOR.MINOR.PATCH
+                VersionSemanticFull - The full semantic version, normally made up of MAJOR.MINOR.PATCH-METADATA+BUILD
+        -->
+        <VersionScriptPath Condition=" '$(VersionScriptPath)' == '' ">UNDEFINED</VersionScriptPath>
     </PropertyGroup>
     
     

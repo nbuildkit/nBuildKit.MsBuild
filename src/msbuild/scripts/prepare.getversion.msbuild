@@ -45,11 +45,14 @@
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
             
+    <Import Project="$(VersionScriptPath)"
+            Condition=" '$(VersionScriptPath)' != '' AND '$(VersionScriptPath)' != 'UNDEFINED' AND Exists('$(VersionScriptPath)')" />
     <Import Project="$(FileVersionMsBuild)"
-            Condition="Exists('$(FileVersionMsBuild)')" />
+            Condition="Exists('$(FileVersionMsBuild)') AND ( '$(VersionScriptPath)' == '' OR '$(VersionScriptPath)' == 'UNDEFINED' OR !Exists('$(VersionScriptPath)'))" />
 
     <Target Name="nBuildKit_Prepare_GetVersion_Run" 
             DependsOnTargets="_nBuildKit_Prepare_GetVersion_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitVersion" />
@@ -81,7 +84,22 @@
         <Message Text="Getting version ..." />
     </Target>
     
-    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" Condition="Exists('$(FileVersionMsBuild)')">
+    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm" 
+            Condition="Exists('$(VersionScriptPath)')">
+        <Message Text="Getting version from the custom version algorithm ..." />
+        
+        <CalculateCustomVersion Condition=" '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
+            <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
+            <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
+            <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+            <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
+        </CalculateCustomVersion>
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" 
+            Condition="Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)')">
         <Message Text="Getting version from the MsBuild version file ..." />
         
         <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)">
@@ -93,9 +111,10 @@
         </CreateProperty>
     </Target>
     
-    <Target Name="_nBuildKit_Prepare_GetVersion_GetToolPaths" Condition="!Exists('$(FileVersionMsBuild)')">
-        <Error Text="The packages directory does not exist. Cannot search for the GitVersion executable."
-               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
+    <Target Name="_nBuildKit_Prepare_GetVersion_GetToolPaths" 
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)')">
+        <Error Text="The packages directory does not exist. Cannot search for the GitVersion or the GitHubFlowVersion executables."
+               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' AND '$(ToolsExternalGitHubFlowVersionPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="GitVersion.exe" 
@@ -117,7 +136,7 @@
     </Target>
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitVersion" 
-            Condition="!Exists('$(FileVersionMsBuild)') AND Exists('$(ToolsExternalGitVersionPath)')">
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND Exists('$(ToolsExternalGitVersionPath)')">
         <CalculateSemanticVersionWithGitVersion ExePath="$(ToolsExternalGitVersionPath)" 
                                                 RemoteRepositoryUrl="$(GitRemoteRepository)" 
                                                 UserName="$(GitUserName)" 
@@ -132,7 +151,7 @@
     </Target>
     
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" 
-            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ToolsExternalGitVersionPath)') AND Exists('$(ToolsExternalGitHubFlowVersionPath)')">
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND !Exists('$(ToolsExternalGitVersionPath)') AND Exists('$(ToolsExternalGitHubFlowVersionPath)')">
         <CalculateSemanticVersionWithGitHubFlowVersion ExePath="$(ToolsExternalGitHubFlowVersionPath)" 
                                                        TempDir="$(DirBuildTemp)"
                                                        Condition=" '$(ShouldExecute)' == 'true' ">
@@ -155,7 +174,7 @@
             
             <Items_SemanticVersion Include="    &quot;FullSemVer&quot;: &quot;$(VersionSemanticFull)&quot;," />
             <Items_SemanticVersion Include="    &quot;SemVer&quot;: &quot;$(VersionSemantic)&quot;," />
-            <Items_SemanticVersion Include="    &quot;Major``&quot;: &quot;$(VersionMajor)&quot;," />
+            <Items_SemanticVersion Include="    &quot;Major&quot;: &quot;$(VersionMajor)&quot;," />
             <Items_SemanticVersion Include="    &quot;Minor&quot;: &quot;$(VersionMinor)&quot;," />
             <Items_SemanticVersion Include="    &quot;Patch&quot;: &quot;$(VersionPatch)&quot;," />
             <Items_SemanticVersion Include="    &quot;Build&quot;: &quot;$(VersionBuild)&quot;," />
