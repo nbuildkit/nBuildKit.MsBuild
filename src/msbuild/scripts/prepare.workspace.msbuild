@@ -67,6 +67,30 @@
                 Condition=" '$(ShouldExecute)' == 'true' "
                 ContinueOnError="True" />
         
+        <!-- 
+            Delete all the known generated files. These may be part of the batch of files we just deleted if the user left the default values
+            in place, otherwise they may be in different places in the system.
+        -->
+        <ItemGroup>
+            <GeneratedFilesToDelete Include="$(FileSemanticVersion)" Condition="Exists('$(FileSemanticVersion)')"/>
+            <GeneratedFilesToDelete Include="$(FileReleaseNotesShort)" Condition="Exists('$(FileReleaseNotesShort)')"/>
+            <GeneratedFilesToDelete Include="$(FileReleaseNotesFull)" Condition="Exists('$(FileReleaseNotesFull)')"/>
+            <GeneratedFilesToDelete Include="$(FileVcsInfo)" Condition="Exists('$(FileVcsInfo)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportCcm)" Condition="Exists('$(FileReportCcm)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportSourceMonitor)" Condition="Exists('$(FileReportSourceMonitor)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportMsTest)" Condition="Exists('$(FileReportMsTest)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportOpenCoverXml)" Condition="Exists('$(FileReportOpenCoverXml)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportOpenCoverCsv)" Condition="Exists('$(FileReportOpenCoverCsv)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportMoma)" Condition="Exists('$(FileReportMoma)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportFxCop)" Condition="Exists('$(FileReportFxCop)')"/>
+            <GeneratedFilesToDelete Include="%(FilesToGenerate.FullPath)" Condition="Exists('%(FilesToGenerate.FullPath)')"/>
+            <GeneratedFilesToDelete Include="%(NuGetPackageSpecs.FullPath)" Condition="Exists('%(NuGetPackageSpecs.FullPath)')"/>
+            <GeneratedFilesToDelete Include="%(ArchivePackageSpecs.FullPath)" Condition="Exists('%(ArchivePackageSpecs.FullPath)')"/>
+        </ItemGroup>
+        <Delete Files="@(GeneratedFilesToDelete)" 
+                Condition=" '$(ShouldExecute)' == 'true' "
+                ContinueOnError="True" />
+        
         <ItemGroup>
             <BuildDirectoriesToDelete Include="$(DirBuildDeploy)" />
             <BuildDirectoriesToDelete Include="$(DirBuildLogs)" />

@@ -109,7 +109,12 @@
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="The SourceMonitor template file does not exist. Cannot execute source code analysis."
                Condition="!Exists('$(FileTemplateSourceMonitor)') AND '$(ShouldExecute)' == 'true' "/>
-        
+                
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportSourceMonitorExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND  '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND  '$(ShouldExecute)' == 'true' " />
     

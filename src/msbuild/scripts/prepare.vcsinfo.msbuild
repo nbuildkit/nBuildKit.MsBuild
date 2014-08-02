@@ -86,8 +86,11 @@
         <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
                Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
         
-        <MakeDir Directories="$(DirBuildTemp)" 
-                 Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsInfo)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
         
         <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
                  LocalPath="$(DirWorkspace)"

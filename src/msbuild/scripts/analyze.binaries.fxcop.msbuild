@@ -103,7 +103,11 @@
         <Error Text="The FxCop project file does not exist. Cannot execute analysis of binaries."
                Condition="!Exists('$(FileProjectFxCop)') AND '$(ShouldExecute)' == 'true' "/>
         
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
         
         <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)" 
                                                  FileToLocate="$(FileFxCopCmdExe)" 
