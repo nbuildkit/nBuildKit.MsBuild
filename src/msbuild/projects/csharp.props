@@ -7,8 +7,8 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        <DirNBuildKitMsBuildProjectsCSharp>$(DirPackages)\nBuildKit.MsBuild.Projects.CSharp.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjectsCSharp>
-        <DirNBuildKitMsBuildProjectsCSharpTemplates>$(DirNBuildKitMsBuildProjectsCSharp)\templates</DirNBuildKitMsBuildProjectsCSharpTemplates>
+        <DirNBuildKitMsBuildProjects>$(DirPackages)\nBuildKit.MsBuild.Projects.CSharp.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjects>
+        <DirNBuildKitMsBuildProjectsTemplates>$(DirNBuildKitMsBuildProjects)\templates</DirNBuildKitMsBuildProjectsTemplates>
     
         <!-- Build configuration -->
         <WarningLevel>$(CSharpWarningLevel)</WarningLevel>
@@ -21,23 +21,23 @@
     <ItemGroup>
         <FilesToGenerate Include="$(SolutionDir)\CompanyInformation.cs"
                          Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
-            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\CompanyInformation.cs.in</Template>
+            <Template>$(DirNBuildKitMsBuildProjectsTemplates)\CompanyInformation.cs.in</Template>
         </FilesToGenerate>
         <FilesToGenerate Include="$(SolutionDir)\ProductInformation.cs"
                          Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
-            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\ProductInformation.cs.in</Template>
+            <Template>$(DirNBuildKitMsBuildProjectsTemplates)\ProductInformation.cs.in</Template>
         </FilesToGenerate>
         <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.Company.cs"
                          Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' ">
-            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\AssemblyInfo.Company.cs.in</Template>
+            <Template>$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.Company.cs.in</Template>
         </FilesToGenerate>
         <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.VersionNumber.cs"
                          Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' ">
-            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\AssemblyInfo.VersionNumber.cs.in</Template>
+            <Template>$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.VersionNumber.cs.in</Template>
         </FilesToGenerate>
         <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.BuildInformation.cs"
                          Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' ">
-            <Template>$(DirNBuildKitMsBuildProjectsCSharpTemplates)\AssemblyInfo.BuildInformation.cs.in</Template>
+            <Template>$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.BuildInformation.cs.in</Template>
         </FilesToGenerate>
     </ItemGroup>
 </Project>
