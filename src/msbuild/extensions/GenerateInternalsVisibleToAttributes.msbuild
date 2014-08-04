@@ -15,7 +15,8 @@
         <ParameterGroup>
             <SnExe ParameterType="System.String" Required="true" />
             <Project ParameterType="System.String" Required="true" />
-            <AttributeTemplate ParameterType="System.String" Required="true" />
+            <AttributeTemplateForSignedAssemblies ParameterType="System.String" Required="true" />
+            <AttributeTemplateForUnsignedAssemblies ParameterType="System.String" Required="true" />
             <DirPackages ParameterType="System.String" Required="true" />
             <DirTemp ParameterType="System.String" Required="true" />
             <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
@@ -244,29 +245,45 @@
                                     }
                                 }
                                 
-                                if (string.IsNullOrEmpty(key))
+                                if (!string.IsNullOrEmpty(key))
                                 {
-                                    Log.LogError("Failed to find public key for: " + taskItem.ItemSpec);
-                                    continue;
-                                }
-                                
-                                var tokenPairs = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.InvariantCultureIgnoreCase)
-                                    {
-                                        { "AssemblyName", taskItem.ItemSpec },
-                                        { "Key", key },
-                                    };
-                                var attributeText = _regex.Replace(
-                                    AttributeTemplate,
-                                    m => 
-                                    {
-                                        var output = m.Value;
-                                        if (tokenPairs.ContainsKey(m.Groups[2].Value))
+                                    var tokenPairs = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.InvariantCultureIgnoreCase)
                                         {
-                                            output = tokenPairs[m.Groups[2].Value];
-                                        }
-                                        return output;
-                                    });
-                                builder.AppendLine(attributeText);
+                                            { "AssemblyName", taskItem.ItemSpec },
+                                            { "Key", key },
+                                        };
+                                    var attributeText = _regex.Replace(
+                                        AttributeTemplateForSignedAssemblies,
+                                        m => 
+                                        {
+                                            var output = m.Value;
+                                            if (tokenPairs.ContainsKey(m.Groups[2].Value))
+                                            {
+                                                output = tokenPairs[m.Groups[2].Value];
+                                            }
+                                            return output;
+                                        });
+                                    builder.AppendLine(attributeText);
+                                }
+                                else
+                                {
+                                    var tokenPairs = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.InvariantCultureIgnoreCase)
+                                        {
+                                            { "AssemblyName", taskItem.ItemSpec },
+                                        };
+                                    var attributeText = _regex.Replace(
+                                        AttributeTemplateForUnsignedAssemblies,
+                                        m => 
+                                        {
+                                            var output = m.Value;
+                                            if (tokenPairs.ContainsKey(m.Groups[2].Value))
+                                            {
+                                                output = tokenPairs[m.Groups[2].Value];
+                                            }
+                                            return output;
+                                        });
+                                    builder.AppendLine(attributeText);
+                                }
                             }
                         }
 
