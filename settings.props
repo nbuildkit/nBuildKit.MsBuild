@@ -292,6 +292,32 @@
         
         <!-- The full path to the file that is used to store the version information during the build -->
         <!-- <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion> -->
+        
+        <!--
+            When using GitVersion with a git repository that needs authentication the following properties 
+            have to be defined on via an environment variable (either local to the process that executes the build, 
+            or global to the user):
+              GitPassword - The user token that provides access to GitHub
+              
+            The following properties can be defined on the command line or via the current script:
+              GitUserName - The user name of the user who owns the GitHub repository
+        -->
+        <!-- <GitUserName Condition=" '$(GitUserName)' == '' ">UNDEFINED</GitUserName> -->
+        
+        <!-- 
+            The full directory path to the script that handles custom generation of the version numbers. 
+            
+            The script is expected be a custom implementation of the CalculateCustomVersion.msbuild script.
+            The script file can be called anything as long as it contains an inline task
+            called CalculateCustomVersion that takes no parameters and returns the version number parts as follows:
+                VersionMajor - The major component of the version number.
+                VersionMinor - The minor component of the version number.
+                VersionPatch - The patch component of the version number.
+                VersionBuild - The build component of the version number.
+                VersionSemantic - The short semantic version, normally made up of MAJOR.MINOR.PATCH
+                VersionSemanticFull - The full semantic version, normally made up of MAJOR.MINOR.PATCH-METADATA+BUILD
+        -->
+        <VersionScriptPath Condition=" '$(VersionScriptPath)' == '' ">UNDEFINED</VersionScriptPath>
     </PropertyGroup>
     
     
@@ -661,6 +687,17 @@
         </NuGetPackageSpecs>
     </ItemGroup>
     
+    <!-- 
+        The item group defining the (partial) names of the NuGet packages that only contain design time element and should
+        thus not be considered dependencies for the generated NuGet packages.
+    -->
+    <ItemGroup>
+        <!--
+        <DesignTimeDependencies Include="nBuildKit" />
+        <DesignTimeDependencies Include="nUnit" />
+        -->
+    </ItemGroup>
+    
     
     <!-- 
         **** PACK - ZIP ARCHIVE ****
@@ -837,7 +874,6 @@
         <!-- <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath> -->
         
         <!-- The full path to the github-release command line executable. -->
-        <!-- On the build server the GitHubReleasePath environment variable is set to the directory that contains the github release executable. -->
         <ToolsExternalGitHubRelease>$(GitHubReleasePath)\github-release.exe</ToolsExternalGitHubRelease>
     
         <!-- The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable. -->
@@ -845,6 +881,9 @@
         
         <!-- The full path to the GitReleaseNotes command line executable. Normally expected to be found in the packages directory. -->
         <!-- <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath> -->
+        
+        <!-- The full path to the GitVersion command line executable. Normally expected to be found in the packages directory. -->
+        <!-- <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath> -->
         
         <!-- The full path to the MoMA command line executable. Normally expected to be found in the packages directory. -->
         <!-- <ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath> -->
