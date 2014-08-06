@@ -14,15 +14,24 @@
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
         <ParameterGroup>
             <Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <DesignTimePackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
             <Dependencies ParameterType="System.String" Output="true" />
         </ParameterGroup>
         <Task>
             <Reference Include="System.Xml" />
             <Reference Include="System.Xml.Linq" />
+            <Using Namespace="System.Linq" />
             <Code Type="Method" Language="cs">
                 <![CDATA[
                     public override bool Execute()
                     {
+                        var excludedDependencies = new System.Collections.Generic.List<string>();
+                        foreach(var token in DesignTimePackages)
+                        {
+                            var packagePartialName = token.ToString().ToLower();
+                            excludedDependencies.Add(packagePartialName);
+                        }
+                    
                         var knownDependencies = new System.Collections.Generic.List<string>();
                         var builder = new System.Text.StringBuilder();
                         foreach (var token in Packages)
@@ -52,6 +61,12 @@
 
                             foreach (var package in packages)
                             {
+                                if (excludedDependencies.Any(p => package.Id.ToLower().Contains(p)))
+                                {
+                                    Log.LogMessage("Ignoring design time package: {0}", package.Id);
+                                    continue;
+                                }
+                            
                                 if (knownDependencies.Contains(package.Id))
                                 {
                                     continue;
