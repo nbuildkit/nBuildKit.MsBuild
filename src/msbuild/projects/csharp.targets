@@ -38,14 +38,16 @@
         </BuildDependsOn>
     </PropertyGroup>
     <PropertyGroup>
-        <InternalsVisibleToTemplate>[assembly: InternalsVisibleTo("${AssemblyName}, PublicKey=${Key}&quot;)]</InternalsVisibleToTemplate>
+        <InternalsVisibleToForSignedAssembliesTemplate>[assembly: InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)]</InternalsVisibleToForSignedAssembliesTemplate>
+        <InternalsVisibleToForUnsignedAssembliesTemplate>[assembly: InternalsVisibleTo(&quot;${AssemblyName}&quot;)]</InternalsVisibleToForUnsignedAssembliesTemplate>
     </PropertyGroup>
     <Target Name="_nBuildKit_Projects_CSharp_PrepareGenerateInternalsVisibleTo"
             DependsOnTargets="_nBuildKit_Projects_Common_GetSnPath"
             Condition=" '@(InternalsVisibleTo)' != '' ">
         <GenerateInternalsVisibleToAttributes SnExe="$(ToolsExternalSnPath)"
                                               Project="$(AssemblyName)"
-                                              AttributeTemplate="$(InternalsVisibleToTemplate)" 
+                                              AttributeTemplateForSignedAssemblies="$(InternalsVisibleToForSignedAssembliesTemplate)" 
+                                              AttributeTemplateForUnsignedAssemblies="$(InternalsVisibleToForUnsignedAssembliesTemplate)" 
                                               DirPackages="$(DirPackages)"
                                               DirTemp="$(DirBuildTemp)"
                                               Items="@(InternalsVisibleTo)"
@@ -64,7 +66,7 @@
         
         <CreateItem
             Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.InternalsVisibleTo.cs"
-            AdditionalMetadata="Template=$(DirNBuildKitMsBuildProjectsCSharpTemplates)\AssemblyInfo.InternalsVisibleTo.cs.in"
+            AdditionalMetadata="Template=$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.InternalsVisibleTo.cs.in"
             Condition=" '$(InternalsVisibleToAttributes)' != '' ">
            <Output
                TaskParameter="Include"

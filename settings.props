@@ -292,6 +292,32 @@
         
         <!-- The full path to the file that is used to store the version information during the build -->
         <!-- <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion> -->
+        
+        <!--
+            When using GitVersion with a git repository that needs authentication the following properties 
+            have to be defined on via an environment variable (either local to the process that executes the build, 
+            or global to the user):
+              GitPassword - The user token that provides access to GitHub
+              
+            The following properties can be defined on the command line or via the current script:
+              GitUserName - The user name of the user who owns the GitHub repository
+        -->
+        <!-- <GitUserName Condition=" '$(GitUserName)' == '' ">UNDEFINED</GitUserName> -->
+        
+        <!-- 
+            The full directory path to the script that handles custom generation of the version numbers. 
+            
+            The script is expected be a custom implementation of the CalculateCustomVersion.msbuild script.
+            The script file can be called anything as long as it contains an inline task
+            called CalculateCustomVersion that takes no parameters and returns the version number parts as follows:
+                VersionMajor - The major component of the version number.
+                VersionMinor - The minor component of the version number.
+                VersionPatch - The patch component of the version number.
+                VersionBuild - The build component of the version number.
+                VersionSemantic - The short semantic version, normally made up of MAJOR.MINOR.PATCH
+                VersionSemanticFull - The full semantic version, normally made up of MAJOR.MINOR.PATCH-METADATA+BUILD
+        -->
+        <VersionScriptPath Condition=" '$(VersionScriptPath)' == '' ">UNDEFINED</VersionScriptPath>
     </PropertyGroup>
     
     
@@ -346,50 +372,18 @@
     -->
     <!-- List of all files that should be generated and their template files -->
     <ItemGroup>
-        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common\common.props">
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\common.props">
             <Template>$(DirSrc)\msbuild\projects\common.props</Template>
         </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common\install.ps1">
-            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFile</Token>
-            <ReplacementValue>common</ReplacementValue>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common\uninstall.ps1">
-            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFile</Token>
-            <ReplacementValue>common</ReplacementValue>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common\nbuildkit.common.readme.txt">
-            <Template>$(DirSrc)\msbuild\projects\readme.txt</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.Common</ReplacementValue>
-        </FilesToGenerate>
-        
-        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common.net\install.ps1">
-            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFile</Token>
-            <ReplacementValue>common.net</ReplacementValue>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common.net\uninstall.ps1">
-            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFile</Token>
-            <ReplacementValue>common.net</ReplacementValue>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\common.net\nbuildkit.common.net.readme.txt">
-            <Template>$(DirSrc)\msbuild\projects\readme.txt</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.Common.Net</ReplacementValue>
-        </FilesToGenerate>
-        
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\install.ps1">
             <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFile</Token>
-            <ReplacementValue>csharp</ReplacementValue>
+            <Token>TargetsFiles</Token>
+            <ReplacementValue>&quot;common&quot;, &quot;common.net&quot;, &quot;csharp&quot;</ReplacementValue>
         </FilesToGenerate>
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\uninstall.ps1">
             <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFile</Token>
-            <ReplacementValue>csharp</ReplacementValue>
+            <Token>TargetsFiles</Token>
+            <ReplacementValue>&quot;common&quot;, &quot;common.net&quot;, &quot;csharp&quot;</ReplacementValue>
         </FilesToGenerate>
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\nbuildkit.csharp.readme.txt">
             <Template>$(DirSrc)\msbuild\projects\readme.txt</Template>
@@ -397,15 +391,18 @@
             <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </FilesToGenerate>
         
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\common.props">
+            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        </FilesToGenerate>
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\install.ps1">
             <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFile</Token>
-            <ReplacementValue>wix</ReplacementValue>
+            <Token>TargetsFiles</Token>
+            <ReplacementValue>&quot;common&quot;, &quot;wix&quot;</ReplacementValue>
         </FilesToGenerate>
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\uninstall.ps1">
             <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFile</Token>
-            <ReplacementValue>wix</ReplacementValue>
+            <Token>TargetsFiles</Token>
+            <ReplacementValue>&quot;common&quot;, &quot;wix&quot;</ReplacementValue>
         </FilesToGenerate>
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\nbuildkit.wix.readme.txt">
             <Template>$(DirSrc)\msbuild\projects\readme.txt</Template>
@@ -680,14 +677,6 @@
             <Template>$(DirTemplates)\nbuildkit.msbuild.nuspec.in</Template>
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirBuildTemp)\nbuildkit.msbuild.projects.common.nuspec">
-            <Template>$(DirTemplates)\nbuildkit.msbuild.projects.common.nuspec.in</Template>
-            <ShouldBuildSymbols>false</ShouldBuildSymbols>
-        </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirBuildTemp)\nbuildkit.msbuild.projects.common.net.nuspec">
-            <Template>$(DirTemplates)\nbuildkit.msbuild.projects.common.net.nuspec.in</Template>
-            <ShouldBuildSymbols>false</ShouldBuildSymbols>
-        </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirBuildTemp)\nbuildkit.msbuild.projects.csharp.nuspec">
             <Template>$(DirTemplates)\nbuildkit.msbuild.projects.csharp.nuspec.in</Template>
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
@@ -696,6 +685,17 @@
             <Template>$(DirTemplates)\nbuildkit.msbuild.projects.wix.nuspec.in</Template>
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
+    </ItemGroup>
+    
+    <!-- 
+        The item group defining the (partial) names of the NuGet packages that only contain design time element and should
+        thus not be considered dependencies for the generated NuGet packages.
+    -->
+    <ItemGroup>
+        <!--
+        <DesignTimeDependencies Include="nBuildKit" />
+        <DesignTimeDependencies Include="nUnit" />
+        -->
     </ItemGroup>
     
     
@@ -874,7 +874,6 @@
         <!-- <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath> -->
         
         <!-- The full path to the github-release command line executable. -->
-        <!-- On the build server the GitHubReleasePath environment variable is set to the directory that contains the github release executable. -->
         <ToolsExternalGitHubRelease>$(GitHubReleasePath)\github-release.exe</ToolsExternalGitHubRelease>
     
         <!-- The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable. -->
@@ -882,6 +881,9 @@
         
         <!-- The full path to the GitReleaseNotes command line executable. Normally expected to be found in the packages directory. -->
         <!-- <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath> -->
+        
+        <!-- The full path to the GitVersion command line executable. Normally expected to be found in the packages directory. -->
+        <!-- <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath> -->
         
         <!-- The full path to the MoMA command line executable. Normally expected to be found in the packages directory. -->
         <!-- <ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath> -->

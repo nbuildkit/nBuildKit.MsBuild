@@ -48,7 +48,7 @@
                                 { 
                                     if (!string.IsNullOrWhiteSpace(e.Data))
                                     {
-                                        Log.LogError(e.Data); 
+                                        Log.LogWarning(e.Data); 
                                     }
                                 };
                             process.Start();
@@ -85,7 +85,7 @@
                                 { 
                                     if (!string.IsNullOrWhiteSpace(e.Data))
                                     {
-                                        Log.LogError(e.Data); 
+                                        Log.LogWarning(e.Data); 
                                     }
                                 };
                             process.Start();
@@ -95,6 +95,56 @@
                             process.WaitForExit();
                             
                             CurrentBranch = text.ToString().Trim();
+                        }
+                        
+                        if (string.IsNullOrEmpty(CurrentBranch) && !string.IsNullOrEmpty(CurrentRevision))
+                        {
+                            Log.LogMessage(MessageImportance.Normal, "Current branch not found. Possibly on a detached head. Searching for branches that contain current commit.");
+                        
+                            // The current HEAD is probably a detached one so we need to find the branch that holds the 
+                            // current commit
+                            var info = new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        FileName = "git",
+                                        Arguments = string.Format("branch --contains {0}", CurrentRevision),
+                                        WorkingDirectory = LocalPath,
+                                        UseShellExecute = false,
+                                        RedirectStandardOutput = true,
+                                        RedirectStandardError = true,
+                                    };
+                            
+                            var lines = new System.Collections.Generic.List<string>();
+                            var process = new System.Diagnostics.Process();
+                            process.StartInfo = info;
+                            process.OutputDataReceived += 
+                                (s, e) => 
+                                { 
+                                    lines.Add(e.Data);
+                                };
+                            process.ErrorDataReceived += 
+                                (s, e) => 
+                                { 
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogWarning(e.Data); 
+                                    }
+                                };
+                            process.Start();
+
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
+                            process.WaitForExit();
+                            
+                            foreach(var line in lines)
+                            {
+                                if (line.Contains("detached"))
+                                {
+                                    continue;
+                                }
+                                
+                                CurrentBranch = line.Trim(' ', '*');
+                                break;
+                            }
                         }
                         
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 

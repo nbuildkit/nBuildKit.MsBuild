@@ -1,0 +1,87 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsGetSemanticVersionFromFile>true</ExistsExtensionsGetSemanticVersionFromFile>
+    </PropertyGroup>
+    
+    <UsingTask TaskName="GetSemanticVersionFromFile" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <VersionFile ParameterType="System.String" Required="true" />
+            <VersionMajor ParameterType="System.String" Output="true" />
+            <VersionMinor ParameterType="System.String" Output="true" />
+            <VersionPatch ParameterType="System.String" Output="true" />
+            <VersionBuild ParameterType="System.String" Output="true" />
+            <VersionSemantic ParameterType="System.String" Output="true" />
+            <VersionSemanticFull ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        try
+                        {
+                            string text;
+                            using (var reader = new System.IO.StreamReader(VersionFile))
+                            {
+                                text = reader.ReadToEnd();
+                            }
+
+                            const string fullSemVersionStart = "\"FullSemVer\": \"";
+                            var index = text.IndexOf(fullSemVersionStart);
+                            VersionSemanticFull = text.Substring(
+                                index + fullSemVersionStart.Length,
+                                text.IndexOf("\"", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length));
+                                
+                            const string semVersionStart = "\"SemVer\": \"";
+                            index = text.IndexOf(semVersionStart);
+                            VersionSemantic = text.Substring(
+                                index + semVersionStart.Length,
+                                text.IndexOf("\"", index + semVersionStart.Length) - (index + semVersionStart.Length));
+
+                            const string majorVersionStart = "\"Major\": \"";
+                            index = text.IndexOf(majorVersionStart);
+                            VersionMajor = text.Substring(
+                                index + majorVersionStart.Length,
+                                text.IndexOf("\"", index + majorVersionStart.Length) - (index + majorVersionStart.Length));
+
+                            const string minorVersionStart = "\"Minor\": \"";
+                            index = text.IndexOf(minorVersionStart);
+                            VersionMinor = text.Substring(
+                                index + minorVersionStart.Length,
+                                text.IndexOf("\"", index + minorVersionStart.Length) - (index + minorVersionStart.Length));
+
+                            const string patchVersionStart = "\"Patch\": \"";
+                            index = text.IndexOf(patchVersionStart);
+                            VersionPatch = text.Substring(
+                                index + patchVersionStart.Length,
+                                text.IndexOf("\"", index + patchVersionStart.Length) - (index + patchVersionStart.Length));
+
+                            const string buildVersionStart = "\"Build\": \"";
+                            index = text.IndexOf(buildVersionStart);
+                            VersionBuild = text.Substring(
+                                index + buildVersionStart.Length,
+                                text.IndexOf("\"", index + buildVersionStart.Length) - (index + buildVersionStart.Length));
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+                        
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

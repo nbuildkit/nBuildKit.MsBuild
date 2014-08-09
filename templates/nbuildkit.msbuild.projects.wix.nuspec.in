@@ -16,12 +16,17 @@
         </releaseNotes>
         <dependencies>
             ${Dependencies}
-            <dependency id="nBuildKit.MsBuild.Projects.Common" version="[${VersionSemantic}]" />
+            <dependency id="nBuildKit.MsBuild" version="[${VersionSemantic}]" />
         </dependencies>
     </metadata>
     <files>
+        <file src="${DirSrc}\msbuild\projects\common.targets" target="build" />
+    
         <file src="${DirSrc}\msbuild\projects\wix.props" target="build" />
         <file src="${DirSrc}\msbuild\projects\wix.targets" target="build" />
+        
+        <file src="${DirTemp}\msbuild\projects\wix\common.props" target="build" />
+        
         <file src="${DirTemp}\msbuild\projects\wix\nbuildkit.wix.readme.txt" target="content" />
         <file src="${DirTemp}\msbuild\projects\wix\install.ps1" target="tools" />
         <file src="${DirTemp}\msbuild\projects\wix\uninstall.ps1" target="tools" />

@@ -45,8 +45,8 @@
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
             Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
     
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\SetEnvironmentVariable.msbuild"
@@ -93,6 +93,12 @@
                  Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="The Sandcastle template file does not exist. Cannot generate documentation."
                Condition="!Exists('$(FileTemplateSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
+               
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileGeneratedSandcastle)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
         
         <CreateProperty Value="$(DXROOT)" Condition="Exists('$(DXROOT)')">
             <Output TaskParameter="Value" PropertyName="DirSandcastle" />
@@ -104,10 +110,10 @@
         </CreateProperty>
         <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
         
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
-                                                           Condition="Exists('$(FileVersionSemantic)') AND '$(ShouldExecute)' == 'true' ">
+        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)" 
+                                    Condition="Exists('$(FileVersionSemantic)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
-        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        </GetSemanticVersionFromFile>
     
         <ItemGroup>
             <TemplateTokens Include="DirShfbRoot">

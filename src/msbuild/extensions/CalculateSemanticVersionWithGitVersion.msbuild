@@ -1,0 +1,148 @@
+<!-- 
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+         ToolsVersion="4.0">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsCalculateSemanticVersionWithGitVersion>true</ExistsExtensionsCalculateSemanticVersionWithGitVersion>
+    </PropertyGroup>
+    
+    <UsingTask TaskName="CalculateSemanticVersionWithGitVersion" 
+               TaskFactory="CodeTaskFactory" 
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <ExePath ParameterType="System.String" Required="true" />
+            <RemoteRepositoryUrl ParameterType="System.String" Required="false" />
+            <UserName ParameterType="System.String" Required="false" />
+            <VersionMajor ParameterType="System.String" Output="true" />
+            <VersionMinor ParameterType="System.String" Output="true" />
+            <VersionPatch ParameterType="System.String" Output="true" />
+            <VersionBuild ParameterType="System.String" Output="true" />
+            <VersionSemantic ParameterType="System.String" Output="true" />
+            <VersionSemanticFull ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var gitPassword = System.Environment.GetEnvironmentVariable("GitPassword");
+                        var builder = new System.Text.StringBuilder();
+                        {
+                            if (!string.IsNullOrEmpty(UserName))
+                            {
+                                builder.Append(string.Format("/u \"{0}\" ", UserName));
+                                builder.Append(string.Format("/p \"{0}\" ", gitPassword));
+                            }
+                            
+                            if (!string.IsNullOrEmpty(RemoteRepositoryUrl) && !string.IsNullOrEmpty(UserName))
+                            {
+                                builder.Append(string.Format("/url \"{0}\" ", RemoteRepositoryUrl));
+                            }
+                        }
+                    
+                        var info = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = ExePath,
+                            Arguments = builder.ToString(),
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                        };
+                        
+                        Log.LogMessage(MessageImportance.Normal, ExePath);
+                        Log.LogMessage(MessageImportance.Normal, info.Arguments);
+                        
+                        var text = new System.Text.StringBuilder();
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    text.Append(e.Data);
+                                }
+                            };
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogError(e.Data);
+                                }
+                            };
+                        process.Start();
+
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+                        
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError("Failed to get semantic version information");
+                            return false;
+                        }
+                        
+                        try
+                        {
+                            string versionText = text.ToString();
+                            const string fullSemVersionStart = "\"FullSemVer\":";
+                            var index = versionText.IndexOf(fullSemVersionStart);
+                            VersionSemanticFull = versionText.Substring(
+                                    index + fullSemVersionStart.Length,
+                                    versionText.IndexOf(",", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length))
+                                .Trim('"');
+                                
+                            const string semVersionStart = "\"MajorMinorPatch\":";
+                            index = versionText.IndexOf(semVersionStart);
+                            VersionSemantic = versionText.Substring(
+                                    index + semVersionStart.Length,
+                                    versionText.IndexOf(",", index + semVersionStart.Length) - (index + semVersionStart.Length))
+                                .Trim('"');
+
+                            const string majorVersionStart = "\"Major\":";
+                            index = versionText.IndexOf(majorVersionStart);
+                            VersionMajor = versionText.Substring(
+                                    index + majorVersionStart.Length,
+                                    versionText.IndexOf(",", index + majorVersionStart.Length) - (index + majorVersionStart.Length))
+                                .Trim('"');
+
+                            const string minorVersionStart = "\"Minor\":";
+                            index = versionText.IndexOf(minorVersionStart);
+                            VersionMinor = versionText.Substring(
+                                    index + minorVersionStart.Length,
+                                    versionText.IndexOf(",", index + minorVersionStart.Length) - (index + minorVersionStart.Length))
+                                .Trim('"');
+
+                            const string patchVersionStart = "\"Patch\":";
+                            index = versionText.IndexOf(patchVersionStart);
+                            VersionPatch = versionText.Substring(
+                                    index + patchVersionStart.Length,
+                                    versionText.IndexOf(",", index + patchVersionStart.Length) - (index + patchVersionStart.Length))
+                                .Trim('"');
+
+                            const string buildVersionStart = "\"BuildMetaData\":";
+                            index = versionText.IndexOf(buildVersionStart);
+                            VersionBuild = versionText.Substring(
+                                    index + buildVersionStart.Length,
+                                    versionText.IndexOf(",", index + buildVersionStart.Length) - (index + buildVersionStart.Length))
+                                .Trim('"');
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+                        
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>  
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

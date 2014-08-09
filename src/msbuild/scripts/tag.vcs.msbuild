@@ -91,10 +91,10 @@
     <Target Name="_nBuildKit_Tag_Vcs_GetVersion">
         <Warning Text="The semantic version file does not exist. Will not be able to get the version."
                  Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)"
-                                                           Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
+        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)"
+                                    Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
-        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        </GetSemanticVersionFromFile>
         
         <Message Text="The semantic version is: $(VersionSemantic)" />
     </Target>

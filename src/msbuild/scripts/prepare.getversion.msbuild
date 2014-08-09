@@ -33,22 +33,31 @@
         
         <!-- External Tools -->
         <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath>
+        <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath>
     </PropertyGroup>
     
     <Import Project="$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion)' != 'true' " />
+    <Import Project="$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitVersion)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
             
+    <Import Project="$(VersionScriptPath)"
+            Condition=" '$(VersionScriptPath)' != '' AND '$(VersionScriptPath)' != 'UNDEFINED' AND Exists('$(VersionScriptPath)')" />
     <Import Project="$(FileVersionMsBuild)"
-            Condition="Exists('$(FileVersionMsBuild)')" />
+            Condition="Exists('$(FileVersionMsBuild)') AND ( '$(VersionScriptPath)' == '' OR '$(VersionScriptPath)' == 'UNDEFINED' OR !Exists('$(VersionScriptPath)'))" />
 
     <Target Name="nBuildKit_Prepare_GetVersion_Run" 
             DependsOnTargets="_nBuildKit_Prepare_GetVersion_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" />
+        <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetToolPaths" />
+        <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitVersion" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" />
+        <CallTarget Targets="_nBuildKit_Prepare_GetVersion_WriteVersionsToFile" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_PushToExternals" />
     </Target>
     
@@ -66,6 +75,7 @@
         <Message Text=" " />
         
         <Message Text="GitHubFlowVersion command line executable is located at: $(ToolsExternalGitHubFlowVersionPath)" />
+        <Message Text="GitVersion command line executable is located at:        $(ToolsExternalGitVersionPath)" />
         <Message Text=" " />
     </Target>
     
@@ -74,36 +84,45 @@
         <Message Text="Getting version ..." />
     </Target>
     
-    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" Condition="Exists('$(FileVersionMsBuild)')">
+    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm" 
+            Condition="Exists('$(VersionScriptPath)')">
+        <Message Text="Getting version from the custom version algorithm ..." />
+        
+        <CalculateCustomVersion Condition=" '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
+            <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
+            <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
+            <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+            <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
+        </CalculateCustomVersion>
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" 
+            Condition="Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)')">
         <Message Text="Getting version from the MsBuild version file ..." />
         
-        <ItemGroup>
-            <Items_SemanticVersion Include="{" />
-            
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_FullSemVer&quot;: &quot;$(VersionMajor).$(VersionMinor).$(VersionPatch)+$(VersionBuild)&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_SemVer&quot;: &quot;$(VersionMajor).$(VersionMinor).$(VersionPatch)&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_AssemblyVersion&quot;: &quot;$(VersionMajor).$(VersionMinor).0.0&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_AssemblyFileVersion&quot;: &quot;$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionBuild)&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_AssemblyInformationalVersion&quot;: &quot;$(VersionMajor).$(VersionMinor).$(VersionPatch)+$(VersionBuild)&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_FourPartVersion&quot;: &quot;$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionBuild)&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_Major&quot;: &quot;$(VersionMajor)&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_Minor&quot;: &quot;$(VersionMinor)&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_Patch&quot;: &quot;$(VersionPatch)&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_NumCommitsSinceRelease&quot;: &quot;$(VersionBuild)&quot;," />
-            <Items_SemanticVersion Include="    &quot;GitHubFlowVersion_Tag&quot;: &quot;&quot;" />
-            
-            <Items_SemanticVersion Include="}" />
-        </ItemGroup>
+        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)">
+            <Output TaskParameter="Value" PropertyName="VersionSemantic" />
+        </CreateProperty>
         
-        <WriteLinesToFile File="$(FileSemanticVersion)"
-                          Lines="@(Items_SemanticVersion)"
-                          Overwrite="true"
-                          Condition=" '$(ShouldExecute)' == 'true' "/>
+        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)+$(VersionBuild)">
+            <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
+        </CreateProperty>
     </Target>
-
-    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" Condition="!Exists('$(FileVersionMsBuild)')">
-        <Error Text="The packages directory does not exist. Cannot search for the GitHubFlowVersion executable."
-               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitHubFlowVersionPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
+    
+    <Target Name="_nBuildKit_Prepare_GetVersion_GetToolPaths" 
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)')">
+        <Error Text="The packages directory does not exist. Cannot search for the GitVersion or the GitHubFlowVersion executables."
+               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' AND '$(ToolsExternalGitHubFlowVersionPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
+        
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
+                                            FileToLocate="GitVersion.exe" 
+                                            Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalGitVersionPath" />
+        </SearchPackagesDirectoryForToolPath>
+        <Message Text="The GitVersion executable was found at: $(ToolsExternalGitVersionPath)"
+                 Condition="Exists('$(ToolsExternalGitVersionPath)') AND '$(ShouldExecute)' == 'true' " />
         
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
                                             FileToLocate="GitHubFlowVersion.exe" 
@@ -112,24 +131,68 @@
         </SearchPackagesDirectoryForToolPath>
         <Message Text="The GitHubFlowVersion executable was found at: $(ToolsExternalGitHubFlowVersionPath)"
                  Condition="Exists('$(ToolsExternalGitHubFlowVersionPath)') AND '$(ShouldExecute)' == 'true' " />
-        <Error Text="Could not locate the GitHubFlowVersion executable path. Cannot get semantic version."
-               Condition="!Exists('$(ToolsExternalGitHubFlowVersionPath)') AND '$(ShouldExecute)' == 'true' "/>
-        
-        <CalculateSemanticVersionWithGitHubFlowVersion ExePath="$(ToolsExternalGitHubFlowVersionPath)" 
-                                                       VersionFile="$(FileSemanticVersion)" 
-                                                       Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="Could not locate either the GitVersion executable path or the GitHubFlowVersion executable path. Cannot get semantic version."
+               Condition="!Exists('$(ToolsExternalGitVersionPath)') AND !Exists('$(ToolsExternalGitHubFlowVersionPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
-    
-    <Target Name="_nBuildKit_Prepare_GetVersion_PushToExternals">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" Condition="Exists('$(FileSemanticVersion)')">
+
+    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitVersion" 
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND Exists('$(ToolsExternalGitVersionPath)')">
+        <CalculateSemanticVersionWithGitVersion ExePath="$(ToolsExternalGitVersionPath)" 
+                                                RemoteRepositoryUrl="$(GitRemoteRepository)" 
+                                                UserName="$(GitUserName)" 
+                                                Condition=" '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
             <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
             <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
             <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
-        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        </CalculateSemanticVersionWithGitVersion>
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion" 
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND !Exists('$(ToolsExternalGitVersionPath)') AND Exists('$(ToolsExternalGitHubFlowVersionPath)')">
+        <CalculateSemanticVersionWithGitHubFlowVersion ExePath="$(ToolsExternalGitHubFlowVersionPath)" 
+                                                       TempDir="$(DirBuildTemp)"
+                                                       Condition=" '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
+            <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
+            <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
+            <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+            <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
+        </CalculateSemanticVersionWithGitHubFlowVersion>
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_GetVersion_WriteVersionsToFile">
+        <Message Text="Writing the versions to file ..." />
         
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileSemanticVersion)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" 
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        
+        <ItemGroup>
+            <Items_SemanticVersion Include="{" />
+            
+            <Items_SemanticVersion Include="    &quot;FullSemVer&quot;: &quot;$(VersionSemanticFull)&quot;," />
+            <Items_SemanticVersion Include="    &quot;SemVer&quot;: &quot;$(VersionSemantic)&quot;," />
+            <Items_SemanticVersion Include="    &quot;Major&quot;: &quot;$(VersionMajor)&quot;," />
+            <Items_SemanticVersion Include="    &quot;Minor&quot;: &quot;$(VersionMinor)&quot;," />
+            <Items_SemanticVersion Include="    &quot;Patch&quot;: &quot;$(VersionPatch)&quot;," />
+            <Items_SemanticVersion Include="    &quot;Build&quot;: &quot;$(VersionBuild)&quot;," />
+            
+            <Items_SemanticVersion Include="}" />
+        </ItemGroup>
+        
+        <WriteLinesToFile File="$(FileSemanticVersion)"
+                          Lines="@(Items_SemanticVersion)"
+                          Overwrite="true"
+                          Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "/>
+    </Target>
+    
+    <Target Name="_nBuildKit_Prepare_GetVersion_PushToExternals">
         <Message Text="Versions are:" />
         <Message Text="Major:          $(VersionMajor)" />
         <Message Text="Minor:          $(VersionMinor)" />
