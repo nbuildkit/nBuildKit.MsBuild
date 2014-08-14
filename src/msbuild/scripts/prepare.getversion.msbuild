@@ -173,6 +173,25 @@
         <MakeDir Directories="$(DirToCreate)" 
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
         
+        <CreateProperty Value="0.0.0+0" Condition=" '$(VersionSemanticFull)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
+        </CreateProperty>
+        <CreateProperty Value="0.0.0" Condition=" '$(VersionSemantic)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionSemantic" />
+        </CreateProperty>
+        <CreateProperty Value="0" Condition=" '$(VersionMajor)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionMajor" />
+        </CreateProperty>
+        <CreateProperty Value="0" Condition=" '$(VersionMinor)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionMinor" />
+        </CreateProperty>
+        <CreateProperty Value="0" Condition=" '$(VersionPatch)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionPatch" />
+        </CreateProperty>
+        <CreateProperty Value="0" Condition=" '$(VersionBuild)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionBuild" />
+        </CreateProperty>        
+        
         <ItemGroup>
             <Items_SemanticVersion Include="{" />
             

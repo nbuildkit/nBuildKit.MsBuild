@@ -28,13 +28,12 @@
                 <![CDATA[
                     public override bool Execute()
                     {
-                        var gitPassword = System.Environment.GetEnvironmentVariable("GitPassword");
                         var builder = new System.Text.StringBuilder();
                         {
                             if (!string.IsNullOrEmpty(UserName))
                             {
                                 builder.Append(string.Format("/u \"{0}\" ", UserName));
-                                builder.Append(string.Format("/p \"{0}\" ", gitPassword));
+                                builder.Append("/p \"%GitPassWord%\" ");
                             }
                             
                             if (!string.IsNullOrEmpty(RemoteRepositoryUrl) && !string.IsNullOrEmpty(UserName))
@@ -43,17 +42,18 @@
                             }
                         }
                     
+                        var arguments = builder.ToString();
+                        Log.LogMessage(MessageImportance.Normal, ExePath);
+                        Log.LogMessage(MessageImportance.Normal, arguments);
+                        
                         var info = new System.Diagnostics.ProcessStartInfo
                         {
                             FileName = ExePath,
-                            Arguments = builder.ToString(),
+                            Arguments = System.Environment.ExpandEnvironmentVariables(arguments),
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
                             RedirectStandardError = true,
                         };
-                        
-                        Log.LogMessage(MessageImportance.Normal, ExePath);
-                        Log.LogMessage(MessageImportance.Normal, info.Arguments);
                         
                         var text = new System.Text.StringBuilder();
                         var process = new System.Diagnostics.Process();
