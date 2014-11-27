@@ -139,9 +139,6 @@
         </DefaultProperties>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\SortItemGroupByKey.msbuild') AND '$(ExistsExtensionsSortItemGroupByKey)' != 'true' " />
-    
     <Target Name="nBuildKit_Build_Run" DependsOnTargets="_nBuildKit_Build_DisplayInfo">
         <Error Text="No build properties file was defined."
                Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
