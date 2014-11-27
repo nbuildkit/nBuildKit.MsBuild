@@ -226,57 +226,101 @@
             $(BuildStepsPackNuGet)                 - Generates the NuGet packages
             $(BuildStepsPackZip)                   - Generates one or more ZIP archives
         
-        The order in which items are defined is irrelevant given that the build script will sort the steps in the right order.
+        The order in which items are defined in the item is irrelevant because the build script will sort the steps in the right order.
+        The order of the steps in the each item defines the order in which those steps are executed.
     -->
     <ItemGroup>
-        <BuildStepsToExecute Include="$(BuildTargetPrepare)">
-            <Steps>
-                $(BuildStepsPrepareRestoreNuGet);
-                $(BuildStepsPrepareReleaseNotes);
-                $(BuildStepsPrepareVcsInfo);
-                $(BuildStepsPrepareGenerateFiles)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetAnalyzeSource)">
-            <Steps>
-                $(BuildStepsAnalyzeSourceCcm);
-                $(BuildStepsAnalyzeSourceSouceMonitor)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNuGet)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetBuildBinaries)">
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetExecuteUnitTests)">
-            <Steps>
-                $(BuildStepsUnitTestNUnit)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareReleaseNotes)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetAnalyzeBinaries)">
-            <Steps>
-                $(BuildStepsAnalyzeBinariesMoma);
-                $(BuildStepsAnalyzeBinariesFxCop)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsInfo)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetBuildApiDocumentation)">
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateFiles)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetPackage)">
-            <Steps>
-                $(BuildStepsPackNuGet);
-                $(BuildStepsPackZip)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceCcm)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceSouceMonitor)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestMsTest)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesMoma)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsBuildApiDocumentationWithSandcastle)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPackZip)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
         </BuildStepsToExecute>
     </ItemGroup>
     

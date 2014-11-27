@@ -229,56 +229,37 @@
         The order in which items are defined is irrelevant given that the build script will sort the steps in the right order.
     -->
     <ItemGroup>
-        <BuildStepsToExecute Include="$(BuildTargetPrepare)">
-            <Steps>
-                $(BuildStepsPrepareRestoreNuGet);
-                $(BuildStepsPrepareReleaseNotes);
-                $(BuildStepsPrepareVcsInfo);
-                $(BuildStepsPrepareGenerateFiles)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <!--
-        <BuildStepsToExecute Include="$(BuildTargetAnalyzeSource)">
-            <Steps>
-                $(BuildStepsAnalyzeSourceCcm);
-                $(BuildStepsAnalyzeSourceSouceMonitor)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNuGet)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetBuildBinaries)">
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetExecuteUnitTests)">
-            <Steps>
-                $(BuildStepsUnitTestNUnit)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareReleaseNotes)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetAnalyzeBinaries)">
-            <Steps>
-                $(BuildStepsAnalyzeBinariesMoma);
-                $(BuildStepsAnalyzeBinariesFxCop)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsInfo)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetBuildApiDocumentation)">
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateFiles)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        -->
-        <BuildStepsToExecute Include="$(BuildTargetPackage)">
-            <Steps>
-                $(BuildStepsPackNuGet);
-                $(BuildStepsPackZip)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPackZip)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
     </ItemGroup>
     
