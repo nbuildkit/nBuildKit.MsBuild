@@ -268,14 +268,6 @@
 
         <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
             <Properties>
-                Configuration=$(TestConfiguration);
-                Platform=$(Platform)
-            </Properties>
-        </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
-            <Properties>
-                Configuration=$(ProductionConfiguration);
-                Platform=$(Platform)
             </Properties>
         </BuildStepsToExecute>
 
@@ -466,10 +458,26 @@
     <!-- 
         **** VISUAL STUDIO BUILD ****
     -->
+    <!-- 
+        The item group defining the location of the Vistual Studio solutions that should be build 
+        The solution path allows build templates.
+    -->
+    <ItemGroup>
+        <SolutionsToBuild Include="$(DirSrc)\myproject.sln">
+            <Configuration>$(TestConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties></Properties>
+        </SolutionsToBuild>
+        <SolutionsToBuild Include="$(DirSrc)\myproject.sln">
+            <Configuration>$(ProductionConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties></Properties>
+        </SolutionsToBuild>
+    </ItemGroup>
+
     <PropertyGroup>
-        <!-- The solution file -->
-        <!-- <FileSln Condition=" '$(FileSln)' == '' ">$(DirSrc)\myproject.sln</FileSln> -->
-        
         <!-- A flag that indicates whether the source files with the company and product information should be generated -->
         <ShouldGenerateCompanyAndProductInfo>false</ShouldGenerateCompanyAndProductInfo>
         
