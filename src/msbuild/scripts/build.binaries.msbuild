@@ -49,13 +49,16 @@
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
     
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
     <Import Project="$(DirMsBuildExtensions)\NuGetRestore.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\NuGetRestore.msbuild') AND '$(ExistsExtensionsNuGetRestore)' != 'true' "/>
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
     
     <Target Name="nBuildKit_Build_Binaries_Run" DependsOnTargets="_nBuildKit_Build_Binaries_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Build_Binaries_RestorePackages" />
-        <CallTarget Targets="_nBuildKit_Build_Binaries_Build" />
-        <CallTarget Targets="_nBuildKit_Build_Binaries_CopyLogs" />
+        <CallTarget Targets="_nBuildKit_Build_Binaries_Execute" />
     </Target>
    
     <Target Name="_nBuildKit_Build_Binaries_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -79,35 +82,36 @@
    
     <!-- Display info -->
     <Target Name="_nBuildKit_Build_Binaries_DisplayInfo" DependsOnTargets="_nBuildKit_Build_Binaries_DebugLog">
-        <Message Text="Building from solution $(FileSln) with: Configuration = $(Configuration) and Platform = $(Platform) ..." />
+        
     </Target>
-    
-    <!-- Run NuGet for the build -->
-    <Target Name="_nBuildKit_Build_Binaries_RestorePackages">
+
+    <Target Name="_nBuildKit_Build_Binaries_Execute" 
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+            Condition=" '@(SolutionsToBuild)' != '' "
+            Outputs="%(SolutionsToBuild.Identity)">
+        <!-- Process the build templates in the solution file path -->
+        <TemplateText Template="%(SolutionsToBuild.FullPath)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileSln" />
+        </TemplateText>
+        
         <Error Text="No NuGet executable defined. Will not be able to restore the packages."
                Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
         <Error Text="The Visual Studio solution file does not point to a valid file."
                Condition="!Exists('$(FileSln)') AND  '$(ShouldExecute)' == 'true' " />
-    
+
+        <Message Text="Building from solution $(FileSln) for targets = %(SolutionsToBuild.Targets) with: Configuration = %(SolutionsToBuild.Configuration) and Platform = %(SolutionsToBuild.Platform) ..." />
+
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)" 
                       PackageFile="$(FileSln)" 
                       PackageDirectory="$(DirPackages)" 
                       Condition=" '$(ShouldExecute)' == 'true' "/>
-    </Target>
-    
-    <!-- Build binaries -->
-    <Target Name="_nBuildKit_Build_Binaries_Build">
-        <Error Text="The Visual Studio solution file does not point to a valid file."
-               Condition="!Exists('$(FileSln)') AND '$(ShouldExecute)' == 'true' " />
-        
+
         <MSBuild Projects="$(FileSln)" 
-                 Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile)" 
-                 Targets="Rebuild"
+                 Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=%(SolutionsToBuild.Platform);BuildPropertyFile=$(BuildPropertyFile);%(SolutionsToBuild.Properties)" 
+                 Targets="%(SolutionsToBuild.Targets)"
                  Condition=" '$(ShouldExecute)' == 'true' " />
-    </Target>
-    
-    <!-- Copy code analysis logs -->
-    <Target Name="_nBuildKit_Build_Binaries_CopyLogs">
+
         <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
         
         <ItemGroup>
