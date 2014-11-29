@@ -163,10 +163,10 @@
         <Message Text=" " />
         
         <!-- Display the targets that will be executed -->
-        <Message Text="Executing targets: @(BuildTasksToExecute->'%(identity)', '; ')" 
-                 Condition=" '@(BuildTasksToExecute)' != ''" />
+        <Message Text="Executing targets: @(BuildStepsToExecute->'%(identity)', '; ')" 
+                 Condition=" '@(BuildStepsToExecute)' != ''" />
         <Message Text="Executing targets: NONE" 
-                 Condition=" '@(BuildTasksToExecute)' == ''" />
+                 Condition=" '@(BuildStepsToExecute)' == ''" />        
                  
         <Message Text=" " />
                  
@@ -213,9 +213,45 @@
         <Message Text=" " />
     </Target>
     
-    <!-- Prepare the workspace and create the necessary files for the build -->
-    <Target Name="_nBuildKit_Build_Execute">
-        <MsBuild Projects="%(BuildStepsToExecute.Identity)"
-                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);$(DefaultFiles);%(BuildStepsToExecute.Properties)" />
+    <Target Name="_nBuildKit_Build_Execute"
+            Condition=" '@(BuildStepsToExecute)' != ''">
+
+        <MSBuild
+            BuildInParallel="False"
+            Projects="%(BuildStepsToExecute.Identity)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);$(DefaultFiles);%(BuildStepsToExecute.Properties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True">
+            <!-- <Output TaskParameter="TargetOutputs" ItemName="" /> -->
+        </MSBuild>
+
+        <OnError ExecuteTargets="_nBuildKit_Build_OnError" />
+    </Target>
+
+    <Target Name="_nBuildKit_Build_OnError">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="%(BuildFailureStepsToExecute.Identity)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);$(DefaultFiles);%(BuildFailureStepsToExecute.Properties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True"
+            Condition=" '@(BuildFailureStepsToExecute)' != '' ">
+        </MSBuild>
     </Target>
 </Project>
