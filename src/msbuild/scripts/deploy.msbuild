@@ -173,7 +173,41 @@
     
     <!-- Add one or more tags to the VCS -->
     <Target Name="_nBuildKit_Deploy_Execute">
-        <MsBuild Projects="%(DeployStepsToExecute.Identity)"
-                 Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);$(DefaultFiles);%(DeployStepsToExecute.Properties)" />
+        <MSBuild
+            BuildInParallel="False"
+            Projects="%(DeployStepsToExecute.Identity)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);$(DefaultFiles);%(DeployStepsToExecute.Properties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True">
+        </MSBuild>
+
+        <OnError ExecuteTargets="_nBuildKit_Deploy_OnError" />
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_OnError">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="%(DeployFailureStepsToExecute.Identity)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);$(DefaultFiles);%(BuildFailureStepsToExecute.Properties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True"
+            Condition=" '@(DeployFailureStepsToExecute)' != '' ">
+        </MSBuild>
     </Target>
 </Project>
