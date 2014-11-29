@@ -107,12 +107,25 @@
                       PackageDirectory="$(DirPackages)" 
                       Condition=" '$(ShouldExecute)' == 'true' "/>
 
-        <MSBuild Projects="$(FileSln)" 
-                 Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=%(SolutionsToBuild.Platform);BuildPropertyFile=$(BuildPropertyFile);%(SolutionsToBuild.Properties)" 
-                 Targets="%(SolutionsToBuild.Targets)"
-                 Condition=" '$(ShouldExecute)' == 'true' " />
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(FileSln)"
+            Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=%(SolutionsToBuild.Platform);BuildPropertyFile=$(BuildPropertyFile);%(SolutionsToBuild.Properties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
+            Targets="%(SolutionsToBuild.Targets)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True"
+            Condition=" '$(ShouldExecute)' == 'true' ">
+        </MSBuild>
 
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir Directories="$(DirBuildLogs)" 
+                 Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
         
         <ItemGroup>
             <LogFiles Include="$(DirBuildBinPlatformConfig)\*.CodeAnalysisLog.xml" />

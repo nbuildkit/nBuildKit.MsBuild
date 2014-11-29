@@ -58,6 +58,21 @@
     <!-- Handle any external pre-build steps -->
     <Target Name="_nBuildKit_Projects_Common_ExternalPreBuild"
             Condition=" '@(PreCompilationScripts)' != '' ">
-        <MSBuild Projects="%(PreCompilationScripts.FullPath)" Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)" />
+
+        <MSBuild
+            BuildInParallel="False"
+            Projects="%(PreCompilationScripts.FullPath)"
+            Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True">
+        </MSBuild>
     </Target>
 </Project>
