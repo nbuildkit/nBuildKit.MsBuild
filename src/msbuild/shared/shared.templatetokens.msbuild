@@ -27,21 +27,21 @@
         <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
     </PropertyGroup>
     
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild" 
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromGitHubFlowVersionOutputFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromGitHubFlowVersionOutputFile)' != 'true' " />
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild" 
+            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild" 
             Condition="Exists('$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild') AND '$(ExistsExtensionsGetVcsInfoFromFile)' != 'true' " />
     
     <Target Name="nBuildKit_Shared_TemplateTokens_Initialize">
-        <GetSemanticVersionFromGitHubFlowVersionOutputFile VersionFile="$(FileSemanticVersion)" 
-                                                           Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
+        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)" 
+                                    Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
             <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
             <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
             <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
-        </GetSemanticVersionFromGitHubFlowVersionOutputFile>
+        </GetSemanticVersionFromFile>
         
         <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShort)'))" 
                         Condition="Exists('$(FileReleaseNotesShort)') AND '$(ShouldExecute)' == 'true' ">
@@ -128,11 +128,27 @@
             <TemplateTokens Include="ProductName">
                 <ReplacementValue>$(ProductName)</ReplacementValue>
             </TemplateTokens>
-            <TemplateTokens Include="Company">
+            <TemplateTokens Include="ProductNameInFilePath">
+                <ReplacementValue>$(ProductNameInFilePath)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ProductDescription">
+                <ReplacementValue>$(ProductDescription)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ProductNamespace">
+                <ReplacementValue>$(ProductNamespace)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ProductStartingYear">
+                <ReplacementValue>$(ProductStartingYear)</ReplacementValue>
+            </TemplateTokens>
+            
+            <TemplateTokens Include="CompanyName">
                 <ReplacementValue>$(CompanyName)</ReplacementValue>
             </TemplateTokens>
-            <TemplateTokens Include="StartingYear">
-                <ReplacementValue>$(ProductStartingYear)</ReplacementValue>
+            <TemplateTokens Include="CompanyNameInFilePath">
+                <ReplacementValue>$(CompanyNameInFilePath)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="CompanyUrl">
+                <ReplacementValue>$(CompanyUrl)</ReplacementValue>
             </TemplateTokens>
             
             <!-- Directory paths -->
@@ -150,6 +166,10 @@
             </TemplateTokens>
             <TemplateTokens Include="DirTemp">
                 <ReplacementValue>$(DirBuildTemp)</ReplacementValue>
+            </TemplateTokens>
+            
+            <TemplateTokens Include="VersionNBuildKit">
+                <ReplacementValue>$(NBuildKitVersion)</ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
     </Target>
