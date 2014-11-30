@@ -71,8 +71,6 @@
             Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
             
     <Target Name="nBuildKit_Pack_NuGet_Run" DependsOnTargets="_nBuildKit_Pack_NuGet_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Pack_NuGet_GetVersion" />
-        <CallTarget Targets="_nBuildKit_Pack_NuGet_GetReleaseNotes" />
         <CallTarget Targets="_nBuildKit_Pack_NuGet_Pack" />
     </Target>
     
@@ -103,58 +101,6 @@
                  Condition=" '@(NuGetPackageSpecs)' != '' " />
     </Target>
     
-    <Target Name="_nBuildKit_Pack_NuGet_GetVersion" Condition="Exists('$(FileSemanticVersion)')">
-        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)" 
-                                    Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
-        </GetSemanticVersionFromFile>
-        
-        <Message Text="Version: $(VersionSemantic)" />
-    </Target>
-    
-    <PropertyGroup>
-        <FileReleaseNotesFullForNuGet>$(DirBuildTemp)\releasenotes_full_xmlsanitised.md</FileReleaseNotesFullForNuGet>
-    </PropertyGroup>
-    <Target Name="_nBuildKit_Pack_NuGet_GetReleaseNotes" Condition="Exists('$(FileReleaseNotesFull)')">
-        <Copy SourceFiles="$(FileReleaseNotesFull)"
-              DestinationFiles="$(FileReleaseNotesFullForNuGet)"
-              Condition="Exists('$(FileReleaseNotesFull)') AND '$(ShouldExecute)' == 'true' "/>
-        
-        <!-- 
-            Replace the XML special tokens with their standard HTML form.
-            Note handle the & first so that we don't stuff up anything else ...
-            
-            Note: this is not the best way to handle this. Realistically we should run this 
-            through a proper translator.
-        -->
-        <ItemGroup>
-            <BaseConfigurationTokens Include="&amp;">
-                <ReplacementValue>&amp;amp;</ReplacementValue>
-            </BaseConfigurationTokens>
-            <BaseConfigurationTokens Include="&quot;">
-                <ReplacementValue>&amp;quot;</ReplacementValue>
-            </BaseConfigurationTokens>
-            <BaseConfigurationTokens Include="&apos;">
-                <ReplacementValue>&amp;apos;</ReplacementValue>
-            </BaseConfigurationTokens>
-            <BaseConfigurationTokens Include="&lt;">
-                <ReplacementValue>&amp;lt;</ReplacementValue>
-            </BaseConfigurationTokens>
-            <BaseConfigurationTokens Include="&gt;">
-                <ReplacementValue>&amp;gt;</ReplacementValue>
-            </BaseConfigurationTokens>
-        </ItemGroup>
-        
-        <FindAndReplaceInFile Input="$(FileReleaseNotesFullForNuGet)"
-                              Tokens="@(BaseConfigurationTokens)"
-                              Condition="Exists('$(FileReleaseNotesFullForNuGet)') AND '$(ShouldExecute)' == 'true' "/>
-    
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFullForNuGet)'))"
-                        Condition="Exists('$(FileReleaseNotesFullForNuGet)') AND '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
-        </CreateProperty>
-    </Target>
-    
     <!-- 
         Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
         once for each entry in the NuGetPackagesSpecs ItemGroup.
@@ -171,14 +117,6 @@
             <Output TaskParameter="Result" PropertyName="FileNuGetNuSpec" />
         </TemplateText>
         
-        <!-- Process the build templates in the nuspec template file path -->
-        <TemplateText Template="%(NuGetPackageSpecs.Template)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FileNuGetTemplate" />
-        </TemplateText>
-        <Error Text="The NuGet template spec file does not exist. Cannot generate packages."
-               Condition="!Exists('$(FileNuGetTemplate)') AND '$(ShouldExecute)' == 'true' "/>
-        
         <!-- Process the build templates in the included dependencies -->
         <TemplateText Template="%(NuGetPackageSpecs.IncludedDependencies)"
                       Tokens="@(TemplateTokens)"
@@ -193,17 +131,7 @@
             <Output TaskParameter="Result" PropertyName="FilesNuGetDependenciesExcluded" />
         </TemplateText>    
         
-        <!--  
-            MsBuild can't seem to handle using item metadata (NuGetPackageSpecs.Template) inside a property function
-            inside the Exists() function, so we'll split the process and do the transfer separately.
-        -->        
-        <ItemGroup>
-            <DirNuSpecTemp Include="$([System.IO.Path]::GetDirectoryName('$(FileNuGetTemplate)'))" Condition="Exists('$(FileNuGetTemplate)')" />
-        </ItemGroup>
-        
         <Message Text="Creating NuGet package from: $(FileNuGetNuSpec)" />
-        <MakeDir Directories="%(DirNuSpecTemp.Identity)" 
-                 Condition="!Exists('%(DirNuSpecTemp.Identity)') AND  '$(ShouldExecute)' == 'true' " />
         <MakeDir Directories="$(DirBuildDeploy)" 
                  Condition="!Exists('$(DirBuildDeploy)') AND  '$(ShouldExecute)' == 'true' " />
 
@@ -232,16 +160,15 @@
             <TemplateTokens Include="Dependencies">
                 <ReplacementValue>$(NuGetDependencies)</ReplacementValue>
             </TemplateTokens>
+            <TemplateTokens Include="ReleaseNotes">
+                <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
+            </TemplateTokens>
         </ItemGroup>
-        <TemplateFile Template="$(FileNuGetTemplate)" 
-                      OutputFileName="$(FileNuGetNuSpec)" 
-                      Tokens="@(TemplateTokens)" 
-                      Condition=" '$(ShouldExecute)' == 'true' "/>
-        
         <NuGetPack NuGetPath="$(ToolsExternalNuGetPath)" 
                    File="$(FileNuGetNuSpec)" 
                    OutputDirectory="$(DirBuildDeploy)" 
                    ShouldBuildSymbols="%(NuGetPackageSpecs.ShouldBuildSymbols)" 
+                   Properties="@(TemplateTokens)"
                    Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>

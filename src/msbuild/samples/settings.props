@@ -206,78 +206,128 @@
     -->
     <!--
         Define the steps taken during the build process. Available steps and their sub-steps are provided by the following properties:
-        $(BuildTargetPrepare)               - Performs preparation of workspace: deleting existing files, restoring nuget packages, generating version number files and release notes.
-            $(BuildStepsPrepareRestoreNuGet)       - Restores the NuGet packages for the project.
-            $(BuildStepsPrepareReleaseNotes)       - Gathers the release notes and stores them for later use during the build process
-            $(BuildStepsPrepareVcsInfo)            - Stores the Version Control System (VCS) information in a file for later use.
-            $(BuildStepsPrepareGenerateFiles)      - Generates one or more files from a set of template files.
-        $(BuildTargetAnalyzeSource)         - Performs static analysis of the source files through CCM and SourceMonitor.
-            $(BuildStepsAnalyzeSourceCcm)          - Analyzes the source code files with CCM
-            $(BuildStepsAnalyzeSourceSouceMonitor) - Analyzes the source code files with SourceMonitor
-        $(BuildTargetBuildBinaries)         - Builds the binaries from a given Visual Studio solution.
-        $(BuildTargetExecuteUnitTests)      - Executes the unit tests with either NUnit or MsTest while calculating unit test coverage with OpenCover.
-            $(BuildStepsUnitTestNUnit)             - Executes the unit tests with NUnit
-            $(BuildStepsUnitTestMsTest)            - Executes the unit tests with MsTest
-        $(BuildTargetAnalyzeBinaries)       - Performs static analysis of the binary files through Moma and FxCop.
-            $(BuildStepsAnalyzeBinariesMoma)       - Analyzes the binary files with Moma (Mono Migration Analyzer)
-            $(BuildStepsAnalyzeBinariesFxCop)      - Analyzes the binary files with FxCop
-        $(BuildTargetBuildApiDocumentation) - Builds the API documentation with SandCastle from the inline XML documentation comments.
-        $(BuildTargetPackage)               - Packages the binaries with NuGet and via ZIP files
-            $(BuildStepsPackNuGet)                 - Generates the NuGet packages
-            $(BuildStepsPackZip)                   - Generates one or more ZIP archives
+        $(BuildStepsPrepareWorkspace)                    - Deletes the existing build artifacts and creates the required directories.
+        $(BuildStepsPrepareRestoreNuGet)                 - Restores the NuGet packages for the project.
+        $(BuildStepsPrepareGetVersion)                   - Gathers version information and stores it in a temporary file for use by the rest of the build process.
+        $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process.
+        $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
+        $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
         
-        The order in which items are defined is irrelevant given that the build script will sort the steps in the right order.
+        $(BuildStepsAnalyzeSourceCcm)                    - Analyzes the source code files with CCM
+        $(BuildStepsAnalyzeSourceSouceMonitor)           - Analyzes the source code files with SourceMonitor
+        
+        $(BuildStepsBuildVisualStudioSolution)           - Builds the binaries from a given Visual Studio solution.
+        
+        $(BuildStepsUnitTestNUnit)                       - Executes the unit tests with NUnit
+        $(BuildStepsUnitTestMsTest)                      - Executes the unit tests with MsTest
+        
+        $(BuildStepsAnalyzeBinariesMoma)                 - Analyzes the binary files with Moma (Mono Migration Analyzer)
+        $(BuildStepsAnalyzeBinariesFxCop)                - Analyzes the binary files with FxCop
+        
+        $(BuildStepsBuildApiDocumentationWithSandcastle) - Builds the API documentation with SandCastle from the inline XML documentation comments.
+        
+        $(BuildStepsPackNuGet)                           - Generates the NuGet packages
+        $(BuildStepsPackZip)                             - Generates one or more ZIP archives
+        
+        The order of the steps defines the order in which those steps are executed.
     -->
     <ItemGroup>
-        <BuildStepsToExecute Include="$(BuildTargetPrepare)">
-            <Steps>
-                $(BuildStepsPrepareRestoreNuGet);
-                $(BuildStepsPrepareReleaseNotes);
-                $(BuildStepsPrepareVcsInfo);
-                $(BuildStepsPrepareGenerateFiles)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetAnalyzeSource)">
-            <Steps>
-                $(BuildStepsAnalyzeSourceCcm);
-                $(BuildStepsAnalyzeSourceSouceMonitor)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNuGet)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetBuildBinaries)">
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetExecuteUnitTests)">
-            <Steps>
-                $(BuildStepsUnitTestNUnit)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareReleaseNotes)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetAnalyzeBinaries)">
-            <Steps>
-                $(BuildStepsAnalyzeBinariesMoma);
-                $(BuildStepsAnalyzeBinariesFxCop)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsInfo)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetBuildApiDocumentation)">
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateFiles)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildTargetPackage)">
-            <Steps>
-                $(BuildStepsPackNuGet);
-                $(BuildStepsPackZip)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceCcm)">
+            <Properties>
+            </Properties>
         </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceSouceMonitor)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestMsTest)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesMoma)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsBuildApiDocumentationWithSandcastle)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPackZip)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+    </ItemGroup>
+
+    <!-- 
+        Define the scripts that should be executed when any one of the build steps fails.
+    -->
+    <ItemGroup>
+        <!--
+        <BuildFailureStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </BuildFailureStepsToExecute>
+        -->
     </ItemGroup>
     
     
@@ -420,10 +470,26 @@
     <!-- 
         **** VISUAL STUDIO BUILD ****
     -->
+    <!-- 
+        The item group defining the location of the Vistual Studio solutions that should be build 
+        The solution path allows build templates.
+    -->
+    <ItemGroup>
+        <SolutionsToBuild Include="$(DirSrc)\myproject.sln">
+            <Configuration>$(TestConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties></Properties>
+        </SolutionsToBuild>
+        <SolutionsToBuild Include="$(DirSrc)\myproject.sln">
+            <Configuration>$(ProductionConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties></Properties>
+        </SolutionsToBuild>
+    </ItemGroup>
+
     <PropertyGroup>
-        <!-- The solution file -->
-        <!-- <FileSln Condition=" '$(FileSln)' == '' ">$(DirSrc)\myproject.sln</FileSln> -->
-        
         <!-- A flag that indicates whether the source files with the company and product information should be generated -->
         <ShouldGenerateCompanyAndProductInfo>false</ShouldGenerateCompanyAndProductInfo>
         
@@ -621,7 +687,6 @@
     -->
     <ItemGroup>
         <NuGetPackageSpecs Include="$(DirBuildTemp)\myproject.nuspec">
-            <Template>$(DirTemplates)\myproject.nuspec.in</Template>
             <ShouldBuildSymbols>true</ShouldBuildSymbols>
             <IncludedDependencies>
                 $(DirSrc)\MyProject\packages.config
@@ -702,30 +767,57 @@
     -->
     <!--
         Define the steps taken during the deploy process. Available steps and their sub-steps are provided by the following properties:
-        $(DeployTargetTag)    - Adds one or more tags to the VCS
-        $(DeployTargetPushTo) - Pushes the artifacts to one or more locations
-            $(DeployStepsPushToNuget)         - Pushes one or more artifacts to a NuGet feed
-            $(DeployStepsPushToDirectory)     - Pushes one or more artifacts to a directory
-            $(DeployStepsPushToSymbolServer)  - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
-            $(DeployStepsPushToGitHubRelease) - Pushes zero or more files to a GitHub release
+        $(DeployStepsTagVcs)              - Tags the current commit with the version number
+        $(DeployStepsPushToNuget)         - Pushes one or more artifacts to a NuGet feed
+        $(DeployStepsPushToDirectory)     - Pushes one or more artifacts to a directory
+        $(DeployStepsPushToSymbolServer)  - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
+        $(DeployStepsPushToGitHubRelease) - Pushes zero or more files to a GitHub release
         
-        The order in which items are defined is irrelevant given that the build script will sort the steps in the right order.
+        The order of the steps defines the order in which those steps are executed.
     -->
     <ItemGroup>
-        <DeployStepsToExecute Include="$(DeployTargetTag)">
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <DeployStepsToExecute Include="$(DeployStepTagVcs)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
         </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployTargetPushTo)">
-            <Steps>
-                $(DeployStepsPushToNuget);
-                $(DeployStepsPushToDirectory);
-                $(DeployStepsPushToSymbolServer);
-                $(DeployStepsPushToGitHubRelease)
-            </Steps>
-            <PreInvokeScripts></PreInvokeScripts>
-            <PostInvokeScripts></PostInvokeScripts>
+        <DeployStepsToExecute Include="$(DeployStepsPushToNuget)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
         </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToDirectory)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToSymbolServer)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitHubRelease)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+        </DeployStepsToExecute>
+    </ItemGroup>
+
+    <!-- 
+        Define the scripts that should be executed when any one of the deploy steps fails.
+    -->
+    <ItemGroup>
+        <!--
+        <DeployFailureStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployFailureStepsToExecute>
+        -->
     </ItemGroup>
     
     
