@@ -16,6 +16,9 @@
             is imported which means there is no way to get the path of the file.
         -->
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+
+        <!-- The full path to the location of the scripts -->
+        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
     </PropertyGroup>
     <PropertyGroup>
         <DeployStepTagVcs>$(DirMsBuildScripts)\tag.vcs.msbuild</DeployStepTagVcs>
