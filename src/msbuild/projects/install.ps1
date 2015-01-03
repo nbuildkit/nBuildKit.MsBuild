@@ -22,6 +22,7 @@ foreach($file in $filesToInsert)
 
     # create the Import node
     $importElement = $msbuild.Xml.CreateImportElement($relativeFilePath)
+    $importElement.Condition = " Exists('$relativeFilePath') "
 
     $itemGroupNode = $msbuild.Xml.ItemGroups | Select-Object -First 1
     Write-Host ("Found first item group at: " + $itemGroupNode.ToString())
@@ -37,6 +38,8 @@ foreach($file in $filesToInsert)
     Write-Host "Relative path from projects file to targets file is: $relativeFilePath" 
 
     $importElement = $msbuild.Xml.CreateImportElement($relativeFilePath)
+    $importElement.Condition = " Exists('$relativeFilePath') "
+    
     $msbuild.Xml.AppendChild($importElement)
 }
 
