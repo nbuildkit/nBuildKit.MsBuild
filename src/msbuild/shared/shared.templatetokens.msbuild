@@ -5,60 +5,62 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedTemplateTokens>true</ExistsSharedTemplateTokens>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-        
+
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
         <PlatformWithoutSpaces Condition=" '$(PlatformWithoutSpaces)' == '' ">$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
-    
+
         <!-- Directories -->
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
-        
+
         <!-- Files -->
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
         <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
         <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
         <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
     </PropertyGroup>
-    
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild" 
+
+    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild" 
+    <Import Project="$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\GetVcsInfoFromFile.msbuild') AND '$(ExistsExtensionsGetVcsInfoFromFile)' != 'true' " />
-    
+
     <Target Name="nBuildKit_Shared_TemplateTokens_Initialize">
-        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)" 
+        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)"
                                     Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
             <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
             <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionPreRelease" PropertyName="VersionPreRelease" />
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
             <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
+            <Output TaskParameter="VersionSemanticNuGet" PropertyName="VersionSemanticNuGet" />
         </GetSemanticVersionFromFile>
-        
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShort)'))" 
+
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShort)'))"
                         Condition="Exists('$(FileReleaseNotesShort)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Value" PropertyName="ReleaseNotesShort" />
         </CreateProperty>
-        
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFull)'))" 
+
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFull)'))"
                         Condition="Exists('$(FileReleaseNotesFull)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Value" PropertyName="ReleaseNotesFull" />
         </CreateProperty>
-        
+
         <GetVcsInfoFromFile InfoFile="$(FileVcsInfo)"
                             Condition="Exists('$(FileVcsInfo)')">
             <Output TaskParameter="Revision" PropertyName="VcsRevision" />
             <Output TaskParameter="Branch" PropertyName="VcsBranch" />
         </GetVcsInfoFromFile>
-        
+
         <ItemGroup>
             <!-- Versions -->
             <TemplateTokens Include="VersionMajor">
@@ -85,7 +87,7 @@
             <TemplateTokens Include="VersionSemanticNuGet">
                 <ReplacementValue>$(VersionSemanticNuGet)</ReplacementValue>
             </TemplateTokens>
-            
+
             <!-- Build setup -->
             <TemplateTokens Include="Configuration">
                 <ReplacementValue>$(Configuration)</ReplacementValue>
@@ -96,7 +98,7 @@
             <TemplateTokens Include="PlatformWithoutSpaces">
                 <ReplacementValue>$(PlatformWithoutSpaces)</ReplacementValue>
             </TemplateTokens>
-            
+
             <!-- VCS information -->
             <TemplateTokens Include="VcsRevision">
                 <ReplacementValue>$(VcsRevision)</ReplacementValue>
@@ -104,7 +106,7 @@
             <TemplateTokens Include="VcsBranch">
                 <ReplacementValue>$(VcsBranch)</ReplacementValue>
             </TemplateTokens>
-            
+
             <!-- Release notes -->
             <TemplateTokens Include="ReleaseNotesShort">
                 <ReplacementValue>$(ReleaseNotesShort)</ReplacementValue>
@@ -112,7 +114,7 @@
             <TemplateTokens Include="ReleaseNotesFull">
                 <ReplacementValue>$(ReleaseNotesFull)</ReplacementValue>
             </TemplateTokens>
-            
+
             <!-- Time & date -->
             <TemplateTokens Include="Now">
                 <ReplacementValue>$([System.DateTime]::Now.ToString("o"))</ReplacementValue>
@@ -129,7 +131,7 @@
             <TemplateTokens Include="Year">
                 <ReplacementValue>$([System.DateTime]::Now.ToString("yyyy"))</ReplacementValue>
             </TemplateTokens>
-            
+
             <!-- Product information -->
             <TemplateTokens Include="ProductName">
                 <ReplacementValue>$(ProductName)</ReplacementValue>
@@ -146,7 +148,7 @@
             <TemplateTokens Include="ProductStartingYear">
                 <ReplacementValue>$(ProductStartingYear)</ReplacementValue>
             </TemplateTokens>
-            
+
             <TemplateTokens Include="CompanyName">
                 <ReplacementValue>$(CompanyName)</ReplacementValue>
             </TemplateTokens>
@@ -156,7 +158,7 @@
             <TemplateTokens Include="CompanyUrl">
                 <ReplacementValue>$(CompanyUrl)</ReplacementValue>
             </TemplateTokens>
-            
+
             <!-- Directory paths -->
             <TemplateTokens Include="DirBin">
                 <ReplacementValue>$(DirBuildBinPlatformConfig)</ReplacementValue>
@@ -173,7 +175,7 @@
             <TemplateTokens Include="DirTemp">
                 <ReplacementValue>$(DirBuildTemp)</ReplacementValue>
             </TemplateTokens>
-            
+
             <TemplateTokens Include="VersionNBuildKit">
                 <ReplacementValue>$(NBuildKitVersion)</ReplacementValue>
             </TemplateTokens>

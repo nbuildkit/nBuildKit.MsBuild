@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGetSemanticVersionFromFile>true</ExistsExtensionsGetSemanticVersionFromFile>
     </PropertyGroup>
-    
-    <UsingTask TaskName="GetSemanticVersionFromFile" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="GetSemanticVersionFromFile"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <VersionFile ParameterType="System.String" Required="true" />
@@ -43,11 +43,11 @@
                                 text.IndexOf("\"", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length));
 
                             const string nugetSemVersionStart = "\"NuGetSemVer\": \"";
-                            var index = text.IndexOf(nugetSemVersionStart);
+                            index = text.IndexOf(nugetSemVersionStart);
                             VersionSemanticNuGet = text.Substring(
                                 index + nugetSemVersionStart.Length,
-                                text.IndexOf("\"", index + nugetSemVersionStart.Length) - (index + nugetSemVersionStart.Length));                                                        
-                                
+                                text.IndexOf("\"", index + nugetSemVersionStart.Length) - (index + nugetSemVersionStart.Length));
+
                             const string semVersionStart = "\"SemVer\": \"";
                             index = text.IndexOf(semVersionStart);
                             VersionSemantic = text.Substring(
@@ -88,13 +88,13 @@
                         {
                             Log.LogError(e.ToString());
                         }
-                        
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

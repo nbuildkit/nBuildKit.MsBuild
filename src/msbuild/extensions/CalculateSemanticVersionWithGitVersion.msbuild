@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsCalculateSemanticVersionWithGitVersion>true</ExistsExtensionsCalculateSemanticVersionWithGitVersion>
     </PropertyGroup>
-    
-    <UsingTask TaskName="CalculateSemanticVersionWithGitVersion" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="CalculateSemanticVersionWithGitVersion"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <ExePath ParameterType="System.String" Required="true" />
@@ -37,17 +37,17 @@
                                 builder.Append(string.Format("/u \"{0}\" ", UserName));
                                 builder.Append("/p \"%GitPassWord%\" ");
                             }
-                            
+
                             if (!string.IsNullOrEmpty(RemoteRepositoryUrl) && !string.IsNullOrEmpty(UserName))
                             {
                                 builder.Append(string.Format("/url \"{0}\" ", RemoteRepositoryUrl));
                             }
                         }
-                    
+
                         var arguments = builder.ToString();
                         Log.LogMessage(MessageImportance.Normal, ExePath);
                         Log.LogMessage(MessageImportance.Normal, arguments);
-                        
+
                         var info = new System.Diagnostics.ProcessStartInfo
                         {
                             FileName = ExePath,
@@ -56,7 +56,7 @@
                             RedirectStandardOutput = true,
                             RedirectStandardError = true,
                         };
-                        
+
                         var text = new System.Text.StringBuilder();
                         var process = new System.Diagnostics.Process();
                         process.StartInfo = info;
@@ -81,13 +81,13 @@
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
                         process.WaitForExit();
-                        
+
                         if (process.ExitCode != 0)
                         {
                             Log.LogError("Failed to get semantic version information");
                             return false;
                         }
-                        
+
                         try
                         {
                             string versionText = text.ToString();
@@ -98,13 +98,13 @@
                                     versionText.IndexOf(",", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length))
                                 .Trim('"');
 
-                            const string semVersionStart = "\"NuGetVersionV2\":";
-                            index = versionText.IndexOf(semVersionStart);
+                            const string nugetSemVersionStart = "\"NuGetVersionV2\":";
+                            index = versionText.IndexOf(nugetSemVersionStart);
                             VersionSemanticNuGet = versionText.Substring(
-                                    index + semVersionStart.Length,
-                                    versionText.IndexOf(",", index + semVersionStart.Length) - (index + semVersionStart.Length))
+                                    index + nugetSemVersionStart.Length,
+                                    versionText.IndexOf(",", index + nugetSemVersionStart.Length) - (index + nugetSemVersionStart.Length))
                                 .Trim('"');
-                                
+
                             const string semVersionStart = "\"MajorMinorPatch\":";
                             index = versionText.IndexOf(semVersionStart);
                             VersionSemantic = versionText.Substring(
@@ -155,13 +155,13 @@
                         {
                             Log.LogError(e.ToString());
                         }
-                        
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>
