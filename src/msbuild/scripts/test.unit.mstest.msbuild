@@ -194,7 +194,7 @@
                    OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
                    OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
                    UnitTestExe="$(ToolsExternalMsTestPath)"
-                   UnitTestArguments="@(TestAssemblies->'/testcontainer:%22%22%(FullPath)%22%22', ' ') /resultsfile:&quot;&quot;$(FileReportMsTestExpanded)&quot;&quot;"
+                   UnitTestArguments="@(UnitTestAssemblies->'/testcontainer:%22%22%(FullPath)%22%22', ' ') /resultsfile:&quot;&quot;$(FileReportMsTestExpanded)&quot;&quot;"
                    BinDir="$(DirBuildBinPlatformConfig)" 
                    Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
         
