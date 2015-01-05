@@ -19,8 +19,10 @@
             <VersionMinor ParameterType="System.String" Output="true" />
             <VersionPatch ParameterType="System.String" Output="true" />
             <VersionBuild ParameterType="System.String" Output="true" />
+            <VersionPreRelease ParameterType="System.String" Output="true" />
             <VersionSemantic ParameterType="System.String" Output="true" />
             <VersionSemanticFull ParameterType="System.String" Output="true" />
+            <VersionSemanticNuGet ParameterType="System.String" Output="true" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -114,6 +116,22 @@
                             VersionBuild = fileText.Substring(
                                 index + buildVersionStart.Length,
                                 fileText.IndexOf("\"", index + buildVersionStart.Length) - (index + buildVersionStart.Length));
+
+                            const string tagVersionStart = "\"GitHubFlowVersion_Tag\": \"";
+                            index = fileText.IndexOf(tagVersionStart);
+                            VersionPreRelease = fileText.Substring(
+                                index + tagVersionStart.Length,
+                                fileText.IndexOf("\"", index + tagVersionStart.Length) - (index + tagVersionStart.Length));
+
+                            VersionSemanticNuGet = VersionSemantic;
+                            if (!string.IsNullOrWhiteSpace(VersionPreRelease))
+                            {
+                                VersionSemanticNuGet = string.Format(
+                                    "{0}-{1}{2}",
+                                    VersionSemantic,
+                                    VersionPreRelease,
+                                    VersionBuild);
+                            }
                         }
                         catch(Exception e)
                         {

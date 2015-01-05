@@ -20,8 +20,10 @@
             <VersionMinor ParameterType="System.String" Output="true" />
             <VersionPatch ParameterType="System.String" Output="true" />
             <VersionBuild ParameterType="System.String" Output="true" />
+            <VersionPreRelease ParameterType="System.String" Output="true" />
             <VersionSemantic ParameterType="System.String" Output="true" />
             <VersionSemanticFull ParameterType="System.String" Output="true" />
+            <VersionSemanticNuGet ParameterType="System.String" Output="true" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -95,6 +97,13 @@
                                     index + fullSemVersionStart.Length,
                                     versionText.IndexOf(",", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length))
                                 .Trim('"');
+
+                            const string semVersionStart = "\"NuGetVersionV2\":";
+                            index = versionText.IndexOf(semVersionStart);
+                            VersionSemanticNuGet = versionText.Substring(
+                                    index + semVersionStart.Length,
+                                    versionText.IndexOf(",", index + semVersionStart.Length) - (index + semVersionStart.Length))
+                                .Trim('"');
                                 
                             const string semVersionStart = "\"MajorMinorPatch\":";
                             index = versionText.IndexOf(semVersionStart);
@@ -130,6 +139,17 @@
                                     index + buildVersionStart.Length,
                                     versionText.IndexOf(",", index + buildVersionStart.Length) - (index + buildVersionStart.Length))
                                 .Trim('"');
+
+                            const string tagVersionStart = "\"PreReleaseTag\":";
+                            index = versionText.IndexOf(tagVersionStart);
+                            VersionPreRelease = versionText.Substring(
+                                    index + tagVersionStart.Length,
+                                    versionText.IndexOf(",", index + tagVersionStart.Length) - (index + tagVersionStart.Length))
+                                .Trim('"');
+                            if (VersionPreRelease.IndexOf(".") > -1)
+                            {
+                                VersionPreRelease = VersionPreRelease.Substring(0, VersionPreRelease.IndexOf("."));
+                            }
                         }
                         catch(Exception e)
                         {
