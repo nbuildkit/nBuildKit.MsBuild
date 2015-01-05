@@ -97,8 +97,10 @@
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
             <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
             <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionPreRelease" PropertyName="VersionPreRelease" />
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
             <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
+            <Output TaskParameter="VersionSemanticNuGet" PropertyName="VersionSemanticNuGet" />
         </CalculateCustomVersion>
     </Target>
     
@@ -112,6 +114,16 @@
         
         <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)+$(VersionBuild)">
             <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
+        </CreateProperty>
+
+        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)-$(VersionPreRelease)$(VersionBuild)"
+                        Condition=" '$(VersionPreRelease)' != '' ">
+            <Output TaskParameter="Value" PropertyName="VersionSemanticNuGet" />
+        </CreateProperty>
+
+        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)"
+                        Condition=" '$(VersionPreRelease)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionSemanticNuGet" />
         </CreateProperty>
     </Target>
     
@@ -149,8 +161,10 @@
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
             <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
             <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionPreRelease" PropertyName="VersionPreRelease" />
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
             <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
+            <Output TaskParameter="VersionSemanticNuGet" PropertyName="VersionSemanticNuGet" />
         </CalculateSemanticVersionWithGitVersion>
     </Target>
     
@@ -163,8 +177,10 @@
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
             <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
             <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionPreRelease" PropertyName="VersionPreRelease" />
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
             <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
+            <Output TaskParameter="VersionSemanticNuGet" PropertyName="VersionSemanticNuGet" />
         </CalculateSemanticVersionWithGitHubFlowVersion>
     </Target>
     
@@ -177,12 +193,6 @@
         <MakeDir Directories="$(DirToCreate)" 
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
         
-        <CreateProperty Value="0.0.0+0" Condition=" '$(VersionSemanticFull)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
-        </CreateProperty>
-        <CreateProperty Value="0.0.0" Condition=" '$(VersionSemantic)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionSemantic" />
-        </CreateProperty>
         <CreateProperty Value="0" Condition=" '$(VersionMajor)' == '' ">
             <Output TaskParameter="Value" PropertyName="VersionMajor" />
         </CreateProperty>
@@ -194,17 +204,31 @@
         </CreateProperty>
         <CreateProperty Value="0" Condition=" '$(VersionBuild)' == '' ">
             <Output TaskParameter="Value" PropertyName="VersionBuild" />
-        </CreateProperty>        
+        </CreateProperty>
+        <CreateProperty Value="" Condition=" '$(VersionPreRelease)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionPreRelease" />
+        </CreateProperty>
+        <CreateProperty Value="0.0.0" Condition=" '$(VersionSemantic)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionSemantic" />
+        </CreateProperty>
+        <CreateProperty Value="0.0.0+0" Condition=" '$(VersionSemanticFull)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
+        </CreateProperty>
+        <CreateProperty Value="0.0.0" Condition=" '$(VersionSemanticNuGet)' == '' ">
+            <Output TaskParameter="Value" PropertyName="VersionSemanticNuGet" />
+        </CreateProperty>
         
         <ItemGroup>
             <Items_SemanticVersion Include="{" />
             
             <Items_SemanticVersion Include="    &quot;FullSemVer&quot;: &quot;$(VersionSemanticFull)&quot;," />
+            <Items_SemanticVersion Include="    &quot;NuGetSemVer&quot;: &quot;$(VersionSemanticNuGet)&quot;," />
             <Items_SemanticVersion Include="    &quot;SemVer&quot;: &quot;$(VersionSemantic)&quot;," />
             <Items_SemanticVersion Include="    &quot;Major&quot;: &quot;$(VersionMajor)&quot;," />
             <Items_SemanticVersion Include="    &quot;Minor&quot;: &quot;$(VersionMinor)&quot;," />
             <Items_SemanticVersion Include="    &quot;Patch&quot;: &quot;$(VersionPatch)&quot;," />
             <Items_SemanticVersion Include="    &quot;Build&quot;: &quot;$(VersionBuild)&quot;" />
+            <Items_SemanticVersion Include="    &quot;PreRelease&quot;: &quot;$(VersionPreRelease)&quot;" />
             
             <Items_SemanticVersion Include="}" />
         </ItemGroup>
@@ -221,8 +245,10 @@
         <Message Text="Minor:          $(VersionMinor)" />
         <Message Text="Patch:          $(VersionPatch)" />
         <Message Text="Build:          $(VersionBuild)" />
+        <Message Text="Build:          $(VersionPreRelease)" />
         <Message Text="Short semantic: $(VersionSemantic)" />
         <Message Text="Full semantic:  $(VersionSemanticFull)" />
+        <Message Text="Full semantic:  $(VersionSemanticNuGet)" />
         
         <!-- Push to TeamCity -->
         <!-- Note that we only need to push to TeamCity if we're not using GitHubFlowVersion because that already makes it happen -->
