@@ -5,11 +5,11 @@
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsPrepareWorkspace>true</ExistsPrepareWorkspace>
-        
+
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
-        
-        <!-- 
+
+        <!--
             Define the DirWorkspace before importing the BuildPropertyFile so that it is defined and can be used by
             the properties in the BuildPropertyFile. Note that we can't define it in the BuildPropertyFile because that
             is imported which means there is no way to get the path of the file.
@@ -19,29 +19,30 @@
 
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
-    
+
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
         <ShouldClean Condition=" '$(ShouldClean)' == '' ">true</ShouldClean>
-        
+
         <!-- Directories -->
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
     </PropertyGroup>
-    
-    <Target Name="nBuildKit_Prepare_Workspace_Run" DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo">
+
+    <Target Name="nBuildKit_Prepare_Workspace_Run"
+            DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Prepare_Workspace_Clean" />
     </Target>
-    
+
     <Target Name="_nBuildKit_Prepare_Workspace_DebugLog" Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Configuration values:" />
         <Message Text="ShouldClean:             $(ShouldClean)" />
         <Message Text=" " />
-        
+
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
         <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
@@ -52,28 +53,28 @@
         <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
     </Target>
-    
+
     <!-- Display info -->
     <Target Name="_nBuildKit_Prepare_Workspace_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_Workspace_DebugLog">
         <Message Text="Preparing workspace ..." />
     </Target>
-    
+
     <!-- Clean -->
     <Target Name="_nBuildKit_Prepare_Workspace_Clean" DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo" Condition="$(ShouldClean)">
-        <!-- 
+        <!--
             We'll try to delete the directory but that may fail randomly because
             some file is being locked (by some other process). This could leads to a failing task, but ..
-            the next task is run and then the delete command still executes (delayed 
+            the next task is run and then the delete command still executes (delayed
             by the OS).
         -->
         <ItemGroup>
             <BuildFilesToDelete Include="$(DirBuild)\**\*.*"/>
         </ItemGroup>
-        <Delete Files="@(BuildFilesToDelete)" 
+        <Delete Files="@(BuildFilesToDelete)"
                 Condition=" '$(ShouldExecute)' == 'true' "
                 ContinueOnError="True" />
-        
-        <!-- 
+
+        <!--
             Delete all the known generated files. These may be part of the batch of files we just deleted if the user left the default values
             in place, otherwise they may be in different places in the system.
         -->
@@ -92,10 +93,10 @@
             <GeneratedFilesToDelete Include="%(FilesToGenerate.FullPath)" Condition="Exists('%(FilesToGenerate.FullPath)')"/>
             <GeneratedFilesToDelete Include="%(ArchivePackageSpecs.FullPath)" Condition="Exists('%(ArchivePackageSpecs.FullPath)')"/>
         </ItemGroup>
-        <Delete Files="@(GeneratedFilesToDelete)" 
+        <Delete Files="@(GeneratedFilesToDelete)"
                 Condition=" '$(ShouldExecute)' == 'true' "
                 ContinueOnError="True" />
-        
+
         <ItemGroup>
             <BuildDirectoriesToDelete Include="$(DirBuildDeploy)" />
             <BuildDirectoriesToDelete Include="$(DirBuildLogs)" />
@@ -103,7 +104,7 @@
             <BuildDirectoriesToDelete Include="$(DirBuildDeploy)" />
             <BuildDirectoriesToDelete Include="$(DirBuild)" />
         </ItemGroup>
-        <RemoveDir Directories="@(BuildDirectoriesToDelete)" 
+        <RemoveDir Directories="@(BuildDirectoriesToDelete)"
                    Condition=" '$(ShouldExecute)' == 'true' "
                    ContinueOnError="True" />
     </Target>
