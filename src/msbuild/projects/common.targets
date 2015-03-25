@@ -10,14 +10,14 @@
         <Error Text="nBuildKit not found"
                Condition="!Exists('$(DirNBuildKitMsBuild)')" />
     </Target>
-    
+
     <Import Project="$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild') AND '$(ExistsPrepareGenerateFiles)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\prepare.getversion.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
-    
+
     <!-- Clean up all the files we generate ourselves -->
     <PropertyGroup>
         <CleanDependsOn>
@@ -32,14 +32,28 @@
         </ItemGroup>
         <Delete Files="@(GeneratedFilesToDelete)" />
     </Target>
-    
+
     <!-- Handle any external pre-clean steps -->
     <Target Name="_nBuildKit_Projects_Common_ExternalPreClean"
             Condition=" '@(PreCleanScripts)' != '' ">
-        <MSBuild Projects="%(PreCleanScripts.FullPath)" Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)" />
+        <MSBuild
+            BuildInParallel="False"
+            Projects="%(PreCleanScripts.FullPath)"
+            Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);$(DefaultFiles)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True">
+        </MSBuild>
     </Target>
-    
-    
+
+
     <!-- Generate the required files -->
     <PropertyGroup>
         <BuildDependsOn>
@@ -67,7 +81,7 @@
             RemoveProperties=""
             RunEachTargetSeparately="True"
             SkipNonexistentProjects="False"
-            StopOnFirstFailure="False"
+            StopOnFirstFailure="True"
             TargetAndPropertyListSeparators=""
             Targets=""
             ToolsVersion="$(MSBuildToolsVersion)"
