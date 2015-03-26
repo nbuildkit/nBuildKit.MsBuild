@@ -1,0 +1,104 @@
+<!--
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
+         ToolsVersion="4.0">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsFxCop>true</ExistsExtensionsFxCop>
+    </PropertyGroup>
+
+    <!--
+        Invokes FxCopCmd and handles the error cases
+        Define:
+        - FxCopDir [Property]: The directory that contains FxCopCmd.exe
+        - FxCopOutputFile [Property]: The file that should contain the FxCop results
+        - FxCopProjectFile [Property]: The FxCop project file
+    -->
+    <UsingTask TaskName="FxCopViaAssemblies"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+        <ParameterGroup>
+            <FxCopDir ParameterType="System.String" Required="true" />
+            <OutputFile ParameterType="System.String" Required="true" />
+            <Assemblies ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <RuleSet ParameterType="System.String" Required="true" />
+            <Dictionary ParameterType="System.String" Required="false" />
+            <Culture ParameterType="System.String" Required="false" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var builder = new System.Text.StringBuilder();
+                        {
+                            builder.Append(string.Format("/ruleset:\"{0}\" ", RuleSet));
+                            builder.Append(string.Format("/out:\"{0}\" ", OutputFile));
+                            builder.Append(string.Format("/ignoregeneratedcode "));
+                            builder.Append(string.Format("/searchgac "));
+                            builder.Append(string.Format("/forceoutput "));
+
+                            if (!string.IsNullOrEmpty(FxCopDictionary))
+                            {
+                                builder.Append(string.Format("/dictionary:\"{0}\" ", Dictionary));
+                            }
+
+                            if (!string.IsNullOrEmpty())
+                            {
+                                builder.Append(string.Format("/culture: \"{0}\" ", Culture));
+                            }
+                        }
+
+                        var info = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = System.IO.Path.Combine(FxCopDir, "FxCopCmd.exe"),
+                                    Arguments = builder.ToString(),
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+
+                        Log.LogMessage(MessageImportance.Normal, info.Arguments);
+
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogMessage(MessageImportance.Normal, e.Data);
+                                }
+                            };
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogError(e.Data);
+                                }
+                            };
+                        process.Start();
+
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError(string.Format("FxCopCmd.exe exited with a non-zero exit code. Exit code was: {0}", process.ExitCode));
+                            return false;
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>
