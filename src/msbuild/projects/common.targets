@@ -15,6 +15,8 @@
             Condition="Exists('$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild') AND '$(ExistsPrepareGenerateFiles)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\prepare.getversion.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\prepare.nuget.restore.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.nuget.restore.msbuild') AND '$(ExistsPrepareNuGetRestore)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
 
@@ -64,6 +66,7 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Projects_Common_GenerateFiles"
             DependsOnTargets="nBuildKit_Projects_Common_VerifyProperties">
+        <CallTarget Targets="nBuildKit_Prepare_NuGet_Restore_Run" />
         <CallTarget Targets="nBuildKit_Prepare_GetVersion_Run" />
         <CallTarget Targets="nBuildKit_Prepare_VcsInfo_Run" />
         <CallTarget Targets="nBuildKit_Prepare_GenerateFiles_Run" />
