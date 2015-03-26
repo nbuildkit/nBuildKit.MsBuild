@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsNuGetPush>true</ExistsExtensionsNuGetPush>
     </PropertyGroup>
-    
-    <UsingTask TaskName="NuGetPush" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="NuGetPush"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <NuGetPath ParameterType="System.String" Required="true" />
@@ -42,20 +42,20 @@
                         {
                             var builder = new System.Text.StringBuilder();
                             {
-                                builder.Append(string.Format("push \"{0}\" ", package));
+                                builder.Append(string.Format("push \"{0}\" ", package.TrimEnd('\\')));
                                 builder.Append("-NonInteractive -Verbosity detailed ");
                                 if (!string.IsNullOrEmpty(Source))
                                 {
-                                    builder.Append(string.Format("-Source \"{0}\" ", Source));
+                                    builder.Append(string.Format("-Source \"{0}\" ", Source.TrimEnd('\\')));
                                 }
-                                
+
                                 var apiKey = System.Environment.GetEnvironmentVariable("NuGetApiKey");
                                 if (!string.IsNullOrEmpty(apiKey))
                                 {
-                                    builder.Append(string.Format("-ApiKey \"{0}\" ", apiKey));
+                                    builder.Append(string.Format("-ApiKey \"{0}\" ", apiKey.TrimEnd('\\')));
                                 }
                             }
-                            
+
                             var info = new System.Diagnostics.ProcessStartInfo
                             {
                                 FileName = NuGetPath,
@@ -88,13 +88,13 @@
                             process.BeginErrorReadLine();
                             process.WaitForExit();
                         }
-                        
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

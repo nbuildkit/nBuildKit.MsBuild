@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGitHubReleaseUpload>true</ExistsExtensionsGitHubReleaseUpload>
     </PropertyGroup>
-    
-    <UsingTask TaskName="GitHubReleaseUpload" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="GitHubReleaseUpload"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <GitHubReleasePath ParameterType="System.String" Required="true" />
@@ -29,14 +29,14 @@
                         var gitHubToken = System.Environment.GetEnvironmentVariable("GitHubToken");
                         var builder = new StringBuilder();
                         {
-                            builder.Append(string.Format("upload --security-token {0} ", gitHubToken));
-                            builder.Append(string.Format("--user \"{0}\" ", UserName));
-                            builder.Append(string.Format("--repo \"{0}\" ", Repository));
-                            builder.Append(string.Format("--tag \"{0}\" ", Tag));
-                            builder.Append(string.Format("--name \"{0}\" ", FileName));
-                            builder.Append(string.Format("--file \"{0}\"", FilePath));
+                            builder.Append(string.Format("upload --security-token {0} ", gitHubToken.TrimEnd('\\')));
+                            builder.Append(string.Format("--user \"{0}\" ", UserName.TrimEnd('\\')));
+                            builder.Append(string.Format("--repo \"{0}\" ", Repository.TrimEnd('\\')));
+                            builder.Append(string.Format("--tag \"{0}\" ", Tag.TrimEnd('\\')));
+                            builder.Append(string.Format("--name \"{0}\" ", FileName.TrimEnd('\\')));
+                            builder.Append(string.Format("--file \"{0}\"", FilePath.TrimEnd('\\')));
                         }
-                    
+
                         Log.LogMessage(MessageImportance.Normal, "Uploading file to GitHub release");
                         var info = new System.Diagnostics.ProcessStartInfo
                                 {
@@ -47,23 +47,23 @@
                                     RedirectStandardOutput = true,
                                     RedirectStandardError = true,
                                 };
-                        
+
                         var process = new System.Diagnostics.Process();
                         process.StartInfo = info;
-                        process.OutputDataReceived += 
-                            (s, e) => 
-                            { 
+                        process.OutputDataReceived +=
+                            (s, e) =>
+                            {
                                 if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
                                     Log.LogMessage(MessageImportance.Normal, e.Data);
                                 }
                             };
-                        process.ErrorDataReceived += 
-                            (s, e) => 
-                            { 
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
                                 if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
-                                    Log.LogError(e.Data); 
+                                    Log.LogError(e.Data);
                                 }
                             };
                         process.Start();
@@ -71,13 +71,13 @@
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
                         process.WaitForExit();
-                        
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

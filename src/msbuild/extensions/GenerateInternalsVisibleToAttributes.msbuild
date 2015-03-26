@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGenerateInternalsVisibleToAttributes>true</ExistsExtensionsGenerateInternalsVisibleToAttributes>
     </PropertyGroup>
-    
-    <UsingTask TaskName="GenerateInternalsVisibleToAttributes" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="GenerateInternalsVisibleToAttributes"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <SnExe ParameterType="System.String" Required="true" />
@@ -32,22 +32,22 @@
                             Log.LogError("No InternalsVisibleTo attributes to generate!");
                             return false;
                         }
-                    
+
                         const string MetadataValueTag = "ReplacementValue";
                         var _regex = new System.Text.RegularExpressions.Regex(
                             "(?<token>\\$\\{(?<identifier>\\w*)\\})",
-                            System.Text.RegularExpressions.RegexOptions.IgnoreCase 
-                            | System.Text.RegularExpressions.RegexOptions.Multiline 
-                            | System.Text.RegularExpressions.RegexOptions.Compiled 
+                            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+                            | System.Text.RegularExpressions.RegexOptions.Multiline
+                            | System.Text.RegularExpressions.RegexOptions.Compiled
                             | System.Text.RegularExpressions.RegexOptions.Singleline);
-                    
+
                         var builder = new System.Text.StringBuilder();
-                        
+
                         ITaskItem[] processedItems = Items;
                         for (int i = 0; i < processedItems.Length; i++)
                         {
                             ITaskItem taskItem = processedItems[i];
-                            
+
                             // Expecting that the taskItems have:
                             // - taskItem.ItemSpec:            Name of the assembly to include in the attribute
                             // - taskItem.Projects:            Semi-colon separated list of projects for which the assembly should be added to the internals visible to list
@@ -61,15 +61,15 @@
                                 {
                                     continue;
                                 }
-                                
-                                Log.LogMessage(MessageImportance.Normal, "Adding InternalsVisibleTo attribute for: " + taskItem.ItemSpec); 
-                                
+
+                                Log.LogMessage(MessageImportance.Normal, "Adding InternalsVisibleTo attribute for: " + taskItem.ItemSpec);
+
                                 var key = string.Empty;
-                                
+
                                 var publicKey = taskItem.GetMetadata("PublicKey");
                                 if (!string.IsNullOrEmpty(publicKey))
                                 {
-                                    Log.LogMessage(MessageImportance.Normal, "Using provided public key: " + publicKey); 
+                                    Log.LogMessage(MessageImportance.Normal, "Using provided public key: " + publicKey);
                                     key = publicKey;
                                 }
                                 else
@@ -77,13 +77,13 @@
                                     var keyFile = taskItem.GetMetadata("KeyFile");
                                     if (!string.IsNullOrEmpty(keyFile))
                                     {
-                                        Log.LogMessage(MessageImportance.Normal, "Extracting public key from key file: " + keyFile); 
-                                        
+                                        Log.LogMessage(MessageImportance.Normal, "Extracting public key from key file: " + keyFile);
+
                                         if (!System.IO.Directory.Exists(DirTemp))
                                         {
                                             System.IO.Directory.CreateDirectory(DirTemp);
                                         }
-                                        
+
                                         var publicKeyFile = System.IO.Path.Combine(DirTemp, (System.IO.Path.GetRandomFileName()));
                                         try
                                         {
@@ -104,7 +104,7 @@
                                                     {
                                                         if (!string.IsNullOrWhiteSpace(e.Data))
                                                         {
-                                                            Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                                            Log.LogMessage(MessageImportance.Normal, e.Data);
                                                         }
                                                     };
                                                 publicKeyProcess.ErrorDataReceived +=
@@ -141,7 +141,7 @@
                                                         text.Append(e.Data);
                                                         if (!string.IsNullOrWhiteSpace(e.Data))
                                                         {
-                                                            Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                                            Log.LogMessage(MessageImportance.Normal, e.Data);
                                                         }
                                                     };
                                                 process.ErrorDataReceived +=
@@ -158,7 +158,7 @@
                                                 process.BeginErrorReadLine();
                                                 process.WaitForExit();
                                             }
-                                            
+
                                             var publicKeyText = text.ToString();
                                             if (string.IsNullOrEmpty(publicKeyText))
                                             {
@@ -193,11 +193,11 @@
                                                 Log.LogError("Failed to find the full path of: " + assemblyFromPackage);
                                                 continue;
                                             }
-                                                
+
                                             var info = new System.Diagnostics.ProcessStartInfo
                                                 {
                                                     FileName = SnExe,
-                                                    Arguments = string.Format("-Tp \"{0}\"", assemblyPath),
+                                                    Arguments = string.Format("-Tp \"{0}\"", assemblyPath.TrimEnd('\\')),
                                                     UseShellExecute = false,
                                                     RedirectStandardOutput = true,
                                                     RedirectStandardError = true,
@@ -212,7 +212,7 @@
                                                     text.Append(e.Data);
                                                     if (!string.IsNullOrWhiteSpace(e.Data))
                                                     {
-                                                        Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                                        Log.LogMessage(MessageImportance.Normal, e.Data);
                                                     }
                                                 };
                                             process.ErrorDataReceived +=
@@ -228,7 +228,7 @@
                                             process.BeginOutputReadLine();
                                             process.BeginErrorReadLine();
                                             process.WaitForExit();
-                                            
+
                                             var publicKeyText = text.ToString();
                                             if (string.IsNullOrEmpty(publicKeyText))
                                             {
@@ -244,7 +244,7 @@
                                         }
                                     }
                                 }
-                                
+
                                 if (!string.IsNullOrEmpty(key))
                                 {
                                     var tokenPairs = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.InvariantCultureIgnoreCase)
@@ -254,7 +254,7 @@
                                         };
                                     var attributeText = _regex.Replace(
                                         AttributeTemplateForSignedAssemblies,
-                                        m => 
+                                        m =>
                                         {
                                             var output = m.Value;
                                             if (tokenPairs.ContainsKey(m.Groups[2].Value))
@@ -273,7 +273,7 @@
                                         };
                                     var attributeText = _regex.Replace(
                                         AttributeTemplateForUnsignedAssemblies,
-                                        m => 
+                                        m =>
                                         {
                                             var output = m.Value;
                                             if (tokenPairs.ContainsKey(m.Groups[2].Value))
@@ -289,12 +289,12 @@
 
                         Result = builder.ToString();
 
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

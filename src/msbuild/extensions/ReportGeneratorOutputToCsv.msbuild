@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsReportGeneratorOutputToCsv>true</ExistsExtensionsReportGeneratorOutputToCsv>
     </PropertyGroup>
-    
-    <UsingTask TaskName="ReportGeneratorOutputToCsv" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="ReportGeneratorOutputToCsv"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <InputFile ParameterType="System.String" Required="true" />
@@ -46,7 +46,7 @@
                                 string.Format(
                                     System.Globalization.CultureInfo.InvariantCulture,
                                     "\"{0}\"",
-                                    item.Name));
+                                    item.Name.TrimEnd('\\')));
                         }
 
                         builder.AppendLine(line.ToString());
@@ -71,7 +71,7 @@
                             writer.Write(builder.ToString());
                         }
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>
