@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsSourceMonitor>true</ExistsExtensionsSourceMonitor>
     </PropertyGroup>
-    
-    <UsingTask TaskName="SourceMonitor" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="SourceMonitor"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <SourceMonitorExe ParameterType="System.String" Required="true" />
@@ -31,20 +31,20 @@
                                 };
                         var process = new System.Diagnostics.Process();
                         process.StartInfo = info;
-                        process.OutputDataReceived += 
-                            (s, e) => 
-                            { 
+                        process.OutputDataReceived +=
+                            (s, e) =>
+                            {
                                 if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
-                                    Log.LogMessage(MessageImportance.Normal, e.Data); 
+                                    Log.LogMessage(MessageImportance.Normal, e.Data);
                                 }
                             };
-                        process.ErrorDataReceived += 
-                            (s, e) => 
-                            { 
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
                                 if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
-                                    Log.LogError(e.Data); 
+                                    Log.LogError(e.Data);
                                 }
                             };
                         process.Start();
@@ -52,13 +52,23 @@
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
                         process.WaitForExit();
-                        
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            return false;
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

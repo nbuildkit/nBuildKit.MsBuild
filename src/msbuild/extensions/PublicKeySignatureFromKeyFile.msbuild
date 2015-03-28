@@ -54,6 +54,16 @@
                                 publicKeyProcess.BeginOutputReadLine();
                                 publicKeyProcess.BeginErrorReadLine();
                                 publicKeyProcess.WaitForExit();
+
+                                if (publicKeyProcess.ExitCode != 0)
+                                {
+                                    Log.LogError(
+                                        string.Format(
+                                            "{0} exited with a non-zero exit code while trying to extract the public key file from the complete key file. Exit code was: {1}",
+                                            System.IO.Path.GetFileName(publicKeyProcess.StartInfo.FileName),
+                                            publicKeyProcess.ExitCode));
+                                    return false;
+                                }
                             }
 
                             var text = new System.Text.StringBuilder();
@@ -91,6 +101,16 @@
                                 process.BeginOutputReadLine();
                                 process.BeginErrorReadLine();
                                 process.WaitForExit();
+
+                                if (process.ExitCode != 0)
+                                {
+                                    Log.LogError(
+                                        string.Format(
+                                            "{0} exited with a non-zero exit code while trying to extract the public key from the public key file. Exit code was: {1}",
+                                            System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                            process.ExitCode));
+                                    return false;
+                                }
                             }
 
                             const string startString = "Public key (hash algorithm: sha1):";

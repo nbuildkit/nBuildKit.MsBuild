@@ -120,6 +120,16 @@
                                                 publicKeyProcess.BeginOutputReadLine();
                                                 publicKeyProcess.BeginErrorReadLine();
                                                 publicKeyProcess.WaitForExit();
+
+                                                if (publicKeyProcess.ExitCode != 0)
+                                                {
+                                                    Log.LogError(
+                                                        string.Format(
+                                                            "{0} exited with a non-zero exit code while trying to extract the public key file from the signing key file. Exit code was: {1}",
+                                                            System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                                            process.ExitCode));
+                                                    return false;
+                                                }
                                             }
 
                                             var text = new System.Text.StringBuilder();
@@ -157,6 +167,16 @@
                                                 process.BeginOutputReadLine();
                                                 process.BeginErrorReadLine();
                                                 process.WaitForExit();
+
+                                                if (process.ExitCode != 0)
+                                                {
+                                                    Log.LogError(
+                                                        string.Format(
+                                                            "{0} exited with a non-zero exit code while trying to extract the public key information from the public key file. Exit code was: {1}",
+                                                            System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                                            process.ExitCode));
+                                                    return false;
+                                                }
                                             }
 
                                             var publicKeyText = text.ToString();
@@ -228,6 +248,16 @@
                                             process.BeginOutputReadLine();
                                             process.BeginErrorReadLine();
                                             process.WaitForExit();
+
+                                            if (process.ExitCode != 0)
+                                            {
+                                                Log.LogError(
+                                                        string.Format(
+                                                            "{0} exited with a non-zero exit code while trying to extract the public key from a signed assembly. Exit code was: {1}",
+                                                            System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                                            process.ExitCode));
+                                                return false;
+                                            }
 
                                             var publicKeyText = text.ToString();
                                             if (string.IsNullOrEmpty(publicKeyText))

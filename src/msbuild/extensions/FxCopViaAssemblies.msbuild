@@ -107,7 +107,11 @@
 
                         if (process.ExitCode != 0)
                         {
-                            Log.LogError(string.Format("FxCopCmd.exe exited with a non-zero exit code. Exit code was: {0}", process.ExitCode));
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
                             return false;
                         }
 
