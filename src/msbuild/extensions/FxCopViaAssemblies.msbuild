@@ -22,8 +22,10 @@
         <ParameterGroup>
             <FxCopDir ParameterType="System.String" Required="true" />
             <OutputFile ParameterType="System.String" Required="true" />
-            <Assemblies ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <RuleSet ParameterType="System.String" Required="true" />
+            <Assemblies ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <ReferenceFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
+            <ReferenceDirectories ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
             <Dictionary ParameterType="System.String" Required="false" />
             <Culture ParameterType="System.String" Required="false" />
         </ParameterGroup>
@@ -34,20 +36,37 @@
                     {
                         var builder = new System.Text.StringBuilder();
                         {
-                            builder.Append(string.Format("/ruleset:\"{0}\" ", RuleSet));
-                            builder.Append(string.Format("/out:\"{0}\" ", OutputFile));
+                            builder.Append(string.Format("/ruleset:\"{0}\" ", RuleSet.TrimEnd('\\')));
+                            builder.Append(string.Format("/out:\"{0}\" ", OutputFile.TrimEnd('\\')));
                             builder.Append(string.Format("/ignoregeneratedcode "));
                             builder.Append(string.Format("/searchgac "));
                             builder.Append(string.Format("/forceoutput "));
+                            builder.Append(string.Format("/verbose "));
+                            builder.Append(string.Format("/successfile "));
 
                             if (!string.IsNullOrEmpty(FxCopDictionary))
                             {
-                                builder.Append(string.Format("/dictionary:\"{0}\" ", Dictionary));
+                                builder.Append(string.Format("/dictionary:\"{0}\" ", Dictionary.TrimEnd('\\')));
                             }
 
                             if (!string.IsNullOrEmpty())
                             {
-                                builder.Append(string.Format("/culture: \"{0}\" ", Culture));
+                                builder.Append(string.Format("/culture:\"{0}\" ", Culture.TrimEnd('\\')));
+                            }
+
+                            foreach (var referenceFileName in ReferenceFiles.Select(f => f.ItemSpec))
+                            {
+                                builder.Append(string.Format("/reference:\"{0}\" ", referenceFileName.TrimEnd('\\')));
+                            }
+
+                            foreach (var referenceDirectory in ReferenceDirectories.Select(f => f.ItemSpec))
+                            {
+                                builder.Append(string.Format("/directory:\"{0}\" ", referenceDirectory.TrimEnd('\\')));
+                            }
+
+                            foreach (var inputFileName in Assemblies.Select(f => f.ItemSpec))
+                            {
+                                builder.Append(string.Format("/file:\"{0}\" ", inputFileName.TrimEnd('\\')));
                             }
                         }
 
