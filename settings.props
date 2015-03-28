@@ -256,6 +256,56 @@
             <Properties>
             </Properties>
         </BuildStepsToExecute>
+
+        <!--
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceCcm)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceSouceMonitor)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestMsTest)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesMoma)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsBuildApiDocumentationWithSandcastle)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        -->
+
         <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
             <Properties>
             </Properties>
@@ -264,6 +314,18 @@
             <Properties>
             </Properties>
         </BuildStepsToExecute>
+    </ItemGroup>
+
+    <!--
+        Define the scripts that should be executed when any one of the build steps fails.
+    -->
+    <ItemGroup>
+        <!--
+        <BuildFailureStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </BuildFailureStepsToExecute>
+        -->
     </ItemGroup>
 
 
@@ -657,7 +719,44 @@
 
         <!-- The full path to the FxCop output report. Allows build templates. -->
         <!-- <FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop> -->
+
+        <!-- The full path to the rules file that indicates which rules FxCop should use to analyse the binaries. -->
+        <!-- <FileFxCopRuleSet Condition=" '$(FileFxCopRuleSet)' == '' ">$(DirWorkspace)\fxcop.rules</FileFxCopRuleSet> -->
+
+        <!-- The full path to the XML file that contains the custom dictionary for FxCop. -->
+        <!-- <FxCopCustomDictionary Condition=" '$(FxCopCustomDictionary)' == '' ">$(DirWorkspace)\customdictionary.xml</FxCopCustomDictionary> -->
+
+        <!-- The culture that FxCop should use for the spelling rules. -->
+        <!-- <FxCopCulture Condition=" 'FxCopCulture' == '' ">en-US</FxCopCulture> -->
     </PropertyGroup>
+    <ItemGroup>
+        <!-- The locations of the files that should be analyzed by FxCop. -->
+        <!--
+        <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
+                    Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
+        <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
+        -->
+    </ItemGroup>
+    <ItemGroup>
+        <!--
+            The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
+            use as reference assemblies.
+        -->
+        <!--
+        <FxCopReferenceFiles Include=""
+                             Exclude="" />
+        -->
+    </ItemGroup>
+    <ItemGroup>
+        <!--
+            The directory locations that contain the assemblies (not including the .NET framework assemblies) which
+            FxCop should use as reference assemblies
+        -->
+        <!--
+        <FxCopReferenceDirectories Include=""
+                                   Exclude="" />
+        -->
+    </ItemGroup>
 
 
     <!--
