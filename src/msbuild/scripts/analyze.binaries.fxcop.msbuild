@@ -66,7 +66,9 @@
         <CallTarget Targets="_nBuildKit_Analyze_Binaries_FxCop_Analyze_WithProject"
                     Condition="Exists('$(FileProjectFxCop)')" />
         <CallTarget Targets="_nBuildKit_Analyze_Binaries_FxCop_Analyze_WithAssemblies"
-                    Condition="!Exists('$(FileProjectFxCop)')" />
+                    Condition="!Exists('$(FileProjectFxCop)') AND '@(FxCopFiles)' != '' " />
+        <CallTarget Targets="_nBuildKit_Analyze_Binaries_FxCop_Analyze_OnError"
+                    Condition="!Exists('$(FileProjectFxCop)') AND  '@(FxCopFiles)' == '' " />
     </Target>
 
     <!-- Display info -->
@@ -75,7 +77,7 @@
         <Message Text="Running FxCop ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DebugLog" \
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DebugLog"
             Condition="$(ShouldDisplayDebugLog)"
             DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
@@ -141,7 +143,7 @@
         <Error Text="The packages directory does not exist. Cannot search for the FxCop executable."
                Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="There are no assemblies defined. Cannot execute analysis of binaries."
-               Condition="!Exists('$(FileProjectFxCop)') AND '$(ShouldExecute)' == 'true' "/>
+               Condition=" '@(FxCopFiles)' == '' AND '$(ShouldExecute)' == 'true' "/>
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
             <Output TaskParameter="Value" PropertyName="DirToCreate" />
@@ -168,5 +170,9 @@
                             Dictionary="$(FxCopCustomDictionary)"
                             Culture="$(FxCopCulture)"
                             Condition=" '$(ShouldExecute)' == 'true' "/>
+    </Target>
+
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_Analyze_OnError">
+        <Error Text="There is no FxCop project defined and there are no assemblies defined for analysis. Cannot execute analysis of binaries." />
     </Target>
  </Project>
