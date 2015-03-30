@@ -52,8 +52,10 @@
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
-    <Import Project="$(DirMsBuildExtensions)\FxCop.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\FxCop.msbuild') AND '$(ExistsExtensionsFxCop)' != 'true' "/>
+    <Import Project="$(DirMsBuildExtensions)\FxCopViaAssemblies.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\FxCopViaAssemblies.msbuild') AND '$(ExistsExtensionsFxCopViaAssemblies)' != 'true' "/>
+    <Import Project="$(DirMsBuildExtensions)\FxCopFxCopViaProject.msbuild"
+            Condition="Exists('$(DirMsBuildExtensions)\FxCopFxCopViaProject.msbuild') AND '$(ExistsExtensionsFxCopViaProject)' != 'true' "/>
     <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild"
