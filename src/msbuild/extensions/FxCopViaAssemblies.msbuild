@@ -28,6 +28,7 @@
             <ReferenceDirectories ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
             <Dictionary ParameterType="System.String" Required="false" />
             <Culture ParameterType="System.String" Required="false" />
+            <WarningsAsErrors ParameterType="System.Boolean" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -55,27 +56,27 @@
 
                             if (ReferenceFiles != null)
                             {
-                            foreach (var referenceFileName in ReferenceFiles.Select(f => f.ItemSpec))
-                            {
-                                builder.Append(string.Format("/reference:\"{0}\" ", referenceFileName.TrimEnd('\\')));
-                            }
+                                foreach (var referenceFileName in ReferenceFiles.Select(f => f.ItemSpec))
+                                {
+                                    builder.Append(string.Format("/reference:\"{0}\" ", referenceFileName.TrimEnd('\\')));
+                                }
                             }
 
                             if (ReferenceDirectories != null)
                             {
-                            foreach (var referenceDirectory in ReferenceDirectories.Select(f => f.ItemSpec))
-                            {
-                                builder.Append(string.Format("/directory:\"{0}\" ", referenceDirectory.TrimEnd('\\')));
-                            }
+                                foreach (var referenceDirectory in ReferenceDirectories.Select(f => f.ItemSpec))
+                                {
+                                    builder.Append(string.Format("/directory:\"{0}\" ", referenceDirectory.TrimEnd('\\')));
+                                }
                             }
 
                             if (Assemblies != null)
                             {
-                            foreach (var inputFileName in Assemblies.Select(f => f.ItemSpec))
-                            {
-                                builder.Append(string.Format("/file:\"{0}\" ", inputFileName.TrimEnd('\\')));
+                                foreach (var inputFileName in Assemblies.Select(f => f.ItemSpec))
+                                {
+                                    builder.Append(string.Format("/file:\"{0}\" ", inputFileName.TrimEnd('\\')));
+                                }
                             }
-                        }
                         }
 
                         var info = new System.Diagnostics.ProcessStartInfo
@@ -115,12 +116,22 @@
 
                         if (process.ExitCode != 0)
                         {
-                            Log.LogError(
-                                string.Format(
-                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
-                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
-                                    process.ExitCode));
-                            return false;
+                            if (!WarningsAsErrors)
+                            {
+                                Log.LogMessage(
+                                    string.Format(
+                                        "{0} exited with exit code: {1}. Build will continue because errors are assumed to be warnings. To change this set FxCopWarningsAsErrors to 'true' in the settings file.",
+                                        System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                        process.ExitCode));
+                            }
+                            else
+                            {
+                                Log.LogError(
+                                    string.Format(
+                                        "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                        System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                        process.ExitCode));
+                            }
                         }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged

@@ -23,6 +23,7 @@
             <FxCopDir ParameterType="System.String" Required="true" />
             <OutputFile ParameterType="System.String" Required="true" />
             <ProjectFile ParameterType="System.String" Required="true" />
+            <WarningsAsErrors ParameterType="System.Boolean" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -76,12 +77,22 @@
 
                         if (process.ExitCode != 0)
                         {
-                            Log.LogError(
-                                string.Format(
-                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
-                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
-                                    process.ExitCode));
-                            return false;
+                            if (!WarningsAsErrors)
+                            {
+                                Log.LogMessage(
+                                    string.Format(
+                                        "{0} exited with exit code: {1}. Build will continue because errors are assumed to be warnings. To change this set FxCopWarningsAsErrors to 'true' in the settings file.",
+                                        System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                        process.ExitCode));
+                            }
+                            else
+                            {
+                                Log.LogError(
+                                    string.Format(
+                                        "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                        System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                        process.ExitCode));
+                            }
                         }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged

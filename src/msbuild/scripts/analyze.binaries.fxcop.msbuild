@@ -24,6 +24,7 @@
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
+        <FxCopWarningsAsErrors Condition=" '$(FxCopWarningsAsErrors)' == '' ">false</FxCopWarningsAsErrors>
 
         <!-- Build configuration -->
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -135,6 +136,7 @@
         <FxCopViaProject FxCopDir="$(ToolsExternalFxCopDir)"
                          ProjectFile="$(FileProjectFxCop)"
                          OutputFile="$(FileReportFxCopExpanded)"
+                         WarningsAsErrors="$(FxCopWarningsAsErrors)"
                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 
@@ -169,6 +171,7 @@
                             ReferenceDirectories="@(FxCopReferenceDirectories)"
                             Dictionary="$(FxCopCustomDictionary)"
                             Culture="$(FxCopCulture)"
+                            WarningsAsErrors="$(FxCopWarningsAsErrors)"
                             Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 
