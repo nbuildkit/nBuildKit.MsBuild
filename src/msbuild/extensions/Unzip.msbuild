@@ -1,18 +1,17 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" 
-         DefaultTargets="Build" 
+<Project ToolsVersion="4.0"
+         DefaultTargets="Build"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsUnzip>true</ExistsExtensionsUnzip>
     </PropertyGroup>
-    
-    <UsingTask TaskName="Unzip" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="Unzip"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <InputFileName ParameterType="System.String" Required="true" />
@@ -23,7 +22,7 @@
             <Reference Include="System.IO.Compression.FileSystem" />
             <Using Namespace="System.IO.Compression" />
             <Code Type="Fragment" Language="cs">
-                <![CDATA[        
+                <![CDATA[
                     Log.LogMessage("Uncompressing archive in: " + DestinationDirectory);
                     ZipFile.ExtractToDirectory(InputFileName, DestinationDirectory);
                 ]]>

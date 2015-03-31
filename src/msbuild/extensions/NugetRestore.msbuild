@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsNuGetRestore>true</ExistsExtensionsNuGetRestore>
     </PropertyGroup>
-    
-    <UsingTask TaskName="NuGetRestore" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="NuGetRestore"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <NuGetPath ParameterType="System.String" Required="true" />
@@ -33,7 +33,7 @@
                         {
                             builder.Append(string.Format("restore \"{0}\" ", PackageFile));
                             builder.Append("-NonInteractive -Verbosity detailed -NoCache ");
-                            
+
                             // Make sure we remove the back-slash because if we don't then
                             // the closing quote will be eaten by the command line parser. Note that
                             // this is only necessary because we're dealing with a directory
@@ -71,13 +71,23 @@
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
                         process.WaitForExit();
-                        
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            return false;
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

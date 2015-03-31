@@ -5,11 +5,11 @@
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsPrepareGenerateFiles>true</ExistsPrepareGenerateFiles>
-        
+
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
-        
-        <!-- 
+
+        <!--
             Define the DirWorkspace before importing the BuildPropertyFile so that it is defined and can be used by
             the properties in the BuildPropertyFile. Note that we can't define it in the BuildPropertyFile because that
             is imported which means there is no way to get the path of the file.
@@ -19,35 +19,37 @@
 
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
-    
+
     <PropertyGroup>
         <!-- Build flags -->
         <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-        
+
         <!-- Directories -->
         <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        
+
         <!-- nBuildKit directories -->
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
-        
+
         <!-- Files -->
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
         <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
     </PropertyGroup>
-    
-    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
-    <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild" 
+    <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
-            
-    <Target Name="nBuildKit_Prepare_GenerateFiles_Run" 
-            DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DisplayInfo">
+
+    <Target Name="nBuildKit_Prepare_GenerateFiles_Run"
+            DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DisplayInfo"
+            Outputs="%(FilesToGenerate.Identity)"
+            Condition=" '@(FilesToGenerate)' != '' ">
         <CallTarget Targets="_nBuildKit_Prepare_GenerateFiles_GenerateFiles" />
     </Target>
-    
+
     <Target Name="_nBuildKit_Prepare_GenerateFiles_DebugLog" Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
@@ -55,36 +57,36 @@
         <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
         <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
         <Message Text=" " />
-        
+
         <Message Text="The semantic version file is located at: $(FileSemanticVersion)" />
         <Message Text="The VCS info file is located at:         $(FileVcsInfo)" />
         <Message Text=" " />
     </Target>
-    
+
     <!-- Display info -->
     <Target Name="_nBuildKit_Prepare_GenerateFiles_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DebugLog">
         <Message Text="Getting version ..." />
     </Target>
-    
+
     <!-- Generate the required files -->
     <Target Name="_nBuildKit_Prepare_GenerateFiles_GenerateFiles"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Outputs="%(FilesToGenerate.Identity)"
             Condition=" '@(FilesToGenerate)' != '' ">
         <Message Text="Generating file %(FilesToGenerate.Identity)" />
-        
-        <!--  
+
+        <!--
             MsBuild can't seem to handle using item metadata (FilesToGenerate.FullPath) inside a property function
             inside the Exists() function, so we'll split the process and do the transfer separately.
-        -->        
+        -->
         <ItemGroup>
             <DirFilesToGenerateTemp Include="$([System.IO.Path]::GetDirectoryName('%(FilesToGenerate.FullPath)'))" />
         </ItemGroup>
-        
-        <MakeDir Directories="%(DirFilesToGenerateTemp.Identity)" 
+
+        <MakeDir Directories="%(DirFilesToGenerateTemp.Identity)"
                  Condition="!Exists('%(DirFilesToGenerateTemp.Identity)')" />
-        
-        <!-- 
+
+        <!--
             It seems MsBuild can't handle batched metadata in conditions either, so make a property and then use that.
         -->
         <CreateProperty Value="%(FilesToGenerate.Token)">
@@ -95,9 +97,9 @@
                 <ReplacementValue>%(FilesToGenerate.ReplacementValue)</ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
-        
-        <TemplateFile Template="%(FilesToGenerate.Template)" 
-                      OutputFileName="%(FilesToGenerate.Identity)" 
+
+        <TemplateFile Template="%(FilesToGenerate.Template)"
+                      OutputFileName="%(FilesToGenerate.Identity)"
                       Tokens="@(TemplateTokens)"
                       Condition="!Exists('%(FilesToGenerate.FullPath)')"/>
     </Target>

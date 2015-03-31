@@ -55,7 +55,8 @@
             Condition="Exists('$(FileVersionMsBuild)') AND ( '$(VersionScriptPath)' == '' OR '$(VersionScriptPath)' == 'UNDEFINED' OR !Exists('$(VersionScriptPath)'))" />
 
     <Target Name="nBuildKit_Prepare_GetVersion_Run"
-            DependsOnTargets="_nBuildKit_Prepare_GetVersion_DisplayInfo">
+            DependsOnTargets="_nBuildKit_Prepare_GetVersion_DisplayInfo"
+            Condition="!Exists('$(FileSemanticVersion)')">
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" />
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_GetToolPaths" />

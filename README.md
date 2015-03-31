@@ -21,7 +21,7 @@ Currently the only version available provides MsBuild scripts that run the build
 
 ## Installation instructions
 
-The MsBuild libraries are available on [NuGet.org](nuget.org). The ZIP archive containing the sample scripts can be found on the [releases page](https://github.com/pvandervelde/nBuildKit/releases).
+The MsBuild libraries are available on [NuGet.org](https://nuget.org). The ZIP archive containing the sample scripts can be found on the [releases page](https://github.com/pvandervelde/nBuildKit/releases).
 
 ## How to build
 

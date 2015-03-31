@@ -6,11 +6,11 @@
     <PropertyGroup>
         <!-- Directory structure -->
         <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
-        
+
         <DirMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirMsBuildExtensions>
         <DirMsBuildShared>$(DirWorkspace)\src\msbuild\shared</DirMsBuildShared>
         <DirMsBuildTemplates>$(DirWorkspace)\src\templates</DirMsBuildTemplates>
-        
+
         <!-- Files -->
         <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
     </PropertyGroup>
@@ -20,6 +20,20 @@
         <DirNBuildKit>$(DirMsBuildScripts)\src\msbuild\scripts</DirNBuildKit>
     </PropertyGroup>
     <Target Name="Run">
-        <MSBuild Projects="$(DirNBuildKit)\build.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions);DirMsBuildShared=$(DirMsBuildShared);DirMsBuildTemplates=$(DirMsBuildTemplates)" />
+    <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKit)\build.msbuild"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions);DirMsBuildShared=$(DirMsBuildShared);DirMsBuildTemplates=$(DirMsBuildTemplates)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True">
+        </MSBuild>
     </Target>
 </Project>
