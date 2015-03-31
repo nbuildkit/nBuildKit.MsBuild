@@ -5,23 +5,37 @@
     <PropertyGroup>
         <!-- Directory structure -->
         <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
-        
+
         <!-- Files -->
         <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
         <NuGetPackageFile>$(DirWorkspace)\packages.config</NuGetPackageFile>
         <FileNugetConfig>$(DirWorkspace)\nuget.config</FileNugetConfig>
-        
+
         <!-- External tools -->
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
-    
+
     <Import Project="$(DirWorkspace)\shared.locatenbuildkit.msbuild"
             Condition="Exists('$(DirWorkspace)\shared.locatenbuildkit.msbuild')" />
 
     <Target Name="Run" DependsOnTargets="_RestoreGlobalNugetPackages;_nBuildKit_Shared_LocateNBuildKit_Locate">
-        <MSBuild Projects="$(DirNBuildKit)\build.msbuild" Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)" />
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKit)\build.msbuild"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True">
+        </MSBuild>
     </Target>
-    
+
     <Target Name="_RestoreGlobalNugetPackages" DependsOnTargets="_nBuildKit_Shared_LocateNBuildKit_LocatePackages">
         <Exec Command="&quot;$(ToolsExternalNuGetPath)&quot; restore $(NuGetPackageFile) -NoCache -NonInteractive -Verbosity detailed -PackagesDirectory &quot;$(DirPackages)&quot;"
               Condition="Exists('$(NuGetPackageFile)')" />
