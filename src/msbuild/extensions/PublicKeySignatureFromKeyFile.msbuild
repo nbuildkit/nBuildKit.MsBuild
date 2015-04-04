@@ -31,9 +31,9 @@
                                     RedirectStandardError = true,
                                 };
 
-                                var publicKeyProcess = new System.Diagnostics.Process();
-                                publicKeyProcess.StartInfo = publicKeyInfo;
-                                publicKeyProcess.OutputDataReceived +=
+                                var process = new System.Diagnostics.Process();
+                                process.StartInfo = publicKeyInfo;
+                                process.OutputDataReceived +=
                                     (s, e) =>
                                     {
                                         if (!string.IsNullOrWhiteSpace(e.Data))
@@ -41,7 +41,7 @@
                                             Log.LogMessage(MessageImportance.Normal, e.Data);
                                         }
                                     };
-                                publicKeyProcess.ErrorDataReceived +=
+                                process.ErrorDataReceived +=
                                     (s, e) =>
                                     {
                                         if (!string.IsNullOrWhiteSpace(e.Data))
@@ -49,19 +49,19 @@
                                             Log.LogError(e.Data);
                                         }
                                     };
-                                publicKeyProcess.Start();
+                                process.Start();
 
-                                publicKeyProcess.BeginOutputReadLine();
-                                publicKeyProcess.BeginErrorReadLine();
-                                publicKeyProcess.WaitForExit();
+                                process.BeginOutputReadLine();
+                                process.BeginErrorReadLine();
+                                process.WaitForExit();
 
-                                if (publicKeyProcess.ExitCode != 0)
+                                if (process.ExitCode != 0)
                                 {
                                     Log.LogError(
                                         string.Format(
                                             "{0} exited with a non-zero exit code while trying to extract the public key file from the complete key file. Exit code was: {1}",
-                                            System.IO.Path.GetFileName(publicKeyProcess.StartInfo.FileName),
-                                            publicKeyProcess.ExitCode));
+                                            System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                            process.ExitCode));
                                     return false;
                                 }
                             }
