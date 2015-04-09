@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="Help"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Directory structure -->
+        <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
+
+        <DirMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirMsBuildExtensions>
+        <DirMsBuildShared>$(DirWorkspace)\src\msbuild\shared</DirMsBuildShared>
+        <DirMsBuildTemplates>$(DirWorkspace)\src\templates</DirMsBuildTemplates>
+        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
+        <DirNBuildKit>$(DirMsBuildScripts)\src\msbuild\scripts</DirNBuildKit>
+
+        <!-- Files -->
+        <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
+    </PropertyGroup>
+
+    <Target Name="Help">
+        <Message Text="nBuildKit - Build system" />
+        <Message Text="Copyright 2013 nBuildKit. Apache License, Version 2.0" />
+        <Message Text="" />
+        <Message Text="The following targets exist:" />
+        <Message Text="" />
+        <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'settings.props' file." />
+        <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'settings.props' file." />
+        <Message Text="- Help: Displays this text." />
+    </Target>
+
+    <Target Name="Build">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKit)\build.msbuild"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions);DirMsBuildShared=$(DirMsBuildShared);DirMsBuildTemplates=$(DirMsBuildTemplates)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+
+    <Target Name="Deploy">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKit)\deploy.msbuild"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions);DirMsBuildShared=$(DirMsBuildShared);DirMsBuildTemplates=$(DirMsBuildTemplates)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+</Project>
