@@ -8,8 +8,10 @@
         ${VersionMinor}          - The minor version number
         ${VersionPatch}          - The patch version number
         ${VersionBuild}          - The build number of the version
+        ${VersionPreRelease}     - The pre-release code, e.g. 'unstable'
         ${VersionSemantic}       - The semantic version, e.g. 1.2.3
-        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3+001
+        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3-unstable.1+001
+        ${VersionSEmanticNuGet}  - The full semantic version as used by nuget, e.g. 1.2.3-unstable0001
 
         ${Configuration}         - The configuration, e.g. Release
         ${Platform}              - The platform name, e.g. Any CPU
@@ -21,11 +23,11 @@
         ${ReleaseNotesShort}     - The contents of the short release notes
         ${ReleaseNotesFull}      - The contents of the full release notes
 
-        ${Now}                   - The current date and time
-        ${Date}                  - The current date
-        ${DayOfMonth}            - The current day of the month
-        ${Month}                 - The current month
-        ${Year}                  - The current year
+        ${Now}                   - The current date and time in round trip format, e.g. 2015-05-15T19:31:45.1234567+12:00
+        ${Date}                  - The current date in the format year-month-dayofmonth, e.g. 2015-05-15
+        ${DayOfMonth}            - The current day of the month, e.g. 15
+        ${Month}                 - The current month, e.g. 05
+        ${Year}                  - The current year, e.g. 2015
 
         ${ProductName}           - The name of the product
         ${ProductNameInFilePath} - The product name written in a way that it can be used in the file path
@@ -37,25 +39,25 @@
         ${CompanyNameInFilePath} - The name of the company written in a way that it can be used in the file path
         ${CompanyUrl}            - The URL of the company website
 
-        ${DirBin}                - The full path to the directory that contains the binaries
-        ${DirDeploy}             - The full path to the directory that contains the artifacts
-        ${DirLogs}               - The full path to the directory that contain the build logs
-        ${DirSrc}                - The full path to the directory that contains the source files
-        ${DirTemp}               - The full path to the directory that contains the temporary build files
+        ${DirBin}                - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
+        ${DirDeploy}             - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
+        ${DirLogs}               - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
+        ${DirSrc}                - The full path to the directory that contains the source files, e.g. c:\myproject\src
+        ${DirTemp}               - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
 
         ${VersionNBuildKit}      - The semantic version of nBuildKit that was used for the current build
     -->
     <!-- Overrides for the project specific properties -->
     <PropertyGroup>
         <!--
-            The name of the product. This is used for:
+            The name of the product. This is for instance used for:
             * Copyrights
             * API documentation
         -->
         <ProductName Condition=" '$(ProductName)' == '' ">nBuildKit</ProductName>
 
         <!--
-            The name of the product that can be used as part of a file path. This is used for:
+            The name of the product that can be used as part of a file path. This is for instance used for:
             * CCM
             * SourceMonitor
             * Deployment directory naming
@@ -63,7 +65,7 @@
         <ProductNameInFilePath Condition=" '$(ProductNameInFilePath)' == '' ">nbuildkit</ProductNameInFilePath>
 
         <!--
-            The description of the product. This is used for:
+            The description of the product. This is for instance used for:
             * Installer information
         -->
         <ProductDescription>
@@ -71,36 +73,40 @@
         </ProductDescription>
 
         <!--
-            The namespace in which all the code for the product is placed.
+            The namespace in which all the code for the product is placed. This is for instance used for:
+            * Finding the correct assemblies and namespaces for unit testing and coverage reporting
+            * Generated code files that contain namespaces
         -->
         <ProductNamespace Condition=" '$(ProductNamespace)' == '' ">NBuildKit</ProductNamespace>
 
         <!--
-            The first year the product was available / created. This is used for:
+            The first year the product was available / created. This is for instance used for:
             * Copyrights
         -->
         <ProductStartingYear Condition=" '$(ProductStartingYear)' == '' ">2014</ProductStartingYear>
 
         <!--
-            The name of the company. This is used for:
+            The name of the company. This is for instance used for:
             * Copyrights
             * API documentation
         -->
         <CompanyName Condition=" '$(CompanyName)' == '' ">P. van der Velde</CompanyName>
 
         <!--
-            The name of the company that can be used as a part of a file path. This is used for:
+            The name of the company that can be used as a part of a file path. This is for instance used for:
             * Installer file paths
         -->
         <CompanyNameInFilePath Condition=" '$(CompanyNameInFilePath)' == '' ">pvandervelde</CompanyNameInFilePath>
 
         <!--
-            The URL of the company website
+            The URL of the company website. This is for instance used for:
+            * nuspec files
         -->
         <CompanyUrl Condition=" '$(CompanyUrl)' == '' ">https://github.com/pvandervelde/nBuildKit</CompanyUrl>
 
         <!--
-            The email address that is specified in the documentation.
+            The email address that is specified in the documentation. This is for instance used for:
+            * API documentation
         -->
         <EmailDocumentation Condition=" '$(EmailDocumentation)' == '' ">UNDEFINED</EmailDocumentation>
     </PropertyGroup>
@@ -110,10 +116,16 @@
         <!-- The user name of the user who owns the repository on GitHub -->
         <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">pvandervelde</GitHubUserName>
 
-        <!-- The repository that contains the source code for the current product -->
+        <!-- 
+            The github repository that contains the source code for the current product. Used when getting the release notes
+            from the github issues. The correct format is <USERNAME>/<REPOSITORYNAME>
+        -->
         <GitHubRepositoryName Condition=" '$(GitHubRepositoryName)' == '' ">$(GitHubUserName)\nBuildKit</GitHubRepositoryName>
 
-        <!-- Repository information -->
+        <!-- 
+            The full URL to the GIT repository. Can include the '%GitHubToken%' environment variable for authenticated
+            connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
+         -->
         <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">https://%GitHubToken%:@github.com/$(GitHubUserName)/nBuildKit.git</GitRemoteRepository>
     </PropertyGroup>
 
@@ -131,9 +143,15 @@
 
     <!-- Overrides for the global properties -->
     <PropertyGroup>
+        <!--
+            A flag that indicates whether or not the workspace should be cleaned before the build is started. If set to
+            true then the 'DirBuild' directory will be removed as well as all known generated files.
+        -->
         <!--<ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>-->
 
-        <!-- Indicates that the execution of the build script runs through the steps but does not actually execute them -->
+        <!--
+            Indicates that the execution of the build script runs through the steps but does not actually execute them.
+        -->
         <!-- <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute> -->
     </PropertyGroup>
 
@@ -142,7 +160,7 @@
         <!-- The build configuration (debug / release / ...) that will be used to run all the unit tests and the static verification on -->
         <!-- <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration> -->
 
-        <!-- The build configuration (debug / release / ..) that will be used for packaging of the binaries -->
+        <!-- The build configuration (debug / release / ..) that will be used to create the binaries that should be deployed -->
         <!-- <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">deploy</ProductionConfiguration> -->
 
         <!-- The platform for which the binaries will be build -->
@@ -157,7 +175,10 @@
         **** DIRECTORIES ****
     -->
     <PropertyGroup>
-        <!-- NOTE: The 'DirWorkspace' property is always set to the top-level directory of the workspace / repository -->
+        <!--
+            NOTE: The 'DirWorkspace' property is always set prior to loading the current file. The variable is set
+            to the directory which contains the current file.
+        -->
 
         <!-- The directory that will contain all the files generated during the build process -->
         <!-- <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild> -->
@@ -184,6 +205,9 @@
         <!-- The directory that will contain the reports generated by OpenCover and ReportGenerator describing the coverage of the unit tests. -->
         <!-- <DirReportGeneratorOutput Condition=" '$(DirReportGeneratorOutput)' == '' ">$(DirBuildLogs)\coverage</DirReportGeneratorOutput> -->
 
+        <!-- The directory that contains the report files generated by MoMA -->
+        <!-- <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma> -->
+
         <!-- The directory that will contain all the temporary files needed during the build process -->
         <!-- <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp> -->
 
@@ -195,9 +219,6 @@
 
         <!-- The directory that contains the template files for the project -->
         <!-- <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates> -->
-
-        <!-- The directory that contains the report files generated by MoMA -->
-        <!-- <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma> -->
     </PropertyGroup>
 
 
@@ -205,31 +226,64 @@
         **** BUILD STEPS ****
     -->
     <!--
-        Define the steps taken during the build process. Available steps and their sub-steps are provided by the following properties:
+        The following ItemGroup defines which steps are taken during the build process. The order of the items in the item group
+        determines in which order the build steps are executed.
+
+        The following build steps are by default provided through the given properties:
         $(BuildStepsPrepareWorkspace)                    - Deletes the existing build artifacts and creates the required directories.
         $(BuildStepsPrepareRestoreNuGet)                 - Restores the NuGet packages for the project.
         $(BuildStepsPrepareGetVersion)                   - Gathers version information and stores it in a temporary file for use by the rest of the build process.
-        $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process.
+                                                           Currently supported methods of gathering version information are using (in order):
+                                                           - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
+                                                             in the 'VersionScriptPath' property. The task should output:
+                                                             - VersionMajor
+                                                             - VersionMinor
+                                                             - VersionPatch
+                                                             - VersionBuild
+                                                             - VersionPreRelease
+                                                             - VersionSemantic
+                                                             - VersionSemanticFull
+                                                             - VersionSemanticNuget
+                                                           - The version stored in an 'version.xml' file which contains an MsBuild property group with
+                                                             the properties:
+                                                             - BuildNumber
+                                                             - VersionMajor
+                                                             - VersionMinor
+                                                             - VersionPatch
+                                                             - VersionBuild
+                                                             - VersionPreRelease
+                                                           - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
+                                                           - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
+        $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process. Release notes
+                                                           are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
+                                                           currently allows gathering release notes from GitHub, Jira and YouTrack
         $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
+                                                           Currently supported version control systems is GIT
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
-
-        $(BuildStepsAnalyzeSourceCcm)                    - Analyzes the source code files with CCM
-        $(BuildStepsAnalyzeSourceSouceMonitor)           - Analyzes the source code files with SourceMonitor
-
+        $(BuildStepsAnalyzeSourceCcm)                    - Analyzes the source code files with CCM.
+        $(BuildStepsAnalyzeSourceSouceMonitor)           - Analyzes the source code files with SourceMonitor.
         $(BuildStepsBuildVisualStudioSolution)           - Builds the binaries from a given Visual Studio solution.
-
-        $(BuildStepsUnitTestNUnit)                       - Executes the unit tests with NUnit
-        $(BuildStepsUnitTestMsTest)                      - Executes the unit tests with MsTest
-
-        $(BuildStepsAnalyzeBinariesMoma)                 - Analyzes the binary files with Moma (Mono Migration Analyzer)
-        $(BuildStepsAnalyzeBinariesFxCop)                - Analyzes the binary files with FxCop
-
+        $(BuildStepsUnitTestNUnit)                       - Executes the unit tests with NUnit and measures code coverage with OpenCover.
+        $(BuildStepsUnitTestMsTest)                      - Executes the unit tests with MsTest and measures code coverage with OpenCover.
+        $(BuildStepsAnalyzeBinariesMoma)                 - Analyzes the binary files with Moma (Mono Migration Analyzer).
+        $(BuildStepsAnalyzeBinariesFxCop)                - Analyzes the binary files with FxCop.
         $(BuildStepsBuildApiDocumentationWithSandcastle) - Builds the API documentation with SandCastle from the inline XML documentation comments.
+        $(BuildStepsPackNuGet)                           - Generates the NuGet packages.
+        $(BuildStepsPackZip)                             - Generates one or more ZIP archives.
 
-        $(BuildStepsPackNuGet)                           - Generates the NuGet packages
-        $(BuildStepsPackZip)                             - Generates one or more ZIP archives
+        Additional build steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a build step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
 
-        The order of the steps defines the order in which those steps are executed.
+        Each script has the following properties passed to it:
+        $(BuildPropertyFile)                             - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog)                         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)                              - The full version of the nBuildKit library that is executing the build.
+        $(DirMsBuildExtensions)                          - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirMsBuildShared)                              - The full path to the directory that contains the nBuildKit shared scripts.
+        $(DirMsBuildTemplates)                           - The full path to the directory that contains the nBuildKit templates.
+
+        Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
     <ItemGroup>
         <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
@@ -318,6 +372,20 @@
 
     <!--
         Define the scripts that should be executed when any one of the build steps fails.
+
+        Steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a build step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Each script has the following properties passed to it:
+        $(BuildPropertyFile)     - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog) - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)      - The full version of the nBuildKit library that is executing the build.
+        $(DirMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirMsBuildShared)      - The full path to the directory that contains the nBuildKit shared scripts.
+        $(DirMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
+
+        Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
     <ItemGroup>
         <!--
@@ -333,10 +401,31 @@
         **** PREPARE - VERSIONING ****
     -->
     <PropertyGroup>
-        <!-- The full path to the file that contains the current version of the project in MsBuild format. -->
+        <!--
+            The full path to the file that contains the current version of the project in MsBuild format.  The file is expected
+            to have the following structure:
+
+            <?xml version="1.0" encoding="utf-8"?>
+            <Project ToolsVersion="3.5"
+                     DefaultTargets="Build"
+                     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+                <PropertyGroup>
+                    <BuildNumber>$(BUILD_NUMBER)</BuildNumber>
+                    <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
+
+                    <VersionMajor>1</VersionMajor>
+                    <VersionMinor>2</VersionMinor>
+                    <VersionPatch>3</VersionPatch>
+                    <VersionBuild>$(BuildNumber)</VersionBuild>
+                    <VersionPreRelease></VersionPreRelease>
+                </PropertyGroup>
+            </Project>
+        -->
         <!-- <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild> -->
 
-        <!-- The full path to the file that is used to store the version information during the build -->
+        <!--
+            The full path to the file that is used to store the version information during the build.
+        -->
         <!-- <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion> -->
 
         <!--
@@ -356,12 +445,17 @@
             The script is expected be a custom implementation of the CalculateCustomVersion.msbuild script.
             The script file can be called anything as long as it contains an inline task
             called CalculateCustomVersion that takes no parameters and returns the version number parts as follows:
-                VersionMajor - The major component of the version number.
-                VersionMinor - The minor component of the version number.
-                VersionPatch - The patch component of the version number.
-                VersionBuild - The build component of the version number.
-                VersionSemantic - The short semantic version, normally made up of MAJOR.MINOR.PATCH
-                VersionSemanticFull - The full semantic version, normally made up of MAJOR.MINOR.PATCH-METADATA+BUILD
+                VersionMajor         - The major component of the version number, e.g. 1.
+                VersionMinor         - The minor component of the version number, e.g. 2.
+                VersionPatch         - The patch component of the version number, e.g. 3.
+                VersionBuild         - The build component of the version number, e.g. 4.
+                VersionPreRelease    - The pre-release section of the version number, e.g. 'unstable'
+                VersionSemantic      - The short semantic version, normally made up of
+                                       <MAJOR>.<MINOR>.<PATCH>, e.g. 1.2.3
+                VersionSemanticFull  - The full semantic version, normally made up of
+                                       <MAJOR>.<MINOR>.<PATCH>-<METADATA>+<BUILD>, e.g. 1.2.3-unstable+4
+                VersionSemanticNuget - The NuGet compatible semantic version, normally made up of
+                                       <MAJOR>.<MINOR>.<PATCH>-<PRERELEASE><BUILD>, e.g. 1.2.3-unstable4
         -->
         <VersionScriptPath Condition=" '$(VersionScriptPath)' == '' ">UNDEFINED</VersionScriptPath>
     </PropertyGroup>
@@ -416,7 +510,14 @@
     <!--
         **** PREPARE - GENERATE FILES ****
     -->
-    <!-- List of all files that should be generated and their template files -->
+    <!--
+        The list of all files that should be generated and their template files.
+
+        The template file may contain zero or more template parameters as indicated at the top of this
+        file. Template parameters must be enclosed in '${}'.
+
+        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
+    -->
     <ItemGroup>
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\nbuildkit.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
@@ -465,7 +566,7 @@
 
     <!--
         Additional items that should be available for the template replacement.
-        The default templates, as indicated at the top of this file, are always available.
+        The default template parameters, as indicated at the top of this file, are always available.
     -->
     <ItemGroup>
         <!--
@@ -480,10 +581,16 @@
         **** SOURCE ANALYSIS - CCM ****
     -->
     <PropertyGroup>
-        <!-- The full path to the template file that is used to provide the project information for CCM. -->
-        <!-- <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirTemplates)\ccm.xml.in</FileTemplateCcm> -->
+        <!--
+            The full path to the template file that is used to provide the project information for CCM. Defaults
+            to the template file included with nBuildKit.
+        -->
+        <!-- <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirMsBuildTemplates)\ccm.xml.in</FileTemplateCcm> -->
 
-        <!-- The full path to the report file generated by CCM. Allows build templates. Allows build templates. -->
+        <!--
+            The full path to the report file generated by CCM. Allows build templates. Allows build templates,
+            e.g. $(DirBuildLogs)\${ProductName}_ccm.xml.
+        -->
         <!-- <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm> -->
     </PropertyGroup>
 
@@ -492,10 +599,16 @@
         **** SOURCE ANALYSIS - SOURCEMONITOR ****
     -->
     <PropertyGroup>
-        <!-- The full path to the template file that is used to provide the project information for SourceMonitor -->
-        <!-- <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor> -->
+        <!--
+            The full path to the template file that is used to provide the project information for SourceMonitor. Defaults
+            to the template file included with nBuildKit.
+        -->
+        <!-- <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirMsBuildTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor> -->
 
-        <!-- The full path to the report file generated by SourceMonitor. Allows build templates. Allows build templates. -->
+        <!--
+            The full path to the report file generated by SourceMonitor. Allows build templates. Allows build templates,
+            e.g. $(DirBuildLogs)\${ProductName}_sourcemonitor.xml
+        -->
         <!-- <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor> -->
     </PropertyGroup>
 
@@ -504,8 +617,8 @@
         **** VISUAL STUDIO BUILD ****
     -->
     <!--
-        The item group defining the location of the Vistual Studio solutions that should be build
-        The solution path allows build templates.
+        The item group defining the location of the Vistual Studio solutions that should be build.
+        The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
     <ItemGroup>
         <!--
@@ -525,30 +638,67 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <!-- A flag that indicates whether the source files with the company and product information should be generated -->
+        <!--
+            A flag that indicates whether the source files with the company and product information should be generated.
+            The files will be placed in the source directory (i.e. DirSrc) and will be called CompanyInformation.xx and
+            ProductInformation.xx.
+
+            The CompanyInformation file will contain the Company website URL, the company name and the company name as used
+            in file paths.
+
+            The ProductInformation file will contain the product name, the product description and the product name as used
+            in file paths.
+
+            Any namespaces will be created as <ProductNamespace>.Internals where 'ProductNamespace' is defined
+            in the current file at the top.
+        -->
         <ShouldGenerateCompanyAndProductInfo>false</ShouldGenerateCompanyAndProductInfo>
 
-        <!-- A flag that indicates whether an AssemblyInfo file with the company and copyright information should be generated -->
+        <!--
+            A flag that indicates whether an AssemblyInfo file with the company and copyright information should be generated.
+            The file will be placed in the Properties directory of the Visual Studio project and will be named
+            AssemblyInfo.Company.xx. This file will contain:
+            - The AssemblyCompanyAttribute with the company name
+            - The AssemblyCopyrightAttribute with the text "Copyright <CompanyName> <ProductStartingYear> - <CurrentYear>".
+        -->
         <ShouldGenerateAssemblyCompanyInfo>false</ShouldGenerateAssemblyCompanyInfo>
 
-        <!-- A flag that indicates whether an AssemblyInfo file with the version numbers should be generated -->
+        <!--
+            A flag that indicates whether an AssemblyInfo file with the version numbers should be generated. The file
+            will be placed in the Properties directory of the Visual Studio project and will be named
+            AssemblyInfo.Version.xx. This file will contain:
+            - The AssemblyVersionAttribute with the version as <MAJOR>.<MINOR>.0.0
+            - The AssemblyFileVersionAttribute with the version as <MAJOR>.<MINOR>.<PATCH>.<BUILD>
+            - The AssemblyInformationalVersionAttribute with the version as the full semantic version
+        -->
         <ShouldGenerateAssemblyVersionInfo>false</ShouldGenerateAssemblyVersionInfo>
 
         <!--
-            A flag that indicates whether an AssemblyInfo file with the build information should be generated.
-            Build information includes:
-            - Build configuration (e.g. Debug)
-            - Build date and time
-            - Build number and VCS revision number
+            A flag that indicates whether an AssemblyInfo file with the build information should be generated. The file
+            will be placed in the Properties directory of the Visual Studio project and will be named
+            AssemblyInfo.BuildInformation.xx. This file will contain
+            - The AssemblyConfigurationAttribute containing the configuration of the build, e.g. Debug
+            - The AssemblyBuildTimeAttribute containing the complete date and time that the file was generated (which
+              should be close enough to the time the assembly was build).
+            - The assemblyBuildInformationAttribute which contains the build number and VCS revision number.
+
+            Note for this file to compile successfully a reference to the Nuclei.Build assembly needs to be added.
+            This assembly can be found on NuGet.org (http://www.nuget.org/packages/Nuclei.Build/)
         -->
         <ShouldGenerateAssemblyBuildInfo>false</ShouldGenerateAssemblyBuildInfo>
 
-        <!-- A flag that indicates whether an application manifest file should be generated for executables -->
+        <!--
+            A flag that indicates whether an application manifest file should be generated for executables. The
+            manifest file is placed in the same directory as the Visual Studio project and will be named
+            <ProjectOutputName>.manifest, e.g. MyCoolApp.exe.manifest.
+        -->
         <ShouldGenerateApplicationManifest>false</ShouldGenerateApplicationManifest>
 
         <!--
-            A flag that indicates whether the current project is a Test project.
-            This value is used here just so that there is a value when no other value is specified. Do not comment this
+            A flag that indicates whether the current project is a Test project. The value will be set in the Visual
+            Studio project files based on whether the project is a test project (as determined by the ProjectType GUID).
+
+            This value is defined here just so that there is a value when no other value is specified. Do not comment this
             value out unless you know what you are doing!
         -->
         <IsTest Condition=" '$(IsTest)' == '' ">false</IsTest>
@@ -557,65 +707,115 @@
     <!-- Build configuration -->
     <PropertyGroup>
         <!--
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+            A flag indicating whether warnings should be treated as errors by the compiler. This value is set
+            for all projects that include the MsBuild.Projects.XXXX NuGet package.
         -->
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <!--
+            The version of the .NET framework at which the assemblies should be targeted. This value is set
+            for all projects that include the MsBuild.Projects.XXXX NuGet package.
+        -->
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     </PropertyGroup>
 
     <!-- Execute code analysis after the build -->
     <PropertyGroup>
         <!--
-        <ShouldPerformCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == '' ">true</ShouldPerformCodeAnalysis>
-        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND !$(IsTest)">$(SolutionDir)\codeanalysis.base.ruleset</CodeAnalysisRuleSet>
-        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND $(IsTest)">$(SolutionDir)\codeanalysis.test.ruleset</CodeAnalysisRuleSet>
-        <CodeAnalysisCulture Condition="$(ShouldPerformCodeAnalysis)">en-US</CodeAnalysisCulture>
+            A flag that indicates whether or not the code analysis should be executed immediately after the compilation
+            process is complete.
         -->
+        <ShouldPerformCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == '' ">true</ShouldPerformCodeAnalysis>
+        <!--
+            The code analysis rule set that should be used for non-test assemblies.
+        -->
+        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND !$(IsTest)">$(SolutionDir)\codeanalysis.base.ruleset</CodeAnalysisRuleSet>
+        <!--
+            The code analysis rule set that should be used for test assemblies. If no code analysis should be executed on test
+            assemblies then it can be turned off in the settings for the different build configurations below.
+        -->
+        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND $(IsTest)">$(SolutionDir)\codeanalysis.test.ruleset</CodeAnalysisRuleSet>
+        <!--
+            The culture which will be used by the code analysis when searching for spelling errors. The culture name should
+            be formatted using the .NET culture format.
+        -->
+        <CodeAnalysisCulture Condition="$(ShouldPerformCodeAnalysis)">en-US</CodeAnalysisCulture>
     </PropertyGroup>
 
     <!-- Generate the XML documentation file -->
     <PropertyGroup>
         <!--
-        <GenerateDocumentation>true</GenerateDocumentation>
-        <DocumentationFile Condition="$(GenerateDocumentation) AND !$(IsTest)">$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
+            A flag indicating whether or not the XML documentation file should be generated during the compilation process.
+            Note that if 'WarningsAsErrors' is enabled then missing documentation will generate errors that stop the
+            build process.
+
+            If documentation should only be generated for non-test assemblies then add the '!$(IsTest)' condition
+            to the property.
         -->
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <!--
+            The full file path where the XML documentation file should be created.
+        -->
+        <DocumentationFile Condition="$(GenerateDocumentation) AND !$(IsTest)">$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
     </PropertyGroup>
 
     <!-- Strong name the binaries -->
     <PropertyGroup>
         <!--
+            A flag that indicates whether or not the assemblies should be strong named during the compilation process.
+        -->
         <ShouldSign Condition=" '$(ShouldSign)' == '' ">true</ShouldSign>
         <SignAssembly Condition="$(ShouldSign)">true</SignAssembly>
         <DelaySign Condition="$(ShouldSign)">false</DelaySign>
-        <AssemblyOriginatorKeyFile Condition="$(ShouldSign)">$(SOFTWARE_SIGNING_KEY_PATH)</AssemblyOriginatorKeyFile>
+        <!--
+            The full path of the key file that will be used to sign the assemblies during the compilation process.
         -->
+        <AssemblyOriginatorKeyFile Condition="$(ShouldSign)">$(SOFTWARE_SIGNING_KEY_PATH)</AssemblyOriginatorKeyFile>
     </PropertyGroup>
 
-    <!-- Debug settings -->
+    <!--
+        Debug configuration
+    -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <!--
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
-        <RunCodeAnalysis>$(ShouldDoCodeAnalysis)</RunCodeAnalysis>
-        -->
+        <RunCodeAnalysis>$(ShouldPerformCodeAnalysis)</RunCodeAnalysis>
     </PropertyGroup>
 
-    <!-- Release settings -->
+    <!--
+        Release configuration
+    -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <!--
         <DebugSymbols>false</DebugSymbols>
         <DebugType>pdbonly</DebugType>
         <Optimize>true</Optimize>
-        <RunCodeAnalysis>$(ShouldDoCodeAnalysis)</RunCodeAnalysis>
-        -->
+        <RunCodeAnalysis>$(ShouldPerformCodeAnalysis)</RunCodeAnalysis>
     </PropertyGroup>
 
     <!-- C# specific configuration -->
     <PropertyGroup>
-        <!-- <CSharpWarningLevel>4</CSharpWarningLevel> -->
+        <!--
+            Indicates what the warning level is for the C# compiler.
+        -->
+        <CSharpWarningLevel>4</CSharpWarningLevel>
     </PropertyGroup>
 
-    <!-- The collection of assemblies that should be provided in the InternalsVisibleTo attributes -->
+    <!--
+        The ItemGroup defining the information for the generation of the InternalsVisibleAttribute.
+        Three different ways of referencing the test projects public key are available. Test assemblies
+        can be referenced by:
+        - Providing the snk key that was / is used to sign the test assembly. This is mainly of use
+          for test assemblies which are compiled at the same time as the target assemblies, i.e. test
+          assemblies that are part of the same Visual Studio solution.
+        - Providing the signed test assembly. This is mainly of use for test assemblies that have been
+          compiled prior to compiling the target assemblies, e.g. third party test assemblies.
+        - Providing the full public key for the assembly. This is mainly of use for assemblies that
+          do not exists on disk, e.g. assemblies that are dynamically generated.
+
+        Multiple projects can be referenced in the 'projects' section by separating them with a semi-colon (;). Whitespace
+        can be added if required but it has no influence on the project list.
+    -->
     <ItemGroup>
         <!--
         <InternalsVisibleTo Include="MyTestProject">
@@ -640,12 +840,23 @@
     </ItemGroup>
 
     <!--
-        Additional scripts that need to be executed prior to the start of the Visual Studio clean process and the
-        start of the Visual Studio build process. The following properties are passed to each script:
+        Define additional scripts that need to be executed prior to the start of the Visual Studio clean process and the
+        start of the Visual Studio build process.
 
-        - Configuration
-        - Platform
-        - Full path to the settings property file (i.e. the current file)
+        Scripts are defined by providing the path to the MsBuild script that should be executed,
+        e.g. 'c:\stuff\MyCoolScript.msbuild'.
+
+        Each script has the following properties passed to it:
+        $(BuildPropertyFile)     - The full path to the settings.props file (i.e. this file).
+        $(Configuration)         - The configuratino for the compilation process.
+        $(Platform)              - The platform for the compilation process.
+        $(ShouldDisplayDebugLog) - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)      - The full version of the nBuildKit library that is executing the build.
+        $(DirMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirMsBuildShared)      - The full path to the directory that contains the nBuildKit shared scripts.
+        $(DirMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
+
+        Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
     <ItemGroup>
         <!--
@@ -659,37 +870,52 @@
         **** UNIT TESTS ****
     -->
     <PropertyGroup>
-        <!-- The assembly name prefix for the assemblies containing the unit tests. Allows build templates. -->
+        <!--
+            The assembly name prefix for the assemblies containing the unit tests. Allows build templates,
+            e.g. '${CompanyName}.${ProductName}.Tests'.
+        -->
         <!-- <UnitTestAssemblyNamePrefix Condition=" '$(UnitTestAssemblyNamePrefix)' == '' " >Test.Unit</UnitTestAssemblyNamePrefix> -->
 
-        <!-- The MsTest report file. Allows build templates. -->
+        <!--
+            The full path to the location where the MsTest report file should be created. This path can include build templates,
+            e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\mytest.trx.
+        -->
         <!-- <FileReportMsTest Condition=" '$(FileReportMsTest)' == '' ">$(DirBuildLogs)\mstest.trx</FileReportMsTest> -->
 
-        <!-- The XML report file that is generated by OpenCover upon completion of the unit test execution. Allows build templates. -->
+        <!--
+            The full path to the XML report file that is generated by OpenCover upon completion of the unit test execution.
+            Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\opencover.xml.
+        -->
         <!-- <FileReportOpenCoverXml Condition=" '$(FileReportOpenCoverXml)' == '' ">$(DirBuildLogs)\opencover.xml</FileReportOpenCoverXml> -->
 
-        <!-- The CSV report file that is generated by OpenCover upon completion of the unit test execution. Allows build templates. -->
+        <!--
+            The full path to the CSV report file that is generated by OpenCover upon completion of the unit test execution.
+            Allows build templates. , e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\coverage.csv.
+        -->
         <!-- <FileReportOpenCoverCsv Condition=" '$(FileReportOpenCoverCsv)' == '' ">$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv> -->
     </PropertyGroup>
     <ItemGroup>
-        <!-- The files that contain the unit test cases. Allows build templates. -->
+        <!--
+            The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
+            e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
+        -->
         <!-- <UnitTestAssemblies Include="$(DirBuildBinPlatformConfig)\**\$(UnitTestAssemblyNamePrefix)*.dll" /> -->
 
-        <!-- Defines the attributes that indicate code that should be ignored by OpenCover -->
         <!--
+            The ItemGroup items that define the attributes that indicate code that should be ignored by OpenCover.
+        -->
         <OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
         <OpenCoverIgnoreAttributes Include="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
-        -->
 
-        <!-- Defines the filters used by OpenCover. -->
-        <!-- NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text -->
         <!--
+            The ItemGroup items that define the filters used by OpenCover.
+            NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text.
+        -->
         <OpenCoverFilters Include="+[$(ProductNamespace)]%2A" />
         <OpenCoverFilters Include="+[$(ProductNamespace).%2A]%2A" />
         <OpenCoverFilters Include="-[%2A$(UnitTestAssemblyNamePrefix)%2A]%2A" />
         <OpenCoverFilters Include="-[NUnit]%2A" />
         <OpenCoverFilters Include="-[NUnit.%2A]%2A" />
-        -->
     </ItemGroup>
 
 
@@ -697,16 +923,18 @@
         **** BINARY ANALYSIS - MOMA ****
     -->
     <PropertyGroup>
-        <!-- The HTML report that is generated by MoMA. Allows build templates. -->
+        <!--
+            The HTML report that is generated by MoMA. Allows build templates, e.g. $(DirReportMoma)\${ProductName}_moma.html.
+        -->
         <!-- <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma> -->
     </PropertyGroup>
     <ItemGroup>
-        <!-- The locations of the files that should be analyzed by MoMA (Mono Migration Analyzer).  -->
         <!--
+            The locations of the files that should be analyzed by MoMA (Mono Migration Analyzer).
+        -->
         <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
                         Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
         <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
-        -->
     </ItemGroup>
 
 
@@ -714,33 +942,47 @@
         **** BINARY ANALYSIS - FXCOP ****
     -->
     <PropertyGroup>
-        <!-- The full path to the FxCop project file. -->
+        <!--
+            The full path to the FxCop project file.
+        -->
         <!-- <FileProjectFxCop Condition=" '$(FileProjectFxCop)' == '' ">UNDEFINED</FileProjectFxCop> -->
 
-        <!-- The full path to the FxCop output report. Allows build templates. -->
+        <!--
+            The full path to the FxCop output report. Allows build templates, e.g. $(DirBuildLogs)\${ProductName}_fxcop.xml.
+        -->
         <!-- <FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop> -->
 
-        <!-- The full path to the rules file that indicates which rules FxCop should use to analyse the binaries. -->
+        <!--
+            The full path to the rules file that indicates which rules FxCop should use to analyse the binaries.
+        -->
         <!-- <FileFxCopRuleSet Condition=" '$(FileFxCopRuleSet)' == '' ">$(DirWorkspace)\fxcop.rules</FileFxCopRuleSet> -->
 
-        <!-- The full path to the XML file that contains the custom dictionary for FxCop. -->
+        <!--
+            The full path to the XML file that contains the custom dictionary for FxCop.
+        -->
         <!-- <FxCopCustomDictionary Condition=" '$(FxCopCustomDictionary)' == '' ">$(DirWorkspace)\customdictionary.xml</FxCopCustomDictionary> -->
 
-        <!-- The culture that FxCop should use for the spelling rules. -->
+        <!--
+            The culture that FxCop should use for the spelling rules.
+        -->
         <!-- <FxCopCulture Condition=" 'FxCopCulture' == '' ">en-US</FxCopCulture> -->
 
-        <!-- A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings -->
+        <!--
+            A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
+            errors are marked as errors then any analysis error will stop the build.
+        -->
         <!-- <FxCopWarningsAsErrors Condition=" '$(FxCopWarningsAsErrors)' == '' ">false</FxCopWarningsAsErrors> -->
     </PropertyGroup>
     <ItemGroup>
-        <!-- The locations of the files that should be analyzed by FxCop. -->
+        <!--
+            The locations of the files that should be analyzed by FxCop.
+        -->
         <!--
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
                     Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
         -->
-    </ItemGroup>
-    <ItemGroup>
+
         <!--
             The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
             use as reference assemblies.
@@ -749,8 +991,7 @@
         <FxCopReferenceFiles Include=""
                              Exclude="" />
         -->
-    </ItemGroup>
-    <ItemGroup>
+
         <!--
             The directory locations that contain the assemblies (not including the .NET framework assemblies) which
             FxCop should use as reference assemblies
@@ -766,7 +1007,10 @@
         **** BUILD API DOCUMENATION - SANDCASTLE ****
     -->
     <PropertyGroup>
-        <!-- The full path to the template file that is used to provide the project information for sandcastle -->
+        <!--
+            The full path to the template file that is used to provide the project information for sandcastle. Defaults to
+            the template file included with nBuildKit.
+        -->
         <!-- <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle> -->
     </PropertyGroup>
 
@@ -775,12 +1019,12 @@
         **** PACK - NUGET ****
     -->
     <!--
-        The item group defining the location and contents of the NuGet packages that are generated during the build
+        The item group defining the location and contents of the NuGet packages that are generated during the build.
 
-        The IncludedDependencies and the ExcludedDependencies are actually lists of packages.config files that
+        The IncludedDependencies and the ExcludedDependencies are lists of packages.config files that
         should be included (or excluded) in the list of dependencies. Each entry is separated by a semi-colon(;).
 
-        Allows build templates.
+        All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
     -->
     <ItemGroup>
         <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.nuspec">
@@ -796,7 +1040,8 @@
 
     <!--
         The item group defining the (partial) names of the NuGet packages that only contain design time element and should
-        thus not be considered dependencies for the generated NuGet packages.
+        thus not be considered dependencies for the generated NuGet packages, even if they are included in the list
+        of dependencies that should be included.
     -->
     <ItemGroup>
         <!--
@@ -815,7 +1060,7 @@
         The IncludedFiles and the ExcludedFiles are actually lists of packages.config files that
         should be included (or excluded) in the list of dependencies. Each entry is separated by a semi-colon(;).
 
-        Allows build templates.
+        All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
         <ArchivePackageSpecs Include="$(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip">
@@ -863,14 +1108,27 @@
         **** DEPLOY STEPS ****
     -->
     <!--
-        Define the steps taken during the deploy process. Available steps and their sub-steps are provided by the following properties:
-        $(DeployStepsTagVcs)              - Tags the current commit with the version number
+        The following ItemGroup defines which steps are taken during the deploy process. The order of the items in the item group
+        determines in which order the deploy steps are executed.
+
+        The following deploy steps are by default provided through the given properties:
+        $(DeployStepsTagVcs)              - Tags the current commit with the version number. Currentlyl supported version control systems are TFS and GIT.
         $(DeployStepsPushToNuget)         - Pushes one or more artifacts to a NuGet feed
         $(DeployStepsPushToDirectory)     - Pushes one or more artifacts to a directory
         $(DeployStepsPushToSymbolServer)  - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
         $(DeployStepsPushToGitHubRelease) - Pushes zero or more files to a GitHub release
 
-        The order of the steps defines the order in which those steps are executed.
+        Additional deploy steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Each script has the following properties passed to it:
+        $(BuildPropertyFile)              - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog)          - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)               - The full version of the nBuildKit library that is executing the build.
+        $(DirMsBuildExtensions)           - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirMsBuildShared)               - The full path to the directory that contains the nBuildKit shared scripts.
+        $(DirMsBuildTemplates)            - The full path to the directory that contains the nBuildKit templates.
     -->
     <ItemGroup>
         <!--
@@ -909,17 +1167,44 @@
         </DeployStepsToExecute>
     </ItemGroup>
 
+    <!--
+        Define the scripts that should be executed when any one of the deploy steps fails.
+
+        Steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Each script has the following properties passed to it:
+        $(BuildPropertyFile)     - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog) - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)      - The full version of the nBuildKit library that is executing the build.
+        $(DirMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirMsBuildShared)      - The full path to the directory that contains the nBuildKit shared scripts.
+        $(DirMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
+
+        Additionally any properties defined by the 'Properties' section are also pushed up.
+    -->
+    <ItemGroup>
+        <!--
+        <DeployFailureStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
 
     <!--
         **** PUSHTO - DIRECTORY / FILESERVER ****
     -->
     <!--
-        The item group defining the files that should be pushed to a given deployment directory.
+        The ItemGroup defining the files that should be pushed to a given deployment directory.
 
-        The IncludedFiles and the ExcludedFiles are actually lists of files that
+        The IncludedFiles and the ExcludedFiles are lists of files that
         should be included (or excluded) in the list of files to deploy. Each entry is separated by a semi-colon(;).
 
-        The PushToDirectorySpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates.
+        The PushToDirectorySpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates,
+        e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
     -->
     <ItemGroup>
         <!--
@@ -938,8 +1223,8 @@
         **** PUSHTO - NUGET ****
     -->
     <!--
-        The item group defining which packages should be pushed up to the NuGet package source.
-        Allows build templates.
+        The ItemGroup defining which packages should be pushed up to the NuGet package source.
+        Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.nupkg.
     -->
     <ItemGroup>
         <NuGetPackagesToPush Include="$(DirBuildDeploy)\*.nupkg"
@@ -951,8 +1236,8 @@
         **** PUSHTO - SYMBOL SERVER ****
     -->
     <!--
-        The item group defining which symbol packages should be pushed up to the symbol server.
-        Allows build templates.
+        The ItemGroup defining which symbol packages should be pushed up to the symbol server.
+        Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.symbols.nupkg.
     -->
     <ItemGroup>
         <!-- <SymbolPackagesToPush Include="$(DirBuildDeploy)\*.symbols.nupkg" /> -->
@@ -963,7 +1248,8 @@
         **** PUSHTO - GITHUB RELEASE ****
     -->
     <!--
-        The item group defining the files that should be pushed to a GitHub release
+        The ItemGroup defining the files that should be pushed to a GitHub release. All properties
+        except for the Repository allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
     <ItemGroup>
         <PushToGitHubReleaseSpecs Include="${VersionSemantic}">
@@ -991,49 +1277,79 @@
 
     <!-- Overrides for the tools paths -->
     <PropertyGroup>
-        <!-- The full path to the CCM command line executable. Normally expected to be found in the packages directory. -->
+        <!--
+            The full path to the CCM command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalCcmPath Condition=" '$(ToolsExternalCcmPath)' == '' ">UNDEFINED</ToolsExternalCcmPath> -->
 
-        <!-- The full path to the directory that contains the FxCop command line executable -->
+        <!--
+            The full path to the directory that contains the FxCop command line executable
+        -->
         <!-- <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir> -->
 
-        <!-- The full path to the GitHubFlowVersion command line executable. Normally expected to be found in the packages directory. -->
+        <!--
+            The full path to the GitHubFlowVersion command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath> -->
 
-        <!-- The full path to the github-release command line executable. -->
+        <!--
+            The full path to the github-release command line executable.
+        -->
         <ToolsExternalGitHubRelease>$(GitHubReleasePath)\github-release.exe</ToolsExternalGitHubRelease>
 
-        <!-- The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable. -->
+        <!--
+            The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
+        -->
         <!-- <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath> -->
 
-        <!-- The full path to the GitReleaseNotes command line executable. Normally expected to be found in the packages directory. -->
+        <!--
+            The full path to the GitReleaseNotes command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath> -->
 
-        <!-- The full path to the GitVersion command line executable. Normally expected to be found in the packages directory. -->
+        <!--
+            The full path to the GitVersion command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath> -->
 
-        <!-- The full path to the MoMA command line executable. Normally expected to be found in the packages directory. -->
+        <!--
+            The full path to the MoMA command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath> -->
 
-        <!-- The full path to the MsTest command line executable. -->
+        <!--
+            The full path to the MsTest command line executable.
+        -->
         <!-- <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath> -->
 
-        <!-- The full path to the NuGet command line executable. Normally expected to be found via the PATH environment variable. -->
+        <!--
+            The full path to the NuGet command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalNuGetExe Condition=" '$(ToolsExternalNuGetExe)' == '' ">nuget.exe</ToolsExternalNuGetExe> -->
 
-        <!-- The full path to the nUnit command line executable. Normally expected to be found in the packages directory. -->
+        <!--
+            The full path to the nUnit command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalNUnitConsolePath Condition=" '$(ToolsExternalNUnitConsolePath)' == '' ">UNDEFINED</ToolsExternalNUnitConsolePath> -->
 
-        <!-- The full path to the OpenCover command line executable. Normally expected to be found in the packages directory. -->
+        <!--
+            The full path to the OpenCover command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath> -->
 
-        <!-- The full path to the ReportGenerator command line executable. Normally expected to be found in the packages directory. -->
+        <!--
+            The full path to the ReportGenerator command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath> -->
 
-        <!-- The full path to the SourceMonitor command line executable. Normally expected to be found in the packages directory. -->
+        <!--
+            The full path to the SourceMonitor command line executable. If not defined the packages directory is searched.
+        -->
         <!-- <ToolsExternalSourceMonitorPath Condition=" '$(ToolsExternalSourceMonitorPath)' == '' ">UNDEFINED</ToolsExternalSourceMonitorPath> -->
 
-        <!-- The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable. -->
+        <!--
+            The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable.
+        -->
         <!-- <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath> -->
     </PropertyGroup>
 
