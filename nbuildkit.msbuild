@@ -3,9 +3,18 @@
          DefaultTargets="Help"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <!-- Directory structure -->
+        <!-- Directories -->
+        <!--
+            The workspace directory is defined as the directory that contains the 'settings.props' file.
+            Given that the current file has to live in the same directory as the 'settings.props' file that
+            means that the workspace directory is the 'MsBuildProjectDirectory' for the current file.
+        -->
         <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
 
+        <!--
+            Hard-code the paths to the different directories because we're dog-fooding here so we know exactly
+            where all the files are.
+        -->
         <DirMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirMsBuildExtensions>
         <DirMsBuildShared>$(DirWorkspace)\src\msbuild\shared</DirMsBuildShared>
         <DirMsBuildTemplates>$(DirWorkspace)\src\templates</DirMsBuildTemplates>
@@ -13,9 +22,15 @@
         <DirNBuildKit>$(DirMsBuildScripts)\src\msbuild\scripts</DirNBuildKit>
 
         <!-- Files -->
+        <!--
+            The file that contains all the properties for the build and deploy processes.
+        -->
         <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
     </PropertyGroup>
 
+    <!--
+        Display the help text for the current script and then exit.
+    -->
     <Target Name="Help">
         <Message Text="nBuildKit - Build system" />
         <Message Text="Copyright 2013 nBuildKit. Apache License, Version 2.0" />
@@ -27,6 +42,11 @@
         <Message Text="- Help: Displays this text." />
     </Target>
 
+    <!--
+        Invoke the build steps as defined by the 'settings.props' file by invoking the nBuildKit 'build.msbuild'
+        script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
+        be used to execute the build.
+    -->
     <Target Name="Build">
         <MSBuild
             BuildInParallel="False"
@@ -45,7 +65,11 @@
         </MSBuild>
     </Target>
 
-    <Target Name="Deploy">
+    <!--
+        Invoke the deploy steps as defined by the 'settings.props' file by invoking the nBuildKit 'deploy.msbuild'
+        script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
+        be used to execute the deploy.
+    -->    <Target Name="Deploy">
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\deploy.msbuild"
