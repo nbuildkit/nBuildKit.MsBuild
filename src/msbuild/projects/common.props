@@ -55,8 +55,20 @@
         <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(DirNBuildKitMsBuild)</DirMsBuildShared>
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirMsBuildExtensions>
 
-        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirTemplates=$(DirTemplates);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
-        <DefaultFiles>FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;</DefaultFiles>
+        <DefaultPathProperties>
+            DirWorkspace=$(DirWorkspace);
+            DirBuild=$(DirBuild);
+            DirBuildDeploy=$(DirBuildDeploy);
+            DirBuildLogs=$(DirBuildLogs);
+            DirBuildTemp=$(DirBuildTemp);
+            DirPackages=$(DirPackages);
+            DirSrc=$(DirSrc);
+            DirTemplates=$(DirTemplates);
+            DirMsBuildExtensions=$(DirMsBuildExtensions)
+        </DefaultPathProperties>
+        <DefaultFiles>
+            FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;
+        </DefaultFiles>
 
         <!--
             Define the platform but without spaces, e.g. 'Any CPU' is turned into 'AnyCPU' which is necessary because Visual Studio
