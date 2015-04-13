@@ -41,14 +41,10 @@
     <Target Name="_nBuildKit_PushTo_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
         <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the build output is located at:           $(DirBuild)" />
-        <Message Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text=" " />
-
         <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
         <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
         <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
+        <Message Text=" " />
 
         <Message Text="Pushing NuGet packages to:                                         nuget.org"
                  Condition=" '$(NuGetSourceUrl)' == '' OR '$(NuGetSourceUrl)' == 'UNDEFINED' " />
@@ -91,12 +87,7 @@
                  Condition=" '@(NuGetPackagesToPushLocal)' != '' " />
         <Message Text="@(NuGetPackagesToPushLocal)"
                  Condition=" '@(NuGetPackagesToPushLocal)' != '' " />
-        <Message Text="No NuGet packages were specified in the settings file. Using default settings."
-                 Condition=" '@(NuGetPackagesToPushLocal)' == '' " />
 
-        <ItemGroup Condition=" '@(NuGetPackagesToPushLocal)' == '' " >
-            <NuGetPackagesToPushLocal Include="$(DirBuildDeploy)\*.nupkg"/>
-        </ItemGroup>
         <Error Text="There are no files to be pushed to the NuGet feed"
                Condition=" '@(NuGetPackagesToPushLocal)' == '' AND '$(ShouldExecute)' == 'true' "/>
 
