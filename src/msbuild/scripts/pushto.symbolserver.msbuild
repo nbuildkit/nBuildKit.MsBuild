@@ -32,8 +32,8 @@
 
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_SymbolServer_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_SymbolServer_DebugLog">
-        <Message Text="Pushing NuGet symbol packages to the symbol server ..." Condition=" '$(SymbolServerUrl)' != 'UNDEFINED' " />
-        <Error Text="No symbol server path defined!" Condition=" '$(SymbolServerUrl)' == 'UNDEFINED' " />
+        <Message Text="Pushing NuGet symbol packages to the symbol server ..." Condition=" '$(SymbolServerUrl)' == '' AND '$(SymbolServerUrl)' != 'UNDEFINED' " />
+        <Error Text="No symbol server path defined!" Condition=" '$(SymbolServerUrl)' == '' OR '$(SymbolServerUrl)' == 'UNDEFINED' " />
     </Target>
 
     <Target Name="_nBuildKit_PushTo_SymbolServer_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -51,7 +51,7 @@
     </Target>
 
     <Target Name="_nBuildKit_PushTo_SymbolServer_Push"
-            Condition=" '$(SymbolServerUrl)' != 'UNDEFINED' "
+            Condition=" '$(SymbolServerUrl)' != '' AND '$(SymbolServerUrl)' != 'UNDEFINED' "
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <TemplateText Template="@(SymbolPackagesToPush)"
                       Tokens="@(TemplateTokens)"
