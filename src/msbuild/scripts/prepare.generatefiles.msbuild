@@ -20,23 +20,6 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <PropertyGroup>
-        <!-- Build flags -->
-        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
-        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-
-        <!-- Directories -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-
-        <!-- nBuildKit directories -->
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
-
-        <!-- Files -->
-        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
-        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
-    </PropertyGroup>
-
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
@@ -50,21 +33,23 @@
         <CallTarget Targets="_nBuildKit_Prepare_GenerateFiles_GenerateFiles" />
     </Target>
 
-    <Target Name="_nBuildKit_Prepare_GenerateFiles_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Prepare_GenerateFiles_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
-        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
         <Message Text=" " />
 
-        <Message Text="The semantic version file is located at: $(FileSemanticVersion)" />
-        <Message Text="The VCS info file is located at:         $(FileVcsInfo)" />
+        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
+        <Message Text="The VCS info file is located at:                                   $(FileVcsInfo)" />
         <Message Text=" " />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Prepare_GenerateFiles_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DebugLog">
+    <Target Name="_nBuildKit_Prepare_GenerateFiles_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DebugLog">
         <Message Text="Getting version ..." />
     </Target>
 
