@@ -496,16 +496,16 @@
 
             - When using YouTrack
               IssueTrackerPassword - The password for the issue tracker user
-
-
-            The following properties can be defined on the command line or via the current script:
-            - Always
-              GitHubUserName - The user name of the user who owns the GitHub repository
-
-            - When using YouTrack
-              IssueTrackerUserName - The user name for YouTrack
-              YouTrackServer - The URL of the YouTrack server, e.g. http://myuser.myjetbrains.com/youtrack
         -->
+
+        <!-- The user name of the user who owns the GitHub repository -->
+        <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
+
+        <!--- The URL of the YouTrack server, e.g. http://myuser.myjetbrains.com/youtrack -->
+        <YouTrackServer Condition=" '$(YouTrackServer)' == '' ">UNDEFINED</YouTrackServer>
+
+        <!-- The user name for YouTrack -->
+        <IssueTrackerUserName Condition=" '$(IssueTrackerUserName)' == '' ">UNDEFINED</IssueTrackerUserName>
 
         <!-- The project ID that is used to identify the product in the issue tracker -->
         <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId>
@@ -1267,7 +1267,7 @@
         <!--
             The full path to the github-release command line executable.
         -->
-        <ToolsExternalGitHubRelease Condition=" '$(ToolsExternalGitHubRelease)' == '' ">github-release.exe</ToolsExternalGitHubRelease>
+        <ToolsExternalGitHubReleasePath Condition=" '$(ToolsExternalGitHubReleasePath)' == '' ">github-release.exe</ToolsExternalGitHubReleasePath>
 
         <!--
             The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
@@ -1300,7 +1300,7 @@
         <!--
             The full path to the NuGet command line executable. If not defined the packages directory is searched.
         -->
-        <ToolsExternalNuGetExe Condition=" '$(ToolsExternalNuGetExe)' == '' ">nuget.exe</ToolsExternalNuGetExe>
+        <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">nuget.exe</ToolsExternalNuGetPath>
 
         <!--
             The full path to the nUnit command line executable. If not defined the packages directory is searched.

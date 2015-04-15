@@ -38,7 +38,7 @@
         <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
         <Message Text=" " />
 
-        <Message Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetExe)" />
+        <Message Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)" />
     </Target>
 
     <!-- Display info -->
@@ -51,7 +51,7 @@
     <Target Name="_nBuildKit_Prepare_NuGet_Restore_Packages"
             DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo">
         <Error Text="No NuGet executable defined. Will not be able to restore the packages."
-               Condition=" '$(ToolsExternalNuGetExe)' == '' AND '$(ShouldExecute)' == 'true' " />
+               Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
             <NuGetPackageFiles Include="$(DirWorkspace)\**\packages.config"
@@ -60,7 +60,7 @@
 
         <Message Text="No NuGet package configuration files found to restore packages from."
                  Condition=" '@(NuGetPackageFiles)' == '' " />
-        <NuGetRestore NuGetPath="$(ToolsExternalNuGetExe)"
+        <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageFile="%(NuGetPackageFiles.FullPath)"
                       PackageDirectory="$(DirPackages)"
                       Condition=" '@(NuGetPackageFiles)' != '' AND '$(ShouldExecute)' == 'true' "/>

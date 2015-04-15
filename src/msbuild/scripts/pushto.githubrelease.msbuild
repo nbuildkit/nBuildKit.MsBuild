@@ -54,7 +54,7 @@
         <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
         <Message Text=" " />
 
-        <Message Text="GitHub-Release command line executable is located at:              $(ToolsExternalGitHubRelease)" />
+        <Message Text="GitHub-Release command line executable is located at:              $(ToolsExternalGitHubReleasePath)" />
         <Message Text=" " />
     </Target>
 
@@ -69,7 +69,7 @@
             Condition=" '@(PushToGitHubReleaseSpecs)' != ''"
             Outputs="%(PushToGitHubReleaseSpecs.Identity)">
         <Error Text="No GitHub-Release executable defined. Will not be able to push a release to GitHub."
-               Condition=" ('$(ToolsExternalGitHubRelease)' == '' OR '$(ToolsExternalGitHubRelease)' == 'UNDEFINED') AND '$(ShouldExecute)' == 'true' " />
+               Condition=" ('$(ToolsExternalGitHubReleasePath)' == '' OR '$(ToolsExternalGitHubReleasePath)' == 'UNDEFINED') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="No GitHub user name specified. Will not be able to push a release to GitHub."
                Condition=" ('$(GitHubUserName)' == '' OR '$(GitHubUserName)' == 'UNDEFINED' ) AND '$(ShouldExecute)' == 'true' " />
 
@@ -131,7 +131,7 @@
         <Message Text="Tag:         $(VersionSemantic)" />
         <Message Text="Name:        $(GitHubReleaseName)" />
         <Message Text="Description: $(GitHubReleaseDescription)" />
-        <GitHubReleaseCreate GitHubReleasePath="$(ToolsExternalGitHubRelease)"
+        <GitHubReleaseCreate GitHubReleasePath="$(ToolsExternalGitHubReleasePath)"
                              LocalPath="$(DirWorkspace)"
                              UserName="$(GitHubUserName)"
                              Repository="$(GitHubReleaseRepository)"
@@ -143,7 +143,7 @@
         <!-- Upload the files -->
         <Message Text="Uploading files to release $(GitHubReleaseName) " />
         <Message Text="%(GitHubReleaseFiles.FullPath)" />
-        <GitHubReleaseUpload GitHubReleasePath="$(ToolsExternalGitHubRelease)"
+        <GitHubReleaseUpload GitHubReleasePath="$(ToolsExternalGitHubReleasePath)"
                              LocalPath="$(DirWorkspace)"
                              UserName="$(GitHubUserName)"
                              Repository="$(GitHubReleaseRepository)"
