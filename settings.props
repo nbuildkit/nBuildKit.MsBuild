@@ -116,17 +116,29 @@
         <!-- The user name of the user who owns the repository on GitHub -->
         <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">pvandervelde</GitHubUserName>
 
-        <!-- 
+        <!--
             The github repository that contains the source code for the current product. Used when getting the release notes
             from the github issues. The correct format is <USERNAME>/<REPOSITORYNAME>
         -->
         <GitHubRepositoryName Condition=" '$(GitHubRepositoryName)' == '' ">$(GitHubUserName)\nBuildKit</GitHubRepositoryName>
 
-        <!-- 
+        <!--
             The full URL to the GIT repository. Can include the '%GitHubToken%' environment variable for authenticated
             connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
          -->
         <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">https://%GitHubToken%:@github.com/$(GitHubUserName)/nBuildKit.git</GitRemoteRepository>
+
+        <!--
+            A flag indicating whether or not the workspace is a GIT workspace or not. If no value is provided then
+            any workspace that contains a .git folder will be assumed to be a GIT workspace.
+        -->
+        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
+        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
+
+        <!--
+            A flag that indicates whether or not the workspace is a TFS workspace. Defaults to false.
+        -->
+        <IsTfsWorkspace Condition=" '$(IsTfsWorkspace)' == '' ">false</IsTfsWorkspace>
     </PropertyGroup>
 
 
@@ -147,27 +159,25 @@
             A flag that indicates whether or not the workspace should be cleaned before the build is started. If set to
             true then the 'DirBuild' directory will be removed as well as all known generated files.
         -->
-        <!--<ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>-->
+        <ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>
 
         <!--
             Indicates that the execution of the build script runs through the steps but does not actually execute them.
         -->
-        <!-- <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute> -->
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
     </PropertyGroup>
 
     <!-- Overrides for the build configuration -->
     <PropertyGroup>
         <!-- The build configuration (debug / release / ...) that will be used to run all the unit tests and the static verification on -->
-        <!-- <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration> -->
+        <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
 
         <!-- The build configuration (debug / release / ..) that will be used to create the binaries that should be deployed -->
-        <!-- <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">deploy</ProductionConfiguration> -->
+        <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">deploy</ProductionConfiguration>
 
         <!-- The platform for which the binaries will be build -->
-        <!--
         <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
         <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
-        -->
     </PropertyGroup>
 
 
@@ -181,44 +191,44 @@
         -->
 
         <!-- The directory that will contain all the files generated during the build process -->
-        <!-- <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild> -->
+        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
 
         <!--
             The directory that will contain all the binaries generated during the build process.
             Note that there may be configuration and platform specific sub-directories.
         -->
-        <!-- <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuild> -->
+        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
 
         <!--
             The directory where the current binaries are placed after being generated.
             Note that $(Platform) and $(Configuration) do not have to be defined in this settings file. They may be provided
             externally as long as they are provided before the settings file is loaded!
         -->
-        <!-- <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig> -->
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
 
         <!-- The directory that will contain all the generated artifacts during the build process -->
-        <!-- <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy> -->
+        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
 
         <!-- The directory that will contain all the generated build logs during the build process -->
-        <!-- <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs> -->
+        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
 
         <!-- The directory that will contain the reports generated by OpenCover and ReportGenerator describing the coverage of the unit tests. -->
-        <!-- <DirReportGeneratorOutput Condition=" '$(DirReportGeneratorOutput)' == '' ">$(DirBuildLogs)\coverage</DirReportGeneratorOutput> -->
+        <DirReportGeneratorOutput Condition=" '$(DirReportGeneratorOutput)' == '' ">$(DirBuildLogs)\coverage</DirReportGeneratorOutput>
 
         <!-- The directory that contains the report files generated by MoMA -->
-        <!-- <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma> -->
+        <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma>
 
         <!-- The directory that will contain all the temporary files needed during the build process -->
-        <!-- <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp> -->
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
 
         <!-- The directory that contains all the NuGet packages for the project -->
-        <!-- <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages> -->
+        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
 
         <!-- The directory that contains the source files for the project -->
-        <!-- <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc> -->
+        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
 
         <!-- The directory that contains the template files for the project -->
-        <!-- <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates> -->
+        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
     </PropertyGroup>
 
 
@@ -362,10 +372,14 @@
 
         <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
             <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
             </Properties>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPackZip)">
             <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
             </Properties>
         </BuildStepsToExecute>
     </ItemGroup>
@@ -421,12 +435,12 @@
                 </PropertyGroup>
             </Project>
         -->
-        <!-- <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild> -->
+        <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild>
 
         <!--
             The full path to the file that is used to store the version information during the build.
         -->
-        <!-- <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion> -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
 
         <!--
             When using GitVersion with a git repository that needs authentication the following properties
@@ -435,9 +449,14 @@
               GitPassword - The user token that provides access to GitHub
 
             The following properties can be defined on the command line or via the current script:
-              GitUserName - The user name of the user who owns the GitHub repository
+              GitUserName - The user name of the user who owns the Git repository
+
+            Note that if no authentication is required, e.g. the repository allows anonymous access or
+            the authentication is done through the user account, i.e. via Active Directory, then
+            the user name should be left empty.
         -->
-        <!-- <GitUserName Condition=" '$(GitUserName)' == '' ">UNDEFINED</GitUserName> -->
+        <GitUserName Condition=" '$(GitUserName)' == '' AND '$(GitHubUserName)' == 'UNDEFINED' "></GitUserName>
+        <GitUserName Condition=" '$(GitUserName)' == '' AND '$(GitHubUserName)' != 'UNDEFINED' ">$(GitHubUserName)</GitUserName>
 
         <!--
             The full directory path to the script that handles custom generation of the version numbers.
@@ -466,10 +485,10 @@
     -->
     <PropertyGroup>
         <!-- The full path to the file that is used to store the release notes for the current release during the build. -->
-        <!-- <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort> -->
+        <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
 
         <!-- The full path to the file that is used to store the release notes for all the releases during the build. -->
-        <!-- <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull> -->
+        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
 
         <!--
             The following properties have to be defined on via an environment variable (either local to the process that
@@ -491,10 +510,10 @@
         -->
 
         <!-- The project ID that is used to identify the product in the issue tracker -->
-        <!-- <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId> -->
+        <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId>
 
         <!-- The filter for getting issues from YouTrack -->
-        <!-- <IssueFilter Condition=" '$(IssueFilter)' == '' ">UNDEFINED</IssueFilter> -->
+        <IssueFilter Condition=" '$(IssueFilter)' == '' ">UNDEFINED</IssueFilter>
     </PropertyGroup>
 
 
@@ -503,7 +522,7 @@
     -->
     <PropertyGroup>
         <!-- The full path to the file that contains the information about the current VCS workspace. -->
-        <!-- <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo> -->
+        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
     </PropertyGroup>
 
 
@@ -585,13 +604,13 @@
             The full path to the template file that is used to provide the project information for CCM. Defaults
             to the template file included with nBuildKit.
         -->
-        <!-- <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirMsBuildTemplates)\ccm.xml.in</FileTemplateCcm> -->
+        <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirMsBuildTemplates)\ccm.xml.in</FileTemplateCcm>
 
         <!--
             The full path to the report file generated by CCM. Allows build templates. Allows build templates,
             e.g. $(DirBuildLogs)\${ProductName}_ccm.xml.
         -->
-        <!-- <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm> -->
+        <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm>
     </PropertyGroup>
 
 
@@ -603,13 +622,13 @@
             The full path to the template file that is used to provide the project information for SourceMonitor. Defaults
             to the template file included with nBuildKit.
         -->
-        <!-- <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirMsBuildTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor> -->
+        <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirMsBuildTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor>
 
         <!--
             The full path to the report file generated by SourceMonitor. Allows build templates. Allows build templates,
             e.g. $(DirBuildLogs)\${ProductName}_sourcemonitor.xml
         -->
-        <!-- <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor> -->
+        <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor>
     </PropertyGroup>
 
 
@@ -621,7 +640,6 @@
         The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
     <ItemGroup>
-        <!--
         <SolutionsToBuild Include="$(DirSrc)\myproject.sln">
             <Configuration>$(TestConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
@@ -634,7 +652,6 @@
             <Targets>Rebuild</Targets>
             <Properties></Properties>
         </SolutionsToBuild>
-        -->
     </ItemGroup>
 
     <PropertyGroup>
@@ -776,7 +793,6 @@
         Debug configuration
     -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <!--
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
@@ -817,26 +833,27 @@
         can be added if required but it has no influence on the project list.
     -->
     <ItemGroup>
-        <!--
         <InternalsVisibleTo Include="MyTestProject">
             <Projects>
-                MyProject
+                MyProject1;
+                MyProject2;
             </Projects>
             <KeyFile>$(MyKeyFileReference)</KeyFile>
         </InternalsVisibleTo>
         <InternalsVisibleTo Include="SomeExternalAssembly">
             <Projects>
-                MyProject
+                MyProject1;
+                MyProject2;
             </Projects>
             <AssemblyFromPackage>SomeExternalAssembly.dll</AssemblyFromPackage>
         </InternalsVisibleTo>
         <InternalsVisibleTo Include="SomeOtherExternalAssemblyThatDoesNotExistOnDisk">
             <Projects>
-                MyProject
+                MyProject1;
+                MyProject2;
             </Projects>
             <PublicKey>$(TheFullPublicKeyForTheExternalAssemblyThatDoesNotExistOnDisk)</PublicKey>
         </InternalsVisibleTo>
-        -->
     </ItemGroup>
 
     <!--
@@ -874,32 +891,32 @@
             The assembly name prefix for the assemblies containing the unit tests. Allows build templates,
             e.g. '${CompanyName}.${ProductName}.Tests'.
         -->
-        <!-- <UnitTestAssemblyNamePrefix Condition=" '$(UnitTestAssemblyNamePrefix)' == '' " >Test.Unit</UnitTestAssemblyNamePrefix> -->
+        <UnitTestAssemblyNamePrefix Condition=" '$(UnitTestAssemblyNamePrefix)' == '' " >Test.Unit</UnitTestAssemblyNamePrefix>
 
         <!--
             The full path to the location where the MsTest report file should be created. This path can include build templates,
             e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\mytest.trx.
         -->
-        <!-- <FileReportMsTest Condition=" '$(FileReportMsTest)' == '' ">$(DirBuildLogs)\mstest.trx</FileReportMsTest> -->
+        <FileReportMsTest Condition=" '$(FileReportMsTest)' == '' ">$(DirBuildLogs)\mstest.trx</FileReportMsTest>
 
         <!--
             The full path to the XML report file that is generated by OpenCover upon completion of the unit test execution.
             Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\opencover.xml.
         -->
-        <!-- <FileReportOpenCoverXml Condition=" '$(FileReportOpenCoverXml)' == '' ">$(DirBuildLogs)\opencover.xml</FileReportOpenCoverXml> -->
+        <FileReportOpenCoverXml Condition=" '$(FileReportOpenCoverXml)' == '' ">$(DirBuildLogs)\opencover.xml</FileReportOpenCoverXml>
 
         <!--
             The full path to the CSV report file that is generated by OpenCover upon completion of the unit test execution.
             Allows build templates. , e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\coverage.csv.
         -->
-        <!-- <FileReportOpenCoverCsv Condition=" '$(FileReportOpenCoverCsv)' == '' ">$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv> -->
+        <FileReportOpenCoverCsv Condition=" '$(FileReportOpenCoverCsv)' == '' ">$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv>
     </PropertyGroup>
     <ItemGroup>
         <!--
             The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
             e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
         -->
-        <!-- <UnitTestAssemblies Include="$(DirBuildBinPlatformConfig)\**\$(UnitTestAssemblyNamePrefix)*.dll" /> -->
+        <UnitTestAssemblies Include="$(DirBuildBinPlatformConfig)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
 
         <!--
             The ItemGroup items that define the attributes that indicate code that should be ignored by OpenCover.
@@ -926,7 +943,7 @@
         <!--
             The HTML report that is generated by MoMA. Allows build templates, e.g. $(DirReportMoma)\${ProductName}_moma.html.
         -->
-        <!-- <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma> -->
+        <FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma>
     </PropertyGroup>
     <ItemGroup>
         <!--
@@ -945,43 +962,41 @@
         <!--
             The full path to the FxCop project file.
         -->
-        <!-- <FileProjectFxCop Condition=" '$(FileProjectFxCop)' == '' ">UNDEFINED</FileProjectFxCop> -->
+        <FileProjectFxCop Condition=" '$(FileProjectFxCop)' == '' ">UNDEFINED</FileProjectFxCop>
 
         <!--
             The full path to the FxCop output report. Allows build templates, e.g. $(DirBuildLogs)\${ProductName}_fxcop.xml.
         -->
-        <!-- <FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop> -->
+        <FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop>
 
         <!--
             The full path to the rules file that indicates which rules FxCop should use to analyse the binaries.
         -->
-        <!-- <FileFxCopRuleSet Condition=" '$(FileFxCopRuleSet)' == '' ">$(DirWorkspace)\fxcop.rules</FileFxCopRuleSet> -->
+        <FileFxCopRuleSet Condition=" '$(FileFxCopRuleSet)' == '' ">$(DirSrc)\codeanalysis.base.ruleset</FileFxCopRuleSet>
 
         <!--
             The full path to the XML file that contains the custom dictionary for FxCop.
         -->
-        <!-- <FxCopCustomDictionary Condition=" '$(FxCopCustomDictionary)' == '' ">$(DirWorkspace)\customdictionary.xml</FxCopCustomDictionary> -->
+        <FxCopCustomDictionary Condition=" '$(FxCopCustomDictionary)' == '' ">$(DirWorkspace)\customdictionary.xml</FxCopCustomDictionary>
 
         <!--
             The culture that FxCop should use for the spelling rules.
         -->
-        <!-- <FxCopCulture Condition=" 'FxCopCulture' == '' ">en-US</FxCopCulture> -->
+        <FxCopCulture Condition=" 'FxCopCulture' == '' ">$(CodeAnalysisCulture)</FxCopCulture>
 
         <!--
             A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
             errors are marked as errors then any analysis error will stop the build.
         -->
-        <!-- <FxCopWarningsAsErrors Condition=" '$(FxCopWarningsAsErrors)' == '' ">false</FxCopWarningsAsErrors> -->
+        <FxCopWarningsAsErrors Condition=" '$(FxCopWarningsAsErrors)' == '' ">false</FxCopWarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
         <!--
             The locations of the files that should be analyzed by FxCop.
         -->
-        <!--
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
                     Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
-        -->
 
         <!--
             The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
@@ -1011,7 +1026,7 @@
             The full path to the template file that is used to provide the project information for sandcastle. Defaults to
             the template file included with nBuildKit.
         -->
-        <!-- <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle> -->
+        <FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirTemplates)\sandcastle.shfbproj.in</FileTemplateSandcastle>
     </PropertyGroup>
 
 
@@ -1097,10 +1112,10 @@
         -->
 
         <!-- The URL to which all NuGet packages should be pushed. By default it pushes to nuget.org -->
-        <!-- <NuGetSourceUrl Condition=" '$(NuGetSourceUrl)' == '' "></NuGetSourceUrl> -->
+        <NuGetSourceUrl Condition=" '$(NuGetSourceUrl)' == '' ">UNDEFINED</NuGetSourceUrl>
 
         <!-- The URL / UNC path to which all the symbol packages should be pushed. -->
-        <!-- <SymbolServerUrl Condition=" '$(SymbolServerUrl)' == '' "></SymbolServerUrl> -->
+        <SymbolServerUrl Condition=" '$(SymbolServerUrl)' == '' ">UNDEFINED</SymbolServerUrl>
     </PropertyGroup>
 
 
@@ -1207,7 +1222,6 @@
         e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
     -->
     <ItemGroup>
-        <!--
         <PushToDirectorySpecs Include="\\MyServer\${ProductName}\${VersionSemantic}">
             <IncludedFiles>
                 $(DirSrc)\Nuclei.Fusion\packages.config
@@ -1215,7 +1229,6 @@
             <ExcludedFiles>
             </ExcludedFiles>
         </PushToDirectorySpecs>
-        -->
     </ItemGroup>
 
 
@@ -1240,7 +1253,7 @@
         Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.symbols.nupkg.
     -->
     <ItemGroup>
-        <!-- <SymbolPackagesToPush Include="$(DirBuildDeploy)\*.symbols.nupkg" /> -->
+        <SymbolPackagesToPush Include="$(DirBuildDeploy)\*.symbols.nupkg" />
     </ItemGroup>
 
 
@@ -1280,77 +1293,80 @@
         <!--
             The full path to the CCM command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalCcmPath Condition=" '$(ToolsExternalCcmPath)' == '' ">UNDEFINED</ToolsExternalCcmPath> -->
+        <ToolsExternalCcmPath Condition=" '$(ToolsExternalCcmPath)' == '' ">UNDEFINED</ToolsExternalCcmPath>
 
         <!--
             The full path to the directory that contains the FxCop command line executable
         -->
-        <!-- <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' "></ToolsExternalFxCopDir> -->
+        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir>
 
         <!--
             The full path to the GitHubFlowVersion command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath> -->
+        <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath>
 
         <!--
             The full path to the github-release command line executable.
         -->
-        <ToolsExternalGitHubRelease>$(GitHubReleasePath)\github-release.exe</ToolsExternalGitHubRelease>
+        <ToolsExternalGitHubRelease Condition=" '$(ToolsExternalGitHubRelease)' == '' ">github-release.exe</ToolsExternalGitHubRelease>
 
         <!--
             The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
         -->
-        <!-- <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath> -->
+        <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>
 
         <!--
             The full path to the GitReleaseNotes command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath> -->
+        <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath>
 
         <!--
             The full path to the GitVersion command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath> -->
+        <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath>
 
         <!--
             The full path to the MoMA command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath> -->
+        <ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath>
 
         <!--
             The full path to the MsTest command line executable.
         -->
-        <!-- <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath> -->
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">UNDEFINED</ToolsExternalMsTestPath>
 
         <!--
             The full path to the NuGet command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalNuGetExe Condition=" '$(ToolsExternalNuGetExe)' == '' ">nuget.exe</ToolsExternalNuGetExe> -->
+        <ToolsExternalNuGetExe Condition=" '$(ToolsExternalNuGetExe)' == '' ">nuget.exe</ToolsExternalNuGetExe>
 
         <!--
             The full path to the nUnit command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalNUnitConsolePath Condition=" '$(ToolsExternalNUnitConsolePath)' == '' ">UNDEFINED</ToolsExternalNUnitConsolePath> -->
+        <ToolsExternalNUnitConsolePath Condition=" '$(ToolsExternalNUnitConsolePath)' == '' ">UNDEFINED</ToolsExternalNUnitConsolePath>
 
         <!--
             The full path to the OpenCover command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath> -->
+        <ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath>
 
         <!--
             The full path to the ReportGenerator command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath> -->
+        <ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath>
 
         <!--
             The full path to the SourceMonitor command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalSourceMonitorPath Condition=" '$(ToolsExternalSourceMonitorPath)' == '' ">UNDEFINED</ToolsExternalSourceMonitorPath> -->
+        <ToolsExternalSourceMonitorPath Condition=" '$(ToolsExternalSourceMonitorPath)' == '' ">UNDEFINED</ToolsExternalSourceMonitorPath>
 
         <!--
             The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable.
         -->
-        <!-- <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath> -->
+        <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath>
     </PropertyGroup>
 
 
