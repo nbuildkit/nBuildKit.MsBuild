@@ -20,28 +20,6 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <PropertyGroup>
-        <!-- Build flags -->
-        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
-        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-
-        <!-- Directories -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-
-        <!-- nBuildKit directories -->
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
-
-        <!-- Files -->
-        <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild>
-        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
-
-        <!-- External Tools -->
-        <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath>
-        <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath>
-    </PropertyGroup>
-
     <Import Project="$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild"
@@ -66,26 +44,30 @@
         <CallTarget Targets="_nBuildKit_Prepare_GetVersion_PushToExternals" />
     </Target>
 
-    <Target Name="_nBuildKit_Prepare_GetVersion_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Prepare_GetVersion_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
-        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
-        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
         <Message Text=" " />
 
-        <Message Text="The semantic version file is located at:    $(FileSemanticVersion)" />
-        <Message Text="The MsBuild XML version file is located at: $(FileVersionMsBuild)" Condition="Exists('$(FileVersionMsBuild)')" />
+        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
+        <Message Text="The MsBuild XML version file is located at:                        $(FileVersionMsBuild)"
+                 Condition="Exists('$(FileVersionMsBuild)')" />
         <Message Text=" " />
 
-        <Message Text="GitHubFlowVersion command line executable is located at: $(ToolsExternalGitHubFlowVersionPath)" />
-        <Message Text="GitVersion command line executable is located at:        $(ToolsExternalGitVersionPath)" />
+        <Message Text="GitHubFlowVersion command line executable is located at:           $(ToolsExternalGitHubFlowVersionPath)" />
+        <Message Text="GitVersion command line executable is located at:                  $(ToolsExternalGitVersionPath)" />
         <Message Text=" " />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Prepare_GetVersion_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_GetVersion_DebugLog">
+    <Target Name="_nBuildKit_Prepare_GetVersion_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Prepare_GetVersion_DebugLog">
         <Message Text="Getting version ..." />
     </Target>
 
@@ -153,7 +135,7 @@
     </Target>
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitVersion"
-            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND Exists('$(ToolsExternalGitVersionPath)')">
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND Exists('$(ToolsExternalGitVersionPath)') AND ('$(IsGitWorkspace)' == 'true')">
         <CalculateSemanticVersionWithGitVersion ExePath="$(ToolsExternalGitVersionPath)"
                                                 RemoteRepositoryUrl="$(GitRemoteRepository)"
                                                 UserName="$(GitUserName)"
@@ -170,7 +152,7 @@
     </Target>
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion"
-            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND !Exists('$(ToolsExternalGitVersionPath)') AND Exists('$(ToolsExternalGitHubFlowVersionPath)')">
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND !Exists('$(ToolsExternalGitVersionPath)') AND Exists('$(ToolsExternalGitHubFlowVersionPath)') AND ('$(IsGitWorkspace)' == 'true')">
         <CalculateSemanticVersionWithGitHubFlowVersion ExePath="$(ToolsExternalGitHubFlowVersionPath)"
                                                        TempDir="$(DirBuildTemp)"
                                                        Condition=" '$(ShouldExecute)' == 'true' ">
@@ -252,7 +234,7 @@
         <Message Text="NuGet semantic:  $(VersionSemanticNuGet)" />
 
         <!-- Push to TeamCity -->
-        <!-- Note that we only need to push to TeamCity if we're not using GitHubFlowVersion because that already makes it happen -->
+        <!-- Note that we only need to push to TeamCity if we're not using GitHubFlowVersion or GitVersion because they already makes it happen -->
         <Message Text="Pushing version number to TeamCity's build number ..."
                  Condition=" '$(TEAMCITY_VERSION)' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
         <Message Text="##teamcity[buildNumber '$(VersionSemanticFull)']"
