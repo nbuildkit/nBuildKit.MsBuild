@@ -20,36 +20,6 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <PropertyGroup>
-        <!-- Build flags -->
-        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
-        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-        <FxCopWarningsAsErrors Condition=" '$(FxCopWarningsAsErrors)' == '' ">false</FxCopWarningsAsErrors>
-
-        <!-- Build configuration -->
-        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
-        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
-
-        <!-- Directories -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
-        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
-        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
-        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-
-        <!-- nBuildKit directories -->
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
-        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
-
-        <!-- Files -->
-        <FileProjectFxCop Condition=" '$(FileProjectFxCop)' == '' ">UNDEFINED</FileProjectFxCop>
-        <FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop>
-
-        <!-- External tools -->
-        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir>
-    </PropertyGroup>
-
     <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
@@ -82,23 +52,23 @@
             Condition="$(ShouldDisplayDebugLog)"
             DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
-        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the generated binaries is located at:    $(DirBuildBinPlatformConfig)" />
-        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
-        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
         <Message Text=" " />
 
-        <Message Text="The FxCop project file is located at: $(FileProjectFxCop)" />
-        <Message Text="The FxCop report file is located at:  $(FileReportFxCopExpanded)" />
+        <Message Text="The FxCop project file is located at:                              $(FileProjectFxCop)" />
+        <Message Text="The FxCop report file is located at:                               $(FileReportFxCopExpanded)" />
         <Message Text=" " />
 
-        <Message Text="FxCop command line executable is located at: $(ToolsExternalFxCopDir)" />
+        <Message Text="FxCop command line executable is located at:                       $(ToolsExternalFxCopDir)" />
         <Message Text=" " />
     </Target>
 
-    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates" DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
+    <Target Name="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Message Text="Resolving build templates for: $(FileReportFxCop)" />
 
         <TemplateText Template="$(FileReportFxCop)"
