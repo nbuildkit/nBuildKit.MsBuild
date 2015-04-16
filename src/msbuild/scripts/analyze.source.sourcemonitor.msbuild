@@ -5,11 +5,11 @@
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsAnalyzeSourceSourceMonitor>true</ExistsAnalyzeSourceSourceMonitor>
-        
+
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
-        
-        <!-- 
+
+        <!--
             Define the DirWorkspace before importing the BuildPropertyFile so that it is defined and can be used by
             the properties in the BuildPropertyFile. Note that we can't define it in the BuildPropertyFile because that
             is imported which means there is no way to get the path of the file.
@@ -19,39 +19,11 @@
 
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
-    
-    <PropertyGroup>
-        <!-- Product & Company information -->
-        <ProductNameInFilePath Condition=" '$(ProductNameInFilePath)' == '' ">UNDEFINED</ProductNameInFilePath>
-    
-        <!-- Build flags -->
-        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
-        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-        
-        <!-- Directories -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
-        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
-        
-        <!-- nBuildKit directories -->
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
-        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
-        <DirMsBuildTemplates Condition=" '$(DirMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirMsBuildTemplates>
-        
-        <!-- Files -->
-        <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirMsBuildTemplates)\sourcemonitor.xml.in</FileTemplateSourceMonitor>
-        <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor>
-        
-        <!-- External tools -->
-        <ToolsExternalSourceMonitorPath Condition=" '$(ToolsExternalSourceMonitorPath)' == '' ">UNDEFINED</ToolsExternalSourceMonitorPath>
-    </PropertyGroup>
-    
-    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
-    
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" 
+
+    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
     <Import Project="$(DirMsBuildExtensions)\SourceMonitor.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\SourceMonitor.msbuild') AND '$(ExistsExtensionsSourceMonitor)' != 'true' "/>
@@ -59,52 +31,51 @@
             Condition="Exists('$(DirMsBuildExtensions)\SourceMonitorOutputToCsv.msbuild') AND '$(ExistsExtensionsSourceMonitorOutputToCsv)' != 'true' "/>
     <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "/>
-    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
-            
-    <Target Name="nBuildKit_Analyze_Source_SourceMonitor_Run" 
+
+    <Target Name="nBuildKit_Analyze_Source_SourceMonitor_Run"
             DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Analyze_Source_SourceMonitor_Analyze" />
     </Target>
-    
+
     <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DisplayInfo" 
+    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DisplayInfo"
             DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog">
         <Message Text="Running SourceMonitor ..." />
     </Target>
-    
-    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog" 
-            Condition="$(ShouldDisplayDebugLog)" 
+
+    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)"
             DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_ReplaceBuildTemplates">
         <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
-        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
-        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
-        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
-        <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:   $(DirMsBuildTemplates)" />
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message Text="The directory containing the build logs is located at:             $(DirBuildLogs)" />
+        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
         <Message Text=" " />
-        
-        <Message Text="The SourceMonitor template file is located at: $(FileTemplateSourceMonitor)" />
-        <Message Text="The SourceMonitor report file is located at:   $(FileReportSourceMonitorExpanded)" />
+
+        <Message Text="The SourceMonitor template file is located at:                     $(FileTemplateSourceMonitor)" />
+        <Message Text="The SourceMonitor report file is located at:                       $(FileReportSourceMonitorExpanded)" />
         <Message Text=" " />
-        
-        <Message Text="SourceMonitor command line executable is located at: $(ToolsExternalSourceMonitorPath)" />
+
+        <Message Text="SourceMonitor command line executable is located at:               $(ToolsExternalSourceMonitorPath)" />
         <Message Text=" " />
     </Target>
-    
-    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_ReplaceBuildTemplates" 
+
+    <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_ReplaceBuildTemplates"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Message Text="Resolving build templates for: $(FileReportSourceMonitor)" />
-        
+
         <TemplateText Template="$(FileReportSourceMonitor)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportSourceMonitorExpanded" />
         </TemplateText>
     </Target>
-    
+
     <PropertyGroup>
         <FileGeneratedSourceMonitor>$(DirBuildTemp)\sourcemonitor.xml</FileGeneratedSourceMonitor>
         <Now>$([System.DateTime]::Now.ToString("yyyy-MM-ddTHH:mm:ss"))</Now>
@@ -115,16 +86,18 @@
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="The SourceMonitor template file does not exist. Cannot execute source code analysis."
                Condition="!Exists('$(FileTemplateSourceMonitor)') AND '$(ShouldExecute)' == 'true' "/>
-                
+
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportSourceMonitorExpanded)'))">
             <Output TaskParameter="Value" PropertyName="DirToCreate" />
         </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)" 
+        <MakeDir Directories="$(DirToCreate)"
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
-        <MakeDir Directories="$(DirBuildTemp)" Condition="!Exists('$(DirBuildTemp)') AND  '$(ShouldExecute)' == 'true' " />
-        <MakeDir Directories="$(DirBuildLogs)" Condition="!Exists('$(DirBuildLogs)') AND  '$(ShouldExecute)' == 'true' " />
-    
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)" 
+        <MakeDir Directories="$(DirBuildTemp)"
+                 Condition="!Exists('$(DirBuildTemp)') AND  '$(ShouldExecute)' == 'true' " />
+        <MakeDir Directories="$(DirBuildLogs)"
+                 Condition="!Exists('$(DirBuildLogs)') AND  '$(ShouldExecute)' == 'true' " />
+
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="SourceMonitor.exe"
                                             Condition=" '$(ToolsExternalSourceMonitorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalSourceMonitorPath" />
@@ -133,24 +106,24 @@
                  Condition="Exists('$(ToolsExternalSourceMonitorPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the SourceMonitor executable path. Cannot execute source code analysis."
                Condition="!Exists('$(ToolsExternalSourceMonitorPath)') AND '$(ShouldExecute)' == 'true' "/>
-    
+
         <ItemGroup>
             <TemplateTokens Include="FileOutputSourceMonitor">
                 <ReplacementValue>$(FileReportSourceMonitorExpanded)</ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
-        <TemplateFile Template="$(FileTemplateSourceMonitor)" 
-                      OutputFileName="$(FileGeneratedSourceMonitor)" 
-                      Tokens="@(TemplateTokens)" 
+        <TemplateFile Template="$(FileTemplateSourceMonitor)"
+                      OutputFileName="$(FileGeneratedSourceMonitor)"
+                      Tokens="@(TemplateTokens)"
                       Condition=" '$(ShouldExecute)' == 'true' "/>
-    
+
         <SourceMonitor SourceMonitorExe="$(ToolsExternalSourceMonitorPath)"
-                       ConfigFile="$(FileGeneratedSourceMonitor)" 
+                       ConfigFile="$(FileGeneratedSourceMonitor)"
                        Condition=" '$(ShouldExecute)' == 'true' "/>
-                       
+
         <SourceMonitorOutputToCsv ProjectName="$(ProductNameInFilePath)"
                                   InputFile="$(FileReportSourceMonitorExpanded)"
-                                  OutputPath="$(DirBuildLogs)" 
+                                  OutputPath="$(DirBuildLogs)"
                                   Condition="Exists('$(FileReportSourceMonitorExpanded)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
