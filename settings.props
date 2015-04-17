@@ -461,8 +461,7 @@
             the authentication is done through the user account, i.e. via Active Directory, then
             the user name should be left empty.
         -->
-        <GitUserName Condition=" '$(GitUserName)' == '' AND '$(GitHubUserName)' == 'UNDEFINED' "></GitUserName>
-        <GitUserName Condition=" '$(GitUserName)' == '' AND '$(GitHubUserName)' != 'UNDEFINED' ">$(GitHubUserName)</GitUserName>
+        <GitUserName Condition=" '$(GitUserName)' == '' "></GitUserName>
 
         <!--
             The full directory path to the script that handles custom generation of the version numbers.
