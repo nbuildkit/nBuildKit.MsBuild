@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion>true</ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion>
     </PropertyGroup>
-    
-    <UsingTask TaskName="CalculateSemanticVersionWithGitHubFlowVersion" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="CalculateSemanticVersionWithGitHubFlowVersion"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <ExePath ParameterType="System.String" Required="true" />
@@ -38,10 +38,10 @@
                             RedirectStandardOutput = true,
                             RedirectStandardError = true,
                         };
-                        
-                        Log.LogMessage(MessageImportance.Normal, ExePath);
-                        Log.LogMessage(MessageImportance.Normal, info.Arguments);
-                        
+
+                        Log.LogMessage(MessageImportance.Low, ExePath);
+                        Log.LogMessage(MessageImportance.Low, info.Arguments);
+
                         var text = new System.Text.StringBuilder();
                         var process = new System.Diagnostics.Process();
                         process.StartInfo = info;
@@ -50,7 +50,7 @@
                             {
                                 if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
-                                    Log.LogMessage(e.Data);
+                                    Log.LogMessage(MessageImportance.Normal, e.Data);
                                 }
                             };
                         process.ErrorDataReceived +=
@@ -66,13 +66,13 @@
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
                         process.WaitForExit();
-                        
+
                         if (process.ExitCode != 0)
                         {
                             Log.LogError("Failed to get semantic version information");
                             return false;
                         }
-                        
+
                         try
                         {
                             string fileText;
@@ -86,7 +86,7 @@
                             VersionSemanticFull = fileText.Substring(
                                 index + fullSemVersionStart.Length,
                                 fileText.IndexOf("\"", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length));
-                                
+
                             const string semVersionStart = "\"GitHubFlowVersion_SemVer\": \"";
                             index = fileText.IndexOf(semVersionStart);
                             VersionSemantic = fileText.Substring(
@@ -137,13 +137,13 @@
                         {
                             Log.LogError(e.ToString());
                         }
-                        
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

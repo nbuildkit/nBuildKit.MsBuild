@@ -20,22 +20,6 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <PropertyGroup>
-        <!-- Build flags -->
-        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
-        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-
-        <!-- Directories -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-
-        <!-- nBuildKit directories -->
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
-
-        <!-- External tools -->
-        <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
-    </PropertyGroup>
-
     <Import Project="$(DirMsBuildExtensions)\NuGetRestore.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\NuGetRestore.msbuild') AND '$(ExistsExtensionsNuGetRestore)' != 'true' "/>
 
@@ -45,23 +29,37 @@
     </Target>
 
     <Target Name="_nBuildKit_Prepare_NuGet_Restore_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
-        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the build output is located at:           $(DirBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="NuGet command line executable is located at: $(ToolsExternalNuGetPath)" />
+        <Message Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)"
+                 Importance="low"/>
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DebugLog">
-        <Message Text="Restoring packages ..." />
+    <Target Name="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DebugLog">
+        <Message Text="Restoring packages ..."
+                 Importance="normal"/>
     </Target>
 
     <!-- NuGet restore -->
-    <Target Name="_nBuildKit_Prepare_NuGet_Restore_Packages" DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo">
+    <Target Name="_nBuildKit_Prepare_NuGet_Restore_Packages"
+            DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo">
         <Error Text="No NuGet executable defined. Will not be able to restore the packages."
                Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
 
@@ -71,6 +69,7 @@
         </ItemGroup>
 
         <Message Text="No NuGet package configuration files found to restore packages from."
+                 Importance="low"
                  Condition=" '@(NuGetPackageFiles)' == '' " />
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageFile="%(NuGetPackageFiles.FullPath)"

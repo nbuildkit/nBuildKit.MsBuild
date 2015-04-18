@@ -5,11 +5,11 @@
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsPushToDirectory>true</ExistsPushToDirectory>
-        
+
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
-        
-        <!-- 
+
+        <!--
             Define the DirWorkspace before importing the BuildPropertyFile so that it is defined and can be used by
             the properties in the BuildPropertyFile. Note that we can't define it in the BuildPropertyFile because that
             is imported which means there is no way to get the path of the file.
@@ -19,76 +19,70 @@
 
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
-    
-    <PropertyGroup>
-        <!-- Build flags -->
-        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
-        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-        
-        <!-- Directories -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
-        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        
-        <!-- nBuildKit directories -->
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirMsBuildExtensions>
-        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirMsBuildShared>
-    </PropertyGroup>
-    
-    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild" 
+
+    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
-    
-    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild" 
+
+    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
-    
+
     <Target Name="nBuildKit_PushTo_Directory_Run" DependsOnTargets="_nBuildKit_PushTo_Directory_DisplayInfo">
         <CallTarget Targets="_nBuildKit_PushTo_Directory_Push" />
     </Target>
-    
+
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_Directory_DisplayInfo">
-        <Message Text="Copying binaries to the remote file location..." />
+        <Message Text="Copying binaries to the remote file location..."
+                 Importance="normal"/>
     </Target>
-    
+
     <Target Name="_nBuildKit_Package_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
-        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
-        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
-        <Message Text=" " />
-        
-        <Message Text="Deploying to: %(PushToDirectorySpecs.Identity)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="Deploying to: %(PushToDirectorySpecs.Identity)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
-    
-    <Target Name="_nBuildKit_PushTo_Directory_Push" 
+
+    <Target Name="_nBuildKit_PushTo_Directory_Push"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Outputs="%(PushToDirectorySpecs.Identity)">
-        <Message Text="Resolving build templates for: %(PushToDirectorySpecs.Identity)" />
-        
+        <Message Text="Resolving build templates for: %(PushToDirectorySpecs.Identity)"
+                 Importance="low"/>
+
         <!-- Process the build templates in the input directories -->
         <TemplateText Template="%(PushToDirectorySpecs.Identity)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="DirPushToSpecs" />
         </TemplateText>
-        
+
         <!-- Process the build templates in the included files -->
         <TemplateText Template="%(PushToDirectorySpecs.IncludedFiles)"
                       Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToDirectorySpecs.IncludedFiles)' != '' ">
             <Output TaskParameter="Result" PropertyName="FilesPushToIncluded" />
         </TemplateText>
-        
+
         <!-- Process the build templates in the excluded files -->
         <TemplateText Template="%(PushToDirectorySpecs.ExcludedFiles)"
                       Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToDirectorySpecs.ExcludedFiles)' != '' ">
             <Output TaskParameter="Result" PropertyName="FilesPushToExcluded" />
-        </TemplateText>        
-        
-        <!-- 
+        </TemplateText>
+
+        <!--
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
@@ -101,11 +95,11 @@
         </CreateItem>
         <Error Text="There are no files to be pushed"
                Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "/>
-        
-        <MakeDir Directories="$(DirPushToSpecs)" 
+
+        <MakeDir Directories="$(DirPushToSpecs)"
                  Condition="!Exists('$(DirPushToSpecs)') AND '$(ShouldExecute)' == 'true' " />
-        <Copy SourceFiles="@(FilesToPush)" 
-              DestinationFolder="$(DirPushToSpecs)" 
+        <Copy SourceFiles="@(FilesToPush)"
+              DestinationFolder="$(DirPushToSpecs)"
               Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 </Project>

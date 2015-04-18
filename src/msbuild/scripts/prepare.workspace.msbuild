@@ -20,47 +20,54 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <PropertyGroup>
-        <!-- Build flags -->
-        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">false</ShouldDisplayDebugLog>
-        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-        <ShouldClean Condition=" '$(ShouldClean)' == '' ">true</ShouldClean>
-
-        <!-- Directories -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
-        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
-        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-    </PropertyGroup>
-
     <Target Name="nBuildKit_Prepare_Workspace_Run"
             DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Prepare_Workspace_Clean" />
     </Target>
 
-    <Target Name="_nBuildKit_Prepare_Workspace_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Configuration values:" />
-        <Message Text="ShouldClean:             $(ShouldClean)" />
-        <Message Text=" " />
+    <Target Name="_nBuildKit_Prepare_Workspace_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Configuration values:"
+                 Importance="low"/>
+        <Message Text="ShouldClean:             $(ShouldClean)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                      $(DirWorkspace)" />
-        <Message Text="The directory containing the build output is located at:          $(DirBuild)" />
-        <Message Text="The directory containing the deliverables is located at:          $(DirBuildDeploy)" />
-        <Message Text="The directory containing the build logs is located at:            $(DirBuildLogs)" />
-        <Message Text="The directory containing the temporary build files is located at: $(DirBuildTemp)" />
-        <Message Text="The directory containing the NuGet packages is located at:        $(DirPackages)" />
-        <Message Text="The directory containing the source code is located at:           $(DirSrc)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:     $(DirMsBuildExtensions)" />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the build output is located at:           $(DirBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)"
+                 Importance="low"/>
+        <Message Text="The directory containing the build logs is located at:             $(DirBuildLogs)"
+                 Importance="low"/>
+        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the source code is located at:            $(DirSrc)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Prepare_Workspace_DisplayInfo" DependsOnTargets="_nBuildKit_Prepare_Workspace_DebugLog">
-        <Message Text="Preparing workspace ..." />
+    <Target Name="_nBuildKit_Prepare_Workspace_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Prepare_Workspace_DebugLog">
+        <Message Text="Preparing workspace ..."
+                 Importance="normal"/>
     </Target>
 
     <!-- Clean -->
-    <Target Name="_nBuildKit_Prepare_Workspace_Clean" DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo" Condition="$(ShouldClean)">
+    <Target Name="_nBuildKit_Prepare_Workspace_Clean"
+            DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo" Condition="$(ShouldClean)">
         <!--
             We'll try to delete the directory but that may fail randomly because
             some file is being locked (by some other process). This could leads to a failing task, but ..
@@ -79,19 +86,32 @@
             in place, otherwise they may be in different places in the system.
         -->
         <ItemGroup>
-            <GeneratedFilesToDelete Include="$(FileSemanticVersion)" Condition="Exists('$(FileSemanticVersion)')"/>
-            <GeneratedFilesToDelete Include="$(FileReleaseNotesShort)" Condition="Exists('$(FileReleaseNotesShort)')"/>
-            <GeneratedFilesToDelete Include="$(FileReleaseNotesFull)" Condition="Exists('$(FileReleaseNotesFull)')"/>
-            <GeneratedFilesToDelete Include="$(FileVcsInfo)" Condition="Exists('$(FileVcsInfo)')"/>
-            <GeneratedFilesToDelete Include="$(FileReportCcm)" Condition="Exists('$(FileReportCcm)')"/>
-            <GeneratedFilesToDelete Include="$(FileReportSourceMonitor)" Condition="Exists('$(FileReportSourceMonitor)')"/>
-            <GeneratedFilesToDelete Include="$(FileReportMsTest)" Condition="Exists('$(FileReportMsTest)')"/>
-            <GeneratedFilesToDelete Include="$(FileReportOpenCoverXml)" Condition="Exists('$(FileReportOpenCoverXml)')"/>
-            <GeneratedFilesToDelete Include="$(FileReportOpenCoverCsv)" Condition="Exists('$(FileReportOpenCoverCsv)')"/>
-            <GeneratedFilesToDelete Include="$(FileReportMoma)" Condition="Exists('$(FileReportMoma)')"/>
-            <GeneratedFilesToDelete Include="$(FileReportFxCop)" Condition="Exists('$(FileReportFxCop)')"/>
-            <GeneratedFilesToDelete Include="%(FilesToGenerate.FullPath)" Condition="Exists('%(FilesToGenerate.FullPath)')"/>
-            <GeneratedFilesToDelete Include="%(ArchivePackageSpecs.FullPath)" Condition="Exists('%(ArchivePackageSpecs.FullPath)')"/>
+            <GeneratedFilesToDelete Include="$(FileSemanticVersion)"
+                                    Condition="Exists('$(FileSemanticVersion)')"/>
+            <GeneratedFilesToDelete Include="$(FileReleaseNotesShort)"
+                                    Condition="Exists('$(FileReleaseNotesShort)')"/>
+            <GeneratedFilesToDelete Include="$(FileReleaseNotesFull)"
+                                    Condition="Exists('$(FileReleaseNotesFull)')"/>
+            <GeneratedFilesToDelete Include="$(FileVcsInfo)"
+                                    Condition="Exists('$(FileVcsInfo)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportCcm)"
+                                    Condition="Exists('$(FileReportCcm)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportSourceMonitor)"
+                                    Condition="Exists('$(FileReportSourceMonitor)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportMsTest)"
+                                    Condition="Exists('$(FileReportMsTest)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportOpenCoverXml)"
+                                    Condition="Exists('$(FileReportOpenCoverXml)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportOpenCoverCsv)"
+                                    Condition="Exists('$(FileReportOpenCoverCsv)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportMoma)"
+                                    Condition="Exists('$(FileReportMoma)')"/>
+            <GeneratedFilesToDelete Include="$(FileReportFxCop)"
+                                    Condition="Exists('$(FileReportFxCop)')"/>
+            <GeneratedFilesToDelete Include="%(FilesToGenerate.FullPath)"
+                                    Condition="Exists('%(FilesToGenerate.FullPath)')"/>
+            <GeneratedFilesToDelete Include="%(ArchivePackageSpecs.FullPath)"
+                                    Condition="Exists('%(ArchivePackageSpecs.FullPath)')"/>
         </ItemGroup>
         <Delete Files="@(GeneratedFilesToDelete)"
                 Condition=" '$(ShouldExecute)' == 'true' "
@@ -101,7 +121,6 @@
             <BuildDirectoriesToDelete Include="$(DirBuildDeploy)" />
             <BuildDirectoriesToDelete Include="$(DirBuildLogs)" />
             <BuildDirectoriesToDelete Include="$(DirBuildTemp)" />
-            <BuildDirectoriesToDelete Include="$(DirBuildDeploy)" />
             <BuildDirectoriesToDelete Include="$(DirBuild)" />
         </ItemGroup>
         <RemoveDir Directories="@(BuildDirectoriesToDelete)"

@@ -41,14 +41,6 @@
 
     <!-- Default settings -->
     <PropertyGroup>
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
-        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
-        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
-        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
-
         <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(DirSrc)</SolutionDir>
 
         <DirNBuildKitMsBuild>$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
@@ -56,28 +48,12 @@
         <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirMsBuildExtensions>
 
         <DefaultPathProperties>
-            DirWorkspace=$(DirWorkspace);
-            DirBuild=$(DirBuild);
-            DirBuildDeploy=$(DirBuildDeploy);
-            DirBuildLogs=$(DirBuildLogs);
-            DirBuildTemp=$(DirBuildTemp);
-            DirPackages=$(DirPackages);
-            DirSrc=$(DirSrc);
-            DirTemplates=$(DirTemplates);
+            DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
+            DirMsBuildShared=$(DirMsBuildShared);
             DirMsBuildExtensions=$(DirMsBuildExtensions)
         </DefaultPathProperties>
         <DefaultFiles>
             FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;
         </DefaultFiles>
-
-        <!--
-            Define the platform but without spaces, e.g. 'Any CPU' is turned into 'AnyCPU' which is necessary because Visual Studio
-            displays the first, but uses the second.
-        -->
-        <PlatformWithoutSpaces Condition=" '$(PlatformWithoutSpaces)' == '' ">$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
-
-        <!-- Define the directory where all the binary files need to end up -->
-        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
-        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
     </PropertyGroup>
 </Project>
