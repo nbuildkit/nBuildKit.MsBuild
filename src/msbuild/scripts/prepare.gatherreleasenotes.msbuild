@@ -35,7 +35,7 @@
     <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_DisplayInfo"
             DependsOnTargets="_nBuildKit_Prepare_GatherReleaseNotes_DebugLog">
         <Message Text="Gathering release notes ..."
-                 Importance="low"/>
+                 Importance="normal"/>
     </Target>
 
     <Target Name="_nBuildKit_Prepare_GatherReleaseNotes_DebugLog"
@@ -82,7 +82,7 @@
                Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
 
         <Message Text="Gathering release note information from GitHub"
-                 Importance="low"
+                 Importance="normal"
                  Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
         <CreateProperty Value="/IssueTracker GitHub"
                         Condition=" '$(YouTrackServer)' == 'UNDEFINED' ">
@@ -90,7 +90,7 @@
         </CreateProperty>
 
         <Message Text="Gathering release note information from YouTrack"
-                 Importance="low"
+                 Importance="normal"
                  Condition=" '$(YouTrackServer)' != 'UNDEFINED' " />
         <CreateProperty Value="/IssueTracker YouTrack /Username $(IssueTrackerUserName) /Password %IssueTrackerPassword% /YouTrackServer $(YouTrackServer) /ProjectId $(IssueTrackerProjectId)"
                         Condition=" '$(YouTrackServer)' != 'UNDEFINED' ">

@@ -83,7 +83,7 @@
     <Target Name="_nBuildKit_Prepare_GetVersion_DisplayInfo"
             DependsOnTargets="_nBuildKit_Prepare_GetVersion_DebugLog">
         <Message Text="Getting version ..."
-                 Importance="low"/>
+                 Importance="normal"/>
     </Target>
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm"
@@ -244,37 +244,38 @@
 
     <Target Name="_nBuildKit_Prepare_GetVersion_PushToExternals">
         <Message Text="Versions are:"
-                 Importance="low"/>
+                 Importance="normal"/>
         <Message Text="Major:          $(VersionMajor)"
-                 Importance="low"/>
+                 Importance="normal"/>
         <Message Text="Minor:          $(VersionMinor)"
-                 Importance="low"/>
+                 Importance="normal"/>
         <Message Text="Patch:          $(VersionPatch)"
-                 Importance="low"/>
+                 Importance="normal"/>
         <Message Text="Build:          $(VersionBuild)"
-                 Importance="low"/>
+                 Importance="normal"/>
         <Message Text="PreRelease:     $(VersionPreRelease)"
-                 Importance="low"/>
+                 Importance="normal"/>
         <Message Text="Short semantic: $(VersionSemantic)"
-                 Importance="low"/>
+                 Importance="normal"/>
         <Message Text="Full semantic:  $(VersionSemanticFull)"
-                 Importance="low"/>
+                 Importance="normal"/>
         <Message Text="NuGet semantic: $(VersionSemanticNuGet)"
-                 Importance="low"/>
+                 Importance="normal"/>
 
         <!-- Push to TeamCity -->
         <!-- Note that we only need to push to TeamCity if we're not using GitHubFlowVersion or GitVersion because they already makes it happen -->
         <Message Text="Pushing version number to TeamCity's build number ..."
-                 Importance="low"
+                 Importance="normal"
                  Condition=" '$(TEAMCITY_VERSION)' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
+        <!-- NOTE: This must always be displayed otherwise TeamCity won't get the message -->
         <Message Text="##teamcity[buildNumber '$(VersionSemanticFull)']"
-                 Importance="low"
+                 Importance="high"
                  Condition=" '$(TEAMCITY_VERSION)' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
 
         <!-- Push to AppVeyor -->
         <!-- Note to make sure that the version that AppVeyor gets is unique we append the build number at the end. -->
         <Message Text="Pushing version number to AppVeyor's build number ..."
-                 Importance="low"
+                 Importance="normal"
                  Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
         <Exec Command="appveyor UpdateBuild -Version &quot;$(VersionSemanticFull)-$(APPVEYOR_BUILD_NUMBER)&quot;"
               Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />

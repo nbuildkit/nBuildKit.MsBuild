@@ -69,7 +69,7 @@
     <Target Name="_nBuildKit_Build_Binaries_DisplayInfo"
             DependsOnTargets="_nBuildKit_Build_Binaries_DebugLog">
         <Message Text="Building the Visual Studio solutions ..."
-                 Importance="low"/>
+                 Importance="normal"/>
     </Target>
 
     <Target Name="_nBuildKit_Build_Binaries_Execute"
@@ -88,7 +88,7 @@
                Condition="!Exists('$(FileSln)') AND  '$(ShouldExecute)' == 'true' " />
 
         <Message Text="Building from solution $(FileSln) for targets = %(SolutionsToBuild.Targets) with: Configuration = %(SolutionsToBuild.Configuration) and Platform = %(SolutionsToBuild.Platform) ..."
-                 Importance="low"/>
+                 Importance="normal"/>
 
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageFile="$(FileSln)"

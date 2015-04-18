@@ -59,8 +59,8 @@
     <!-- Display info -->
     <Target Name="_nBuildKit_Prepare_GenerateFiles_DisplayInfo"
             DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DebugLog">
-        <Message Text="Getting version ..."
-                 Importance="low"/>
+        <Message Text="Generating files ..."
+                 Importance="normal"/>
     </Target>
 
     <!-- Generate the required files -->
@@ -69,7 +69,7 @@
             Outputs="%(FilesToGenerate.Identity)"
             Condition=" '@(FilesToGenerate)' != '' ">
         <Message Text="Generating file %(FilesToGenerate.Identity)"
-                 Importance="low"/>
+                 Importance="normal"/>
 
         <!--
             MsBuild can't seem to handle using item metadata (FilesToGenerate.FullPath) inside a property function

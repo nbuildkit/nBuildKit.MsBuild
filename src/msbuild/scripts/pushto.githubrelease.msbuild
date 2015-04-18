@@ -39,10 +39,10 @@
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_GitHubRelease_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_GitHubRelease_DebugLog">
         <Message Text="Pushing artifacts to the GitHub release ..."
-                 Importance="low"
+                 Importance="normal"
                  Condition=" '@(PushToGitHubReleaseSpecs)' != '' " />
         <Message Text="No releases defined!"
-                 Importance="low"
+                 Importance="normal"
                  Condition=" '@(PushToGitHubReleaseSpecs)' == '' " />
     </Target>
 

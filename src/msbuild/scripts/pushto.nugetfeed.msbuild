@@ -34,26 +34,42 @@
 
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_NuGet_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_NuGet_DebugLog">
-        <Message Text="Pushing NuGet packages to: $(NuGetSourceUrl)" Condition=" '$(NuGetSourceUrl)' != '' AND '$(NuGetSourceUrl)' != 'UNDEFINED' " />
-        <Message Text="No NuGet source defined, pushing to NuGet.org" Condition=" '$(NuGetSourceUrl)' == '' OR '$(NuGetSourceUrl)' == 'UNDEFINED' " />
+        <Message Text="Pushing NuGet packages to: $(NuGetSourceUrl)"
+                 Importance="normal"
+                 Condition=" '$(NuGetSourceUrl)' != '' AND '$(NuGetSourceUrl)' != 'UNDEFINED' " />
+        <Message Text="No NuGet source defined, pushing to NuGet.org"
+                 Importance="normal"
+                 Condition=" '$(NuGetSourceUrl)' == '' OR '$(NuGetSourceUrl)' == 'UNDEFINED' " />
     </Target>
 
-    <Target Name="_nBuildKit_PushTo_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+    <Target Name="_nBuildKit_PushTo_NuGet_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
         <Message Text="Pushing NuGet packages to:                                         nuget.org"
+                 Importance="low"
                  Condition=" '$(NuGetSourceUrl)' == '' OR '$(NuGetSourceUrl)' == 'UNDEFINED' " />
         <Message Text="Pushing NuGet packages to:                                         $(NuGetSourceUrl)"
+                 Importance="low"
                  Condition=" '$(NuGetSourceUrl)' != '' AND '$(NuGetSourceUrl)' != 'UNDEFINED' " />
-        <Message Text=" " />
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)" />
-        <Message Text=" " />
+        <Message Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_PushTo_NuGet_Push"
@@ -84,14 +100,17 @@
                ItemName="NuGetPackagesToPushLocal"/>
         </CreateItem>
         <Message Text="The following NuGet packages were specified in the settings file: "
+                 Importance="low"
                  Condition=" '@(NuGetPackagesToPushLocal)' != '' " />
         <Message Text="@(NuGetPackagesToPushLocal)"
+                 Importance="low"
                  Condition=" '@(NuGetPackagesToPushLocal)' != '' " />
 
         <Error Text="There are no files to be pushed to the NuGet feed"
                Condition=" '@(NuGetPackagesToPushLocal)' == '' AND '$(ShouldExecute)' == 'true' "/>
 
-        <Message Text="Pushing: @(NuGetPackagesToPushLocal)" />
+        <Message Text="Pushing: @(NuGetPackagesToPushLocal)"
+                 Importance="low"/>
         <NuGetPush NuGetPath="$(ToolsExternalNuGetPath)"
                    Source="$(NuGetRepositoryToPushTo)"
                    PackagesToPush="@(NuGetPackagesToPushLocal)"
