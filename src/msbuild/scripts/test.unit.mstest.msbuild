@@ -48,30 +48,48 @@
     <Target Name="_nBuildKit_Test_Unit_MsTest_DebugLog"
             Condition="$(ShouldDisplayDebugLog)"
             DependsOnTargets="_nBuildKit_Test_Unit_MsTest_ReplaceBuildTemplates">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                                     $(DirWorkspace)" />
-        <Message Text="The directory containing the OpenCover unit test coverage reports is located at: $(DirReportGeneratorOutput)" />
-        <Message Text="The directory containing the NuGet packages is located at:                       $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:                    $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:                  $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at:               $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                                     $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the OpenCover unit test coverage reports is located at: $(DirReportGeneratorOutput)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:                       $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:                    $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:                  $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at:               $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The MsTest report will be located at:                                            $(FileReportMsTestExpanded)" />
-        <Message Text="The OpenCover XML report will be located at:                                     $(FileReportOpenCoverXmlExpanded)" />
-        <Message Text="The OpenCover CSV report will be located at:                                     $(FileReportOpenCoverCsvExpanded)" />
-        <Message Text="The ReportGenerator XML summary report will be located at:                       $(FileReportReportGeneratorXmlSummary)" />
-        <Message Text=" " />
+        <Message Text="The MsTest report will be located at:                                            $(FileReportMsTestExpanded)"
+                 Importance="low"/>
+        <Message Text="The OpenCover XML report will be located at:                                     $(FileReportOpenCoverXmlExpanded)"
+                 Importance="low"/>
+        <Message Text="The OpenCover CSV report will be located at:                                     $(FileReportOpenCoverCsvExpanded)"
+                 Importance="low"/>
+        <Message Text="The ReportGenerator XML summary report will be located at:                       $(FileReportReportGeneratorXmlSummary)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The MsTest command line executable is located at:                                $(ToolsExternalMsTestPath)" />
-        <Message Text="OpenCover command line executable is located at:                                 $(ToolsExternalOpenCoverPath)" />
-        <Message Text="ReportGenerator command line executable is located at:                           $(ToolsExternalReportGeneratorPath)" />
-        <Message Text=" " />
+        <Message Text="The MsTest command line executable is located at:                                $(ToolsExternalMsTestPath)"
+                 Importance="low"/>
+        <Message Text="OpenCover command line executable is located at:                                 $(ToolsExternalOpenCoverPath)"
+                 Importance="low"/>
+        <Message Text="ReportGenerator command line executable is located at:                           $(ToolsExternalReportGeneratorPath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_Test_Unit_MsTest_ReplaceBuildTemplates"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
-        <Message Text="Resolving build templates ..." />
+        <Message Text="Resolving build templates ..."
+                 Importance="low"/>
 
         <TemplateText Template="$(FileReportMsTest)"
                       Tokens="@(TemplateTokens)">
@@ -124,6 +142,7 @@
           <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverPath" />
         </SearchPackagesDirectoryForToolPath>
         <Message Text="The OpenCover executable was found at: $(ToolsExternalOpenCoverPath)"
+                 Importance="low"
                  Condition="Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the OpenCover executable path. Cannot execute unit tests."
                Condition="!Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
@@ -134,6 +153,7 @@
           <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
         </SearchPackagesDirectoryForToolPath>
         <Message Text="The ReportGenerator executable was found at: $(ToolsExternalReportGeneratorPath)"
+                 Importance="low"
                  Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
         <Warning Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports."
                  Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>

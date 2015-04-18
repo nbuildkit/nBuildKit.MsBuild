@@ -48,27 +48,42 @@
     <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_DebugLog"
             Condition="$(ShouldDisplayDebugLog)"
             DependsOnTargets="_nBuildKit_Analyze_Source_SourceMonitor_ReplaceBuildTemplates">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the build logs is located at:             $(DirBuildLogs)" />
-        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the build logs is located at:             $(DirBuildLogs)"
+                 Importance="low"/>
+        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The SourceMonitor template file is located at:                     $(FileTemplateSourceMonitor)" />
-        <Message Text="The SourceMonitor report file is located at:                       $(FileReportSourceMonitorExpanded)" />
-        <Message Text=" " />
+        <Message Text="The SourceMonitor template file is located at:                     $(FileTemplateSourceMonitor)"
+                 Importance="low"/>
+        <Message Text="The SourceMonitor report file is located at:                       $(FileReportSourceMonitorExpanded)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="SourceMonitor command line executable is located at:               $(ToolsExternalSourceMonitorPath)" />
-        <Message Text=" " />
+        <Message Text="SourceMonitor command line executable is located at:               $(ToolsExternalSourceMonitorPath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_Analyze_Source_SourceMonitor_ReplaceBuildTemplates"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
-        <Message Text="Resolving build templates for: $(FileReportSourceMonitor)" />
+        <Message Text="Resolving build templates for: $(FileReportSourceMonitor)"
+                 Importance="low"/>
 
         <TemplateText Template="$(FileReportSourceMonitor)"
                       Tokens="@(TemplateTokens)">
@@ -103,6 +118,7 @@
             <Output TaskParameter="Path" PropertyName="ToolsExternalSourceMonitorPath" />
         </SearchPackagesDirectoryForToolPath>
         <Message Text="The SourceMonitor executable was found at: $(ToolsExternalSourceMonitorPath)"
+                 Importance="low"
                  Condition="Exists('$(ToolsExternalSourceMonitorPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the SourceMonitor executable path. Cannot execute source code analysis."
                Condition="!Exists('$(ToolsExternalSourceMonitorPath)') AND '$(ShouldExecute)' == 'true' "/>

@@ -29,22 +29,32 @@
     </Target>
 
     <Target Name="_nBuildKit_Prepare_NuGet_Restore_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the build output is located at:           $(DirBuild)" />
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the build output is located at:           $(DirBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)" />
+        <Message Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)"
+                 Importance="low"/>
     </Target>
 
     <!-- Display info -->
     <Target Name="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo"
             DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DebugLog">
-        <Message Text="Restoring packages ..." />
+        <Message Text="Restoring packages ..."
+                 Importance="low"/>
     </Target>
 
     <!-- NuGet restore -->
@@ -59,6 +69,7 @@
         </ItemGroup>
 
         <Message Text="No NuGet package configuration files found to restore packages from."
+                 Importance="low"
                  Condition=" '@(NuGetPackageFiles)' == '' " />
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageFile="%(NuGetPackageFiles.FullPath)"

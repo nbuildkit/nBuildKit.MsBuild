@@ -42,7 +42,8 @@
     <!-- Display info -->
     <Target Name="_nBuildKit_Pack_NuGet_DisplayInfo"
             DependsOnTargets="_nBuildKit_Pack_NuGet_DebugLog">
-        <Message Text="Creating NuGet package..." />
+        <Message Text="Creating NuGet package..."
+                 Importance="low"/>
 
         <Error Text="No NuGet spec files are specified!"
                Condition=" '@(NuGetPackageSpecs)' == '' "/>
@@ -50,17 +51,26 @@
 
     <Target Name="_nBuildKit_Pack_NuGet_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
         <Message Text="The NuGet spec files are:"
+                 Importance="low"
                  Condition=" '@(NuGetPackageSpecs)' != '' "/>
         <Message Text="Template: %(NuGetPackageSpecs.Template) - Output: %(NuGetPackageSpecs.Identity)"
+                 Importance="low"
                  Condition=" '@(NuGetPackageSpecs)' != '' " />
     </Target>
 
@@ -72,7 +82,8 @@
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Condition=" '@(NuGetPackageSpecs)' != '' "
             Outputs="%(NuGetPackageSpecs.Identity)">
-        <Message Text="Resolving build templates for: %(NuGetPackageSpecs.Identity)" />
+        <Message Text="Resolving build templates for: %(NuGetPackageSpecs.Identity)"
+                 Importance="low"/>
 
         <!-- Process the build templates in the nuspec file path -->
         <TemplateText Template="%(NuGetPackageSpecs.Identity)"
@@ -94,12 +105,15 @@
             <Output TaskParameter="Result" PropertyName="FilesNuGetDependenciesExcluded" />
         </TemplateText>
 
-        <Message Text="Creating NuGet package from: $(FileNuGetNuSpec)" />
+        <Message Text="Creating NuGet package from: $(FileNuGetNuSpec)"
+                 Importance="low"/>
         <MakeDir Directories="$(DirBuildDeploy)"
                  Condition="!Exists('$(DirBuildDeploy)') AND  '$(ShouldExecute)' == 'true' " />
 
-        <Message Text="Included dependencies: $(FilesNuGetDependenciesIncluded)" />
-        <Message Text="Excluded dependencies: $(FilesNuGetDependenciesExcluded)" />
+        <Message Text="Included dependencies: $(FilesNuGetDependenciesIncluded)"
+                 Importance="low"/>
+        <Message Text="Excluded dependencies: $(FilesNuGetDependenciesExcluded)"
+                 Importance="low"/>
 
         <!--
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically

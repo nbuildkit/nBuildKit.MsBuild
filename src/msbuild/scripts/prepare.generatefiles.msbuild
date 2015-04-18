@@ -35,22 +35,32 @@
 
     <Target Name="_nBuildKit_Prepare_GenerateFiles_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
-        <Message Text="The VCS info file is located at:                                   $(FileVcsInfo)" />
-        <Message Text=" " />
+        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)"
+                 Importance="low"/>
+        <Message Text="The VCS info file is located at:                                   $(FileVcsInfo)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <!-- Display info -->
     <Target Name="_nBuildKit_Prepare_GenerateFiles_DisplayInfo"
             DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DebugLog">
-        <Message Text="Getting version ..." />
+        <Message Text="Getting version ..."
+                 Importance="low"/>
     </Target>
 
     <!-- Generate the required files -->
@@ -58,7 +68,8 @@
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Outputs="%(FilesToGenerate.Identity)"
             Condition=" '@(FilesToGenerate)' != '' ">
-        <Message Text="Generating file %(FilesToGenerate.Identity)" />
+        <Message Text="Generating file %(FilesToGenerate.Identity)"
+                 Importance="low"/>
 
         <!--
             MsBuild can't seem to handle using item metadata (FilesToGenerate.FullPath) inside a property function

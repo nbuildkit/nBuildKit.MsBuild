@@ -38,24 +38,37 @@
 
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_GitHubRelease_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_GitHubRelease_DebugLog">
-        <Message Text="Pushing artifacts to the GitHub release ..." Condition=" '@(PushToGitHubReleaseSpecs)' != '' " />
-        <Message Text="No releases defined!" Condition=" '@(PushToGitHubReleaseSpecs)' == '' " />
+        <Message Text="Pushing artifacts to the GitHub release ..."
+                 Importance="low"
+                 Condition=" '@(PushToGitHubReleaseSpecs)' != '' " />
+        <Message Text="No releases defined!"
+                 Importance="low"
+                 Condition=" '@(PushToGitHubReleaseSpecs)' == '' " />
     </Target>
 
     <Target Name="_nBuildKit_PushTo_GitHubRelease_DebugLog"
             Condition="$(ShouldDisplayDebugLog)" >
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
         <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
-        <Message Text=" " />
+        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="GitHub-Release command line executable is located at:              $(ToolsExternalGitHubReleasePath)" />
-        <Message Text=" " />
+        <Message Text="GitHub-Release command line executable is located at:              $(ToolsExternalGitHubReleasePath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_PushTo_GitHubRelease_GetVersion">
@@ -74,7 +87,8 @@
                Condition=" ('$(GitHubUserName)' == '' OR '$(GitHubUserName)' == 'UNDEFINED' ) AND '$(ShouldExecute)' == 'true' " />
 
         <!-- Process the build templates in the name -->
-        <Message Text="Translating the release name. Currently at: %(PushToGitHubReleaseSpecs.Identity)" />
+        <Message Text="Translating the release name. Currently at: %(PushToGitHubReleaseSpecs.Identity)"
+                 Importance="low"/>
         <TemplateText Template="%(PushToGitHubReleaseSpecs.Identity)"
                       Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.Identity)' != '' ">
@@ -82,7 +96,8 @@
         </TemplateText>
 
         <!-- Process the build templates in the included files -->
-        <Message Text="Translating the included files. Currently at: %(PushToGitHubReleaseSpecs.IncludedFiles)" />
+        <Message Text="Translating the included files. Currently at: %(PushToGitHubReleaseSpecs.IncludedFiles)"
+                 Importance="low"/>
         <TemplateText Template="%(PushToGitHubReleaseSpecs.IncludedFiles)"
                       Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.IncludedFiles)' != '' ">
@@ -90,7 +105,8 @@
         </TemplateText>
 
         <!-- Process the build templates in the excluded files -->
-        <Message Text="Translating the excluded files. Currently at: %(PushToGitHubReleaseSpecs.ExcludedFiles)" />
+        <Message Text="Translating the excluded files. Currently at: %(PushToGitHubReleaseSpecs.ExcludedFiles)"
+                 Importance="low"/>
         <TemplateText Template="%(PushToGitHubReleaseSpecs.ExcludedFiles)"
                       Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.ExcludedFiles)' != '' ">
@@ -98,7 +114,8 @@
         </TemplateText>
 
         <!-- Process the build templates in the description -->
-        <Message Text="Translating the description. Currently at: %(PushToGitHubReleaseSpecs.Description)" />
+        <Message Text="Translating the description. Currently at: %(PushToGitHubReleaseSpecs.Description)"
+                 Importance="low"/>
         <TemplateText Template="%(PushToGitHubReleaseSpecs.Description)"
                       Tokens="@(TemplateTokens)"
                       Condition=" '%(PushToGitHubReleaseSpecs.Description)' != '' ">
@@ -126,11 +143,16 @@
                Condition=" '$(GitHubReleaseRepository)' == '' AND '$(ShouldExecute)' == 'true' " />
 
         <!-- Create the release -->
-        <Message Text="Creating a release on GitHub with: " />
-        <Message Text="Repository:  $(GitHubUserName)/$(GitHubReleaseRepository)" />
-        <Message Text="Tag:         $(VersionSemantic)" />
-        <Message Text="Name:        $(GitHubReleaseName)" />
-        <Message Text="Description: $(GitHubReleaseDescription)" />
+        <Message Text="Creating a release on GitHub with: "
+                 Importance="low"/>
+        <Message Text="Repository:  $(GitHubUserName)/$(GitHubReleaseRepository)"
+                 Importance="low"/>
+        <Message Text="Tag:         $(VersionSemantic)"
+                 Importance="low"/>
+        <Message Text="Name:        $(GitHubReleaseName)"
+                 Importance="low"/>
+        <Message Text="Description: $(GitHubReleaseDescription)"
+                 Importance="low"/>
         <GitHubReleaseCreate GitHubReleasePath="$(ToolsExternalGitHubReleasePath)"
                              LocalPath="$(DirWorkspace)"
                              UserName="$(GitHubUserName)"
@@ -141,8 +163,10 @@
                              Condition=" '$(ShouldExecute)' == 'true' "/>
 
         <!-- Upload the files -->
-        <Message Text="Uploading files to release $(GitHubReleaseName) " />
-        <Message Text="%(GitHubReleaseFiles.FullPath)" />
+        <Message Text="Uploading files to release $(GitHubReleaseName) "
+                 Importance="low"/>
+        <Message Text="%(GitHubReleaseFiles.FullPath)"
+                 Importance="low"/>
         <GitHubReleaseUpload GitHubReleasePath="$(ToolsExternalGitHubReleasePath)"
                              LocalPath="$(DirWorkspace)"
                              UserName="$(GitHubUserName)"

@@ -51,20 +51,32 @@
     <Target Name="_nBuildKit_Analyze_Binaries_FxCop_DebugLog"
             Condition="$(ShouldDisplayDebugLog)"
             DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low" />
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low" />
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The FxCop project file is located at:                              $(FileProjectFxCop)" />
-        <Message Text="The FxCop report file is located at:                               $(FileReportFxCopExpanded)" />
-        <Message Text=" " />
+        <Message Text="The FxCop project file is located at:                              $(FileProjectFxCop)"
+                 Importance="low"/>
+        <Message Text="The FxCop report file is located at:                               $(FileReportFxCopExpanded)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="FxCop command line executable is located at:                       $(ToolsExternalFxCopDir)" />
-        <Message Text=" " />
+        <Message Text="FxCop command line executable is located at:                       $(ToolsExternalFxCopDir)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_Analyze_Binaries_FxCop_ReplaceBuildTemplates"
@@ -129,6 +141,7 @@
             <Output TaskParameter="Path" PropertyName="ToolsExternalFxCopDir" />
         </SearchPackagesDirectoryForToolDirectory>
         <Message Text="The FxCop directory was found at: $(ToolsExternalFxCopDir)"
+                 Importance="low"
                  Condition="Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the FxCop executable path. Cannot execute analysis of binaries."
                Condition="!Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' "/>

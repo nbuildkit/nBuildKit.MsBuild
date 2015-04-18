@@ -66,17 +66,25 @@
     <Target Name="_nBuildKit_Deploy_DebugLog" Condition="$(ShouldDisplayDebugLog)">
         <!-- Display the targets that will be executed -->
         <Message Text="Executing targets: @(BuildTasksToExecute->'%(identity)', '; ')"
+                 Importance="low"
                  Condition=" '@(DeployTasksToExecute)' != ''" />
         <Message Text="Executing targets: NONE"
+                 Importance="low"
                  Condition=" '@(DeployTasksToExecute)' == '' " />
-        <Message Text=" " />
+        <Message Text=" "
+                 Importance="low"/>
 
         <!-- Display the known directories -->
-        <Message Text="Project directory structure:"/>
-        <Message Text="The directory containing the local template files is located at:   $(DirTemplates)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The directory containing the local template files is located at:   $(DirTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
     </Target>
 
     <PropertyGroup>

@@ -62,14 +62,14 @@
                                     continue;
                                 }
 
-                                Log.LogMessage(MessageImportance.Normal, "Adding InternalsVisibleTo attribute for: " + taskItem.ItemSpec);
+                                Log.LogMessage(MessageImportance.Low, "Adding InternalsVisibleTo attribute for: " + taskItem.ItemSpec);
 
                                 var key = string.Empty;
 
                                 var publicKey = taskItem.GetMetadata("PublicKey");
                                 if (!string.IsNullOrEmpty(publicKey))
                                 {
-                                    Log.LogMessage(MessageImportance.Normal, "Using provided public key: " + publicKey);
+                                    Log.LogMessage(MessageImportance.Low, "Using provided public key: " + publicKey);
                                     key = publicKey;
                                 }
                                 else
@@ -77,7 +77,7 @@
                                     var keyFile = taskItem.GetMetadata("KeyFile");
                                     if (!string.IsNullOrEmpty(keyFile))
                                     {
-                                        Log.LogMessage(MessageImportance.Normal, "Extracting public key from key file: " + keyFile);
+                                        Log.LogMessage(MessageImportance.Low, "Extracting public key from key file: " + keyFile);
 
                                         if (!System.IO.Directory.Exists(DirTemp))
                                         {
@@ -104,7 +104,7 @@
                                                     {
                                                         if (!string.IsNullOrWhiteSpace(e.Data))
                                                         {
-                                                            Log.LogMessage(MessageImportance.Normal, e.Data);
+                                                            Log.LogMessage(MessageImportance.Low, e.Data);
                                                         }
                                                     };
                                                 process.ErrorDataReceived +=
@@ -151,7 +151,7 @@
                                                         text.Append(e.Data);
                                                         if (!string.IsNullOrWhiteSpace(e.Data))
                                                         {
-                                                            Log.LogMessage(MessageImportance.Normal, e.Data);
+                                                            Log.LogMessage(MessageImportance.Low, e.Data);
                                                         }
                                                     };
                                                 process.ErrorDataReceived +=
@@ -232,7 +232,7 @@
                                                     text.Append(e.Data);
                                                     if (!string.IsNullOrWhiteSpace(e.Data))
                                                     {
-                                                        Log.LogMessage(MessageImportance.Normal, e.Data);
+                                                        Log.LogMessage(MessageImportance.Low, e.Data);
                                                     }
                                                 };
                                             process.ErrorDataReceived +=

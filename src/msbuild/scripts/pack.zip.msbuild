@@ -36,17 +36,24 @@
     <!-- Display info -->
     <Target Name="_nBuildKit_Pack_Zip_DisplayInfo"
             DependsOnTargets="_nBuildKit_Pack_Zip_DebugLog">
-        <Message Text="Packing binaries ..." />
+        <Message Text="Packing binaries ..."
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_Pack_Zip_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <!--
@@ -57,7 +64,8 @@
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Condition=" '@(ArchivePackageSpecs)' != '' "
             Outputs="%(ArchivePackageSpecs.Identity)">
-        <Message Text="Resolving build templates for: %(ArchivePackageSpecs.Identity)" />
+        <Message Text="Resolving build templates for: %(ArchivePackageSpecs.Identity)"
+                 Importance="low"/>
 
         <!-- Process the build templates in the ZIP file path -->
         <TemplateText Template="%(ArchivePackageSpecs.Identity)"
@@ -105,8 +113,12 @@
         <Error Text="There are no files to be ZIP archived for $(FileArchiveSpecs)"
                Condition=" '@(PackageFiles)' == '' AND '$(ShouldExecute)' == 'true' "/>
 
-        <Message Text="Creating $(FileArchiveSpecs) with the following files: " />
-        <Message Text="%(PackageFiles.Identity)" />
+        <Message Text="Creating $(FileArchiveSpecs)"
+                 Importance="normal"/>
+        <Message Text="Using the following files: "
+                 Importance="low" />
+        <Message Text="%(PackageFiles.Identity)"
+                 Importance="low"/>
         <Zip InputFileNames="@(PackageFiles)"
              BaseDirectory="$(DirPackageSpecsBase)"
              OutputFileName="$(FileArchiveSpecs)"

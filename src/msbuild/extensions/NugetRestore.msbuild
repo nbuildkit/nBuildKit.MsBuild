@@ -26,7 +26,7 @@
                     {
                         if (!System.IO.File.Exists(PackageFile))
                         {
-                            Log.LogMessage("File does not exist: {0}", PackageFile);
+                            Log.LogMessage(MessageImportance.High, "File does not exist: {0}", PackageFile);
                         }
 
                         var builder = new System.Text.StringBuilder();
@@ -55,7 +55,7 @@
                             {
                                 if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
-                                    Log.LogMessage(MessageImportance.Normal, e.Data);
+                                    Log.LogMessage(MessageImportance.Low, e.Data);
                                 }
                             };
                         process.ErrorDataReceived +=

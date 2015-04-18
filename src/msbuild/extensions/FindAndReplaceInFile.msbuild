@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsFindAndReplaceInFile>true</ExistsExtensionsFindAndReplaceInFile>
     </PropertyGroup>
-    
-    <UsingTask TaskName="FindAndReplaceInFile" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="FindAndReplaceInFile"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <Input ParameterType="System.String" Required="true" />
@@ -47,16 +47,16 @@
                             {
                                 text = streamReader.ReadToEnd();
                             }
-                            
+
                             foreach (var pair in toReplace)
                             {
                                 if (text.Contains(pair.Key))
                                 {
-                                    Log.LogMessage("Replacing [" + pair.Key + "] with [" + pair.Value + "]");
+                                    Log.LogMessage(MessageImportance.Low, "Replacing [" + pair.Key + "] with [" + pair.Value + "]");
                                     text = text.Replace(pair.Key, pair.Value);
                                 }
                             }
-                            
+
                             using (var streamWriter = new System.IO.StreamWriter(Input))
                             {
                                 streamWriter.WriteLine(text);
@@ -64,12 +64,12 @@
                             }
                         }
 
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

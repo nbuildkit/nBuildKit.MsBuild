@@ -47,17 +47,27 @@
 
     <Target Name="_nBuildKit_Build_ApiDocumentation_SandCastle_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
-        <Message Text="The sandcastle template file is located at:                        $(FileTemplateSandcastle)" />
-        <Message Text=" " />
+        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)"
+                 Importance="low"/>
+        <Message Text="The sandcastle template file is located at:                        $(FileTemplateSandcastle)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <PropertyGroup>
@@ -117,8 +127,10 @@
         <Error Text="The Sandcastle file does not exist. Cannot generate documentation."
                Condition="!Exists('$(FileGeneratedSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
 
-        <Message Text="DirSandcastle = $(DirSandcastle)" />
-        <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
+        <Message Text="DirSandcastle = $(DirSandcastle)"
+                 Importance="low"/>
+        <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)"
+                 Importance="low"/>
 
         <!-- Run sandcastle via msbuild -->
         <Exec Command="&quot;$(MSBuildToolsPath)/msbuild.exe&quot; &quot;$(FileGeneratedSandcastle)&quot;"
@@ -143,6 +155,7 @@
             <Output TaskParameter="Path" PropertyName="DirSandcastle" />
         </SearchPackagesDirectoryForToolDirectory>
         <Message Text="The Sandcastle directory was found at: $(DirSandCastle)"
+                 Importance="low"
                  Condition="Exists('$(DirSandcastle)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the Sandcastle transformation path. Cannot generate the API documentation."
                Condition="!Exists('$(DirSandcastle)') AND '$(ShouldExecute)' == 'true' "/>
@@ -160,12 +173,15 @@
             <Output TaskParameter="Path" PropertyName="DirSandcastleHelpFileBuilder" />
         </SearchPackagesDirectoryForToolDirectory>
         <Message Text="The Sandcastle help file builder executable was found at: $(DirSandcastleHelpFileBuilder)"
+                 Importance="low"
                  Condition="Exists('$(DirSandcastleHelpFileBuilder)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the Sandcastle help file builder executable path. Cannot generate the API documentation."
                Condition="!Exists('$(DirSandcastleHelpFileBuilder)') AND '$(ShouldExecute)' == 'true' "/>
 
-        <Message Text="DirSandcastle = $(DirSandcastle)" />
-        <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)" />
+        <Message Text="DirSandcastle = $(DirSandcastle)"
+                 Importance="low"/>
+        <Message Text="DirSandcastleHelpFileBuilder = $(DirSandcastleHelpFileBuilder)"
+                 Importance="low"/>
 
         <!--
             Set an environment variable for the sandcastle process. Note that MsBuild itself won't be able to pick this

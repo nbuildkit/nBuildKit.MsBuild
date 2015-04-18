@@ -32,20 +32,31 @@
 
     <!-- Display info -->
     <Target Name="_nBuildKit_PushTo_SymbolServer_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_SymbolServer_DebugLog">
-        <Message Text="Pushing NuGet symbol packages to the symbol server ..." Condition=" '$(SymbolServerUrl)' == '' AND '$(SymbolServerUrl)' != 'UNDEFINED' " />
-        <Error Text="No symbol server path defined!" Condition=" '$(SymbolServerUrl)' == '' OR '$(SymbolServerUrl)' == 'UNDEFINED' " />
+        <Message Text="Pushing NuGet symbol packages to the symbol server ..."
+                 Importance="low"
+                 Condition=" '$(SymbolServerUrl)' == '' AND '$(SymbolServerUrl)' != 'UNDEFINED' " />
+        <Error Text="No symbol server path defined!"
+               Condition=" '$(SymbolServerUrl)' == '' OR '$(SymbolServerUrl)' == 'UNDEFINED' " />
     </Target>
 
     <Target Name="_nBuildKit_PushTo_SymbolServer_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="Pushing symbol packages to:                                        $(SymbolServerUrl)" />
-        <Message Text=" " />
+        <Message Text="Pushing symbol packages to:                                        $(SymbolServerUrl)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_PushTo_SymbolServer_Push"

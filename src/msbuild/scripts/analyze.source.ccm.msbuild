@@ -46,26 +46,40 @@
     <Target Name="_nBuildKit_Analyze_Source_Ccm_DebugLog"
             Condition="$(ShouldDisplayDebugLog)"
             DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The CCM template file is located at:                               $(FileTemplateCcm)" />
-        <Message Text="The CCM report file is located at:                                 $(FileReportCcmExpanded)" />
-        <Message Text=" " />
+        <Message Text="The CCM template file is located at:                               $(FileTemplateCcm)"
+                 Importance="low"/>
+        <Message Text="The CCM report file is located at:                                 $(FileReportCcmExpanded)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="CCM command line executable is located at:                         $(ToolsExternalCcmPath)" />
-        <Message Text=" " />
+        <Message Text="CCM command line executable is located at:                         $(ToolsExternalCcmPath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
-        <Message Text="Resolving build templates for: $(FileReportCcm)" />
+        <Message Text="Resolving build templates for: $(FileReportCcm)"
+                 Importance="low"/>
 
         <TemplateText Template="$(FileReportCcm)"
                       Tokens="@(TemplateTokens)">
@@ -98,6 +112,7 @@
             <Output TaskParameter="Path" PropertyName="ToolsExternalCcmPath" />
         </SearchPackagesDirectoryForToolPath>
         <Message Text="The CCM executable was found at: $(ToolsExternalCcmPath)"
+                 Importance="low"
                  Condition="Exists('$(ToolsExternalCcmPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the CCM executable path. Cannot execute source code analysis."
                Condition="!Exists('$(ToolsExternalCcmPath)') AND '$(ShouldExecute)' == 'true' "/>

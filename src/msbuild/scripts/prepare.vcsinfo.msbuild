@@ -32,28 +32,42 @@
     <!-- Display info -->
     <Target Name="_nBuildKit_Prepare_VcsInfo_DisplayInfo"
             DependsOnTargets="_nBuildKit_Prepare_VcsInfo_DebugLog">
-        <Message Text="Writing GIT workspace information to file ..." />
+        <Message Text="Writing GIT workspace information to file ..."
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_Prepare_VcsInfo_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The VCS info file is located at:                                   $(FileVcsInfo)" />
-        <Message Text=" " />
+        <Message Text="The VCS info file is located at:                                   $(FileVcsInfo)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="GIT command line executable is located at:                         $(ToolsExternalGitPath)" />
-        <Message Text=" " />
+        <Message Text="GIT command line executable is located at:                         $(ToolsExternalGitPath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
         <Message Text="The current workspace is a GIT workspace"
+                 Importance="low"
                  Condition=" '$(IsGitWorkspace)' == 'true' " />
         <Warning Text="The current workspace does not have any identifying VCS information. No VCS info file will be created"
+                 Importance="low"
                  Condition=" '$(IsGitWorkspace)' != 'true' " />
-        <Message Text=" " />
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_Prepare_VcsInfo_GatherGitInfo"

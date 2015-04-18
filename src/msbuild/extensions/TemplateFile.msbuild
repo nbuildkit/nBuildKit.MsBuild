@@ -1,16 +1,16 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsTemplateFile>true</ExistsExtensionsTemplateFile>
     </PropertyGroup>
-    
-    <UsingTask TaskName="TemplateFile" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="TemplateFile"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
             <Template ParameterType="System.String" Required="true" />
@@ -25,9 +25,9 @@
                         const string MetadataValueTag = "ReplacementValue";
                         var _regex = new System.Text.RegularExpressions.Regex(
                             "(?<token>\\$\\{(?<identifier>\\w*)\\})",
-                            System.Text.RegularExpressions.RegexOptions.IgnoreCase 
-                            | System.Text.RegularExpressions.RegexOptions.Multiline 
-                            | System.Text.RegularExpressions.RegexOptions.Compiled 
+                            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+                            | System.Text.RegularExpressions.RegexOptions.Multiline
+                            | System.Text.RegularExpressions.RegexOptions.Compiled
                             | System.Text.RegularExpressions.RegexOptions.Singleline);
 
                         if (!System.IO.File.Exists(Template))
@@ -54,7 +54,7 @@
                             {
                                 string value = _regex.Replace(
                                     streamReader.ReadToEnd(),
-                                    m => 
+                                    m =>
                                     {
                                         var output = m.Value;
                                         if (tokenPairs.ContainsKey(m.Groups[2].Value))
@@ -68,17 +68,17 @@
                                 {
                                     streamWriter.Write(value);
                                     streamWriter.Flush();
-                                    Log.LogMessage("Template replaced and written to '{0}'", OutputFileName);
+                                    Log.LogMessage(MessageImportance.Low, "Template replaced and written to '{0}'", OutputFileName);
                                 }
                             }
                         }
 
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged 
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
                         return !Log.HasLoggedErrors;
                     }
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

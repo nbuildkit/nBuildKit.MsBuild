@@ -42,25 +42,38 @@
     <Target Name="_nBuildKit_Analyze_Binaries_Moma_DebugLog"
             Condition="$(ShouldDisplayDebugLog)"
             DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates">
-        <Message Text="Project directory structure:" />
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)" />
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)" />
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
-        <Message Text=" " />
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="The MoMA report file is located at:                                $(FileReportMomaExpanded)" />
-        <Message Text=" " />
+        <Message Text="The MoMA report file is located at:                                $(FileReportMomaExpanded)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
 
-        <Message Text="MoMA command line executable is located at:                        $(ToolsExternalMomaPath)" />
-        <Message Text=" " />
+        <Message Text="MoMA command line executable is located at:                        $(ToolsExternalMomaPath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
     </Target>
 
     <Target Name="_nBuildKit_Analyze_Binaries_Moma_ReplaceBuildTemplates"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
-        <Message Text="Resolving build templates for: $(FileReportMoma)" />
+        <Message Text="Resolving build templates for: $(FileReportMoma)"
+                 Importance="low"/>
 
         <TemplateText Template="$(FileReportMoma)"
                       Tokens="@(TemplateTokens)">
@@ -92,6 +105,7 @@
             <Output TaskParameter="Path" PropertyName="ToolsExternalMomaPath" />
         </SearchPackagesDirectoryForToolPath>
         <Message Text="The MoMA executable was found at: $(ToolsExternalMomaPath)"
+                 Importance="low"
                  Condition="Exists('$(ToolsExternalMomaPath)') AND '$(ShouldExecute)' == 'true' " />
         <Error Text="Could not locate the MoMA executable path. Cannot execute analysis of binaries."
                Condition="!Exists('$(ToolsExternalMomaPath)') AND '$(ShouldExecute)' == 'true' "/>
