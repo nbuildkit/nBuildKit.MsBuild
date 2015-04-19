@@ -20,8 +20,8 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild"
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
     <Import Project="$(DirMsBuildExtensions)\NuGetPush.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\NuGetPush.msbuild') AND '$(ExistsExtensionsNuGetPush)' != 'true' "/>
@@ -48,7 +48,7 @@
                  Importance="low"/>
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirMsBuildShared)"
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
                  Importance="low"/>
