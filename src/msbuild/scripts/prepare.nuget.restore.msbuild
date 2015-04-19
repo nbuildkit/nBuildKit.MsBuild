@@ -23,17 +23,26 @@
     <Import Project="$(DirMsBuildExtensions)\NuGetRestore.msbuild"
             Condition="Exists('$(DirMsBuildExtensions)\NuGetRestore.msbuild') AND '$(ExistsExtensionsNuGetRestore)' != 'true' "/>
 
+    <PropertyGroup>
+        <FileNuGetRestoreComplete>$(DirBuildTemp)\nuget_restore.json</FileNuGetRestoreComplete>
+    </PropertyGroup>
+
     <Target Name="nBuildKit_Prepare_NuGet_Restore_Run"
-            DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo">
+            DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_DisplayInfo"
+            Condition="!Exists('$(FileNuGetRestoreComplete)')">
         <CallTarget Targets="_nBuildKit_Prepare_NuGet_Restore_Packages" />
+        <CallTarget Targets="_nBuildKit_Prepare_Nuget_Restore_IndicateComplete" />
     </Target>
 
-    <Target Name="_nBuildKit_Prepare_NuGet_Restore_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Prepare_NuGet_Restore_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:"
                  Importance="low"/>
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
                  Importance="low"/>
         <Message Text="The directory containing the build output is located at:           $(DirBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
                  Importance="low"/>
         <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
                  Importance="low"/>
@@ -75,5 +84,28 @@
                       PackageFile="%(NuGetPackageFiles.FullPath)"
                       PackageDirectory="$(DirPackages)"
                       Condition=" '@(NuGetPackageFiles)' != '' AND '$(ShouldExecute)' == 'true' "/>
+    </Target>
+
+    <PropertyGroup>
+        <Now>$([System.DateTime]::Now.ToString("o"))</Now>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Prepare_Nuget_Restore_IndicateComplete"
+            DependsOnTargets="_nBuildKit_Prepare_NuGet_Restore_Packages">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileNuGetRestoreComplete)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)"
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+
+        <ItemGroup>
+            <Items_NuGetRestore Include="{" />
+            <Items_NuGetRestore Include="    &quot;RestoredAt&quot;: &quot;$(Now)&quot;," />
+            <Items_NuGetRestore Include="}" />
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(FileNuGetRestoreComplete)"
+                          Lines="@(Items_NuGetRestore)"
+                          Overwrite="true"
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
