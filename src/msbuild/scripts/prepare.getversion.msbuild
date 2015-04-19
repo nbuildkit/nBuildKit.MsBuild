@@ -112,7 +112,13 @@
             <Output TaskParameter="Value" PropertyName="VersionSemantic" />
         </CreateProperty>
 
-        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)+$(VersionBuild)">
+        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)-$(VersionPreRelease)+$(VersionBuild)"
+                        Condition=" '$(VersionPreRelease)' != '' ">
+            <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
+        </CreateProperty>
+
+        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)+$(VersionBuild)"
+                        Condition=" '$(VersionPreRelease)' == '' ">
             <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
         </CreateProperty>
 
@@ -155,6 +161,9 @@
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitVersion"
             Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND Exists('$(ToolsExternalGitVersionPath)') AND ('$(IsGitWorkspace)' == 'true')">
+        <Message Text="Getting version from the GitVersion ..."
+                 Importance="low"/>
+
         <CalculateSemanticVersionWithGitVersion ExePath="$(ToolsExternalGitVersionPath)"
                                                 RemoteRepositoryUrl="$(GitRemoteRepository)"
                                                 UserName="$(GitUserName)"
@@ -172,6 +181,9 @@
 
     <Target Name="_nBuildKit_Prepare_GetVersion_GetSemanticVersionViaGitHubFlowVersion"
             Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND !Exists('$(ToolsExternalGitVersionPath)') AND Exists('$(ToolsExternalGitHubFlowVersionPath)') AND ('$(IsGitWorkspace)' == 'true')">
+        <Message Text="Getting version from the GitHubFlowVersion ..."
+                 Importance="low"/>
+
         <CalculateSemanticVersionWithGitHubFlowVersion ExePath="$(ToolsExternalGitHubFlowVersionPath)"
                                                        TempDir="$(DirBuildTemp)"
                                                        Condition=" '$(ShouldExecute)' == 'true' ">
