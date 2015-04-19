@@ -51,6 +51,7 @@
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
         <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
 
@@ -60,6 +61,7 @@
         -->
         <DefaultPathProperties>
             DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
+            DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);
             DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
             DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)
         </DefaultPathProperties>
@@ -102,6 +104,8 @@
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirNBuildKitMsBuildShared)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
