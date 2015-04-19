@@ -23,10 +23,10 @@
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
     <Target Name="nBuildKit_Analyze_Binaries_Moma_Run"
             DependsOnTargets="_nBuildKit_Analyze_Binaries_Moma_DisplayInfo">
@@ -53,7 +53,7 @@
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
                  Importance="low"/>

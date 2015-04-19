@@ -44,11 +44,11 @@
         <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(DirSrc)</SolutionDir>
 
         <DirNBuildKitMsBuild>$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirMsBuildExtensions>
+        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirNBuildKitMsBuildExtensions>
 
         <DefaultPathProperties>
             DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
-            DirMsBuildExtensions=$(DirMsBuildExtensions)
+            DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
         </DefaultPathProperties>
         <DefaultFiles>
             FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;

@@ -23,14 +23,14 @@
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
-    <Import Project="$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\SetEnvironmentVariable.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\SetEnvironmentVariable.msbuild') AND '$(ExistsExtensionsSetEnvironmentVariable)' != 'true' "/>
-    <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SetEnvironmentVariable.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SetEnvironmentVariable.msbuild') AND '$(ExistsExtensionsSetEnvironmentVariable)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "/>
 
     <Target Name="nBuildKit_Build_ApiDocumentation_SandCastle_Run"
             DependsOnTargets="_nBuildKit_Build_ApiDocumentation_SandCastle_DisplayInfo">
@@ -56,7 +56,7 @@
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
                  Importance="low"/>

@@ -23,16 +23,16 @@
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
-    <Import Project="$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\FindAndReplaceInFile.msbuild') AND '$(ExistsExtensionsFindAndReplaceInFile)' != 'true' "/>
-    <Import Project="$(DirMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild') AND '$(ExistsExtensionsGatherNuGetDependenciesForProject)' != 'true' "/>
-    <Import Project="$(DirMsBuildExtensions)\NuGetPack.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\NuGetPack.msbuild') AND '$(ExistsExtensionsNuGetPack)' != 'true' "/>
-    <Import Project="$(DirMsBuildExtensions)\TemplateFile.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "/>
-    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\FindAndReplaceInFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\FindAndReplaceInFile.msbuild') AND '$(ExistsExtensionsFindAndReplaceInFile)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild') AND '$(ExistsExtensionsGatherNuGetDependenciesForProject)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetPack.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetPack.msbuild') AND '$(ExistsExtensionsNuGetPack)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
     <Target Name="nBuildKit_Pack_NuGet_Run"
             DependsOnTargets="_nBuildKit_Pack_NuGet_DisplayInfo">
@@ -59,7 +59,7 @@
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
                  Importance="low"/>

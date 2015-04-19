@@ -23,14 +23,14 @@
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
-    <Import Project="$(DirMsBuildExtensions)\FxCopViaAssemblies.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\FxCopViaAssemblies.msbuild') AND '$(ExistsExtensionsFxCopViaAssemblies)' != 'true' "/>
-    <Import Project="$(DirMsBuildExtensions)\FxCopFxCopViaProject.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\FxCopFxCopViaProject.msbuild') AND '$(ExistsExtensionsFxCopViaProject)' != 'true' "/>
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\FxCopViaAssemblies.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\FxCopViaAssemblies.msbuild') AND '$(ExistsExtensionsFxCopViaAssemblies)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\FxCopFxCopViaProject.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\FxCopFxCopViaProject.msbuild') AND '$(ExistsExtensionsFxCopViaProject)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
     <Target Name="nBuildKit_Analyze_Binaries_FxCop_Run"
             DependsOnTargets="_nBuildKit_Analyze_Binaries_FxCop_DisplayInfo">
@@ -60,7 +60,7 @@
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
                  Importance="low"/>
