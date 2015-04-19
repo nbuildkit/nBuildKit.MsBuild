@@ -20,15 +20,15 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <Import Project="$(DirMsBuildShared)\shared.templatetokens.msbuild"
-            Condition="Exists('$(DirMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
-    <Import Project="$(DirMsBuildExtensions)\GitHubReleaseCreate.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\GitHubReleaseCreate.msbuild') AND '$(ExistsExtensionsGitHubReleaseCreate)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\GitHubReleaseUpload.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\GitHubReleaseUpload.msbuild') AND '$(ExistsExtensionsGitHubReleaseUpload)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\TemplateText.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitHubReleaseCreate.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitHubReleaseCreate.msbuild') AND '$(ExistsExtensionsGitHubReleaseCreate)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitHubReleaseUpload.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitHubReleaseUpload.msbuild') AND '$(ExistsExtensionsGitHubReleaseUpload)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
     <Target Name="nBuildKit_PushTo_GitHubRelease_Run" DependsOnTargets="_nBuildKit_PushTo_GitHubRelease_DisplayInfo">
         <CallTarget Targets="_nBuildKit_PushTo_GitHubRelease_GetVersion" />
@@ -52,11 +52,14 @@
                  Importance="low"/>
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirNBuildKitMsBuildShared)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)" />
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
+                 Importance="low"/>
         <Message Text=" "
                  Importance="low"/>
 

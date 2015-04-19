@@ -20,12 +20,12 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <Import Project="$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitVersion)' != 'true' " />
-    <Import Project="$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitVersion)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
 
     <Import Project="$(VersionScriptPath)"
             Condition=" '$(VersionScriptPath)' != '' AND '$(VersionScriptPath)' != 'UNDEFINED' AND Exists('$(VersionScriptPath)')" />
@@ -54,11 +54,11 @@
                  Importance="low"/>
         <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
                  Importance="low"/>
         <Message Text=" "
                  Importance="low"/>

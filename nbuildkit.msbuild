@@ -15,9 +15,10 @@
             Hard-code the paths to the different directories because we're dog-fooding here so we know exactly
             where all the files are.
         -->
-        <DirMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirMsBuildExtensions>
-        <DirMsBuildShared>$(DirWorkspace)\src\msbuild\shared</DirMsBuildShared>
-        <DirMsBuildTemplates>$(DirWorkspace)\src\templates</DirMsBuildTemplates>
+        <DirNBuildKitMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirNBuildKitMsBuildExtensions>
+        <DirNBuildKitMsBuildShared>$(DirWorkspace)\src\msbuild\shared</DirNBuildKitMsBuildShared>
+        <DirNBuildKitMsBuildTemplates>$(DirWorkspace)\src\templates</DirNBuildKitMsBuildTemplates>
+
         <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
         <DirNBuildKit>$(DirMsBuildScripts)\src\msbuild\scripts</DirNBuildKit>
 
@@ -51,7 +52,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\build.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions);DirMsBuildShared=$(DirMsBuildShared);DirMsBuildTemplates=$(DirMsBuildTemplates)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -73,7 +74,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\deploy.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);DirMsBuildExtensions=$(DirMsBuildExtensions);DirMsBuildShared=$(DirMsBuildShared);DirMsBuildTemplates=$(DirMsBuildTemplates)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

@@ -44,13 +44,13 @@
         <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(DirSrc)</SolutionDir>
 
         <DirNBuildKitMsBuild>$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
-        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(DirNBuildKitMsBuild)</DirMsBuildShared>
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirMsBuildExtensions>
+        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirNBuildKitMsBuildExtensions>
+        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(DirNBuildKitMsBuild)\templates</DirNBuildKitMsBuildTemplates>
 
         <DefaultPathProperties>
             DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
-            DirMsBuildShared=$(DirMsBuildShared);
-            DirMsBuildExtensions=$(DirMsBuildExtensions)
+            DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
+            DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)
         </DefaultPathProperties>
         <DefaultFiles>
             FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;

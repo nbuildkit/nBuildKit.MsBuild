@@ -20,8 +20,8 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <Import Project="$(DirMsBuildExtensions)\GitInfo.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' " />
 
     <Target Name="nBuildKit_Prepare_VcsInfo_Run"
             DependsOnTargets="_nBuildKit_Prepare_VcsInfo_DisplayInfo"
@@ -41,11 +41,11 @@
                  Importance="low"/>
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirMsBuildExtensions)"
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirMsBuildTemplates)"
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirMsBuildShared)"
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
                  Importance="low"/>
         <Message Text=" "
                  Importance="low"/>
