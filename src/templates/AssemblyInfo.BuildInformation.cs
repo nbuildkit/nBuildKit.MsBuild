@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright company="${CompanyName}">
-//     Copyright (c) ${CompanyName}. All rights reserved.
+//     ${CopyrightShort}
 // </copyright>
 //-----------------------------------------------------------------------
 //
@@ -19,7 +19,7 @@ using Nuclei.Build;
 
 /*
  * THIS IS A GENERATED FILE. DO NOT MAKE CHANGES IN THIS FILE BECAUSE ANY
- * CHANGES WILL BE UNDONE THE NEXT TIME THE FILE IS GENERATED! 
+ * CHANGES WILL BE UNDONE THE NEXT TIME THE FILE IS GENERATED!
  */
 
 // The build configuration (e.g. debug/release)
@@ -30,7 +30,7 @@ using Nuclei.Build;
 
 // The version from which the assembly was build
 [module: SuppressMessage(
-    "Microsoft.Usage", 
-    "CA2243:AttributeStringLiteralsShouldParseCorrectly", 
+    "Microsoft.Usage",
+    "CA2243:AttributeStringLiteralsShouldParseCorrectly",
     Justification = "It's a VCS revision, not a version")]
 [assembly: AssemblyBuildInformation(buildNumber: ${VersionBuild}, versionControlInformation: "${VcsRevision}")]

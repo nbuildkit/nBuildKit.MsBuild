@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright company="${CompanyName}">
-//     Copyright (c) ${CompanyName}. All rights reserved.
+//     ${CopyrightShort}
 // </copyright>
 //-----------------------------------------------------------------------
 //
@@ -17,7 +17,7 @@ using System.Runtime.CompilerServices;
 
 /*
  * THIS IS A GENERATED FILE. DO NOT MAKE CHANGES IN THIS FILE BECAUSE ANY
- * CHANGES WILL BE UNDONE THE NEXT TIME THE FILE IS GENERATED! 
+ * CHANGES WILL BE UNDONE THE NEXT TIME THE FILE IS GENERATED!
  */
 
 ${InternalsVisibleToAttributes}
