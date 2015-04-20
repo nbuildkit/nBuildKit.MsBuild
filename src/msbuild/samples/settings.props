@@ -39,6 +39,9 @@
         ${CompanyNameInFilePath} - The name of the company written in a way that it can be used in the file path
         ${CompanyUrl}            - The URL of the company website
 
+        ${CopyrightShort}        - The short form of the copyright
+        ${CopyrightLong}         - The long form of the copyright
+
         ${DirBin}                - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
         ${DirDeploy}             - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
         ${DirLogs}               - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
@@ -109,6 +112,23 @@
             * API documentation
         -->
         <EmailDocumentation Condition=" '$(EmailDocumentation)' == '' ">UNDEFINED</EmailDocumentation>
+
+        <!--
+            The short form of the  copyright text. This is for instance used for:
+            * Documentation copyrights
+            * Generated file copyrights
+        -->
+        <CopyrightShort>
+            Copyright (c) - $(CompanyName). All rights reserved.
+        </CopyrightShort>
+
+        <!--
+            The long form of the  copyright text. This is for instance used for:
+            * Assembly copyrights
+        -->
+        <CopyrightLong>
+            Copyright (c) - $(CompanyName) $(ProductStartingYear) - $([System.DateTime]::Now.ToString("yyyy")). All rights reserved.
+        </CopyrightLong>
     </PropertyGroup>
 
     <!-- Overrides for the VCS specific properties -->
