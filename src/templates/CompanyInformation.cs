@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright company="${CompanyName}">
-//     Copyright (c) ${CompanyName}. All rights reserved.
+//     ${CopyrightShort}
 // </copyright>
 //-----------------------------------------------------------------------
 //
@@ -27,12 +27,12 @@ namespace ${ProductNamespace}.Internals
         /// The name of the company.
         /// </summary>
         public const string CompanyName = "${CompanyName}";
-        
+
         /// <summary>
         /// The name of the path in the file system related to the company name.
         /// </summary>
         public const string CompanyNameInFilePath = "${CompanyNameInFilePath}";
-        
+
         /// <summary>
         /// The URL of the main website of the company.
         /// </summary>

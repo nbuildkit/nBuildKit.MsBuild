@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright company="${CompanyName}">
-//     Copyright (c) ${CompanyName}. All rights reserved.
+//     ${CopyrightShort}
 // </copyright>
 //-----------------------------------------------------------------------
 //
