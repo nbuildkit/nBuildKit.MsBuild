@@ -31,8 +31,16 @@
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\GetVcsInfoFromFile.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetVcsInfoFromFile.msbuild') AND '$(ExistsExtensionsGetVcsInfoFromFile)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
     <Target Name="nBuildKit_Shared_TemplateTokens_Initialize">
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Initialize_GetPropertyValues" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Initialize_StandardParameters" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Initialize_SpecialVersionParameters" />
+    </Target>
+
+    <Target Name="nBuildKit_Shared_TemplateTokens_Initialize_GetPropertyValues">
         <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)"
                                     Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
@@ -60,7 +68,10 @@
             <Output TaskParameter="Revision" PropertyName="VcsRevision" />
             <Output TaskParameter="Branch" PropertyName="VcsBranch" />
         </GetVcsInfoFromFile>
+    </Target>
 
+    <Target Name="nBuildKit_Shared_TemplateTokens_Initialize_StandardParameters"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize_GetPropertyValues">
         <ItemGroup>
             <!-- Versions -->
             <TemplateTokens Include="VersionMajor">
@@ -187,5 +198,29 @@
                 <ReplacementValue>$(NBuildKitVersion)</ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
+    </Target>
+
+    <Target Name="nBuildKit_Shared_TemplateTokens_Initialize_SpecialVersionParameters"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize_StandardParameters"
+            Outputs="%(TemplateVersion.Identity)">
+        <!--
+            Transform the template text in the version number into a string without template parameters
+            in it and assign it to the requested property.
+        -->
+        <TemplateText Template="%(TemplateVersion.Template)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="TemplateVersionWithReplacedParameters" />
+        </TemplateText>
+
+        <!--
+            Add the new value to the list of template tokens under the given name.
+        -->
+        <CreateItem
+            Include="%(TemplateVersion.Identity)"
+            AdditionalMetadata="ReplacementValue=$(TemplateVersionWithReplacedParameters)">
+           <Output
+               TaskParameter="Include"
+               ItemName="TemplateTokens"/>
+        </CreateItem>
     </Target>
 </Project>
