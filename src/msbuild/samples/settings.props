@@ -49,6 +49,10 @@
         ${DirTemp}               - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
 
         ${VersionNBuildKit}      - The semantic version of nBuildKit that was used for the current build
+
+
+        Special template parameters exists for additional version numbers. These are defined in the TemplateVersion ItemGroup
+        as defined below.
     -->
     <!-- Overrides for the project specific properties -->
     <PropertyGroup>
@@ -156,6 +160,63 @@
         -->
         <IsTfsWorkspace Condition=" '$(IsTfsWorkspace)' == '' ">false</IsTfsWorkspace>
     </PropertyGroup>
+
+    <!--
+        Defines the custom version numbers that should be available for template replacement.
+        The template consists of a name and a version number string. The name will be used as the
+        name of the template, i.e. 'VersionAssembly' will be available in the collection of template
+        parameters available for replacement.
+
+        Each version number may consist of zero or more template parameters. Template parameters
+        must be enclosed in '${}', e.g. ${VersionMajor} will be replaced by the major version number
+        as indicated at the top of the file.
+
+        Note that custom version number templates may not reference other custom version number templates.
+    -->
+    <ItemGroup>
+        <!--
+            The template for the version number that will be used in the 'AssemblyVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <TemplateVersion Include="VersionAssembly">
+            <Template>${VersionMajor}.${VersionMinor}.0.0</Template>
+        </TemplateVersion>
+        <!--
+            The template for the version number that will be used in the 'AssemblyFileVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <TemplateVersion Include="VersionAssemblyFile">
+            <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}.${VersionBuild}</Template>
+        </TemplateVersion>
+        <!--
+            The template for the version number that will be used in the 'AssemblyInformationalVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+
+            Also used as the 'ApplicationVersion' in the 'VersionNumber.wxi' file.
+        -->
+        <TemplateVersion Include="VersionProduct">
+            <Template>${VersionSemanticFull}</Template>
+        </TemplateVersion>
+        <!--
+            The template for the version number that will be used as the 'InstallVersion' in the
+            'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <TemplateVersion Include="VersionInstall">
+            <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}</Template>
+        </TemplateVersion>
+        <!--
+            The template for the version number that will be used as the 'ProductVersionFolder' in the
+            'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <TemplateVersion Include="VersionInstallFilePath">
+            <Template>${VersionMajor}.${VersionMinor}</Template>
+        </TemplateVersion>
+    </ItemGroup>
 
 
 
@@ -643,8 +704,8 @@
     <PropertyGroup>
         <!--
             A flag that indicates whether the source files with the company and product information should be generated.
-            The files will be placed in the source directory (i.e. DirSrc) and will be called CompanyInformation.xx and
-            ProductInformation.xx.
+            The files will be placed in the source directory (i.e. DirSrc) and will be called CompanyInformation.xx
+            (cs/vb/wxi) and ProductInformation.xx (cs/vc/wxi).
 
             The CompanyInformation file will contain the Company website URL, the company name and the company name as used
             in file paths.
@@ -660,26 +721,32 @@
         <!--
             A flag that indicates whether an AssemblyInfo file with the company and copyright information should be generated.
             The file will be placed in the Properties directory of the Visual Studio project and will be named
-            AssemblyInfo.Company.xx. This file will contain:
+            AssemblyInfo.Company.xx (cs/vb). This file will contain:
             - The AssemblyCompanyAttribute with the company name
-            - The AssemblyCopyrightAttribute with the text "Copyright <CompanyName> <ProductStartingYear> - <CurrentYear>".
+            - The AssemblyCopyrightAttribute with the text provided by the ${CopyrightLong} template parameter.
         -->
         <ShouldGenerateAssemblyCompanyInfo>false</ShouldGenerateAssemblyCompanyInfo>
 
         <!--
             A flag that indicates whether an AssemblyInfo file with the version numbers should be generated. The file
             will be placed in the Properties directory of the Visual Studio project and will be named
-            AssemblyInfo.Version.xx. This file will contain:
-            - The AssemblyVersionAttribute with the version as <MAJOR>.<MINOR>.0.0
-            - The AssemblyFileVersionAttribute with the version as <MAJOR>.<MINOR>.<PATCH>.<BUILD>
-            - The AssemblyInformationalVersionAttribute with the version as the full semantic version
+            AssemblyInfo.Version.xx (cs/vb). This file will contain:
+            - The AssemblyVersionAttribute with the version as provided by the ${VersionAssembly} template parameter.
+            - The AssemblyFileVersionAttribute with the version as provided by the ${VersionAssemblyFile} template parameter.
+            - The AssemblyInformationalVersionAttribute with the version as provided by the ${VersionProduct} template parameter.
+
+            Also indicates that a VersionNumber.wxi should be generated. This file will be placed
+            in the project folder of the Visual Studio project. This file will contain:
+            - The ApplicationVersion property with the version as provided by the ${VersionProduct} template parameter.
+            - The InstallVersion property with the version as provided by the ${VersionInstall} template parameter.
+            - The ProductVersionFolder property with the version as provided by the ${VersionInstallFilePath} template parameter.
         -->
         <ShouldGenerateAssemblyVersionInfo>false</ShouldGenerateAssemblyVersionInfo>
 
         <!--
             A flag that indicates whether an AssemblyInfo file with the build information should be generated. The file
             will be placed in the Properties directory of the Visual Studio project and will be named
-            AssemblyInfo.BuildInformation.xx. This file will contain
+            AssemblyInfo.BuildInformation.xx (cs/vb). This file will contain
             - The AssemblyConfigurationAttribute containing the configuration of the build, e.g. Debug
             - The AssemblyBuildTimeAttribute containing the complete date and time that the file was generated (which
               should be close enough to the time the assembly was build).
