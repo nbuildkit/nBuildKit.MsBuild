@@ -1,1 +1,1 @@
-This file was installed by ${PackageName}.
+This file was installed by ${PackageName} [version: ${VersionProduct}].
