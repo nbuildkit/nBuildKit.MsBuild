@@ -27,10 +27,13 @@
                     public override bool Execute()
                     {
                         var excludedDependencies = new System.Collections.Generic.List<string>();
-                        foreach(var token in DesignTimePackages)
+                        if (DesignTimePackages != null)
                         {
-                            var packagePartialName = token.ToString().ToLower();
-                            excludedDependencies.Add(packagePartialName);
+                            foreach(var token in DesignTimePackages)
+                            {
+                                var packagePartialName = token.ToString().ToLower();
+                                excludedDependencies.Add(packagePartialName);
+                            }
                         }
 
                         var knownPackageFiles = new System.Collections.Generic.List<string>();
@@ -42,18 +45,21 @@
                             knownPackageFiles.Add(localPackagesPath);
                         }
 
-                        foreach(var token in Packages)
+                        if (Packages != null)
                         {
-                            var filePath = token.ToString();
-                            if (!System.IO.File.Exists(filePath))
+                            foreach(var token in Packages)
                             {
-                                Log.LogMessage(MessageImportance.High, "File does not exist: {0}", filePath);
-                                continue;
-                            }
+                                var filePath = token.ToString();
+                                if (!System.IO.File.Exists(filePath))
+                                {
+                                    Log.LogMessage(MessageImportance.High, "File does not exist: {0}", filePath);
+                                    continue;
+                                }
 
-                            if (!knownPackageFiles.Contains(filePath))
-                            {
-                                knownPackageFiles.Add(filePath);
+                                if (!knownPackageFiles.Contains(filePath))
+                                {
+                                    knownPackageFiles.Add(filePath);
+                                }
                             }
                         }
 
