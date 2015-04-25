@@ -848,6 +848,8 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
+        <DefineDebug>true</DefineDebug>
+        <DefineTrace>true</DefineTrace>
         <Optimize>false</Optimize>
         <RunCodeAnalysis>$(ShouldPerformCodeAnalysis)</RunCodeAnalysis>
     </PropertyGroup>
@@ -858,16 +860,35 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DebugSymbols>false</DebugSymbols>
         <DebugType>pdbonly</DebugType>
+        <DefineDebug>false</DefineDebug>
+        <DefineTrace>true</DefineTrace>
         <Optimize>true</Optimize>
         <RunCodeAnalysis>$(ShouldPerformCodeAnalysis)</RunCodeAnalysis>
     </PropertyGroup>
 
-    <!-- C# specific configuration -->
+    <!-- Compiler specific configurations -->
     <PropertyGroup>
         <!--
             Indicates what the warning level is for the C# compiler.
         -->
         <CSharpWarningLevel>4</CSharpWarningLevel>
+        <!--
+            Define any additional constants for the C# compiler. Multiple constants should be
+            separated by a semi-colon (;).
+        -->
+        <CSharpConstants>TRACE</CSharpConstants>
+        <!--
+            The name of the directory that contains the VB.NET AssemblyInfo and resoure files.
+        -->
+        <VbNetAppDesignerFolder>My Project</VbNetAppDesignerFolder>
+        <!--
+            Indicates if the VB.NET Option Explicit is 'on' or 'off'
+        -->
+        <VbNetOptionExplicit>On</VbNetOptionExplicit>
+        <!--
+            Indicates if the VB.NET Option strict is 'on' or 'off'
+        -->
+        <VbNetOptionStrict>On</VbNetOptionStrict>
     </PropertyGroup>
 
     <!--
