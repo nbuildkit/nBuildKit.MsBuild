@@ -13,6 +13,7 @@
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
+            <NuGetSpec ParameterType="System.String" Required="true" />
             <Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <DesignTimePackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
             <Dependencies ParameterType="System.String" Output="true" />
@@ -26,31 +27,54 @@
                     public override bool Execute()
                     {
                         var excludedDependencies = new System.Collections.Generic.List<string>();
-                        foreach(var token in DesignTimePackages)
+                        if (DesignTimePackages != null)
                         {
-                            var packagePartialName = token.ToString().ToLower();
-                            excludedDependencies.Add(packagePartialName);
+                            foreach(var token in DesignTimePackages)
+                            {
+                                var packagePartialName = token.ToString().ToLower();
+                                excludedDependencies.Add(packagePartialName);
+                            }
+                        }
+
+                        var knownPackageFiles = new System.Collections.Generic.List<string>();
+
+                        // See if there is a packages.config file in the same directory as the nuspec file. Grab that too
+                        var localPackagesPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(NuGetSpec), "packages.config");
+                        if (System.IO.File.Exists(localPackagesPath))
+                        {
+                            knownPackageFiles.Add(localPackagesPath);
+                        }
+
+                        if (Packages != null)
+                        {
+                            foreach(var token in Packages)
+                            {
+                                var filePath = token.ToString();
+                                if (!System.IO.File.Exists(filePath))
+                                {
+                                    Log.LogMessage(MessageImportance.High, "File does not exist: {0}", filePath);
+                                    continue;
+                                }
+
+                                if (!knownPackageFiles.Contains(filePath))
+                                {
+                                    knownPackageFiles.Add(filePath);
+                                }
+                            }
                         }
 
                         var knownDependencies = new System.Collections.Generic.List<string>();
                         var builder = new System.Text.StringBuilder();
-                        foreach (var token in Packages)
+                        foreach (var packageFile in knownPackageFiles)
                         {
-                            var filePath = token.ToString();
-                            if (!System.IO.File.Exists(filePath))
-                            {
-                                Log.LogMessage(MessageImportance.High, "File does not exist: {0}", filePath);
-                                continue;
-                            }
-
                             System.Xml.Linq.XDocument xDoc = null;
                             try
                             {
-                                xDoc = System.Xml.Linq.XDocument.Load(filePath);
+                                xDoc = System.Xml.Linq.XDocument.Load(packageFile);
                             }
                             catch(System.Exception)
                             {
-                                Log.LogError("Failed to load document {0}.", filePath);
+                                Log.LogError("Failed to load document {0}.", packageFile);
                             }
 
                             var packages = from package in xDoc.Element("packages").Descendants("package")
