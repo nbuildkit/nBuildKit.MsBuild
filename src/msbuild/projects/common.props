@@ -16,12 +16,14 @@
             so we have to make some assumptions about the location of the file when working from Visual Studio.
             When running from the build scripts we'll make sure to pass the location in.
 
-            There are two standard locations for the settings.props file. Either it lives in the same directory
-            as the solution. Or the solution lives in a 'src' directory which means that the properties file
-            lives in the parent directory of the 'src' directory.
+            Probe for the settings.props file up to 5 directories above our current one.
         -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\settings.props'))</BuildPropertyFile>
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\..\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\..\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\..\..\..\settings.props'))</BuildPropertyFile>
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">FAILED_TO_LOCATE_BUILDPROPERTYFILE</BuildPropertyFile>
 
         <!-- Directory structure -->
