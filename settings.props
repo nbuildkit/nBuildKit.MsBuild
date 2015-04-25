@@ -647,6 +647,25 @@
             <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </FilesToGenerate>
 
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\common.props">
+            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\install.ps1">
+            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
+            <Token>TargetsFiles</Token>
+            <ReplacementValue>&quot;common&quot;, &quot;common.net&quot;, &quot;vbnet&quot;</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\uninstall.ps1">
+            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
+            <Token>TargetsFiles</Token>
+            <ReplacementValue>&quot;common&quot;, &quot;common.net&quot;, &quot;vbnet&quot;</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\nbuildkit.vbnet.readme.txt">
+            <Template>$(DirSrc)\readme.txt</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
+        </FilesToGenerate>
+
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\common.props">
             <Template>$(DirSrc)\msbuild\projects\common.props</Template>
         </FilesToGenerate>
@@ -1147,6 +1166,9 @@
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.csharp.nuspec">
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.vbnet.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.wix.nuspec">
