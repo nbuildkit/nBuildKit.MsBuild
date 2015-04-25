@@ -13,6 +13,7 @@
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
+            <NuGetSpec ParameterType="System.String" Required="true" />
             <Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <DesignTimePackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
             <Dependencies ParameterType="System.String" Output="true" />
@@ -32,9 +33,16 @@
                             excludedDependencies.Add(packagePartialName);
                         }
 
-                        var knownDependencies = new System.Collections.Generic.List<string>();
-                        var builder = new System.Text.StringBuilder();
-                        foreach (var token in Packages)
+                        var knownPackageFiles = new System.Collection.Generic.List<string>();
+
+                        // See if there is a packages.config file in the same directory as the nuspec file. Grab that too
+                        var localPackagesPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(NuGetSpec), "packages.config");
+                        if (System.IO.File.Exists(localPackagesPath))
+                        {
+                            knownPackageFiles.Add(localPackagesPath);
+                        }
+
+                        foreach(var token in Packages)
                         {
                             var filePath = token.ToString();
                             if (!System.IO.File.Exists(filePath))
@@ -43,14 +51,24 @@
                                 continue;
                             }
 
+                            if (!knownPackageFiles.Contains(filePath))
+                            {
+                                knownPackageFiles.Add(filePath);
+                            }
+                        }
+
+                        var knownDependencies = new System.Collections.Generic.List<string>();
+                        var builder = new System.Text.StringBuilder();
+                        foreach (var packageFile in knownPackageFiles)
+                        {
                             System.Xml.Linq.XDocument xDoc = null;
                             try
                             {
-                                xDoc = System.Xml.Linq.XDocument.Load(filePath);
+                                xDoc = System.Xml.Linq.XDocument.Load(packageFile);
                             }
                             catch(System.Exception)
                             {
-                                Log.LogError("Failed to load document {0}.", filePath);
+                                Log.LogError("Failed to load document {0}.", packageFile);
                             }
 
                             var packages = from package in xDoc.Element("packages").Descendants("package")

@@ -129,7 +129,8 @@
                ItemName="PackageDependencies"/>
         </CreateItem>
 
-        <GatherNuGetDependenciesForProject Packages="@(PackageDependencies)"
+        <GatherNuGetDependenciesForProject NuGetSpec="$(FileNuGetNuSpec)"
+                                           Packages="@(PackageDependencies)"
                                            DesignTimePackages="@(DesignTimeDependencies)"
                                            Condition=" '@(PackageDependencies)' != '' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Dependencies" PropertyName="NuGetDependencies" />
