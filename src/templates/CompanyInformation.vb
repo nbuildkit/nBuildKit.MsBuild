@@ -13,27 +13,27 @@
 ' </auto-generated>
 '-----------------------------------------------------------------------
 
-Imports System.CodeDom.Compiler;
+Imports System.CodeDom.Compiler
 
 Namespace ${ProductNamespace}.Internals
     ''' <summary>
     ''' Stores marketing information about the company.
     ''' </summary>
-    [GeneratedCode("nBuildKit.MsBuild.TemplateFile", "${VersionNBuildKit}")]
+    <GeneratedCode("nBuildKit.MsBuild.TemplateFile", "${VersionNBuildKit}")>
     Friend Class CompanyInformation
         ''' <summary>
         ''' The name of the company.
         ''' </summary>
-        Public Const CompanyName As String = "${CompanyName}";
+        Public Const CompanyName As String = "${CompanyName}"
 
         ''' <summary>
         ''' The name of the path in the file system related to the company name.
         ''' </summary>
-        Public const CompanyNameInFilePath As String = "${CompanyNameInFilePath}";
+        Public const CompanyNameInFilePath As String = "${CompanyNameInFilePath}"
 
         ''' <summary>
         ''' The URL of the main website of the company.
         ''' </summary>
-        Public Const CompanyUrl As String = "${CompanyUrl}";
+        Public Const CompanyUrl As String = "${CompanyUrl}"
     End Class
 End Namespace

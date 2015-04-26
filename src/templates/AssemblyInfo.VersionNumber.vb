@@ -13,7 +13,7 @@
 ' </auto-generated>
 '-----------------------------------------------------------------------
 
-Imports System.Reflection;
+Imports System.Reflection
 
 '
 ' THIS IS A GENERATED FILE. DO NOT MAKE CHANGES IN THIS FILE BECAUSE ANY

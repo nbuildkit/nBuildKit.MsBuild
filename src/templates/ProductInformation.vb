@@ -13,23 +13,23 @@
 ' </auto-generated>
 '-----------------------------------------------------------------------
 
-Imports System.CodeDom.Compiler;
+Imports System.CodeDom.Compiler
 
 Namespace ${ProductNamespace}.Internals
 
     ''' <summary>
     ''' Stores marketing information about the product.
     ''' </summary>
-    [GeneratedCode("nBuildKit.MsBuild.TemplateFile", "${VersionNBuildKit}")]
+    <GeneratedCode("nBuildKit.MsBuild.TemplateFile", "${VersionNBuildKit}")>
     Friend Class ProductInformation
         ''' <summary>
         ''' The marketing name of the product of which the current assembly is part.
         ''' </summary>
-        Public Const ProductName As String = "${ProductName}";
+        Public Const ProductName As String = "${ProductName}"
 
         ''' <summary>
         ''' The name of the path in the file system related to the product name.
         ''' </summary>
-        Public Const ProductNameInFilePath As String = "${ProductNameInFilePath}";
+        Public Const ProductNameInFilePath As String = "${ProductNameInFilePath}"
     End Class
 End Namespace

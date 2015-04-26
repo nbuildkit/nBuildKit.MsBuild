@@ -13,9 +13,9 @@
 ' </auto-generated>
 '-----------------------------------------------------------------------
 
-Imports System.Diagnostics.CodeAnalysis;
-Imports System.Reflection;
-Imports Nuclei.Build;
+Imports System.Diagnostics.CodeAnalysis
+Imports System.Reflection
+Imports Nuclei.Build
 
 '
 ' THIS IS A GENERATED FILE. DO NOT MAKE CHANGES IN THIS FILE BECAUSE ANY
@@ -26,11 +26,11 @@ Imports Nuclei.Build;
 <Assembly: AssemblyConfiguration("${Configuration}")>
 
 ' The time the assembly was build
-<Assembly: AssemblyBuildTime(buildTime: "${Now}")>
+<Assembly: AssemblyBuildTime("${Now}")>
 
 ' The version from which the assembly was build
 <Module: SuppressMessage( _
     "Microsoft.Usage", _
     "CA2243:AttributeStringLiteralsShouldParseCorrectly", _
     Justification:= "It's a VCS revision, not a version")>
-<Assembly: AssemblyBuildInformation(buildNumber: ${VersionBuild}, versionControlInformation: "${VcsRevision}")>
+<Assembly: AssemblyBuildInformation(${VersionBuild}, "${VcsRevision}")>

@@ -13,8 +13,8 @@
 ' </auto-generated>
 '-----------------------------------------------------------------------
 
-Imports System.Reflection;
-Imports System.Runtime.InteropServices;
+Imports System.Reflection
+Imports System.Runtime.InteropServices
 
 '
 ' THIS IS A GENERATED FILE. DO NOT MAKE CHANGES IN THIS FILE BECAUSE ANY

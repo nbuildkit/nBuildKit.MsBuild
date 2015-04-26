@@ -13,7 +13,7 @@
 ' </auto-generated>
 '-----------------------------------------------------------------------
 
-Imports System.Runtime.CompilerServices;
+Imports System.Runtime.CompilerServices
 
 '
 ' THIS IS A GENERATED FILE. DO NOT MAKE CHANGES IN THIS FILE BECAUSE ANY
