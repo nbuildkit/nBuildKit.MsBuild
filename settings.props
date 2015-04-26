@@ -145,7 +145,7 @@
         <!--
             The full URL to the GIT repository. Can include the '%GitHubToken%' environment variable for authenticated
             connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
-         -->
+        -->
         <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">https://%GitHubToken%:@github.com/$(GitHubUserName)/nBuildKit.git</GitRemoteRepository>
 
         <!--
@@ -647,6 +647,25 @@
             <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </FilesToGenerate>
 
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\common.props">
+            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\install.ps1">
+            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
+            <Token>TargetsFiles</Token>
+            <ReplacementValue>&quot;common&quot;, &quot;common.net&quot;, &quot;vbnet&quot;</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\uninstall.ps1">
+            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
+            <Token>TargetsFiles</Token>
+            <ReplacementValue>&quot;common&quot;, &quot;common.net&quot;, &quot;vbnet&quot;</ReplacementValue>
+        </FilesToGenerate>
+        <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\nbuildkit.vbnet.readme.txt">
+            <Template>$(DirSrc)\readme.txt</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
+        </FilesToGenerate>
+
         <FilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\common.props">
             <Template>$(DirSrc)\msbuild\projects\common.props</Template>
         </FilesToGenerate>
@@ -823,6 +842,12 @@
             for all projects that include the MsBuild.Projects.XXXX NuGet package.
         -->
         <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+
+        <!--
+            The platform against which the code should be compiled. Note that the target should not have space in it,
+            i.e. AnyCPU, x86, x64 etc.
+        -->
+        <PlatformTarget>$(PlatformWithoutSpaces)</PlatformTarget>
     </PropertyGroup>
 
     <!-- Execute code analysis after the build -->
@@ -885,6 +910,8 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
+        <DefineDebug>true</DefineDebug>
+        <DefineTrace>true</DefineTrace>
         <Optimize>false</Optimize>
         <RunCodeAnalysis>$(ShouldPerformCodeAnalysis)</RunCodeAnalysis>
     </PropertyGroup>
@@ -895,16 +922,35 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DebugSymbols>false</DebugSymbols>
         <DebugType>pdbonly</DebugType>
+        <DefineDebug>false</DefineDebug>
+        <DefineTrace>true</DefineTrace>
         <Optimize>true</Optimize>
         <RunCodeAnalysis>$(ShouldPerformCodeAnalysis)</RunCodeAnalysis>
     </PropertyGroup>
 
-    <!-- C# specific configuration -->
+    <!-- Compiler specific configurations -->
     <PropertyGroup>
         <!--
             Indicates what the warning level is for the C# compiler.
         -->
         <CSharpWarningLevel>4</CSharpWarningLevel>
+        <!--
+            Define any additional constants for the C# compiler. Multiple constants should be
+            separated by a semi-colon (;).
+        -->
+        <CSharpConstants>TRACE</CSharpConstants>
+        <!--
+            The name of the directory that contains the VB.NET AssemblyInfo and resoure files.
+        -->
+        <VbNetAppDesignerFolder>My Project</VbNetAppDesignerFolder>
+        <!--
+            Indicates if the VB.NET Option Explicit is 'on' or 'off'
+        -->
+        <VbNetOptionExplicit>On</VbNetOptionExplicit>
+        <!--
+            Indicates if the VB.NET Option strict is 'on' or 'off'
+        -->
+        <VbNetOptionStrict>On</VbNetOptionStrict>
     </PropertyGroup>
 
     <!--
@@ -1147,6 +1193,9 @@
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.csharp.nuspec">
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.vbnet.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.wix.nuspec">
