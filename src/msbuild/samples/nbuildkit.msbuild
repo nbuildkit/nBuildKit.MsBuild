@@ -102,7 +102,7 @@
         so that we can be sure that the nBuildKit main package is extacted to the package directory.
     -->
     <Target Name="_RestoreGlobalNugetPackages" DependsOnTargets="_LocatePackagesDir">
-        <Exec Command="&quot;$(ToolsExternalNuGetPath)&quot; restore $(NuGetPackageFile) -NoCache -NonInteractive -Verbosity detailed -PackagesDirectory &quot;$(DirPackages)&quot;"
+        <Exec Command="&quot;$(ToolsExternalNuGetPath)&quot; restore &quot;$(NuGetPackageFile)&quot; -NoCache -NonInteractive -Verbosity detailed -PackagesDirectory &quot;$(DirPackages)&quot;"
               Condition="Exists('$(NuGetPackageFile)')" />
     </Target>
 
