@@ -46,17 +46,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <FilesToGenerate Include="$(SolutionDir)\CompanyInformation.wxi"
+        <BuildFilesToGenerate Include="$(SolutionDir)\CompanyInformation.wxi"
                          Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\CompanyInformation.wxi</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(SolutionDir)\ProductInformation.wxi"
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(SolutionDir)\ProductInformation.wxi"
                          Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\ProductInformation.wxi</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(MSBuildProjectDirectory)\VersionNumber.wxi"
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(MSBuildProjectDirectory)\VersionNumber.wxi"
                          Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\VersionNumber.wxi</Template>
-        </FilesToGenerate>
+        </BuildFilesToGenerate>
     </ItemGroup>
 </Project>

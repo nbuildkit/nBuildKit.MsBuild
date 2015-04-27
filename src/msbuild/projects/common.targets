@@ -30,7 +30,7 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Projects_Common_CleanGeneratedFiles" DependsOnTargets="nBuildKit_Projects_Common_VerifyProperties">
         <ItemGroup>
-            <GeneratedFilesToDelete Include="%(FilesToGenerate.FullPath)" />
+            <GeneratedFilesToDelete Include="%(BuildFilesToGenerate.FullPath)" />
         </ItemGroup>
         <Delete Files="@(GeneratedFilesToDelete)" />
     </Target>
