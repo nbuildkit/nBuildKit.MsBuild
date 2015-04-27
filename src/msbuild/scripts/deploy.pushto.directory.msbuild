@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_PushTo_Directory_Run"
+         DefaultTargets="nBuildKit_Deploy_PushTo_Directory_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsPushToDirectory>true</ExistsPushToDirectory>
+        <ExistsDeployPushToDirectory>true</ExistsDeployPushToDirectory>
 
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
@@ -26,17 +26,17 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
-    <Target Name="nBuildKit_PushTo_Directory_Run" DependsOnTargets="_nBuildKit_PushTo_Directory_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_PushTo_Directory_Push" />
+    <Target Name="nBuildKit_Deploy_PushTo_Directory_Run" DependsOnTargets="_nBuildKit_Deploy_PushTo_Directory_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_Directory_Push" />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_PushTo_Directory_DisplayInfo">
+    <Target Name="_nBuildKit_Deploy_PushTo_Directory_DisplayInfo">
         <Message Text="Copying binaries to the remote file location..."
                  Importance="normal"/>
     </Target>
 
-    <Target Name="_nBuildKit_Package_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Deploy_Package_NuGet_DebugLog" Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:"
                  Importance="low"/>
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
@@ -58,7 +58,7 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_PushTo_Directory_Push"
+    <Target Name="_nBuildKit_Deploy_PushTo_Directory_Push"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Outputs="%(PushToDirectorySpecs.Identity)">
         <Message Text="Resolving build templates for: %(PushToDirectorySpecs.Identity)"

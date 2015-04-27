@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_PushTo_SymbolServer_Run"
+         DefaultTargets="nBuildKit_Deploy_PushTo_SymbolServer_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsPushToSymbolServer>true</ExistsPushToSymbolServer>
+        <ExistsDeployPushToSymbolServer>true</ExistsDeployPushToSymbolServer>
 
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
@@ -26,12 +26,12 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
-    <Target Name="nBuildKit_PushTo_SymbolServer_Run" DependsOnTargets="_nBuildKit_PushTo_SymbolServer_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_PushTo_SymbolServer_Push" />
+    <Target Name="nBuildKit_Deploy_PushTo_SymbolServer_Run" DependsOnTargets="_nBuildKit_Deploy_PushTo_SymbolServer_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_SymbolServer_Push" />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_PushTo_SymbolServer_DisplayInfo" DependsOnTargets="_nBuildKit_PushTo_SymbolServer_DebugLog">
+    <Target Name="_nBuildKit_Deploy_PushTo_SymbolServer_DisplayInfo" DependsOnTargets="_nBuildKit_Deploy_PushTo_SymbolServer_DebugLog">
         <Message Text="Pushing NuGet symbol packages to the symbol server ..."
                  Importance="low"
                  Condition=" '$(SymbolServerUrl)' == '' AND '$(SymbolServerUrl)' != 'UNDEFINED' " />
@@ -39,7 +39,7 @@
                Condition=" '$(SymbolServerUrl)' == '' OR '$(SymbolServerUrl)' == 'UNDEFINED' " />
     </Target>
 
-    <Target Name="_nBuildKit_PushTo_SymbolServer_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+    <Target Name="_nBuildKit_Deploy_PushTo_SymbolServer_DebugLog" Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:"
                  Importance="low"/>
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
@@ -61,7 +61,7 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_PushTo_SymbolServer_Push"
+    <Target Name="_nBuildKit_Deploy_PushTo_SymbolServer_Push"
             Condition=" '$(SymbolServerUrl)' != '' AND '$(SymbolServerUrl)' != 'UNDEFINED' "
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <TemplateText Template="@(SymbolPackagesToPush)"
