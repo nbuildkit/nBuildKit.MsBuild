@@ -21,28 +21,28 @@
         <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
     </PropertyGroup>
     <PropertyGroup>
-        <BuildStepsPrepareWorkspace>$(DirMsBuildScripts)\prepare.workspace.msbuild</BuildStepsPrepareWorkspace>
-        <BuildStepsPrepareRestoreNuGet>$(DirMsBuildScripts)\prepare.nuget.restore.msbuild</BuildStepsPrepareRestoreNuGet>
-        <BuildStepsPrepareGetVersion>$(DirMsBuildScripts)\prepare.getversion.msbuild</BuildStepsPrepareGetVersion>
-        <BuildStepsPrepareReleaseNotes>$(DirMsBuildScripts)\prepare.gatherreleasenotes.msbuild</BuildStepsPrepareReleaseNotes>
-        <BuildStepsPrepareVcsInfo>$(DirMsBuildScripts)\prepare.vcsinfo.msbuild</BuildStepsPrepareVcsInfo>
-        <BuildStepsPrepareGenerateFiles>$(DirMsBuildScripts)\prepare.generatefiles.msbuild</BuildStepsPrepareGenerateFiles>
+        <BuildStepsPrepareWorkspace>$(DirMsBuildScripts)\build.prepare.workspace.msbuild</BuildStepsPrepareWorkspace>
+        <BuildStepsPrepareRestoreNuGet>$(DirMsBuildScripts)\build.prepare.nuget.restore.msbuild</BuildStepsPrepareRestoreNuGet>
+        <BuildStepsPrepareGetVersion>$(DirMsBuildScripts)\build.prepare.getversion.msbuild</BuildStepsPrepareGetVersion>
+        <BuildStepsPrepareReleaseNotes>$(DirMsBuildScripts)\build.prepare.gatherreleasenotes.msbuild</BuildStepsPrepareReleaseNotes>
+        <BuildStepsPrepareVcsInfo>$(DirMsBuildScripts)\build.prepare.vcsinfo.msbuild</BuildStepsPrepareVcsInfo>
+        <BuildStepsPrepareGenerateFiles>$(DirMsBuildScripts)\build.prepare.generatefiles.msbuild</BuildStepsPrepareGenerateFiles>
 
-        <BuildStepsAnalyzeSourceCcm>$(DirMsBuildScripts)\analyze.source.ccm.msbuild</BuildStepsAnalyzeSourceCcm>
-        <BuildStepsAnalyzeSourceSouceMonitor>$(DirMsBuildScripts)\analyze.source.sourcemonitor.msbuild</BuildStepsAnalyzeSourceSouceMonitor>
+        <BuildStepsAnalyzeSourceCcm>$(DirMsBuildScripts)\build.analyze.source.ccm.msbuild</BuildStepsAnalyzeSourceCcm>
+        <BuildStepsAnalyzeSourceSouceMonitor>$(DirMsBuildScripts)\build.analyze.source.sourcemonitor.msbuild</BuildStepsAnalyzeSourceSouceMonitor>
 
         <BuildStepsBuildVisualStudioSolution>$(DirMsBuildScripts)\build.binaries.msbuild</BuildStepsBuildVisualStudioSolution>
 
-        <BuildStepsUnitTestNUnit>$(DirMsBuildScripts)\test.unit.nunit.msbuild</BuildStepsUnitTestNUnit>
-        <BuildStepsUnitTestMsTest>$(DirMsBuildScripts)\test.unit.mstest.msbuild</BuildStepsUnitTestMsTest>
+        <BuildStepsUnitTestNUnit>$(DirMsBuildScripts)\build.test.unit.nunit.msbuild</BuildStepsUnitTestNUnit>
+        <BuildStepsUnitTestMsTest>$(DirMsBuildScripts)\build.test.unit.mstest.msbuild</BuildStepsUnitTestMsTest>
 
-        <BuildStepsAnalyzeBinariesMoma>$(DirMsBuildScripts)\analyze.binaries.moma.msbuild</BuildStepsAnalyzeBinariesMoma>
-        <BuildStepsAnalyzeBinariesFxCop>$(DirMsBuildScripts)\analyze.binaries.fxcop.msbuild</BuildStepsAnalyzeBinariesFxCop>
+        <BuildStepsAnalyzeBinariesMoma>$(DirMsBuildScripts)\build.analyze.binaries.moma.msbuild</BuildStepsAnalyzeBinariesMoma>
+        <BuildStepsAnalyzeBinariesFxCop>$(DirMsBuildScripts)\build.analyze.binaries.fxcop.msbuild</BuildStepsAnalyzeBinariesFxCop>
 
         <BuildStepsBuildApiDocumentationWithSandcastle>$(DirMsBuildScripts)\build.apidocumentation.sandcastle.msbuild</BuildStepsBuildApiDocumentationWithSandcastle>
 
-        <BuildStepsPackNuGet>$(DirMsBuildScripts)\pack.nuget.msbuild</BuildStepsPackNuGet>
-        <BuildStepsPackZip>$(DirMsBuildScripts)\pack.zip.msbuild</BuildStepsPackZip>
+        <BuildStepsPackNuGet>$(DirMsBuildScripts)\build.pack.nuget.msbuild</BuildStepsPackNuGet>
+        <BuildStepsPackZip>$(DirMsBuildScripts)\build.pack.zip.msbuild</BuildStepsPackZip>
     </PropertyGroup>
 
     <Import Project="$(BuildPropertyFile)"
