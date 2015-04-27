@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Analyze_Source_Ccm_Run"
+         DefaultTargets="nBuildKit_Build_Analyze_Source_Ccm_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsAnalyzeSourceCcm>true</ExistsAnalyzeSourceCcm>
+        <ExistsBuildAnalyzeSourceCcm>true</ExistsBuildAnalyzeSourceCcm>
 
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
@@ -32,21 +32,21 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
-    <Target Name="nBuildKit_Analyze_Source_Ccm_Run"
-            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Analyze_Source_Ccm_Analyze" />
+    <Target Name="nBuildKit_Build_Analyze_Source_Ccm_Run"
+            DependsOnTargets="_nBuildKit_Build_Analyze_Source_Ccm_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Analyze_Source_Ccm_Analyze" />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_DebugLog">
+    <Target Name="_nBuildKit_Build_Analyze_Source_Ccm_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Build_Analyze_Source_Ccm_DebugLog">
         <Message Text="Running CCM..."
                  Importance="normal"/>
     </Target>
 
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_DebugLog"
+    <Target Name="_nBuildKit_Build_Analyze_Source_Ccm_DebugLog"
             Condition="$(ShouldDisplayDebugLog)"
-            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates">
+            DependsOnTargets="_nBuildKit_Build_Analyze_Source_Ccm_ReplaceBuildTemplates">
         <Message Text="Project directory structure:"
                  Importance="low"/>
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
@@ -79,7 +79,7 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates"
+    <Target Name="_nBuildKit_Build_Analyze_Source_Ccm_ReplaceBuildTemplates"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
         <Message Text="Resolving build templates for: $(FileReportCcm)"
                  Importance="low"/>
@@ -94,8 +94,8 @@
         <FileCcmExe>Ccm.exe</FileCcmExe>
         <FileGeneratedCcm>$(DirBuildTemp)\ccm.input.xml</FileGeneratedCcm>
     </PropertyGroup>
-    <Target Name="_nBuildKit_Analyze_Source_Ccm_Analyze"
-            DependsOnTargets="_nBuildKit_Analyze_Source_Ccm_ReplaceBuildTemplates">
+    <Target Name="_nBuildKit_Build_Analyze_Source_Ccm_Analyze"
+            DependsOnTargets="_nBuildKit_Build_Analyze_Source_Ccm_ReplaceBuildTemplates">
         <Error Text="The packages directory does not exist. Cannot search for the CCM executable."
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="The CCM template file does not exist. Cannot execute source code analysis."

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Pack_Zip_Run"
+         DefaultTargets="nBuildKit_Build_Pack_Zip_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsPackZip>true</ExistsPackZip>
+        <ExistsBuildPackZip>true</ExistsBuildPackZip>
 
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
@@ -28,19 +28,19 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\Zip.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Zip.msbuild') AND '$(ExistsExtensionsZip)' != 'true' "/>
 
-    <Target Name="nBuildKit_Pack_Zip_Run"
-            DependsOnTargets="_nBuildKit_Pack_Zip_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Pack_Zip_Pack" />
+    <Target Name="nBuildKit_Build_Pack_Zip_Run"
+            DependsOnTargets="_nBuildKit_Build_Pack_Zip_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Pack_Zip_Pack" />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Pack_Zip_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Pack_Zip_DebugLog">
+    <Target Name="_nBuildKit_Build_Pack_Zip_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Build_Pack_Zip_DebugLog">
         <Message Text="Packing binaries ..."
                  Importance="normal"/>
     </Target>
 
-    <Target Name="_nBuildKit_Pack_Zip_DebugLog"
+    <Target Name="_nBuildKit_Build_Pack_Zip_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:"
                  Importance="low"/>
@@ -62,7 +62,7 @@
         Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
         once for each entry in the ArchivePackageSpecs ItemGroup.
     -->
-    <Target Name="_nBuildKit_Pack_Zip_Pack"
+    <Target Name="_nBuildKit_Build_Pack_Zip_Pack"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Condition=" '@(ArchivePackageSpecs)' != '' "
             Outputs="%(ArchivePackageSpecs.Identity)">

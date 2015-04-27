@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Prepare_GenerateFiles_Run"
+         DefaultTargets="nBuildKit_Build_Prepare_GenerateFiles_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsPrepareGenerateFiles>true</ExistsPrepareGenerateFiles>
+        <ExistsBuildPrepareGenerateFiles>true</ExistsBuildPrepareGenerateFiles>
 
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
@@ -26,14 +26,14 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
 
-    <Target Name="nBuildKit_Prepare_GenerateFiles_Run"
-            DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DisplayInfo"
+    <Target Name="nBuildKit_Build_Prepare_GenerateFiles_Run"
+            DependsOnTargets="_nBuildKit_Build_Prepare_GenerateFiles_DisplayInfo"
             Outputs="%(FilesToGenerate.Identity)"
             Condition=" '@(FilesToGenerate)' != '' ">
-        <CallTarget Targets="_nBuildKit_Prepare_GenerateFiles_GenerateFiles" />
+        <CallTarget Targets="_nBuildKit_Build_Prepare_GenerateFiles_GenerateFiles" />
     </Target>
 
-    <Target Name="_nBuildKit_Prepare_GenerateFiles_DebugLog"
+    <Target Name="_nBuildKit_Build_Prepare_GenerateFiles_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:"
                  Importance="low"/>
@@ -59,14 +59,14 @@
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Prepare_GenerateFiles_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Prepare_GenerateFiles_DebugLog">
+    <Target Name="_nBuildKit_Build_Prepare_GenerateFiles_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Build_Prepare_GenerateFiles_DebugLog">
         <Message Text="Generating files ..."
                  Importance="normal"/>
     </Target>
 
     <!-- Generate the required files -->
-    <Target Name="_nBuildKit_Prepare_GenerateFiles_GenerateFiles"
+    <Target Name="_nBuildKit_Build_Prepare_GenerateFiles_GenerateFiles"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Outputs="%(FilesToGenerate.Identity)"
             Condition=" '@(FilesToGenerate)' != '' ">

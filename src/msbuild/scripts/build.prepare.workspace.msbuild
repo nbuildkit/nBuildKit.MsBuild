@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Prepare_Workspace_Run"
+         DefaultTargets="nBuildKit_Build_Prepare_Workspace_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsPrepareWorkspace>true</ExistsPrepareWorkspace>
+        <ExistsBuildPrepareWorkspace>true</ExistsBuildPrepareWorkspace>
 
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
@@ -20,12 +20,12 @@
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
-    <Target Name="nBuildKit_Prepare_Workspace_Run"
-            DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Prepare_Workspace_Clean" />
+    <Target Name="nBuildKit_Build_Prepare_Workspace_Run"
+            DependsOnTargets="_nBuildKit_Build_Prepare_Workspace_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean" />
     </Target>
 
-    <Target Name="_nBuildKit_Prepare_Workspace_DebugLog"
+    <Target Name="_nBuildKit_Build_Prepare_Workspace_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Configuration values:"
                  Importance="low"/>
@@ -59,15 +59,15 @@
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Prepare_Workspace_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Prepare_Workspace_DebugLog">
+    <Target Name="_nBuildKit_Build_Prepare_Workspace_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Build_Prepare_Workspace_DebugLog">
         <Message Text="Preparing workspace ..."
                  Importance="normal"/>
     </Target>
 
     <!-- Clean -->
-    <Target Name="_nBuildKit_Prepare_Workspace_Clean"
-            DependsOnTargets="_nBuildKit_Prepare_Workspace_DisplayInfo" Condition="$(ShouldClean)">
+    <Target Name="_nBuildKit_Build_Prepare_Workspace_Clean"
+            DependsOnTargets="_nBuildKit_Build_Prepare_Workspace_DisplayInfo" Condition="$(ShouldClean)">
         <!--
             We'll try to delete the directory but that may fail randomly because
             some file is being locked (by some other process). This could leads to a failing task, but ..
