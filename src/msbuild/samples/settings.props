@@ -131,7 +131,9 @@
         <CopyrightLong>Copyright (c) - $(CompanyName) $(ProductStartingYear) - $([System.DateTime]::Now.ToString("yyyy")). All rights reserved.</CopyrightLong>
     </PropertyGroup>
 
-    <!-- Overrides for the VCS specific properties -->
+    <!--
+        Overrides for the VCS specific properties
+    -->
     <PropertyGroup>
         <!-- The user name of the user who owns the repository on GitHub -->
         <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
@@ -218,51 +220,8 @@
         </TemplateVersion>
     </ItemGroup>
 
-
-
-
-
     <!--
-        *************************************
-        *                                   *
-        *     BUILD SETTINGS                *
-        *                                   *
-        *************************************
-    -->
-
-    <!-- Overrides for the global properties -->
-    <PropertyGroup>
-        <!-- A flag indicating whether or not to display debug log information, usually at the start of the script execution. -->
-        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">true</ShouldDisplayDebugLog>
-
-        <!--
-            A flag that indicates whether or not the workspace should be cleaned before the build is started. If set to
-            true then the 'DirBuild' directory will be removed as well as all known generated files.
-        -->
-        <ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>
-
-        <!--
-            Indicates that the execution of the build script runs through the steps but does not actually execute them.
-        -->
-        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-    </PropertyGroup>
-
-    <!-- Overrides for the build configuration -->
-    <PropertyGroup>
-        <!-- The build configuration (debug / release / ...) that will be used to run all the unit tests and the static verification on -->
-        <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
-
-        <!-- The build configuration (debug / release / ..) that will be used to create the binaries that should be deployed -->
-        <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">deploy</ProductionConfiguration>
-
-        <!-- The platform for which the binaries will be build -->
-        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
-        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
-    </PropertyGroup>
-
-
-    <!--
-        **** DIRECTORIES ****
+        Directories
     -->
     <PropertyGroup>
         <!--
@@ -312,6 +271,48 @@
 
         <!-- The directory that contains the template files for the project -->
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
+        *     BUILD SETTINGS                *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the global properties -->
+    <PropertyGroup>
+        <!-- A flag indicating whether or not to display debug log information, usually at the start of the script execution. -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">true</ShouldDisplayDebugLog>
+
+        <!--
+            A flag that indicates whether or not the workspace should be cleaned before the build is started. If set to
+            true then the 'DirBuild' directory will be removed as well as all known generated files.
+        -->
+        <ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>
+
+        <!--
+            Indicates that the execution of the build script runs through the steps but does not actually execute them.
+        -->
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
+    </PropertyGroup>
+
+    <!-- Overrides for the build configuration -->
+    <PropertyGroup>
+        <!-- The build configuration (debug / release / ...) that will be used to run all the unit tests and the static verification on -->
+        <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
+
+        <!-- The build configuration (debug / release / ..) that will be used to create the binaries that should be deployed -->
+        <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">deploy</ProductionConfiguration>
+
+        <!-- The platform for which the binaries will be build -->
+        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
     </PropertyGroup>
 
 
