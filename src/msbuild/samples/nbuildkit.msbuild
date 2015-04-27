@@ -10,7 +10,9 @@
             means that the workspace directory is the 'MsBuildProjectDirectory' for the current file.
         -->
         <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
-        <!-- The default directory that the NuGet packages are expanded into -->
+        <!--
+            The default directory that the NuGet packages are expanded into
+        -->
         <DirDefaultPackages>$(DirWorkspace)\packages</DirDefaultPackages>
 
         <!-- Files -->
@@ -31,7 +33,9 @@
         <FileNugetConfig>$(DirWorkspace)\nuget.config</FileNugetConfig>
 
         <!-- External tools -->
-        <!-- The full path to the NuGet command line application. Expected to be found via the PATH environment variable. -->
+        <!--
+            The full path to the NuGet command line application. Expected to be found via the PATH environment variable.
+        -->
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
     </PropertyGroup>
 
