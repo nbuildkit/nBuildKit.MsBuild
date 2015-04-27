@@ -263,6 +263,9 @@
         <!-- The directory that will contain all the temporary files needed during the build process -->
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
 
+        <!-- The directory that will contain all the test files generated during the test process -->
+        <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
+
         <!-- The directory that contains all the NuGet packages for the project -->
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
 
@@ -271,7 +274,22 @@
 
         <!-- The directory that contains the template files for the project -->
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+
+        <!-- The directory that contains all the test files for the project -->
+        <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
     </PropertyGroup>
+
+    <!--
+        Additional items that should be available for the template replacement.
+        The default template parameters, as indicated at the top of this file, are always available.
+    -->
+    <ItemGroup>
+        <!--
+        <TemplateTokens Include="">
+            <ReplacementValue></ReplacementValue>
+        </TemplateTokens>
+        -->
+    </ItemGroup>
 
 
 
@@ -629,18 +647,6 @@
             <Token>MyAdditionalTemplateParameter</Token>
             <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
         </BuildFilesToGenerate>
-    </ItemGroup>
-
-    <!--
-        Additional items that should be available for the template replacement.
-        The default template parameters, as indicated at the top of this file, are always available.
-    -->
-    <ItemGroup>
-        <!--
-        <TemplateTokens Include="">
-            <ReplacementValue></ReplacementValue>
-        </TemplateTokens>
-        -->
     </ItemGroup>
 
 
@@ -1187,6 +1193,132 @@
     <!--
         *************************************
         *                                   *
+        *     Test SETTINGS                 *
+        *                                   *
+        *************************************
+    -->
+
+    <!--
+        **** TEST - GENERAL ****
+    -->
+    <PropertyGroup>
+        <!--
+            The following properties have to be defined on via an environment variable (either local to the process that
+            executes the build, or global to the user):
+            - When pushing packages via NuGet
+              NuGetApiKey - The NuGet API key for the NuGet feed
+        -->
+
+        <!-- The URL to which all NuGet packages should be pushed. By default it pushes to nuget.org -->
+        <NuGetSourceUrl Condition=" '$(NuGetSourceUrl)' == '' ">UNDEFINED</NuGetSourceUrl>
+
+        <!-- The URL / UNC path to which all the symbol packages should be pushed. -->
+        <SymbolServerUrl Condition=" '$(SymbolServerUrl)' == '' ">UNDEFINED</SymbolServerUrl>
+    </PropertyGroup>
+
+
+    <!--
+        **** Test STEPS ****
+    -->
+    <!--
+        The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
+        determines in which order the test steps are executed.
+
+        The following test steps are by default provided through the given properties:
+        $(TestStepsPrepareWorkspace)      - Deletes the existing test files and logs and creates the required directories for the test to execute.
+        $(TestStepsPrepareGenerateFiles)  - Generates one or more files from a set of template files.
+
+        Additional test steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Each script has the following properties passed to it:
+        $(BuildPropertyFile)              - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog)          - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)               - The full version of the nBuildKit library that is executing the build.
+        $(DirNBuildKitMsBuild)            - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)      - The full path to the directory that contains the nBuildKit shared scripts.
+        $(DirNBuildKitMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
+    -->
+    <ItemGroup>
+        <TestStepsToExecute Include="$(TestStepsPrepareWorkspace)">
+            <Properties>
+            </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
+            <Properties>
+            </Properties>
+        </TestStepsToExecute>
+    </ItemGroup>
+
+    <!--
+        Define the scripts that should be executed when any one of the test steps fails.
+
+        Steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Each script has the following properties passed to it:
+        $(BuildPropertyFile)             - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
+        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the nBuildKit shared scripts.
+        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
+
+        Additionally any properties defined by the 'Properties' section are also pushed up.
+    -->
+    <ItemGroup>
+        <!--
+        <TestFailureStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </TestFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - WORKSPACE ****
+    -->
+    <ItemGroup>
+        <TestFilesToCopy Include="$(DirTest)\**\*.*">
+            <TargetDirectory>$(DirBuildTest)</TargetDirectory>
+        </TestFilesToCopy>
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!--
+        The list of all files that should be generated and their template files.
+
+        The template file may contain zero or more template parameters as indicated at the top of this
+        file. Template parameters must be enclosed in '${}'.
+
+        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
+    -->
+    <ItemGroup>
+        <TestFilesToGenerate Include="$(DirBuildTemp)\MyFile.txt">
+            <Template>$(DirTemplates)\MyTemplatefile.txt</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTemp)\MyOtherFile.txt">
+            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
+            <Token>MyAdditionalTemplateParameter</Token>
+            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
+        </TestFilesToGenerate>
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
         *     DEPLOYMENT SETTINGS           *
         *                                   *
         *************************************
@@ -1314,7 +1446,7 @@
     <ItemGroup>
         <PushToDirectorySpecs Include="\\MyServer\${ProductNameInFilePath}\${VersionSemantic}">
             <IncludedFiles>
-                $(DirBuildDeploy)\myfile.xip
+                $(DirBuildDeploy)\myfile.zip
             </IncludedFiles>
             <ExcludedFiles>
             </ExcludedFiles>
