@@ -11,14 +11,14 @@
                Condition="!Exists('$(DirNBuildKitMsBuild)')" />
     </Target>
 
-    <Import Project="$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild') AND '$(ExistsPrepareGenerateFiles)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\build.prepare.getversion.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\build.prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\build.prepare.nuget.restore.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\build.prepare.nuget.restore.msbuild') AND '$(ExistsPrepareNuGetRestore)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\build.prepare.vcsinfo.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\build.prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.prepare.generatefiles.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.prepare.generatefiles.msbuild') AND '$(ExistsPrepareGenerateFiles)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.prepare.getversion.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.prepare.nuget.restore.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.prepare.nuget.restore.msbuild') AND '$(ExistsPrepareNuGetRestore)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.prepare.vcsinfo.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
 
     <!-- Clean up all the files we generate ourselves -->
     <PropertyGroup>

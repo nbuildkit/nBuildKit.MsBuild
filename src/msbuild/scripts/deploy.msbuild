@@ -18,14 +18,17 @@
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
 
         <!-- The full path to the location of the scripts -->
-        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
+        <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuildShared>
+        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
+        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
     <PropertyGroup>
-        <DeployStepTagVcs>$(DirMsBuildScripts)\deploy.tag.vcs.msbuild</DeployStepTagVcs>
-        <DeployStepsPushToNuget>$(DirMsBuildScripts)\deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
-        <DeployStepsPushToDirectory>$(DirMsBuildScripts)\deploy.pushto.directory.msbuild</DeployStepsPushToDirectory>
-        <DeployStepsPushToSymbolServer>$(DirMsBuildScripts)\deploy.pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
-        <DeployStepsPushToGitHubRelease>$(DirMsBuildScripts)\deploy.pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
+        <DeployStepTagVcs>$(DirNBuildKitMsBuild)\deploy.tag.vcs.msbuild</DeployStepTagVcs>
+        <DeployStepsPushToNuget>$(DirNBuildKitMsBuild)\deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
+        <DeployStepsPushToDirectory>$(DirNBuildKitMsBuild)\deploy.pushto.directory.msbuild</DeployStepsPushToDirectory>
+        <DeployStepsPushToSymbolServer>$(DirNBuildKitMsBuild)\deploy.pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
+        <DeployStepsPushToGitHubRelease>$(DirNBuildKitMsBuild)\deploy.pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
     </PropertyGroup>
 
     <Import Project="$(BuildPropertyFile)"
@@ -33,11 +36,6 @@
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
-        <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
-        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuildShared>
-        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
-        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
-
         <!--
             Each build file needs to have the paths passed in so that the default directory paths are always known.
             To prevent having to provide them in a lengthy line each time we'll store them here

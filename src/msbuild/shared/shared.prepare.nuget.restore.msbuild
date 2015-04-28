@@ -73,8 +73,7 @@
                Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
-            <NuGetPackageFiles Include="$(DirWorkspace)\**\packages.config"
-                               Exclude="$(DirPackages)\**\packages.config;$(DirBuild)\**\packages.config" />
+            <NuGetPackageFiles Include="$(DirWorkspace)\packages.config" />
         </ItemGroup>
 
         <Message Text="No NuGet package configuration files found to restore packages from."

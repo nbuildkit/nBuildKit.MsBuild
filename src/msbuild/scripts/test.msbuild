@@ -18,11 +18,18 @@
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
 
         <!-- The full path to the location of the scripts -->
-        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
+        <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuildShared>
+        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
+        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
     <PropertyGroup>
-        <TestStepsPrepareWorkspace>$(DirMsBuildScripts)\test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
-        <TestStepsPrepareGenerateFiles>$(DirMsBuildScripts)\test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
+        <TestStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
+        <TestStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuildShared)\shared.prepare.nuget.restore.msbuild</TestStepsPrepareRestoreNuGet>
+        <TestStepsPrepareGetVersion>$(DirNBuildKitMsBuildShared)\shared.prepare.getversion.msbuild</TestStepsPrepareGetVersion>
+        <TestStepsPrepareReleaseNotes>$(DirNBuildKitMsBuildShared)\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
+        <TestStepsPrepareVcsInfo>$(DirNBuildKitMsBuildShared)\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
+        <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuildShared)\shared.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
     </PropertyGroup>
 
     <Import Project="$(BuildPropertyFile)"
@@ -30,11 +37,6 @@
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
-        <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
-        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuildShared>
-        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
-        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
-
         <!--
             Each build file needs to have the paths passed in so that the default directory paths are always known.
             To prevent having to provide them in a lengthy line each time we'll store them here
