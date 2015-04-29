@@ -16,7 +16,6 @@
             where all the files are.
         -->
         <DirNBuildKitMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirNBuildKitMsBuildExtensions>
-        <DirNBuildKitMsBuildShared>$(DirWorkspace)\src\msbuild\shared</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildTemplates>$(DirWorkspace)\src\templates</DirNBuildKitMsBuildTemplates>
 
         <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
@@ -39,6 +38,7 @@
         <Message Text="The following targets exist:" />
         <Message Text="" />
         <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'settings.props' file." />
+        <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'setttings.props' file." />
         <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'settings.props' file." />
         <Message Text="- Help: Displays this text." />
     </Target>
@@ -52,7 +52,30 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\build.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="False"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+
+    <!--
+        Invoke the test steps as defined by the 'settings.props' file by invoking the nBuildKit 'test.msbuild'
+        script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
+        be used to execute the tests.
+    -->
+    <Target Name="Test">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKit)\test.msbuild"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -74,7 +97,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\deploy.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
