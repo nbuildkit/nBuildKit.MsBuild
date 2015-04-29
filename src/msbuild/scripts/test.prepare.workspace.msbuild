@@ -23,6 +23,7 @@
     <Target Name="nBuildKit_Test_Prepare_Workspace_Run"
             DependsOnTargets="_nBuildKit_Test_Prepare_Workspace_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Test_Prepare_Workspace_Clean" />
+        <CallTarget Targets="_nBuildKit_Test_Prepare_Workspace_CopyFiles" />
     </Target>
 
     <Target Name="_nBuildKit_Test_Prepare_Workspace_DebugLog"
@@ -95,7 +96,6 @@
 
     <Target Name="_nBuildKit_Test_Prepare_Workspace_CopyFiles"
             DependsOnTargets="_nBuildKit_Test_Prepare_Workspace_DisplayInfo;_nBuildKit_Test_Prepare_Workspace_Clean"
-            Outputs="%(TestFilesToCopy.Identity)"
             Condition=" '@(TestFilesToCopy)' != '' ">
         <!--
             MsBuild can't seem to handle using item metadata (BuildFilesToGenerate.FullPath) inside a property function
