@@ -844,6 +844,9 @@
 
     <!-- Strong name the binaries -->
     <PropertyGroup>
+        <FileSoftwareSigningKey>$(DirWorkspace)\nbuildkit.snk</FileSoftwareSigningKey>
+    </PropertyGroup>
+    <PropertyGroup>
         <!--
             A flag that indicates whether or not the assemblies should be strong named during the compilation process.
         -->
@@ -853,7 +856,7 @@
         <!--
             The full path of the key file that will be used to sign the assemblies during the compilation process.
         -->
-        <AssemblyOriginatorKeyFile Condition="$(ShouldSign)">$(SOFTWARE_SIGNING_KEY_PATH)</AssemblyOriginatorKeyFile>
+        <AssemblyOriginatorKeyFile Condition="$(ShouldSign)">$(FileSoftwareSigningKey)</AssemblyOriginatorKeyFile>
     </PropertyGroup>
 
     <!--
@@ -925,7 +928,7 @@
             <Projects>
                 NBuildKit.Test.CSharp.Library
             </Projects>
-            <KeyFile>$(SOFTWARE_SIGNING_KEY_PATH)</KeyFile>
+            <KeyFile>$(FileSoftwareSigningKey)</KeyFile>
         </InternalsVisibleTo>
         <InternalsVisibleTo Include="Moq">
             <Projects>
