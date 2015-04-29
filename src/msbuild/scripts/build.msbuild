@@ -19,17 +19,16 @@
 
         <!-- The full path to the location of the scripts -->
         <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
-        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
     <PropertyGroup>
         <BuildStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\build.prepare.workspace.msbuild</BuildStepsPrepareWorkspace>
-        <BuildStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuildShared)\shared.prepare.nuget.restore.msbuild</BuildStepsPrepareRestoreNuGet>
-        <BuildStepsPrepareGetVersion>$(DirNBuildKitMsBuildShared)\shared.prepare.getversion.msbuild</BuildStepsPrepareGetVersion>
-        <BuildStepsPrepareReleaseNotes>$(DirNBuildKitMsBuildShared)\shared.prepare.gatherreleasenotes.msbuild</BuildStepsPrepareReleaseNotes>
-        <BuildStepsPrepareVcsInfo>$(DirNBuildKitMsBuildShared)\shared.prepare.vcsinfo.msbuild</BuildStepsPrepareVcsInfo>
-        <BuildStepsPrepareGenerateFiles>$(DirNBuildKitMsBuildShared)\shared.prepare.generatefiles.msbuild</BuildStepsPrepareGenerateFiles>
+        <BuildStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild</BuildStepsPrepareRestoreNuGet>
+        <BuildStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</BuildStepsPrepareGetVersion>
+        <BuildStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</BuildStepsPrepareReleaseNotes>
+        <BuildStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</BuildStepsPrepareVcsInfo>
+        <BuildStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild</BuildStepsPrepareGenerateFiles>
 
         <BuildStepsAnalyzeSourceCcm>$(DirNBuildKitMsBuild)\build.analyze.source.ccm.msbuild</BuildStepsAnalyzeSourceCcm>
         <BuildStepsAnalyzeSourceSouceMonitor>$(DirNBuildKitMsBuild)\build.analyze.source.sourcemonitor.msbuild</BuildStepsAnalyzeSourceSouceMonitor>
@@ -59,7 +58,6 @@
         -->
         <DefaultPathProperties>
             DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
-            DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);
             DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
             DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)
         </DefaultPathProperties>
@@ -102,8 +100,6 @@
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirNBuildKitMsBuildShared)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>

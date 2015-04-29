@@ -19,17 +19,16 @@
 
         <!-- The full path to the location of the scripts -->
         <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
-        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
     <PropertyGroup>
         <TestStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
-        <TestStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuildShared)\shared.prepare.nuget.restore.msbuild</TestStepsPrepareRestoreNuGet>
-        <TestStepsPrepareGetVersion>$(DirNBuildKitMsBuildShared)\shared.prepare.getversion.msbuild</TestStepsPrepareGetVersion>
-        <TestStepsPrepareReleaseNotes>$(DirNBuildKitMsBuildShared)\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
-        <TestStepsPrepareVcsInfo>$(DirNBuildKitMsBuildShared)\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
-        <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuildShared)\shared.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
+        <TestStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild</TestStepsPrepareRestoreNuGet>
+        <TestStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</TestStepsPrepareGetVersion>
+        <TestStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
+        <TestStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
+        <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
     </PropertyGroup>
 
     <Import Project="$(BuildPropertyFile)"
@@ -43,7 +42,6 @@
         -->
         <DefaultPathProperties>
             DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
-            DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);
             DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
             DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)
         </DefaultPathProperties>
@@ -86,8 +84,6 @@
         <Message Text="The workspace is located at:                                       $(DirWorkspace)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirNBuildKitMsBuildShared)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
