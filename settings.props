@@ -267,6 +267,7 @@
         <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
         <DirBuildTestMsBuild>$(DirBuildTest)\msbuild</DirBuildTestMsBuild>
         <DirBuildTestMsBuildCSharp>$(DirBuildTestMsBuild)\csharp</DirBuildTestMsBuildCSharp>
+        <DirBuildTestMsBuildVbNet>$(DirBuildTestMsBuild)\vbnet</DirBuildTestMsBuildVbNet>
 
         <!-- The directory that contains all the NuGet packages for the project -->
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
@@ -281,6 +282,7 @@
         <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
         <DirTestMsBuild>$(DirTest)\msbuild</DirTestMsBuild>
         <DirTestMsBuildCSharp>$(DirTestMsBuild)\csharp</DirTestMsBuildCSharp>
+        <DirTestMsBuildVbNet>$(DirTestMsBuild)\vbnet</DirTestMsBuildVbNet>
     </PropertyGroup>
 
 
@@ -980,6 +982,9 @@
 
         Multiple projects can be referenced in the 'projects' section by separating them with a semi-colon (;). Whitespace
         can be added if required but it has no influence on the project list.
+
+        If the assemblies are not signed it is possible to leave out the signing information, e.g. the 'KeyFile'
+        property, the 'AssemblyFromPackage' property and the 'PublicKey' property.
     -->
     <ItemGroup>
         <InternalsVisibleTo Include="MyTestProject">
@@ -1344,6 +1349,10 @@
             <Properties>
             </Properties>
         </TestStepsToExecute>
+        <TestStepsToExecute Include="$(DirWorkspace)\test.execute.nbuildkit.vbnet.msbuild">
+            <Properties>
+            </Properties>
+        </TestStepsToExecute>
     </ItemGroup>
 
     <!--
@@ -1383,6 +1392,11 @@
         </TestFilesToCopy>
         <TestFilesToCopy Include="$(DirTestMsBuild)\*.snk">
             <TargetDirectory>$(DirBuildTestMsBuildCSharp)</TargetDirectory>
+        </TestFilesToCopy>
+
+        <TestFilesToCopy Include="$(DirTestMsBuildVbNet)\**\*.*"
+                         Exclude="$(DirTestMsBuildVbNet)\nuget.config;$(DirTestMsBuildVbNet)\**\packages.config;$(DirTestMsBuildVbNet)\**\*.vbproj">
+            <TargetDirectory>$(DirBuildTestMsBuildVbNet)</TargetDirectory>
         </TestFilesToCopy>
     </ItemGroup>
 
@@ -1430,6 +1444,39 @@
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestMsBuildCSharp)\src\Test.Unit.Library\packages.config">
             <Template>$(DirTestMsBuildCSharp)\src\Test.Unit.Library\packages.config</Template>
+        </TestFilesToGenerate>
+
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\nuget.config">
+            <Template>$(DirTestMsBuildVbNet)\nuget.config</Template>
+            <Token>LocalNuGetRepository</Token>
+            <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\packages.config">
+            <Template>$(DirTestMsBuildVbNet)\packages.config</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj">
+            <Template>$(DirTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Console\packages.config">
+            <Template>$(DirTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Console\packages.config</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Library\nBuildKit.Test.VbNet.Library.vbproj">
+            <Template>$(DirTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Library\nBuildKit.Test.VbNet.Library.vbproj</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Library\packages.config">
+            <Template>$(DirTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Library\packages.config</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Wpf\nBuildKit.Test.VbNet.Wpf.vbproj">
+            <Template>$(DirTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Wpf\nBuildKit.Test.VbNet.Wpf.vbproj</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Wpf\packages.config">
+            <Template>$(DirTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Wpf\packages.config</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\src\Test.Unit.Library\Test.Unit.Library.vbproj">
+            <Template>$(DirTestMsBuildVbNet)\src\Test.Unit.Library\Test.Unit.Library.vbproj</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\src\Test.Unit.Library\packages.config">
+            <Template>$(DirTestMsBuildVbNet)\src\Test.Unit.Library\packages.config</Template>
         </TestFilesToGenerate>
     </ItemGroup>
 
