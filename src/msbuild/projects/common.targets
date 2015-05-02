@@ -66,9 +66,12 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Projects_Common_GenerateFiles"
             DependsOnTargets="nBuildKit_Projects_Common_VerifyProperties">
-        <CallTarget Targets="nBuildKit_Shared_Prepare_NuGet_Restore_Run" />
-        <CallTarget Targets="nBuildKit_Shared_Prepare_GetVersion_Run" />
-        <CallTarget Targets="nBuildKit_Shared_Prepare_VcsInfo_Run" />
+        <CallTarget Targets="nBuildKit_Shared_Prepare_NuGet_Restore_Run"
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareRestoreNuGet)' " />
+        <CallTarget Targets="nBuildKit_Shared_Prepare_GetVersion_Run"
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareGetVersion)' "/>
+        <CallTarget Targets="nBuildKit_Shared_Prepare_VcsInfo_Run"
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareVcsInfo)' "/>
         <CallTarget Targets="nBuildKit_Build_Prepare_GenerateFiles_Run" />
     </Target>
 
