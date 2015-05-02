@@ -11,14 +11,14 @@
                Condition="!Exists('$(DirNBuildKitMsBuild)')" />
     </Target>
 
-    <Import Project="$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.generatefiles.msbuild') AND '$(ExistsPrepareGenerateFiles)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\prepare.getversion.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\prepare.nuget.restore.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.nuget.restore.msbuild') AND '$(ExistsPrepareNuGetRestore)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild') AND '$(ExistsPrepareGenerateFiles)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild') AND '$(ExistsPrepareNuGetRestore)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
 
     <!-- Clean up all the files we generate ourselves -->
     <PropertyGroup>
@@ -30,7 +30,7 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Projects_Common_CleanGeneratedFiles" DependsOnTargets="nBuildKit_Projects_Common_VerifyProperties">
         <ItemGroup>
-            <GeneratedFilesToDelete Include="%(FilesToGenerate.FullPath)" />
+            <GeneratedFilesToDelete Include="%(BuildFilesToGenerate.FullPath)" />
         </ItemGroup>
         <Delete Files="@(GeneratedFilesToDelete)" />
     </Target>
@@ -66,10 +66,10 @@
     </PropertyGroup>
     <Target Name="_nBuildKit_Projects_Common_GenerateFiles"
             DependsOnTargets="nBuildKit_Projects_Common_VerifyProperties">
-        <CallTarget Targets="nBuildKit_Prepare_NuGet_Restore_Run" />
-        <CallTarget Targets="nBuildKit_Prepare_GetVersion_Run" />
-        <CallTarget Targets="nBuildKit_Prepare_VcsInfo_Run" />
-        <CallTarget Targets="nBuildKit_Prepare_GenerateFiles_Run" />
+        <CallTarget Targets="nBuildKit_Shared_Prepare_NuGet_Restore_Run" />
+        <CallTarget Targets="nBuildKit_Shared_Prepare_GetVersion_Run" />
+        <CallTarget Targets="nBuildKit_Shared_Prepare_VcsInfo_Run" />
+        <CallTarget Targets="nBuildKit_Build_Prepare_GenerateFiles_Run" />
     </Target>
 
     <!-- Handle any external pre-build steps -->

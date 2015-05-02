@@ -18,14 +18,16 @@
         <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
 
         <!-- The full path to the location of the scripts -->
-        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
+        <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
+        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
     <PropertyGroup>
-        <DeployStepTagVcs>$(DirMsBuildScripts)\tag.vcs.msbuild</DeployStepTagVcs>
-        <DeployStepsPushToNuget>$(DirMsBuildScripts)\pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
-        <DeployStepsPushToDirectory>$(DirMsBuildScripts)\pushto.directory.msbuild</DeployStepsPushToDirectory>
-        <DeployStepsPushToSymbolServer>$(DirMsBuildScripts)\pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
-        <DeployStepsPushToGitHubRelease>$(DirMsBuildScripts)\pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
+        <DeployStepTagVcs>$(DirNBuildKitMsBuild)\deploy.tag.vcs.msbuild</DeployStepTagVcs>
+        <DeployStepsPushToNuget>$(DirNBuildKitMsBuild)\deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
+        <DeployStepsPushToDirectory>$(DirNBuildKitMsBuild)\deploy.pushto.directory.msbuild</DeployStepsPushToDirectory>
+        <DeployStepsPushToSymbolServer>$(DirNBuildKitMsBuild)\deploy.pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
+        <DeployStepsPushToGitHubRelease>$(DirNBuildKitMsBuild)\deploy.pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
     </PropertyGroup>
 
     <Import Project="$(BuildPropertyFile)"
@@ -33,18 +35,12 @@
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
-        <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
-        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuildShared>
-        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
-        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
-
         <!--
             Each build file needs to have the paths passed in so that the default directory paths are always known.
             To prevent having to provide them in a lengthy line each time we'll store them here
         -->
         <DefaultPathProperties>
             DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
-            DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);
             DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
             DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)
         </DefaultPathProperties>
@@ -83,8 +79,6 @@
         <Message Text="The directory containing the local template files is located at:   $(DirTemplates)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit shared files is located at: $(DirNBuildKitMsBuildShared)"
                  Importance="low"/>
         <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>

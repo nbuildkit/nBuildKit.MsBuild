@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Build_Test_Unit_NUnit_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildTestUnitNUnit>true</ExistsBuildTestUnitNUnit>
+
+        <!-- The full path to the settings file that contains all the settings for the build process -->
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+
+        <!--
+            Define the DirWorkspace before importing the BuildPropertyFile so that it is defined and can be used by
+            the properties in the BuildPropertyFile. Note that we can't define it in the BuildPropertyFile because that
+            is imported which means there is no way to get the path of the file.
+        -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+    </PropertyGroup>
+
+    <Import Project="$(BuildPropertyFile)"
+            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\OpenCover.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\OpenCover.msbuild') AND '$(ExistsExtensionsOpenCover)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\ReportGenerator.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ReportGenerator.msbuild') AND '$(ExistsExtensionsReportGenerator)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild') AND '$(ExistsExtensionsReportGeneratorOutputToCsv)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+
+    <Target Name="nBuildKit_Build_Test_Unit_NUnit_Run"
+            DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_Execute" />
+    </Target>
+
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_DebugLog">
+        <Message Text="Running unit tests with NUnit ..."
+                 Importance="low"/>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)"
+            DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates">
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                                     $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the OpenCover unit test coverage reports is located at: $(DirReportGeneratorOutput)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:                       $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit files is located at:                      $(DirNBuildKitMsBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:                    $(DirNBuildKitMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:                  $(DirNBuildKitMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="The OpenCover XML report will be located at:                                     $(FileReportOpenCoverXmlExpanded)"
+                 Importance="low"/>
+        <Message Text="The OpenCover CSV report will be located at:                                     $(FileReportOpenCoverCsvExpanded)"
+                 Importance="low"/>
+        <Message Text="The ReportGenerator XML summary report will be located at:                       $(FileReportReportGeneratorXmlSummary)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="nUnit command line executable is located at:                                     $(ToolsExternalNUnitConsolePath)"
+                 Importance="low"/>
+        <Message Text="OpenCover command line executable is located at:                                 $(ToolsExternalOpenCoverPath)"
+                 Importance="low"/>
+        <Message Text="ReportGenerator command line executable is located at:                           $(ToolsExternalReportGeneratorPath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
+        <Message Text="Resolving build templates ..."
+                 Importance="low"/>
+
+        <TemplateText Template="$(FileReportOpenCoverXml)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverXmlExpanded" />
+        </TemplateText>
+
+        <TemplateText Template="$(FileReportOpenCoverCsv)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverCsvExpanded" />
+        </TemplateText>
+    </Target>
+
+    <PropertyGroup>
+        <FileReportReportGeneratorXmlSummary>$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_Execute"
+            DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates">
+        <Error Text="The packages directory does not exist. Cannot search for the unit test executables."
+               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverCsvExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+
+        <!-- This directory is always present although users may change the location -->
+        <MakeDir Directories="$(DirReportGeneratorOutput)"
+                 Condition="!Exists('$(DirReportGeneratorOutput)') AND '$(ShouldExecute)' == 'true' " />
+
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
+                                            FileToLocate="nunit-console.exe"
+                                            Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalNUnitConsolePath" />
+        </SearchPackagesDirectoryForToolPath>
+        <Message Text="The NUnit executable was found at: $(ToolsExternalNUnitConsolePath)"
+                 Importance="low"
+                 Condition="Exists('$(ToolsExternalNUnitConsolePath)') AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="Could not locate the NUnit executable path. Cannot execute unit tests."
+               Condition="!Exists('$(ToolsExternalNUnitConsolePath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
+                                            FileToLocate="opencover.console.exe"
+                                            Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverPath" />
+        </SearchPackagesDirectoryForToolPath>
+        <Message Text="The OpenCover executable was found at: $(ToolsExternalOpenCoverPath)"
+                 Importance="low"
+                 Condition="Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="Could not locate the OpenCover executable path. Cannot execute unit tests."
+               Condition="!Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
+                                            FileToLocate="ReportGenerator.exe"
+                                            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
+        </SearchPackagesDirectoryForToolPath>
+        <Message Text="The ReportGenerator executable was found at: $(ToolsExternalReportGeneratorPath)"
+                 Importance="low"
+                 Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Warning Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports."
+                 Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <OpenCover OpenCoverExe="$(ToolsExternalOpenCoverPath)"
+                   OpenCoverOutput="$(FileReportOpenCoverXmlExpanded)"
+                   OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
+                   OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
+                   UnitTestExe="$(ToolsExternalNUnitConsolePath)"
+                   UnitTestArguments="/framework:net-4.5 /result:&quot;nunit-console.xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:single @(UnitTestAssemblies->'%22%(FullPath)%22', ' ')"
+                   BinDir="$(DirBuildBinPlatformConfig)"
+                   Condition=" Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
+                         OpenCoverOutputFile="$(FileReportOpenCoverXmlExpanded)"
+                         OutputDir="$(DirReportGeneratorOutput)"
+                         Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <ReportGeneratorOutputToCsv InputFile="$(FileReportReportGeneratorXmlSummary)"
+                                    OutputFile="$(FileReportOpenCoverCsvExpanded)"
+                                    Condition="Exists('$(FileReportReportGeneratorXmlSummary)') AND '$(ShouldExecute)' == 'true' "/>
+    </Target>
+ </Project>

@@ -20,25 +20,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <FilesToGenerate Include="$(SolutionDir)\CompanyInformation.vb"
+        <BuildFilesToGenerate Include="$(SolutionDir)\CompanyInformation.vb"
                          Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\CompanyInformation.vb</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(SolutionDir)\ProductInformation.vb"
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(SolutionDir)\ProductInformation.vb"
                          Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\ProductInformation.vb</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.Company.vb"
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.Company.vb"
                          Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.Company.vb</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.VersionNumber.vb"
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.VersionNumber.vb"
                          Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.VersionNumber.vb</Template>
-        </FilesToGenerate>
-        <FilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.BuildInformation.vb"
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.BuildInformation.vb"
                          Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.BuildInformation.vb</Template>
-        </FilesToGenerate>
+        </BuildFilesToGenerate>
     </ItemGroup>
 </Project>
