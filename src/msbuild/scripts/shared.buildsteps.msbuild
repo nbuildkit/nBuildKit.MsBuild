@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <!-- Note the current script is not meant to be imported! -->
+        <ExistsBuildSteps>true</ExistsBuildSteps>
+
+        <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
+    </PropertyGroup>
+    <PropertyGroup>
+        <BuildStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\build.prepare.workspace.msbuild</BuildStepsPrepareWorkspace>
+        <BuildStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild</BuildStepsPrepareRestoreNuGet>
+        <BuildStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</BuildStepsPrepareGetVersion>
+        <BuildStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</BuildStepsPrepareReleaseNotes>
+        <BuildStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</BuildStepsPrepareVcsInfo>
+        <BuildStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild</BuildStepsPrepareGenerateFiles>
+
+        <BuildStepsAnalyzeSourceCcm>$(DirNBuildKitMsBuild)\build.analyze.source.ccm.msbuild</BuildStepsAnalyzeSourceCcm>
+        <BuildStepsAnalyzeSourceSouceMonitor>$(DirNBuildKitMsBuild)\build.analyze.source.sourcemonitor.msbuild</BuildStepsAnalyzeSourceSouceMonitor>
+
+        <BuildStepsBuildVisualStudioSolution>$(DirNBuildKitMsBuild)\build.binaries.msbuild</BuildStepsBuildVisualStudioSolution>
+
+        <BuildStepsUnitTestNUnit>$(DirNBuildKitMsBuild)\build.test.unit.nunit.msbuild</BuildStepsUnitTestNUnit>
+        <BuildStepsUnitTestMsTest>$(DirNBuildKitMsBuild)\build.test.unit.mstest.msbuild</BuildStepsUnitTestMsTest>
+
+        <BuildStepsAnalyzeBinariesMoma>$(DirNBuildKitMsBuild)\build.analyze.binaries.moma.msbuild</BuildStepsAnalyzeBinariesMoma>
+        <BuildStepsAnalyzeBinariesFxCop>$(DirNBuildKitMsBuild)\build.analyze.binaries.fxcop.msbuild</BuildStepsAnalyzeBinariesFxCop>
+
+        <BuildStepsBuildApiDocumentationWithSandcastle>$(DirNBuildKitMsBuild)\build.apidocumentation.sandcastle.msbuild</BuildStepsBuildApiDocumentationWithSandcastle>
+
+        <BuildStepsPackNuGet>$(DirNBuildKitMsBuild)\build.pack.nuget.msbuild</BuildStepsPackNuGet>
+        <BuildStepsPackZip>$(DirNBuildKitMsBuild)\build.pack.zip.msbuild</BuildStepsPackZip>
+    </PropertyGroup>
+</Project>

@@ -22,31 +22,9 @@
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
-    <PropertyGroup>
-        <BuildStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\build.prepare.workspace.msbuild</BuildStepsPrepareWorkspace>
-        <BuildStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild</BuildStepsPrepareRestoreNuGet>
-        <BuildStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</BuildStepsPrepareGetVersion>
-        <BuildStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</BuildStepsPrepareReleaseNotes>
-        <BuildStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</BuildStepsPrepareVcsInfo>
-        <BuildStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild</BuildStepsPrepareGenerateFiles>
 
-        <BuildStepsAnalyzeSourceCcm>$(DirNBuildKitMsBuild)\build.analyze.source.ccm.msbuild</BuildStepsAnalyzeSourceCcm>
-        <BuildStepsAnalyzeSourceSouceMonitor>$(DirNBuildKitMsBuild)\build.analyze.source.sourcemonitor.msbuild</BuildStepsAnalyzeSourceSouceMonitor>
-
-        <BuildStepsBuildVisualStudioSolution>$(DirNBuildKitMsBuild)\build.binaries.msbuild</BuildStepsBuildVisualStudioSolution>
-
-        <BuildStepsUnitTestNUnit>$(DirNBuildKitMsBuild)\build.test.unit.nunit.msbuild</BuildStepsUnitTestNUnit>
-        <BuildStepsUnitTestMsTest>$(DirNBuildKitMsBuild)\build.test.unit.mstest.msbuild</BuildStepsUnitTestMsTest>
-
-        <BuildStepsAnalyzeBinariesMoma>$(DirNBuildKitMsBuild)\build.analyze.binaries.moma.msbuild</BuildStepsAnalyzeBinariesMoma>
-        <BuildStepsAnalyzeBinariesFxCop>$(DirNBuildKitMsBuild)\build.analyze.binaries.fxcop.msbuild</BuildStepsAnalyzeBinariesFxCop>
-
-        <BuildStepsBuildApiDocumentationWithSandcastle>$(DirNBuildKitMsBuild)\build.apidocumentation.sandcastle.msbuild</BuildStepsBuildApiDocumentationWithSandcastle>
-
-        <BuildStepsPackNuGet>$(DirNBuildKitMsBuild)\build.pack.nuget.msbuild</BuildStepsPackNuGet>
-        <BuildStepsPackZip>$(DirNBuildKitMsBuild)\build.pack.zip.msbuild</BuildStepsPackZip>
-    </PropertyGroup>
-
+    <Import Project="$(DirNBuildKitMsBuild)\shared.buildsteps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.buildsteps.msbuild') AND '$(ExistsBuildSteps)' != 'true' " />
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
