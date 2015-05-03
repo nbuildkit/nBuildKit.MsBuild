@@ -5,6 +5,8 @@
     <Target Name="nBuildKit_Projects_Common_VerifyProperties">
         <Error Text="Build property file not found"
                Condition="!Exists('$(BuildPropertyFile)')" />
+        <Error Text="Build property file not loaded"
+               Condition=" '$(ExistsSettings)' != 'true' " />
         <Error Text="nBuildKit version is not set"
                Condition=" '$(NBuildKitVersion)' == '' " />
         <Error Text="nBuildKit not found"
@@ -69,9 +71,9 @@
         <CallTarget Targets="nBuildKit_Shared_Prepare_NuGet_Restore_Run"
                     Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareRestoreNuGet)' " />
         <CallTarget Targets="nBuildKit_Shared_Prepare_GetVersion_Run"
-                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareGetVersion)' "/>
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareGetVersion)' " />
         <CallTarget Targets="nBuildKit_Shared_Prepare_VcsInfo_Run"
-                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareVcsInfo)' "/>
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareVcsInfo)' " />
         <CallTarget Targets="nBuildKit_Build_Prepare_GenerateFiles_Run" />
     </Target>
 
