@@ -22,15 +22,9 @@
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
-    <PropertyGroup>
-        <TestStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
-        <TestStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild</TestStepsPrepareRestoreNuGet>
-        <TestStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</TestStepsPrepareGetVersion>
-        <TestStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
-        <TestStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
-        <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
-    </PropertyGroup>
 
+    <Import Project="$(DirNBuildKitMsBuild)\shared.teststeps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' " />
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
