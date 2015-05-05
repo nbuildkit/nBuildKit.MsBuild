@@ -48,10 +48,57 @@
         <Message Text="" />
         <Message Text="The following targets exist:" />
         <Message Text="" />
+        <Message Text="- Init: Configures an empty directory to be used as a nBuildKit workspace." />
         <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'settings.props' file." />
         <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'setttings.props' file." />
         <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'settings.props' file." />
         <Message Text="- Help: Displays this text." />
+    </Target>
+
+    <!--
+        Configure the current directory to be used as a nBuildKit workspace.
+    -->
+    <Target Name="Init">
+        <!--
+            Properties:
+            - WorkspaceType:
+                - Software
+                - Ops
+            - VersionVia:
+                - version.xml
+                - Custom
+                - GitFlow
+                - GitHubFlow
+        -->
+
+        <!--
+            Directories:
+            - Software
+                - src
+                - tests
+            - Ops
+                - cookbooks
+                - scripts
+                - tests
+        -->
+
+        <!--
+            Files:
+            Create nuget.config
+            Create packages.config
+            Create settings.props ==> download from github in the samples file
+            Config settings.props:
+            - ProductName
+            - ProductNameInFilePath
+            - ProductNamespace
+            - ProductDescription
+            - ProductStartingYear
+            - CompanyName
+            - CompanyNameInFilePath
+            - CompanyUrl
+            -
+        -->
+
     </Target>
 
     <!--
