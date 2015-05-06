@@ -1140,6 +1140,8 @@
 
         The IncludedDependencies and the ExcludedDependencies are lists of packages.config files that
         should be included (or excluded) in the list of dependencies. Each entry is separated by a semi-colon(;).
+        If there is a 'packages.config' file in the same directory as the nuspec file then it is assumed that
+        all references in the 'packages.config' file should be added as dependencies.
 
         All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
     -->
@@ -1147,7 +1149,7 @@
         <NuGetPackageSpecs Include="$(DirSrc)\myproject\myproject.nuspec">
             <ShouldBuildSymbols>true</ShouldBuildSymbols>
             <IncludedDependencies>
-                $(DirSrc)\MyProject\packages.config
+                $(DirSrc)\MyOtherProject\packages.config
             </IncludedDependencies>
             <ExcludedDependencies>
             </ExcludedDependencies>
