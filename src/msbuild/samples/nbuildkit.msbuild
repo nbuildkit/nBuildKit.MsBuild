@@ -70,30 +70,41 @@
         <DirSrcDefault>$(DirWorkspace)\src</DirSrcDefault>
         <DirTestsDefault>$(DirWorkspace)\tests</DirTestsDefault>
 
-        <UrlNBuildKitOnGitHub>https://github.com/pvandervelde/nBuildKit</UrlNBuildKitOnGitHub>
-        <UrlNBuildKitOnGitHubMasterMsBuildSamples>$(UrlNBuildKitOnGitHub)/blob/master/src/msbuild/samples</UrlNBuildKitOnGitHubMasterMsBuildSamples>
+        <UrlNBuildKitOnGitHub>https://raw.githubusercontent.com/pvandervelde/nBuildKit</UrlNBuildKitOnGitHub>
+        <UrlNBuildKitOnGitHubMasterMsBuildSamples>$(UrlNBuildKitOnGitHub)/master/src/msbuild/samples</UrlNBuildKitOnGitHubMasterMsBuildSamples>
     </PropertyGroup>
     <Target Name="Init">
-        <MakeDir Directories="$(DirBuildDefault)"
-                 Condition="!Exists('$(DirBuildDefault)')" />
-        <MakeDir Directories="$(DirBuildTempDefault)"
-                 Condition="!Exists('$(DirBuildTempDefault)')" />
+        <Error Text="In order to initialize the workspace please provide the name of the product through the 'ProductName' property."
+               Condition=" '$(ProductName)' == '' " />
+        <Error Text="In order to initialize the workspace please provide the name of the company through the 'CompanyName' property."
+               Condition=" '$(CompanyName)' == '' " />
+
+        <Message Text="Creating directory to contain source files ..." />
         <MakeDir Directories="$(DirSrcDefault)"
                  Condition="!Exists('$(DirSrcDefault)')" />
+
+        <Message Text="Creating directory to contain test files ..." />
         <MakeDir Directories="$(DirTestsDefault)"
                  Condition="!Exists('$(DirTestsDefault)')" />
 
+        <Message Text="Downloading the nuget configuration file from GitHub ..." />
         <DownloadFile Address="$(UrlNBuildKitOnGitHubMasterMsBuildSamples)/nuget.config"
-                      Destination="$(FileNugetConfig)" />
+                      Destination="$(FileNugetConfig)"
+                      Condition="!Exists('$(FileNugetConfig)')"/>
 
+        <Message Text="Downloading the settings file from GitHub ..." />
         <DownloadFile Address="$(UrlNBuildKitOnGitHubMasterMsBuildSamples)/settings.props"
-                      Destination="$(BuildPropertyFile)" />
-
-        <DownloadFile Address="$(UrlNBuildKitOnGitHubMasterMsBuildSamples)/version.xml"
                       Destination="$(BuildPropertyFile)"
-                      Condition=" '$(IsGitWorkspace)' != 'true' " />
+                      Condition="!Exists('$(BuildPropertyFile)')"/>
+
+        <Message Text="Downloading the version file from GitHub ..."
+                 Condition=" '$(IsGitWorkspace)' != 'true' "/>
+        <DownloadFile Address="$(UrlNBuildKitOnGitHubMasterMsBuildSamples)/version.xml"
+                      Destination="$(DirWorkspace)\version.xml"
+                      Condition=" '$(IsGitWorkspace)' != 'true' AND !Exists('$(DirWorkspace)\version.xml')" />
 
         <!-- Create the packages.config file -->
+        <Message Text="Generating package configuration file ..." />
         <GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
             <Output TaskParameter="Version" PropertyName="NBuildKitLatestVersion" />
         </GetLatestNBuildKitVersionFromNuGet>
@@ -116,49 +127,52 @@
         <!--
             ProductName: ProductName property
         -->
+        <Message Text="Updating settings file with product values ..." />
         <XmlPoke
-            Namespaces="&lt;Namespace Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="//Project/PropertyGroup/ProductName"
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:ProductName"
             Value="$(ProductName)"
             XmlInputPath="$(BuildPropertyFile)" />
         <!--
             ProductNameInFilePath: ProductName property without spaces
         -->
         <XmlPoke
-            Namespaces="&lt;Namespace Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="//Project/PropertyGroup/ProductNameInFilePath"
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:ProductNameInFilePath"
             Value="$(ProductName.Replace(' ', ''))"
             XmlInputPath="$(BuildPropertyFile)" />
         <!--
             ProductNamespace: ProductName property with all spaces replaced by dots (.)
         -->
         <XmlPoke
-            Namespaces="&lt;Namespace Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="//Project/PropertyGroup/ProductNamespace"
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:ProductNamespace"
             Value="$(ProductName.Replace(' ', '.'))"
             XmlInputPath="$(BuildPropertyFile)" />
         <!--
             ProductStartingYear: Set to the current year
         -->
+        <Message Text="Updating settings file with copyright values ..." />
         <XmlPoke
-            Namespaces="&lt;Namespace Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="//Project/PropertyGroup/ProductStartingYear"
-            Value="$([System.DateTime]::Now.ToString("yyyy"))"
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:ProductStartingYear"
+            Value="$([System.DateTime]::Now.ToString('yyyy'))"
             XmlInputPath="$(BuildPropertyFile)" />
         <!--
             CompanyName: CompanyName property
         -->
+        <Message Text="Updating settings file with company values ..." />
         <XmlPoke
-            Namespaces="&lt;Namespace Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="//Project/PropertyGroup/CompanyName"
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:CompanyName"
             Value="$(CompanyName)"
             XmlInputPath="$(BuildPropertyFile)" />
         <!--
             CompanyNameInFilePath: CompanyName property without spaces
         -->
         <XmlPoke
-            Namespaces="&lt;Namespace Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="//Project/PropertyGroup/CompanyNameInFilePath"
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:CompanyNameInFilePath"
             Value="$(CompanyName.Replace(' ', ''))"
             XmlInputPath="$(BuildPropertyFile)" />
 
@@ -166,17 +180,26 @@
             - CompanyUrl: companyname_withoutspaces.com
         -->
         <XmlPoke
-            Namespaces="&lt;Namespace Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="//Project/PropertyGroup/CompanyUrl"
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:CompanyUrl"
             Value="http://$(CompanyName.Replace(' ', '')).com"
             XmlInputPath="$(BuildPropertyFile)" />
 
         <!--
-
-            - GitHubUserName ==> if .git directory then get from git
-            - GitHubRepositoryName ==> if .git directory then get from git
             - GitRemoteRepository ==> if .git directory then get from git
         -->
+        <Message Text="Updating settings file with GIT values ..."
+                 Condition=" '$(IsGitWorkspace)' == 'true' "/>
+        <GetRemoteRepositoryUrlFromGit GitPath="git"
+                                       Condition=" '$(IsGitWorkspace)' == 'true' ">
+            <Output TaskParameter="RemoteRepositoryUrl" PropertyName="GitRemoteUrl" />
+        </GetRemoteRepositoryUrlFromGit>
+        <XmlPoke
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:GitRemoteRepository"
+            Value="http://$(GitRemoteUrl)"
+            XmlInputPath="$(BuildPropertyFile)"
+            Condition=" '$(IsGitWorkspace)' == 'true' AND '$(GitRemoteUrl)' != '' " />
     </Target>
 
     <!--
@@ -406,7 +429,94 @@
                             Version = listText.Substring(
                                     index + nbuildKitVersionStart.Length,
                                     listText.IndexOf("nBuildKit", index + nbuildKitVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + nbuildKitVersionStart.Length))
-                                .Trim('"');
+                                .Trim();
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <UsingTask TaskName="GetRemoteRepositoryUrlFromGit"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+        <ParameterGroup>
+            <GitPath ParameterType="System.String" Required="true" />
+            <RemoteRepositoryUrl ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var info = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = GitPath,
+                                    Arguments = "remote show origin",
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+
+                        Log.LogMessage(MessageImportance.Low, string.Format("{0} {1}", info.FileName, info.Arguments));
+
+                        var text = new System.Text.StringBuilder();
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    text.Append(e.Data);
+                                }
+                            };
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogError(e.Data);
+                                }
+                            };
+                        process.Start();
+
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            return false;
+                        }
+
+                        RemoteRepositoryUrl = "";
+                        try
+                        {
+                            string listText = text.ToString();
+                            const string remoteStart = "Fetch URL: ";
+                            var index = listText.IndexOf(remoteStart, StringComparison.OrdinalIgnoreCase);
+                            if (index > -1)
+                            {
+                                RemoteRepositoryUrl = listText.Substring(
+                                        index + remoteStart.Length,
+                                        listText.IndexOf("Push  URL:", index + remoteStart.Length, StringComparison.OrdinalIgnoreCase) - (index + remoteStart.Length))
+                                    .Trim();
+                            }
                         }
                         catch(Exception e)
                         {
