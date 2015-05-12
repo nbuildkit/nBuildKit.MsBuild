@@ -143,9 +143,9 @@
         <GetReleaseNotesViaGitReleaseNotes ExePath="$(ToolsExternalGitReleaseNotesPath)"
                                            RepositoryName="$(GitHubRepositoryName)"
                                            Version="$(VersionSemantic)"
-                                           OutputFile="$(FileReleaseNotesShort)"
+                                           OutputFile="$(FileReleaseNotesFull)"
                                            GetAllReleaseNotes="true"
-                                           Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' "
+                                           Condition=" '$(ShouldExecute)' == 'true' "
                                            ContinueOnError="true" />
     </Target>
 
@@ -187,7 +187,7 @@
         <GetReleaseNotesViaGitReleaseNotes ExePath="$(ToolsExternalGitReleaseNotesPath)"
                                            RepositoryName="$(GitHubRepositoryName)"
                                            Version="$(VersionSemantic)"
-                                           OutputFile="$(FileReleaseNotesShort)"
+                                           OutputFile="$(FileReleaseNotesFull)"
                                            YouTrackUserName="$(IssueTrackerUserName)"
                                            YouTrackServer="$(YouTrackServer)"
                                            YouTrackProject="$(IssueTrackerProjectId)"
