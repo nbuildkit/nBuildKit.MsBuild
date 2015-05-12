@@ -121,20 +121,17 @@
 
         <Message Text="Gathering release note information from GitHub"
                  Importance="normal" />
-        <Warning Text="Not enough information provided to gather the release notes ..."
-                 Condition=" '$(IssueTrackerConnection)' == '' " />
         <Warning Text="Github username not specified"
-                 Condition="  '$(IssueTrackerConnection)' == '' AND '$(GitHubUserName)' == 'UNDEFINED' " />
+                 Condition=" '$(GitHubUserName)' == 'UNDEFINED' " />
 
         <Message Text="Gathering release notes for current release ..."
-                 Importance="normal"
-                 Condition=" '$(IssueTrackerConnection)' != '' " />
+                 Importance="normal" />
         <GetReleaseNotesViaGitReleaseNotes ExePath="$(ToolsExternalGitReleaseNotesPath)"
                                            RepositoryName="$(GitHubRepositoryName)"
                                            Version="$(VersionSemantic)"
                                            OutputFile="$(FileReleaseNotesShort)"
                                            GetAllReleaseNotes="false"
-                                           Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' "
+                                           Condition=" '$(ShouldExecute)' == 'true' "
                                            ContinueOnError="true" />
 
         <Message Text="Gathering release notes for all releases ..."
@@ -159,12 +156,10 @@
                  Importance="normal"
                  Condition=" '$(YouTrackServer)' != 'UNDEFINED' " />
 
-        <Warning Text="Not enough information provided to gather the release notes ..."
-                 Condition=" '$(IssueTrackerConnection)' == '' " />
         <Warning Text="YouTrack server URI not specified"
-                 Condition="  '$(IssueTrackerConnection)' =='' AND '$(YouTrackServer)' == 'UNDEFINED' " />
+                 Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
         <Warning Text="Issue tracker project ID not specified"
-                 Condition="  '$(IssueTrackerConnection)' == '' AND '$(IssueTrackerProjectId)' == 'UNDEFINED' " />
+                 Condition=" '$(IssueTrackerProjectId)' == 'UNDEFINED' " />
 
         <Message Text="Gathering release notes for current release ..."
                  Importance="normal"
@@ -178,7 +173,7 @@
                                            YouTrackProject="$(IssueTrackerProjectId)"
                                            YouTrackFilter="$(IssueFilter)"
                                            GetAllReleaseNotes="false"
-                                           Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' "
+                                           Condition=" '$(ShouldExecute)' == 'true' "
                                            ContinueOnError="true" />
 
         <Message Text="Gathering release notes for all releases ..."
@@ -193,7 +188,7 @@
                                            YouTrackProject="$(IssueTrackerProjectId)"
                                            YouTrackFilter="$(IssueFilter)"
                                            GetAllReleaseNotes="true"
-                                           Condition=" '$(IssueTrackerConnection)' != '' AND '$(ShouldExecute)' == 'true' "
+                                           Condition=" '$(ShouldExecute)' == 'true' "
                                            ContinueOnError="true" />
     </Target>
  </Project>
