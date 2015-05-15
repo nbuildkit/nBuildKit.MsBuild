@@ -1178,16 +1178,11 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirBuildDeploy)\nBuildKit.Test.VbNet-${VersionSemantic}.zip">
+        <ArchivePackageSpecs Include="$(DirBuildBinPlatformConfig)\*.dll;$(DirBuildBinPlatformConfig)\*.pdb">
             <DirBase>$(DirBuildBinPlatformConfig)</DirBase>
-            <IncludedFiles>
-                $(DirBuildBinPlatformConfig)\*.dll;
-                $(DirBuildBinPlatformConfig)\*.pdb
-            </IncludedFiles>
-            <ExcludedFiles>
-                $(DirBuildBinPlatformConfig)\myfile.dll;
-                $(DirBuildBinPlatformConfig)\myfile.pdb
-            </ExcludedFiles>
+            <IncludeInPackage>
+                $(DirBuildDeploy)\nBuildKit.Test.VbNet-${VersionSemantic}.z
+            </IncludeInPackage>
         </ArchivePackageSpecs>
     </ItemGroup>
 
