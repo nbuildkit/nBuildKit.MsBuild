@@ -30,6 +30,7 @@
 
     <Target Name="nBuildKit_Build_Pack_Zip_Run"
             DependsOnTargets="_nBuildKit_Build_Pack_Zip_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Pack_Zip_Prepare" />
         <CallTarget Targets="_nBuildKit_Build_Pack_Zip_Pack" />
     </Target>
 
@@ -60,7 +61,7 @@
         Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
         once for each entry in the ArchivePackageSpecs ItemGroup.
     -->
-    <Target Name="_nBuildKit_Build_Pack_Zip_Pack"
+    <Target Name="_nBuildKit_Build_Pack_Zip_Prepare"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Condition=" '@(ArchivePackageSpecs)' != '' "
             Outputs="%(ArchivePackageSpecs.Identity)">
@@ -80,17 +81,10 @@
         </TemplateText>
 
         <!-- Process the build templates in the included files -->
-        <TemplateText Template="%(ArchivePackageSpecs.IncludedFiles)"
+        <TemplateText Template="%(ArchivePackageSpecs.IncludeInPackage)"
                       Tokens="@(TemplateTokens)"
-                      Condition=" '%(ArchivePackageSpecs.IncludedFiles)' != '' ">
-            <Output TaskParameter="Result" PropertyName="FilesArchiveZipIncluded" />
-        </TemplateText>
-
-        <!-- Process the build templates in the excluded files -->
-        <TemplateText Template="%(ArchivePackageSpecs.ExcludedFiles)"
-                      Tokens="@(TemplateTokens)"
-                      Condition=" '%(ArchivePackageSpecs.ExcludedFiles)' != '' ">
-            <Output TaskParameter="Result" PropertyName="FilesArchiveZipExcluded" />
+                      Condition=" '%(ArchivePackageSpecs.IncludeInPackage)' != '' ">
+            <Output TaskParameter="Result" PropertyName="FilesArchiveZipPackage" />
         </TemplateText>
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileArchiveSpecs)'))">
@@ -104,25 +98,23 @@
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
         <CreateItem
-            Include="$(FilesArchiveZipIncluded.Split(';'))"
-            Exclude="$(FilesArchiveZipExcluded.Split(';'))">
+            Include="$(FileArchiveSpecs.Split(';'))"
+            AdditionalMetadata="DirBase=$(DirPackageSpecsBase);IncludeInPackage=$(FilesArchiveZipPackage)">
            <Output
                TaskParameter="Include"
                ItemName="PackageFiles"/>
         </CreateItem>
-        <Error Text="There are no files to be ZIP archived for $(FileArchiveSpecs)"
+
+        <Message Text="PackageFiles: @(PackageFiles)" />
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Pack_Zip_Pack"
+            DependsOnTargets="_nBuildKit_Build_Pack_Zip_Prepare">
+        <Error Text="There are no files to be ZIP archived"
                Condition=" '@(PackageFiles)' == '' AND '$(ShouldExecute)' == 'true' "/>
 
-        <Message Text="Creating $(FileArchiveSpecs)"
-                 Importance="normal"/>
-        <Message Text="Using the following files: "
-                 Importance="low" />
-        <Message Text="%(PackageFiles.Identity)"
-                 Importance="low"/>
-        <Zip InputFileNames="@(PackageFiles)"
-             BaseDirectory="$(DirPackageSpecsBase)"
-             OutputFileName="$(FileArchiveSpecs)"
-             OverwriteExistingFile="true"
+        <Zip Input="@(PackageFiles)"
+             OverwriteExistingFiles="true"
              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
