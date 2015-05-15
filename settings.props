@@ -1245,13 +1245,23 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip">
+        <ArchivePackageSpecs Include="$(DirWorkspace)\README.md;$(DirWorkspace)\LICENSE">
+            <DirBase>$(DirWorkspace)</DirBase>
+            <IncludeInPackage>
+                $(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip
+            </IncludeInPackage>
+        </ArchivePackageSpecs>
+        <ArchivePackageSpecs Include="$(FileReleaseNotesFull)">
+            <DirBase>$(DirBuildTemp)</DirBase>
+            <IncludeInPackage>
+                $(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip
+            </IncludeInPackage>
+        </ArchivePackageSpecs>
+        <ArchivePackageSpecs Include="$(DirSrc)\msbuild\samples\**\*.*">
             <DirBase>$(DirSrc)\msbuild\samples</DirBase>
-            <IncludedFiles>
-                $(DirSrc)\msbuild\samples\**\*.*;
-            </IncludedFiles>
-            <ExcludedFiles>
-            </ExcludedFiles>
+            <IncludeInPackage>
+                $(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip
+            </IncludeInPackage>
         </ArchivePackageSpecs>
     </ItemGroup>
 
