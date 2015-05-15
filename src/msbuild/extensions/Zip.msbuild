@@ -1,60 +1,145 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project ToolsVersion="4.0" 
-         DefaultTargets="Build" 
+<Project ToolsVersion="4.0"
+         DefaultTargets="Build"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsZip>true</ExistsExtensionsZip>
     </PropertyGroup>
-    
-    <UsingTask TaskName="Zip" 
-               TaskFactory="CodeTaskFactory" 
+
+    <UsingTask TaskName="Zip"
+               TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
-            <InputFileNames ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-            <BaseDirectory ParameterType="System.String" Required="false" />
-            <OutputFileName ParameterType="System.String" Required="true" />
-            <OverwriteExistingFile ParameterType="System.Boolean" Required="false" />
+            <Input ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <OverwriteExistingFiles ParameterType="System.Boolean" Required="false" />
         </ParameterGroup>
         <Task>
             <Reference Include="System.IO.Compression" />
-            <Using Namespace="System.IO.Compression" />
-            <Code Type="Fragment" Language="cs">
-                <![CDATA[        
-                    const int BufferSize = 64 * 1024;
+            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
+            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Utilities.v$(MSBuildToolsVersion).dll"/>
+            <Code Type="Class" Language="cs">
+                <![CDATA[
+                    using System.IO;
+                    using System.IO.Compression;
+                    using Microsoft.Build.Framework;
+                    using Microsoft.Build.Utilities;
 
-                    var buffer = new byte[BufferSize];
-                    var fileMode = OverwriteExistingFile ? FileMode.Create : FileMode.CreateNew;
-
-                    using (var outputFileStream = new FileStream(OutputFileName, fileMode))
+                    public sealed class Zip : Microsoft.Build.Utilities.Task
                     {
-                        using (var archive = new ZipArchive(outputFileStream, ZipArchiveMode.Create))
+                        public bool OverwriteExistingFiles
                         {
-                            foreach (var inputFileName in InputFileNames.Select(f => f.ItemSpec))
-                            {
-                                var path = Path.GetFullPath(inputFileName);
-                                var relativePath = !string.IsNullOrEmpty(BaseDirectory) 
-                                    ? path.Substring(BaseDirectory.Length).TrimStart(Path.DirectorySeparatorChar)
-                                    : Path.GetFileName(path);
-                                var archiveEntry = archive.CreateEntry(relativePath);
+                            get;
+                            set;
+                        }
 
-                                using (var fs = new FileStream(inputFileName, FileMode.Open))
+                        [Microsoft.Build.Framework.Required]
+                        public Microsoft.Build.Framework.ITaskItem[] Input
+                        {
+                            get;
+                            set;
+                        }
+
+                        public override bool Execute()
+                        {
+                            if (Input == null)
+                            {
+                                Log.LogError("No archive files to create!");
+                                return false;
+                            }
+
+                            var archives = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>();
+
+                            var processedItems = Input;
+                            for (int i = 0; i < processedItems.Length; i++)
+                            {
+                                var taskItem = processedItems[i];
+
+                                // Expecting that the taskItems have:
+                                // - taskItem.ItemSpec:         Name of the assembly to include in the attribute
+                                // - taskItem.IncludeInPackage: Semi-colon separated list of archive files in which the files should be added to
+                                // - taskItem.DirBase:          The base directory from where the relative file path should be calculated.
+                                if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                                 {
-                                    using (var zipStream = archiveEntry.Open())
+                                    var archivesLine = taskItem.GetMetadata("IncludeInPackage");
+                                    if (string.IsNullOrEmpty(archivesLine))
                                     {
-                                        int bytesRead = -1;
-                                        while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
+                                        continue;
+                                    }
+
+                                    var path = Path.GetFullPath(taskItem.ItemSpec);
+                                    var baseDirectory = taskItem.GetMetadata("DirBase");
+                                    var relativePath = !string.IsNullOrEmpty(baseDirectory)
+                                        ? path.Substring(baseDirectory.Length).TrimStart(Path.DirectorySeparatorChar)
+                                        : Path.GetFileName(path);
+
+                                    var archivesForItem = archivesLine.Split(new[] {';'}, System.StringSplitOptions.RemoveEmptyEntries);
+                                    foreach(var archive in archivesForItem)
+                                    {
+                                        if (!archives.ContainsKey(archive))
                                         {
-                                            zipStream.Write(buffer, 0, bytesRead);
+                                            archives.Add(archive, new System.Collections.Generic.Dictionary<string, string>());
+                                        }
+
+                                        var map = archives[archive];
+                                        if (!map.ContainsKey(path))
+                                        {
+                                            map.Add(path, relativePath);
+                                        }
+                                    }
+                                }
+                            }
+
+                            foreach(var pair in archives)
+                            {
+                                Log.LogMessage(MessageImportance.Normal, string.Format("Creating archive at: {0}", pair.Key));
+                                Compress(pair.Key, pair.Value, OverwriteExistingFiles);
+                            }
+
+                            // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                            // from a task's constructor or property setter. As long as this task is written to always log an error
+                            // when it fails, we can reliably return HasLoggedErrors.
+                            return !Log.HasLoggedErrors;
+                        }
+
+                        private void Compress(
+                            string outputFile,
+                            System.Collections.Generic.IDictionary<string, string> files,
+                            bool overwriteExistingFile)
+                        {
+                            const int BufferSize = 64 * 1024;
+
+                            var buffer = new byte[BufferSize];
+                            var fileMode = overwriteExistingFile ? FileMode.Create : FileMode.CreateNew;
+
+                            using (var outputFileStream = new FileStream(outputFile, fileMode))
+                            {
+                                using (var archive = new ZipArchive(outputFileStream, ZipArchiveMode.Create))
+                                {
+                                    foreach(var pair in files)
+                                    {
+                                        var archiveEntry = archive.CreateEntry(pair.Value);
+
+                                        Log.LogMessage(MessageImportance.Low, string.Format("Adding: {0}. Storing as: {1}", pair.Key, pair.Value));
+                                        using (var fs = new FileStream(pair.Key, FileMode.Open))
+                                        {
+                                            using (var zipStream = archiveEntry.Open())
+                                            {
+                                                int bytesRead = -1;
+                                                while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
+                                                {
+                                                    zipStream.Write(buffer, 0, bytesRead);
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }        
+                    }
                 ]]>
             </Code>
         </Task>
