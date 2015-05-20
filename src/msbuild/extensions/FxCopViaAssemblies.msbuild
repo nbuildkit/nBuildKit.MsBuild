@@ -31,12 +31,14 @@
             <WarningsAsErrors ParameterType="System.Boolean" Required="false" />
         </ParameterGroup>
         <Task>
+            <Reference Include="System.Core" />
             <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
             <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Utilities.v$(MSBuildToolsVersion).dll"/>
             <Code Type="Class" Language="cs">
                 <![CDATA[
+                    using System;
                     using System.IO;
-                    using System.IO.Compression;
+                    using System.Linq;
                     using Microsoft.Build.Framework;
                     using Microsoft.Build.Utilities;
 
@@ -170,21 +172,21 @@
 
                                 if (ReferenceFiles != null)
                                 {
-                                    foreach (var referenceFileName in ReferenceFiles.Select(f => f.ItemSpec))
+                                    foreach (var referenceFileName in ReferenceFiles)
                                     {
-                                        builder.Append(string.Format("/reference:\"{0}\" ", referenceFileName.TrimEnd('\\')));
+                                        builder.Append(string.Format("/reference:\"{0}\" ", referenceFileName.ItemSpec.TrimEnd('\\')));
                                     }
                                 }
 
                                 if (ReferenceDirectories != null)
                                 {
-                                    foreach (var referenceDirectory in ReferenceDirectories.Select(f => f.ItemSpec))
+                                    foreach (var referenceDirectory in ReferenceDirectories)
                                     {
-                                        builder.Append(string.Format("/directory:\"{0}\" ", referenceDirectory.TrimEnd('\\')));
+                                        builder.Append(string.Format("/directory:\"{0}\" ", referenceDirectory.ItemSpec.TrimEnd('\\')));
                                     }
                                 }
 
-                                foreach (var inputFileName in assemblyPaths.Select(f => f.ItemSpec))
+                                foreach (var inputFileName in assemblyPaths)
                                 {
                                     builder.Append(string.Format("/file:\"{0}\" ", inputFileName.TrimEnd('\\')));
                                 }
