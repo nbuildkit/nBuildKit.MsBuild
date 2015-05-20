@@ -1101,8 +1101,12 @@
             The locations of the files that should be analyzed by FxCop.
         -->
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
-                    Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
-        <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
+                    Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll">
+            <Group>.NET 4.5</Group>
+        </FxCopFiles>
+        <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.exe">
+            <Group>.NET 4.5</Group>
+        </FxCopFiles>
 
         <!--
             The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
