@@ -31,114 +31,223 @@
             <WarningsAsErrors ParameterType="System.Boolean" Required="false" />
         </ParameterGroup>
         <Task>
-            <Code Type="Method" Language="cs">
+            <Reference Include="System.Core" />
+            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
+            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Utilities.v$(MSBuildToolsVersion).dll"/>
+            <Code Type="Class" Language="cs">
                 <![CDATA[
-                    public override bool Execute()
+                    using System;
+                    using System.IO;
+                    using System.Linq;
+                    using Microsoft.Build.Framework;
+                    using Microsoft.Build.Utilities;
+
+                    public sealed class FxCopViaAssemblies : Microsoft.Build.Utilities.Task
                     {
-                        var builder = new System.Text.StringBuilder();
+                        [Microsoft.Build.Framework.Required]
+                        public string FxCopDir
                         {
-                            builder.Append(string.Format("/ruleset:+\"{0}\" ", RuleSet.TrimEnd('\\')));
-                            builder.Append(string.Format("/out:\"{0}\" ", OutputFile.TrimEnd('\\')));
-                            builder.Append(string.Format("/ignoregeneratedcode "));
-                            builder.Append(string.Format("/searchgac "));
-                            builder.Append(string.Format("/forceoutput "));
-                            builder.Append(string.Format("/successfile "));
+                            get;
+                            set;
+                        }
 
-                            if (!string.IsNullOrEmpty(Dictionary))
-                            {
-                                builder.Append(string.Format("/dictionary:\"{0}\" ", Dictionary.TrimEnd('\\')));
-                            }
+                        [Microsoft.Build.Framework.Required]
+                        public string OutputFile
+                        {
+                            get;
+                            set;
+                        }
 
-                            if (!string.IsNullOrEmpty(Culture))
-                            {
-                                builder.Append(string.Format("/culture:\"{0}\" ", Culture.TrimEnd('\\')));
-                            }
+                        [Microsoft.Build.Framework.Required]
+                        public string RuleSet
+                        {
+                            get;
+                            set;
+                        }
 
-                            if (ReferenceFiles != null)
-                            {
-                                foreach (var referenceFileName in ReferenceFiles.Select(f => f.ItemSpec))
-                                {
-                                    builder.Append(string.Format("/reference:\"{0}\" ", referenceFileName.TrimEnd('\\')));
-                                }
-                            }
+                        [Microsoft.Build.Framework.Required]
+                        public Microsoft.Build.Framework.ITaskItem[] Assemblies
+                        {
+                            get;
+                            set;
+                        }
 
-                            if (ReferenceDirectories != null)
-                            {
-                                foreach (var referenceDirectory in ReferenceDirectories.Select(f => f.ItemSpec))
-                                {
-                                    builder.Append(string.Format("/directory:\"{0}\" ", referenceDirectory.TrimEnd('\\')));
-                                }
-                            }
+                        public Microsoft.Build.Framework.ITaskItem[] ReferenceFiles
+                        {
+                            get;
+                            set;
+                        }
 
+                        public Microsoft.Build.Framework.ITaskItem[] ReferenceDirectories
+                        {
+                            get;
+                            set;
+                        }
+
+                        public string Dictionary
+                        {
+                            get;
+                            set;
+                        }
+
+                        public string Culture
+                        {
+                            get;
+                            set;
+                        }
+
+                        public bool WarningsAsErrors
+                        {
+                            get;
+                            set;
+                        }
+
+                        public override bool Execute()
+                        {
                             if (Assemblies != null)
                             {
-                                foreach (var inputFileName in Assemblies.Select(f => f.ItemSpec))
+                                var assemblyPaths = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>();
+
+                                for (int i = 0; i < Assemblies.Length; i++)
+                                {
+                                    var taskItem = Assemblies[i];
+                                    // Expecting that the taskItems have:
+                                    // - taskItem.ItemSpec: Name of the assembly to include in the attribute
+                                    // - taskItem.Group:    Name of the group the assemblies belong to
+                                    if (!string.IsNullOrEmpty(taskItem.ItemSpec))
+                                    {
+                                        var path = Path.GetFullPath(taskItem.ItemSpec);
+                                        var group = taskItem.GetMetadata("Group");
+                                        if (string.IsNullOrEmpty(group))
+                                        {
+                                            continue;
+                                        }
+
+                                        if (!assemblyPaths.ContainsKey(group))
+                                        {
+                                            assemblyPaths.Add(group, new System.Collections.Generic.List<string>());
+                                        }
+
+                                        var list = assemblyPaths[group];
+                                        if (!list.Contains(path))
+                                        {
+                                            list.Add(path);
+                                        }
+                                    }
+                                }
+
+                                foreach(var map in assemblyPaths)
+                                {
+                                    Log.LogMessage(MessageImportance.Normal, string.Format("Analyzing assemblies in group [{0}] with FxCop", map.Key));
+                                    InvokeFxCop(map.Value);
+                                }
+                            }
+
+                            // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                            // from a task's constructor or property setter. As long as this task is written to always log an error
+                            // when it fails, we can reliably return HasLoggedErrors.
+                            return !Log.HasLoggedErrors;
+                        }
+
+                        private void InvokeFxCop(System.Collections.Generic.IEnumerable<string> assemblyPaths)
+                        {
+                            var builder = new System.Text.StringBuilder();
+                            {
+                                builder.Append(string.Format("/ruleset:+\"{0}\" ", RuleSet.TrimEnd('\\')));
+                                builder.Append(string.Format("/out:\"{0}\" ", OutputFile.TrimEnd('\\')));
+                                builder.Append(string.Format("/ignoregeneratedcode "));
+                                builder.Append(string.Format("/searchgac "));
+                                builder.Append(string.Format("/forceoutput "));
+                                builder.Append(string.Format("/successfile "));
+
+                                if (!string.IsNullOrEmpty(Dictionary))
+                                {
+                                    builder.Append(string.Format("/dictionary:\"{0}\" ", Dictionary.TrimEnd('\\')));
+                                }
+
+                                if (!string.IsNullOrEmpty(Culture))
+                                {
+                                    builder.Append(string.Format("/culture:\"{0}\" ", Culture.TrimEnd('\\')));
+                                }
+
+                                if (ReferenceFiles != null)
+                                {
+                                    foreach (var referenceFileName in ReferenceFiles)
+                                    {
+                                        builder.Append(string.Format("/reference:\"{0}\" ", referenceFileName.ItemSpec.TrimEnd('\\')));
+                                    }
+                                }
+
+                                if (ReferenceDirectories != null)
+                                {
+                                    foreach (var referenceDirectory in ReferenceDirectories)
+                                    {
+                                        builder.Append(string.Format("/directory:\"{0}\" ", referenceDirectory.ItemSpec.TrimEnd('\\')));
+                                    }
+                                }
+
+                                foreach (var inputFileName in assemblyPaths)
                                 {
                                     builder.Append(string.Format("/file:\"{0}\" ", inputFileName.TrimEnd('\\')));
                                 }
                             }
-                        }
 
-                        var info = new System.Diagnostics.ProcessStartInfo
+                            var info = new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        FileName = System.IO.Path.Combine(FxCopDir, "FxCopCmd.exe"),
+                                        Arguments = builder.ToString(),
+                                        UseShellExecute = false,
+                                        RedirectStandardOutput = true,
+                                        RedirectStandardError = true,
+                                    };
+
+                            Log.LogMessage(MessageImportance.Low, info.Arguments);
+
+                            var process = new System.Diagnostics.Process();
+                            process.StartInfo = info;
+                            process.OutputDataReceived +=
+                                (s, e) =>
                                 {
-                                    FileName = System.IO.Path.Combine(FxCopDir, "FxCopCmd.exe"),
-                                    Arguments = builder.ToString(),
-                                    UseShellExecute = false,
-                                    RedirectStandardOutput = true,
-                                    RedirectStandardError = true,
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogMessage(MessageImportance.Normal, e.Data);
+                                    }
                                 };
-
-                        Log.LogMessage(MessageImportance.Low, info.Arguments);
-
-                        var process = new System.Diagnostics.Process();
-                        process.StartInfo = info;
-                        process.OutputDataReceived +=
-                            (s, e) =>
-                            {
-                                if (!string.IsNullOrWhiteSpace(e.Data))
+                            process.ErrorDataReceived +=
+                                (s, e) =>
                                 {
-                                    Log.LogMessage(MessageImportance.Normal, e.Data);
-                                }
-                            };
-                        process.ErrorDataReceived +=
-                            (s, e) =>
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogError(e.Data);
+                                    }
+                                };
+                            process.Start();
+
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
+                            process.WaitForExit();
+
+                            if (process.ExitCode != 0)
                             {
-                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                if (!WarningsAsErrors)
                                 {
-                                    Log.LogError(e.Data);
+                                    Log.LogMessage(
+                                        MessageImportance.Normal,
+                                        string.Format(
+                                            "{0} exited with exit code: {1}. Build will continue because errors are assumed to be warnings. To change this set FxCopWarningsAsErrors to 'true' in the settings file.",
+                                            System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                            process.ExitCode));
                                 }
-                            };
-                        process.Start();
-
-                        process.BeginOutputReadLine();
-                        process.BeginErrorReadLine();
-                        process.WaitForExit();
-
-                        if (process.ExitCode != 0)
-                        {
-                            if (!WarningsAsErrors)
-                            {
-                                Log.LogMessage(
-                                    MessageImportance.Normal,
-                                    string.Format(
-                                        "{0} exited with exit code: {1}. Build will continue because errors are assumed to be warnings. To change this set FxCopWarningsAsErrors to 'true' in the settings file.",
-                                        System.IO.Path.GetFileName(process.StartInfo.FileName),
-                                        process.ExitCode));
-                            }
-                            else
-                            {
-                                Log.LogError(
-                                    string.Format(
-                                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                                        System.IO.Path.GetFileName(process.StartInfo.FileName),
-                                        process.ExitCode));
+                                else
+                                {
+                                    Log.LogError(
+                                        string.Format(
+                                            "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                            System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                            process.ExitCode));
+                                }
                             }
                         }
-
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
-                        // from a task's constructor or property setter. As long as this task is written to always log an error
-                        // when it fails, we can reliably return HasLoggedErrors.
-                        return !Log.HasLoggedErrors;
                     }
                 ]]>
             </Code>
