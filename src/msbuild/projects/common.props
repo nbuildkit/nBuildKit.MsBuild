@@ -18,18 +18,20 @@
 
             Probe for the settings.props file up to 5 directories above our current one.
         -->
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\settings.props'))</BuildPropertyFile>
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\settings.props'))</BuildPropertyFile>
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\settings.props'))</BuildPropertyFile>
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\..\settings.props'))</BuildPropertyFile>
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\..\..\settings.props'))</BuildPropertyFile>
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\..\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\..\..\..\settings.props'))</BuildPropertyFile>
+        <DirLocalBase Condition="Exists('$(SolutionDir)')">$(SolutionDir)</DirLocalBase>
+        <DirLocalBase Condition="!Exists('$(SolutionDir)')">$(MSBuildProjectDirectory)</DirLocalBase>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\..\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\settings.props'))</BuildPropertyFile>
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">FAILED_TO_LOCATE_BUILDPROPERTYFILE</BuildPropertyFile>
 
         <!-- Directory structure -->
         <!-- Once we have the settings file we can calculate the workspace directory -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
-        <DirWorkspace Condition="!Exists('$(DirWorkspace)')">$(SolutionDir)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' AND Exists('$(BuildPropertyFile)') ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirWorkspace Condition="!Exists('$(DirWorkspace)')">$(DirLocalBase)</DirWorkspace>
 
         <!--
             Find the path to the PackagesDirectory manually so that we can load the shared build steps before loading the
