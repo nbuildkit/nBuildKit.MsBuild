@@ -14,17 +14,23 @@
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
         <ParameterGroup>
-            <Input ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <File ParameterType="System.String" Required="true" />
+            <OutputDirectory ParameterType="System.String" Required="true" />
             <OverwriteExistingFiles ParameterType="System.Boolean" Required="false" />
         </ParameterGroup>
         <Task>
             <Reference Include="System.IO.Compression" />
+            <Reference Include="System.Xml" />
             <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
             <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Utilities.v$(MSBuildToolsVersion).dll"/>
             <Code Type="Class" Language="cs">
                 <![CDATA[
+                    using System;
+                    using System.Collections.Generic;
+                    using System.Linq;
                     using System.IO;
                     using System.IO.Compression;
+                    using System.Xml;
                     using Microsoft.Build.Framework;
                     using Microsoft.Build.Utilities;
 
@@ -37,7 +43,14 @@
                         }
 
                         [Microsoft.Build.Framework.Required]
-                        public Microsoft.Build.Framework.ITaskItem[] Input
+                        public string File
+                        {
+                            get;
+                            set;
+                        }
+
+                        [Microsoft.Build.Framework.Required]
+                        public string OutputDirectory
                         {
                             get;
                             set;
@@ -45,64 +58,79 @@
 
                         public override bool Execute()
                         {
-                            if (Input == null)
+                            if (File == null)
                             {
                                 Log.LogError("No archive files to create!");
                                 return false;
                             }
 
-                            var archives = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>();
+                            var xmlDoc = new XmlDocument();
+                            xmlDoc.Load(File);
+                            var name = xmlDoc.SelectSingleNode("//archive/name/text()").InnerText;
+                            var outputFilePath = Path.Combine(OutputDirectory, string.Format("{0}.zip", name));
 
-                            var processedItems = Input;
-                            for (int i = 0; i < processedItems.Length; i++)
+                            var files = new Dictionary<string, string>();
+                            var filesNode = xmlDoc.SelectSingleNode("//archive/files");
+                            foreach (XmlNode child in filesNode.ChildNodes)
                             {
-                                var taskItem = processedItems[i];
-
-                                // Expecting that the taskItems have:
-                                // - taskItem.ItemSpec:         Name of the assembly to include in the attribute
-                                // - taskItem.IncludeInPackage: Semi-colon separated list of archive files in which the files should be added to
-                                // - taskItem.DirBase:          The base directory from where the relative file path should be calculated.
-                                if (!string.IsNullOrEmpty(taskItem.ItemSpec))
+                                var excludedFiles = new List<string>();
+                                var excludedAttribute = child.Attributes["exclude"];
+                                var excluded = (excludedAttribute != null ? excludedAttribute.Value : string.Empty).Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var exclude in excluded)
                                 {
-                                    var archivesLine = taskItem.GetMetadata("IncludeInPackage");
-                                    if (string.IsNullOrEmpty(archivesLine))
+                                    var pathSections = exclude.Split(new[] { "**" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                    var directory = pathSections.Length == 1 ? Path.GetDirectoryName(pathSections[0]) : pathSections[0].Trim('\\');
+                                    var fileFilter = pathSections.Length == 1 ? Path.GetFileName(pathSections[0]) : pathSections[pathSections.Length - 1].Trim('\\');
+                                    var recurse = pathSections.Length > 1;
+                                    var filesToExclude = GetFilteredFilePaths(directory, fileFilter, recurse).Select(f => f.FullName);
+                                    excludedFiles.AddRange(filesToExclude);
+                                }
+
+                                var targetAttribute = child.Attributes["target"];
+                                var target = targetAttribute != null ? targetAttribute.Value : string.Empty;
+
+                                var sourceAttribute = child.Attributes["src"];
+                                var sources = sourceAttribute.Value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var source in sources)
+                                {
+                                    var pathSections = source.Split(new[] { "**" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                    var directory = pathSections.Length == 1 ? Path.GetDirectoryName(pathSections[0]) : pathSections[0].Trim('\\');
+                                    var fileFilter = pathSections.Length == 1 ? Path.GetFileName(pathSections[0]) : pathSections[pathSections.Length - 1].Trim('\\');
+                                    var recurse = pathSections.Length > 1;
+                                    var filesToInclude = GetFilteredFilePaths(directory, fileFilter, recurse)
+                                        .Where(f => !excludedFiles.Contains(f.FullName))
+                                        .Select(f => f.FullName);
+
+                                    foreach(var file in filesToInclude)
                                     {
-                                        continue;
-                                    }
-
-                                    var path = Path.GetFullPath(taskItem.ItemSpec);
-                                    var baseDirectory = taskItem.GetMetadata("DirBase");
-                                    var relativePath = !string.IsNullOrEmpty(baseDirectory)
-                                        ? path.Substring(baseDirectory.Length).TrimStart(Path.DirectorySeparatorChar)
-                                        : Path.GetFileName(path);
-
-                                    var archivesForItem = archivesLine.Split(new[] {';'}, System.StringSplitOptions.RemoveEmptyEntries);
-                                    foreach(var archive in archivesForItem)
-                                    {
-                                        if (!archives.ContainsKey(archive))
-                                        {
-                                            archives.Add(archive, new System.Collections.Generic.Dictionary<string, string>());
-                                        }
-
-                                        var map = archives[archive];
-                                        if (!map.ContainsKey(path))
-                                        {
-                                            map.Add(path, relativePath);
-                                        }
+                                        var relativePath = Path.Combine(target, GetRelativePath(file, directory));
+                                        files.Add(file, relativePath);
                                     }
                                 }
                             }
 
-                            foreach(var pair in archives)
-                            {
-                                Log.LogMessage(MessageImportance.Normal, string.Format("Creating archive at: {0}", pair.Key));
-                                Compress(pair.Key, pair.Value, OverwriteExistingFiles);
-                            }
+                            Log.LogMessage(MessageImportance.Normal, string.Format("Creating archive at: {0}", outputFilePath));
+                            Compress(outputFilePath, files, OverwriteExistingFiles);
 
                             // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                             // from a task's constructor or property setter. As long as this task is written to always log an error
                             // when it fails, we can reliably return HasLoggedErrors.
                             return !Log.HasLoggedErrors;
+                        }
+
+                        private IEnumerable<FileInfo> GetFilteredFilePaths(string baseDirectory, string fileFilter, bool recurse)
+                        {
+                            var dirInfo = new System.IO.DirectoryInfo(baseDirectory);
+                            return dirInfo.EnumerateFiles(fileFilter, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                        }
+
+                        private string GetRelativePath(string file, string baseDirectory)
+                        {
+                            return !string.IsNullOrEmpty(baseDirectory)
+                                ? file.Substring(baseDirectory.Length).TrimStart(Path.DirectorySeparatorChar)
+                                : Path.GetFileName(file);
                         }
 
                         private void Compress(
@@ -119,7 +147,7 @@
                             {
                                 using (var archive = new ZipArchive(outputFileStream, ZipArchiveMode.Create))
                                 {
-                                    foreach(var pair in files)
+                                    foreach (var pair in files)
                                     {
                                         var archiveEntry = archive.CreateEntry(pair.Value);
 

@@ -1183,26 +1183,7 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirWorkspace)\readme.txt">
-            <DirBase>$(DirWorkspace)</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip;
-                $(DirBuildDeploy)\myotherarchive-${VersionSemantic}.zip
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
-        <ArchivePackageSpecs Include="$(DirBuildBinPlatformConfig)\*.dll;$(DirBuildBinPlatformConfig)\*.pdb"
-                             Exclude="$(DirBuildBinPlatformConfig)\myfile.dll;$(DirBuildBinPlatformConfig)\myfile.pdb">
-            <DirBase>$(DirBuildBinPlatformConfig)</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
-        <ArchivePackageSpecs Include="$(DirBuildBinPlatformConfig)\myfile.dll;$(DirBuildBinPlatformConfig)\myfile.pdb">
-            <DirBase>$(DirBuildBinPlatformConfig)</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\myotherarchive-${VersionSemantic}.zip
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
+        <ArchivePackageSpecs Include="$(DirTemplate)\myarchive.zipspec" />
     </ItemGroup>
 
 

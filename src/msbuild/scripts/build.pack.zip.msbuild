@@ -23,6 +23,8 @@
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\Zip.msbuild"
@@ -30,7 +32,6 @@
 
     <Target Name="nBuildKit_Build_Pack_Zip_Run"
             DependsOnTargets="_nBuildKit_Build_Pack_Zip_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Build_Pack_Zip_Prepare" />
         <CallTarget Targets="_nBuildKit_Build_Pack_Zip_Pack" />
     </Target>
 
@@ -57,63 +58,32 @@
                  Importance="low"/>
     </Target>
 
-    <!--
-        Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
-        once for each entry in the ArchivePackageSpecs ItemGroup.
-    -->
-    <Target Name="_nBuildKit_Build_Pack_Zip_Prepare"
+    <Target Name="_nBuildKit_Build_Pack_Zip_Pack"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Condition=" '@(ArchivePackageSpecs)' != '' "
             Outputs="%(ArchivePackageSpecs.Identity)">
         <Message Text="Resolving build templates for: %(ArchivePackageSpecs.Identity)"
                  Importance="low"/>
 
-        <!-- Process the build templates in the ZIP file path -->
         <TemplateText Template="%(ArchivePackageSpecs.Identity)"
                       Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FileArchiveSpecs" />
+            <Output TaskParameter="Result" PropertyName="FileArchiveSpec" />
         </TemplateText>
 
-        <!-- Process the build templates in the base directory -->
-        <TemplateText Template="%(ArchivePackageSpecs.DirBase)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="DirPackageSpecsBase" />
-        </TemplateText>
-
-        <!-- Process the build templates in the included files -->
-        <TemplateText Template="%(ArchivePackageSpecs.IncludeInPackage)"
-                      Tokens="@(TemplateTokens)"
-                      Condition=" '%(ArchivePackageSpecs.IncludeInPackage)' != '' ">
-            <Output TaskParameter="Result" PropertyName="FilesArchiveZipPackage" />
-        </TemplateText>
-
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileArchiveSpecs)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        <CreateProperty Value="$([System.IO.Path]::GetFileName('$(FileArchiveSpec)'))" >
+            <Output TaskParameter="Value" PropertyName="FileNameArchiveSpec" />
         </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        <CreateProperty Value="$(DirBuildTemp)\$(FileNameArchiveSpec)" >
+            <Output TaskParameter="Value" PropertyName="FileGeneratedArchiveSpec" />
+        </CreateProperty>
 
-        <!--
-            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
-            created properties doesn't work because the wildcards are not always expanded for some reason.
-        -->
-        <CreateItem
-            Include="$(FileArchiveSpecs.Split(';'))"
-            AdditionalMetadata="DirBase=$(DirPackageSpecsBase);IncludeInPackage=$(FilesArchiveZipPackage)">
-           <Output
-               TaskParameter="Include"
-               ItemName="PackageFiles"/>
-        </CreateItem>
+        <TemplateFile Template="$(FileArchiveSpec)"
+                      OutputFileName="$(FileGeneratedArchiveSpec)"
+                      Tokens="@(TemplateTokens)"
+                      Condition=" '$(ShouldExecute)' == 'true' "/>
 
-        <Message Text="PackageFiles: @(PackageFiles)" />
-    </Target>
-
-    <Target Name="_nBuildKit_Build_Pack_Zip_Pack"
-            DependsOnTargets="_nBuildKit_Build_Pack_Zip_Prepare">
-        <Error Text="There are no files to be ZIP archived"
-               Condition=" '@(PackageFiles)' == '' AND '$(ShouldExecute)' == 'true' "/>
-
-        <Zip Input="@(PackageFiles)"
+        <Zip File="$(FileGeneratedArchiveSpec)"
+             OutputDirectory="$(DirBuildDeploy)"
              OverwriteExistingFiles="true"
              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
