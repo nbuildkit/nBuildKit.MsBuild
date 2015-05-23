@@ -104,7 +104,7 @@
                                                     {
                                                         if (!string.IsNullOrWhiteSpace(e.Data))
                                                         {
-                                                            Log.LogMessage(MessageImportance.Normal, e.Data);
+                                                            Log.LogMessage(MessageImportance.Low, e.Data);
                                                         }
                                                     };
                                                 process.ErrorDataReceived +=
@@ -151,7 +151,7 @@
                                                         text.Append(e.Data);
                                                         if (!string.IsNullOrWhiteSpace(e.Data))
                                                         {
-                                                            Log.LogMessage(MessageImportance.Normal, e.Data);
+                                                            Log.LogMessage(MessageImportance.Low, e.Data);
                                                         }
                                                     };
                                                 process.ErrorDataReceived +=
@@ -205,6 +205,8 @@
                                         var assemblyFromPackage = taskItem.GetMetadata("AssemblyFromPackage");
                                         if (!string.IsNullOrEmpty(assemblyFromPackage))
                                         {
+                                            Log.LogMessage(MessageImportance.Normal, "Extracting public key from assembly file: " + assemblyFromPackage);
+
                                             var assemblyPath = System.IO.Directory.EnumerateFiles(DirPackages, assemblyFromPackage, SearchOption.AllDirectories)
                                                 .OrderBy(k => System.IO.Path.GetDirectoryName(k))
                                                 .LastOrDefault();
@@ -232,7 +234,7 @@
                                                     text.Append(e.Data);
                                                     if (!string.IsNullOrWhiteSpace(e.Data))
                                                     {
-                                                        Log.LogMessage(MessageImportance.Normal, e.Data);
+                                                        Log.LogMessage(MessageImportance.Low, e.Data);
                                                     }
                                                 };
                                             process.ErrorDataReceived +=

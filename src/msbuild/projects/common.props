@@ -16,18 +16,57 @@
             so we have to make some assumptions about the location of the file when working from Visual Studio.
             When running from the build scripts we'll make sure to pass the location in.
 
-            There are two standard locations for the settings.props file. Either it lives in the same directory
-            as the solution. Or the solution lives in a 'src' directory which means that the properties file
-            lives in the parent directory of the 'src' directory.
+            Probe for the settings.props file up to 5 directories above our current one.
         -->
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\settings.props'))</BuildPropertyFile>
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(SolutionDir)\..\settings.props')">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\settings.props'))</BuildPropertyFile>
+        <DirLocalBase Condition="Exists('$(SolutionDir)')">$(SolutionDir)</DirLocalBase>
+        <DirLocalBase Condition="!Exists('$(SolutionDir)')">$(MSBuildProjectDirectory)</DirLocalBase>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\settings.props'))</BuildPropertyFile>
+        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == ''  AND Exists('$(DirLocalBase)\..\..\..\..\..\settings.props')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\settings.props'))</BuildPropertyFile>
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">FAILED_TO_LOCATE_BUILDPROPERTYFILE</BuildPropertyFile>
 
         <!-- Directory structure -->
         <!-- Once we have the settings file we can calculate the workspace directory -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
-        <DirWorkspace Condition="!Exists('$(DirWorkspace)')">$(SolutionDir)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' AND Exists('$(BuildPropertyFile)') ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirWorkspace Condition="!Exists('$(DirWorkspace)')">$(DirLocalBase)</DirWorkspace>
+
+        <!--
+            Find the path to the PackagesDirectory manually so that we can load the shared build steps before loading the
+            'settings.props' file. This is necessary because otherwise the BuildStepsToExecute ItemGroup will only be partially populated
+
+            Searching for the package directory is complicated. Technically we would like to get it from the 'settings.props' file because
+            that would be easy, except that we can only load that file once. So the next best thing is to see if there is a 'nuget.config'
+            file somewhere that gives us the path. If not we'll assume it is in the workspace directory.
+        -->
+        <!--
+            Assume the 'nuget.config' file is in the workspace directory. If it's somewhere else we're stuffed and nBuildKit won't be working
+            correctly anyway.
+
+            Then get the content and strip out the whitespace for easier use.
+        -->
+        <FileNuGetConfig>$(DirWorkspace)\nuget.config</FileNuGetConfig>
+        <ContentNuGetConfig Condition="Exists('$(FileNuGetConfig)')">$([System.IO.File]::ReadAllText('$(FileNuGetConfig)'))</ContentNuGetConfig>
+        <ContentNuGetConfig Condition="Exists('$(FileNuGetConfig)')">$([System.Text.RegularExpressions.Regex]::Replace('$(ContentNuGetConfig)', '\s+', ''))</ContentNuGetConfig>
+
+        <!--
+            Now search for the element '<add key="repositorypath" value="foobar">'. Using a Regex here because that's the only way MsBuild allows us to find the element value.
+            This regex searches for the block 'addkey="repositorypath"value="' and then grabs the word characters (\w+) after it (?<= is the positive lookbehind operator).
+        -->
+        <ConfigPackagesLocation>$([System.Text.RegularExpressions.Regex]::Match('$(ContentNuGetConfig)', '(?&lt;=addkey\=\"repositorypath\"value\=\")\w+'))</ConfigPackagesLocation>
+
+        <!--
+            Now determine the packages path. If the packages path from the 'nuget.config' file is a full path (i.e. it is rooted) then we use that, otherwise we assume it's a
+            path relative to the workspace directory.
+        -->
+        <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND $([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(ConfigPackagesLocation)'))</DirPackages>
+        <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND !$([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(DirWorkspace)\$(ConfigPackagesLocation)'))</DirPackages>
+
+        <DirNBuildKitMsBuild>$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirNBuildKitMsBuildExtensions>
+        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(DirNBuildKitMsBuild)\templates</DirNBuildKitMsBuildTemplates>
 
         <!--
             Note that {3AC096D0-A1C2-E12C-1390-A8335801FDAB} is the project type GUID for test projects in any language
@@ -36,36 +75,19 @@
         <IsTest Condition=" '$(IsTest)' == '' ">$(ProjectTypeGuids.Contains('{3AC096D0-A1C2-E12C-1390-A8335801FDAB}'))</IsTest>
     </PropertyGroup>
 
+    <Import Project="$(DirNBuildKitMsBuild)\shared.buildsteps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.buildsteps.msbuild') AND '$(ExistsBuildSteps)' != 'true' " />
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
     <!-- Default settings -->
     <PropertyGroup>
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
-        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
-        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
-        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
-
         <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(DirSrc)</SolutionDir>
 
-        <DirNBuildKitMsBuild>$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
-        <DirMsBuildShared Condition=" '$(DirMsBuildShared)' == '' ">$(DirNBuildKitMsBuild)</DirMsBuildShared>
-        <DirMsBuildExtensions Condition=" '$(DirMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirMsBuildExtensions>
-
-        <DefaultPathProperties>DirWorkspace=$(DirWorkspace);DirBuild=$(DirBuild);DirBuildDeploy=$(DirBuildDeploy);DirBuildLogs=$(DirBuildLogs);DirBuildTemp=$(DirBuildTemp);DirPackages=$(DirPackages);DirSrc=$(DirSrc);DirTemplates=$(DirTemplates);DirMsBuildExtensions=$(DirMsBuildExtensions)</DefaultPathProperties>
-        <DefaultFiles>FileVersionSemantic=&quot;$(FileSemanticVersion)&quot;</DefaultFiles>
-
-        <!--
-            Define the platform but without spaces, e.g. 'Any CPU' is turned into 'AnyCPU' which is necessary because Visual Studio
-            displays the first, but uses the second.
-        -->
-        <PlatformWithoutSpaces Condition=" '$(PlatformWithoutSpaces)' == '' ">$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
-
-        <!-- Define the directory where all the binary files need to end up -->
-        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
-        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
+        <DefaultPathProperties>
+            DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
+            DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
+            DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates);
+        </DefaultPathProperties>
     </PropertyGroup>
 </Project>

@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="Help"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Directories -->
+        <!--
+            The workspace directory is defined as the directory that contains the 'settings.props' file.
+            Given that the current file has to live in the same directory as the 'settings.props' file that
+            means that the workspace directory is the 'MsBuildProjectDirectory' for the current file.
+        -->
+        <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
+        <!--
+            The default directory that the NuGet packages are expanded into
+        -->
+        <DirDefaultPackages>$(DirWorkspace)\packages</DirDefaultPackages>
+
+        <!-- Files -->
+        <!--
+            The file that contains all the properties for the build and deploy processes.
+        -->
+        <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
+        <!--
+            The file that contains all the NuGet packages that are used by the non-compilation parts
+            of the build and deploy process. NuGet package files that are used by the compilation parts
+            of the build process are expected to be handled by the compilation process.
+        -->
+        <NuGetPackageFile>$(DirWorkspace)\packages.config</NuGetPackageFile>
+        <!--
+            The file that contains all the NuGet configuration settings for the current project. This file
+            is used to determine where the package directory is located if no such directory is defined.
+        -->
+        <FileNugetConfig>$(DirWorkspace)\nuget.config</FileNugetConfig>
+
+        <!-- External tools -->
+        <!--
+            The full path to the NuGet command line application. Expected to be found via the PATH environment variable.
+        -->
+        <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
+    </PropertyGroup>
+
+    <!--
+        Display the help text for the current script and then exit.
+    -->
+    <Target Name="Help">
+        <Message Text="nBuildKit - Build system" />
+        <Message Text="Copyright 2013 nBuildKit. Apache License, Version 2.0" />
+        <Message Text="" />
+        <Message Text="The following targets exist:" />
+        <Message Text="" />
+        <Message Text="- Init: Configures an empty directory to be used as a nBuildKit workspace." />
+        <Message Text="  Additional properties that can be specified are:" />
+        <Message Text="  * ProductName - The name of the product that will be built from the current workspace." />
+        <Message Text="  * CompanyName - The name of the company that owns the copyright to the product." />
+        <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'settings.props' file." />
+        <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'setttings.props' file." />
+        <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'settings.props' file." />
+        <Message Text="- Help: Displays this text." />
+    </Target>
+
+    <!--
+        Configure the current directory to be used as a nBuildKit workspace.
+    -->
+    <PropertyGroup>
+        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
+        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
+
+        <DirBuildDefault>$(DirWorkspace)\build</DirBuildDefault>
+        <DirBuildTempDefault>$(DirBuildDefault)\temp</DirBuildTempDefault>
+        <DirSrcDefault>$(DirWorkspace)\src</DirSrcDefault>
+        <DirTestsDefault>$(DirWorkspace)\tests</DirTestsDefault>
+
+        <UrlNBuildKitOnGitHub>https://raw.githubusercontent.com/pvandervelde/nBuildKit</UrlNBuildKitOnGitHub>
+        <UrlNBuildKitOnGitHubMasterMsBuildSamples>$(UrlNBuildKitOnGitHub)/master/src/msbuild/samples</UrlNBuildKitOnGitHubMasterMsBuildSamples>
+    </PropertyGroup>
+    <Target Name="Init">
+        <Error Text="In order to initialize the workspace please provide the name of the product through the 'ProductName' property."
+               Condition=" '$(ProductName)' == '' " />
+        <Error Text="In order to initialize the workspace please provide the name of the company through the 'CompanyName' property."
+               Condition=" '$(CompanyName)' == '' " />
+
+        <Message Text="Creating directory to contain source files ..." />
+        <MakeDir Directories="$(DirSrcDefault)"
+                 Condition="!Exists('$(DirSrcDefault)')" />
+
+        <Message Text="Creating directory to contain test files ..." />
+        <MakeDir Directories="$(DirTestsDefault)"
+                 Condition="!Exists('$(DirTestsDefault)')" />
+
+        <Message Text="Downloading the nuget configuration file from GitHub ..." />
+        <DownloadFile Address="$(UrlNBuildKitOnGitHubMasterMsBuildSamples)/nuget.config"
+                      Destination="$(FileNugetConfig)"
+                      Condition="!Exists('$(FileNugetConfig)')"/>
+
+        <Message Text="Downloading the settings file from GitHub ..." />
+        <DownloadFile Address="$(UrlNBuildKitOnGitHubMasterMsBuildSamples)/settings.props"
+                      Destination="$(BuildPropertyFile)"
+                      Condition="!Exists('$(BuildPropertyFile)')"/>
+
+        <Message Text="Downloading the version file from GitHub ..."
+                 Condition=" '$(IsGitWorkspace)' != 'true' "/>
+        <DownloadFile Address="$(UrlNBuildKitOnGitHubMasterMsBuildSamples)/version.xml"
+                      Destination="$(DirWorkspace)\version.xml"
+                      Condition=" '$(IsGitWorkspace)' != 'true' AND !Exists('$(DirWorkspace)\version.xml')" />
+
+        <!-- Create the packages.config file -->
+        <Message Text="Generating package configuration file ..." />
+        <GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
+            <Output TaskParameter="Version" PropertyName="NBuildKitLatestVersion" />
+        </GetLatestNBuildKitVersionFromNuGet>
+        <ItemGroup>
+            <PackagesConfigContent Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
+            <PackagesConfigContent Include="&lt;packages&gt;" />
+            <PackagesConfigContent Include="&lt;package id=&quot;nBuildKit.MsBuild&quot; version=&quot;$(NBuildKitLatestVersion)&quot; /&gt;" />
+            <PackagesConfigContent Include="&lt;package id=&quot;GitVersion.CommandLine&quot; version=&quot;2.0.0&quot; /&gt;"
+                                   Condition=" '$(IsGitWorkspace)' == 'true' " />
+            <PackagesConfigContent Include="&lt;package id=&quot;GitReleaseNotes&quot; version=&quot;0.6.0&quot; /&gt;"
+                                   Condition=" '$(IsGitWorkspace)' == 'true' " />
+            <PackagesConfigContent Include="&lt;/packages&gt;" />
+        </ItemGroup>
+        <WriteLinesToFile
+            File="$(NuGetPackageFile)"
+            Lines="@(PackagesConfigContent)"
+            Overwrite="true" />
+
+        <!-- Update the settings.props file with the values provided -->
+        <!--
+            ProductName: ProductName property
+        -->
+        <Message Text="Updating settings file with product values ..." />
+        <XmlPoke
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:ProductName"
+            Value="$(ProductName)"
+            XmlInputPath="$(BuildPropertyFile)" />
+        <!--
+            ProductNameInFilePath: ProductName property without spaces
+        -->
+        <XmlPoke
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:ProductNameInFilePath"
+            Value="$(ProductName.Replace(' ', ''))"
+            XmlInputPath="$(BuildPropertyFile)" />
+        <!--
+            ProductNamespace: ProductName property with all spaces replaced by dots (.)
+        -->
+        <XmlPoke
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:ProductNamespace"
+            Value="$(ProductName.Replace(' ', '.'))"
+            XmlInputPath="$(BuildPropertyFile)" />
+        <!--
+            ProductStartingYear: Set to the current year
+        -->
+        <Message Text="Updating settings file with copyright values ..." />
+        <XmlPoke
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:ProductStartingYear"
+            Value="$([System.DateTime]::Now.ToString('yyyy'))"
+            XmlInputPath="$(BuildPropertyFile)" />
+        <!--
+            CompanyName: CompanyName property
+        -->
+        <Message Text="Updating settings file with company values ..." />
+        <XmlPoke
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:CompanyName"
+            Value="$(CompanyName)"
+            XmlInputPath="$(BuildPropertyFile)" />
+        <!--
+            CompanyNameInFilePath: CompanyName property without spaces
+        -->
+        <XmlPoke
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:CompanyNameInFilePath"
+            Value="$(CompanyName.Replace(' ', ''))"
+            XmlInputPath="$(BuildPropertyFile)" />
+
+        <!--
+            - CompanyUrl: companyname_withoutspaces.com
+        -->
+        <XmlPoke
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:CompanyUrl"
+            Value="http://$(CompanyName.Replace(' ', '')).com"
+            XmlInputPath="$(BuildPropertyFile)" />
+
+        <!--
+            - GitRemoteRepository ==> if .git directory then get from git
+        -->
+        <Message Text="Updating settings file with GIT values ..."
+                 Condition=" '$(IsGitWorkspace)' == 'true' "/>
+        <GetRemoteRepositoryUrlFromGit GitPath="git"
+                                       Condition=" '$(IsGitWorkspace)' == 'true' ">
+            <Output TaskParameter="RemoteRepositoryUrl" PropertyName="GitRemoteUrl" />
+        </GetRemoteRepositoryUrlFromGit>
+        <XmlPoke
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:GitRemoteRepository"
+            Value="http://$(GitRemoteUrl)"
+            XmlInputPath="$(BuildPropertyFile)"
+            Condition=" '$(IsGitWorkspace)' == 'true' AND '$(GitRemoteUrl)' != '' " />
+    </Target>
+
+    <!--
+        Invoke the build steps as defined by the 'settings.props' file by invoking the nBuildKit 'build.msbuild'
+        script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
+        be used to execute the build.
+    -->
+    <Target Name="Build"
+            DependsOnTargets="_RestoreGlobalNugetPackages;_LocateNBuildKit">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKit)\build.msbuild"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+
+    <!--
+        Invoke the test steps as defined by the 'settings.props' file by invoking the nBuildKit 'test.msbuild'
+        script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
+        be used to execute the tests.
+    -->
+    <Target Name="Test"
+            DependsOnTargets="_RestoreGlobalNugetPackages;_LocateNBuildKit">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKit)\test.msbuild"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+
+    <!--
+        Invoke the deploy steps as defined by the 'settings.props' file by invoking the nBuildKit 'deploy.msbuild'
+        script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
+        be used to execute the deploy.
+    -->
+    <Target Name="Deploy"
+            DependsOnTargets="_RestoreGlobalNugetPackages;_LocateNBuildKit">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKit)\deploy.msbuild"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+
+    <!--
+        Restore all the packages that are used by the non-compilation part of the build and deploy process. This is required
+        so that we can be sure that the nBuildKit main package is extacted to the package directory.
+    -->
+    <Target Name="_RestoreGlobalNugetPackages" DependsOnTargets="_LocatePackagesDir">
+        <Exec Command="&quot;$(ToolsExternalNuGetPath)&quot; restore &quot;$(NuGetPackageFile)&quot; -NoCache -NonInteractive -Verbosity detailed -PackagesDirectory &quot;$(DirPackages)&quot;"
+              Condition="Exists('$(NuGetPackageFile)')" />
+    </Target>
+
+    <!--
+        Get the full path to the nBuildkit package directory so that we can invoked the build scripts from there.
+    -->
+    <Target Name="_LocateNBuildKit"
+            DependsOnTargets="_LocatePackagesDir">
+        <!-- Get the version of nBuildKit that is expected from the global packages file -->
+        <XmlPeek XmlInputPath="$(NuGetPackageFile)"
+                 Query="//package[@id='nBuildKit.MsBuild']/@version"
+                 Condition="Exists('$(NuGetPackageFile)')">
+            <Output TaskParameter="Result" ItemName="VersionNBuildKit" />
+        </XmlPeek>
+        <Message Text="Version: @(VersionNBuildKit)" />
+
+        <CreateProperty Value="%(VersionNBuildKit.Identity)">
+            <Output TaskParameter="Value" PropertyName="NBuildKitVersion" />
+        </CreateProperty>
+
+        <!--
+            If the packages directory exists then we assume that nBuildKit is in there. If that is not the case we'll get a
+            non-existing path but that will lead to an error.
+        -->
+        <CreateProperty Value="$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build" Condition="Exists('$(DirPackages)') AND !Exists('$(DirNBuildKit)')">
+            <Output TaskParameter="Value" PropertyName="DirNBuildKit" />
+        </CreateProperty>
+
+        <Error Text="Unable to find the nBuildKit directory."
+               Condition="!Exists('$(DirNBuildKit)')" />
+    </Target>
+
+    <!--
+        Get the full path to the packages directory.
+    -->
+    <Target Name="_LocatePackagesDir">
+        <!-- Determine if a packages folder exists at the same level as this script. If so use that  -->
+        <CreateProperty Value="$(DirDefaultPackages)" Condition="Exists('$(DirDefaultPackages)')">
+            <Output TaskParameter="Value" PropertyName="DirPackages" />
+        </CreateProperty>
+
+        <!-- Get the location of the packages directory from the local nuget.config file -->
+        <XmlPeek XmlInputPath="$(FileNugetConfig)"
+                 Query="//add[@key='repositorypath']/@value"
+                 Condition="!Exists('$(DirPackages)')">
+            <Output TaskParameter="Result" ItemName="DirNuGetPackages" />
+        </XmlPeek>
+
+        <!-- If the DirNuGetPackages has a root (i.e. a drive letter) then we assume it is an absolute path. Just use it that way. -->
+        <CreateProperty Value="$([System.IO.Path]::GetFullPath('%(DirNuGetPackages.Identity)'))" Condition=" '$(DirNuGetPackages)' != '' AND $([System.IO.Path]::IsPathRooted('%(DirNuGetPackages.Identity)'))">
+            <Output TaskParameter="Value" PropertyName="DirPackages" />
+        </CreateProperty>
+
+        <!-- If the DirNuGetPackages has no root (i.e. no drive letter) then we assume it is a relative path. Base it on the directory that the nuget.config file is in. -->
+        <CreateProperty Value="$([System.IO.Path]::GetFullPath('$(DirWorkspace)\%(DirNuGetPackages.Identity)'))" Condition=" '@(DirNuGetPackages)' != '' AND !$([System.IO.Path]::IsPathRooted('%(DirNuGetPackages.Identity)'))">
+            <Output TaskParameter="Value" PropertyName="DirPackages" />
+        </CreateProperty>
+
+        <Message Text="Package directory at: $(DirPackages)"
+                 Condition=" '$(DirPackages)' != '' " />
+
+        <!-- No packages folder found. Note this and move on -->
+        <Warning Text="Unable to find the packages folder."
+                 Condition=" '$(DirPackages)' == '' " />
+    </Target>
+
+    <UsingTask TaskName="DownloadFile"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+        <ParameterGroup>
+            <Address ParameterType="System.String" Required="true"/>
+            <Destination ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+                    new System.Net.WebClient().DownloadFile(Address, Destination);
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <UsingTask TaskName="GetLatestNBuildKitVersionFromNuGet"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+        <ParameterGroup>
+            <NuGetPath ParameterType="System.String" Required="true" />
+            <Version ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var info = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = NuGetPath,
+                                    Arguments = "list NBuildKit.MsBuild -Source https://nuget.org/api/v2",
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+
+                        Log.LogMessage(MessageImportance.Low, string.Format("{0} {1}", info.FileName, info.Arguments));
+
+                        var text = new System.Text.StringBuilder();
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    text.Append(e.Data);
+                                }
+                            };
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogError(e.Data);
+                                }
+                            };
+                        process.Start();
+
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            return false;
+                        }
+
+                        try
+                        {
+                            string listText = text.ToString();
+                            const string nbuildKitVersionStart = "nBuildKit.Msbuild ";
+                            var index = listText.IndexOf(nbuildKitVersionStart, StringComparison.OrdinalIgnoreCase);
+                            Version = listText.Substring(
+                                    index + nbuildKitVersionStart.Length,
+                                    listText.IndexOf("nBuildKit", index + nbuildKitVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + nbuildKitVersionStart.Length))
+                                .Trim();
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <UsingTask TaskName="GetRemoteRepositoryUrlFromGit"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+        <ParameterGroup>
+            <GitPath ParameterType="System.String" Required="true" />
+            <RemoteRepositoryUrl ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var info = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = GitPath,
+                                    Arguments = "remote show origin",
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+
+                        Log.LogMessage(MessageImportance.Low, string.Format("{0} {1}", info.FileName, info.Arguments));
+
+                        var text = new System.Text.StringBuilder();
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    text.Append(e.Data);
+                                }
+                            };
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogError(e.Data);
+                                }
+                            };
+                        process.Start();
+
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            return false;
+                        }
+
+                        RemoteRepositoryUrl = "";
+                        try
+                        {
+                            string listText = text.ToString();
+                            const string remoteStart = "Fetch URL: ";
+                            var index = listText.IndexOf(remoteStart, StringComparison.OrdinalIgnoreCase);
+                            if (index > -1)
+                            {
+                                RemoteRepositoryUrl = listText.Substring(
+                                        index + remoteStart.Length,
+                                        listText.IndexOf("Push  URL:", index + remoteStart.Length, StringComparison.OrdinalIgnoreCase) - (index + remoteStart.Length))
+                                    .Trim();
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

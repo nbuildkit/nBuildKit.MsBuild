@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild') AND '$(ExistsExtensionsGenerateInternalsVisibleToAttributes)' != 'true' " />
+
+    <!-- Clean up all the files we generate ourselves -->
+    <PropertyGroup>
+        <CleanDependsOn>
+            _nBuildKit_Projects_VBNet_CleanGeneratedFiles;
+            $(CleanDependsOn);
+        </CleanDependsOn>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Projects_VBNet_CleanGeneratedFiles"
+            Condition="Exists('$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.InternalsVisibleTo.vb')">
+        <ItemGroup>
+            <GeneratedFilesToDelete Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.InternalsVisibleTo.vb" />
+        </ItemGroup>
+        <Delete Files="@(GeneratedFilesToDelete)" />
+    </Target>
+
+    <!-- Determine which InternalsVisibleTo attributes and files need to be generated -->
+    <PropertyGroup>
+        <BuildDependsOn>
+            _nBuildKit_Projects_VBNet_PrepareGenerateInternalsVisibleTo;
+            $(BuildDependsOn);
+        </BuildDependsOn>
+    </PropertyGroup>
+    <PropertyGroup>
+        <InternalsVisibleToForSignedAssembliesTemplate>&lt;Assembly: InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)&gt;</InternalsVisibleToForSignedAssembliesTemplate>
+        <InternalsVisibleToForUnsignedAssembliesTemplate>&lt;Assembly: InternalsVisibleTo(&quot;${AssemblyName}&quot;)&gt;</InternalsVisibleToForUnsignedAssembliesTemplate>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Projects_VBNet_PrepareGenerateInternalsVisibleTo"
+            DependsOnTargets="_nBuildKit_Projects_Common_GetSnPath"
+            Condition=" '@(InternalsVisibleTo)' != '' ">
+        <GenerateInternalsVisibleToAttributes SnExe="$(ToolsExternalSnPath)"
+                                              Project="$(AssemblyName)"
+                                              AttributeTemplateForSignedAssemblies="$(InternalsVisibleToForSignedAssembliesTemplate)"
+                                              AttributeTemplateForUnsignedAssemblies="$(InternalsVisibleToForUnsignedAssembliesTemplate)"
+                                              DirPackages="$(DirPackages)"
+                                              DirTemp="$(DirBuildTemp)"
+                                              Items="@(InternalsVisibleTo)"
+                                              Condition=" '@(InternalsVisibleTo)' != '' ">
+            <Output TaskParameter="Result" PropertyName="InternalsVisibleToAttributes" />
+        </GenerateInternalsVisibleToAttributes>
+
+        <CreateItem
+            Include="InternalsVisibleToAttributes"
+            AdditionalMetadata="ReplacementValue=$(InternalsVisibleToAttributes)"
+            Condition=" '$(InternalsVisibleToAttributes)' != '' ">
+           <Output
+               TaskParameter="Include"
+               ItemName="TemplateTokens"/>
+        </CreateItem>
+
+        <CreateItem
+            Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.InternalsVisibleTo.vb"
+            AdditionalMetadata="Template=$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.InternalsVisibleTo.vb"
+            Condition=" '$(InternalsVisibleToAttributes)' != '' ">
+           <Output
+               TaskParameter="Include"
+               ItemName="BuildFilesToGenerate"/>
+        </CreateItem>
+    </Target>
+</Project>

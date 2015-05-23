@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>nBuildKit.MsBuild.Projects.VBNet</id>
+        <version>$VersionSemanticNuGet$</version>
+        <authors>$CompanyName$</authors>
+        <owners>$CompanyName$</owners>
+        <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+        <projectUrl>$CompanyUrl$</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>
+            Provides default properties and build tasks used to unify the settings of a set of VB.NET projects in a Visual Studio solution.
+        </description>
+        <releaseNotes>
+            $ReleaseNotesShort$
+        </releaseNotes>
+        <dependencies>
+            $Dependencies$
+            <dependency id="nBuildKit.MsBuild" version="[$VersionSemanticNuGet$]" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="$DirSrc$\msbuild\projects\common.targets" target="build" />
+
+        <file src="$DirSrc$\msbuild\projects\common.net.props" target="build" />
+
+        <file src="$DirSrc$\msbuild\projects\common.net.targets" target="build" />
+        <file src="$DirSrc$\msbuild\projects\vbnet.props" target="build" />
+        <file src="$DirSrc$\msbuild\projects\vbnet.targets" target="build" />
+
+        <file src="$DirTemp$\msbuild\projects\vbnet\common.props" target="build" />
+
+        <file src="$DirTemp$\msbuild\projects\vbnet\nbuildkit.vbnet.readme.txt" target="content" />
+        <file src="$DirTemp$\msbuild\projects\vbnet\install.ps1" target="tools" />
+        <file src="$DirTemp$\msbuild\projects\vbnet\uninstall.ps1" target="tools" />
+
+        <file src="$DirSrc$\templates\AssemblyInfo.Company.vb" target="build\templates" />
+        <file src="$DirSrc$\templates\AssemblyInfo.VersionNumber.vb" target="build\templates" />
+        <file src="$DirSrc$\templates\AssemblyInfo.BuildInformation.vb" target="build\templates" />
+        <file src="$DirSrc$\templates\AssemblyInfo.InternalsVisibleTo.vb" target="build\templates" />
+        <file src="$DirSrc$\templates\CompanyInformation.vb" target="build\templates" />
+        <file src="$DirSrc$\templates\ProductInformation.vb" target="build\templates" />
+        <file src="$DirSrc$\templates\app.manifest" target="build\templates" />
+    </files>
+</package>

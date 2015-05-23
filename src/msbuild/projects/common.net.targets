@@ -2,8 +2,8 @@
 <Project ToolsVersion="4.0"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <Import Project="$(DirMsBuildExtensions)\PublicKeySignatureFromKeyFile.msbuild"
-            Condition="Exists('$(DirMsBuildExtensions)\PublicKeySignatureFromKeyFile.msbuild') AND '$()' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\PublicKeySignatureFromKeyFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\PublicKeySignatureFromKeyFile.msbuild') AND '$()' != 'true' " />
 
     <!-- Locate the installed version of sn.exe -->
     <PropertyGroup>
@@ -25,6 +25,7 @@
             <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe</ToolsExternalSnPath>
         </PropertyGroup>
         <Message Text="The sn executable was found at: $(ToolsExternalSnPath)"
+                 Importance="low"
                  Condition="Exists('$(ToolsExternalSnPath)')" />
         <Error Text="Could not locate the sn executable path. Cannot execute unit tests."
                Condition="!Exists('$(ToolsExternalSnPath)')"/>
@@ -62,10 +63,10 @@
 
         <CreateItem
             Include="$(MSBuildProjectDirectory)\$(AssemblyName).exe.manifest"
-            AdditionalMetadata="Template=$(DirNBuildKitMsBuildProjectsTemplates)\app.manifest.in">
+            AdditionalMetadata="Template=$(DirNBuildKitMsBuildProjectsTemplates)\app.manifest">
            <Output
                TaskParameter="Include"
-               ItemName="FilesToGenerate"/>
+               ItemName="BuildFilesToGenerate"/>
         </CreateItem>
     </Target>
 </Project>
