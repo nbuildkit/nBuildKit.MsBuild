@@ -4,51 +4,59 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
         Certain properties and items in this settings file allow replacement of the following templates:
-        ${VersionMajor}          - The major version number
-        ${VersionMinor}          - The minor version number
-        ${VersionPatch}          - The patch version number
-        ${VersionBuild}          - The build number of the version
-        ${VersionPreRelease}     - The pre-release code, e.g. 'unstable'
-        ${VersionSemantic}       - The semantic version, e.g. 1.2.3
-        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3-unstable.1+001
-        ${VersionSEmanticNuGet}  - The full semantic version as used by nuget, e.g. 1.2.3-unstable0001
+        ${VersionMajor}           - The major version number
+        ${VersionMinor}           - The minor version number
+        ${VersionPatch}           - The patch version number
+        ${VersionBuild}           - The build number of the version
+        ${VersionPreRelease}      - The pre-release code, e.g. 'unstable'
+        ${VersionSemantic}        - The semantic version, e.g. 1.2.3
+        ${VersionSemanticFull}    - The full semantic version, e.g. 1.2.3-unstable.1+001
+        ${VersionSEmanticNuGet}   - The full semantic version as used by nuget, e.g. 1.2.3-unstable0001
 
-        ${Configuration}         - The configuration, e.g. Release
-        ${Platform}              - The platform name, e.g. Any CPU
-        ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
+        ${Configuration}          - The configuration, e.g. Release
+        ${Platform}               - The platform name, e.g. Any CPU
+        ${PlatformWithoutSpaces}  - The platform name without spaces in it, e.g. AnyCPU
 
-        ${VcsRevision}           - The current VCS revision 'number'
-        ${VcsBranch}             - The name of the current VCS branch
+        ${VcsRevision}            - The current VCS revision 'number'
+        ${VcsBranch}              - The name of the current VCS branch
 
-        ${ReleaseNotesShort}     - The contents of the short release notes
-        ${ReleaseNotesFull}      - The contents of the full release notes
+        ${ReleaseNotesShort}      - The contents of the short release notes
+        ${ReleaseNotesFull}       - The contents of the full release notes
 
-        ${Now}                   - The current date and time in round trip format, e.g. 2015-05-15T19:31:45.1234567+12:00
-        ${Date}                  - The current date in the format year-month-dayofmonth, e.g. 2015-05-15
-        ${DayOfMonth}            - The current day of the month, e.g. 15
-        ${Month}                 - The current month, e.g. 05
-        ${Year}                  - The current year, e.g. 2015
+        ${Now}                    - The current date and time in round trip format, e.g. 2015-05-15T19:31:45.1234567+12:00
+        ${Date}                   - The current date in the format year-month-dayofmonth, e.g. 2015-05-15
+        ${DayOfMonth}             - The current day of the month, e.g. 15
+        ${Month}                  - The current month, e.g. 05
+        ${Year}                   - The current year, e.g. 2015
 
-        ${ProductName}           - The name of the product
-        ${ProductNameInFilePath} - The product name written in a way that it can be used in the file path
-        ${ProductDescription}    - The (short) description of the product
-        ${ProductNamespace}      - The namespace in which all the code for the product is placed
-        ${ProductStartingYear}   - The year the current product was created / released.
+        ${ProductName}            - The name of the product
+        ${ProductNameInFilePath}  - The product name written in a way that it can be used in the file path
+        ${ProductDescription}     - The (short) description of the product
+        ${ProductNamespace}       - The namespace in which all the code for the product is placed
+        ${ProductStartingYear}    - The year the current product was created / released.
 
-        ${CompanyName}           - The name of the company
-        ${CompanyNameInFilePath} - The name of the company written in a way that it can be used in the file path
-        ${CompanyUrl}            - The URL of the company website
+        ${CompanyName}            - The name of the company
+        ${CompanyNameInFilePath}  - The name of the company written in a way that it can be used in the file path
+        ${CompanyUrl}             - The URL of the company website
 
-        ${CopyrightShort}        - The short form of the copyright
-        ${CopyrightLong}         - The long form of the copyright
+        ${CopyrightShort}         - The short form of the copyright
+        ${CopyrightLong}          - The long form of the copyright
 
-        ${DirBin}                - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
-        ${DirDeploy}             - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
-        ${DirLogs}               - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
-        ${DirSrc}                - The full path to the directory that contains the source files, e.g. c:\myproject\src
-        ${DirTemp}               - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
+        ${FileReleaseNotesShort}  - The file containing the short release notes
+        ${FileReleaseNotesFull}   - The file containing the full release notes
 
-        ${VersionNBuildKit}      - The semantic version of nBuildKit that was used for the current build
+        ${DirWorkspace}           - The full path to the directory that contains forms the base of the workspace for the project, e.g. c:\myproject
+        ${DirBin}                 - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
+        ${DirDeploy}              - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
+        ${DirLogs}                - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
+        ${DirSrc}                 - The full path to the directory that contains the source files, e.g. c:\myproject\src
+        ${DirTemp}                - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
+
+        ${DirNBuildKit}           - The full path to the directory that contains the nBuildKit scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build
+        ${DirNBuildKitExtensions} - The full path to the directory that contains the nBuildKit extension scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\extensions
+        ${DirNBuildKitTemplates}  - The full path to the directory that contains the nBuildKit template files, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\templates
+
+        ${VersionNBuildKit}       - The semantic version of nBuildKit that was used for the current build
 
 
         Special template parameters exists for additional version numbers. These are defined in the TemplateVersion ItemGroup
@@ -1183,26 +1191,7 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirWorkspace)\readme.txt">
-            <DirBase>$(DirWorkspace)</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip;
-                $(DirBuildDeploy)\myotherarchive-${VersionSemantic}.zip
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
-        <ArchivePackageSpecs Include="$(DirBuildBinPlatformConfig)\*.dll;$(DirBuildBinPlatformConfig)\*.pdb"
-                             Exclude="$(DirBuildBinPlatformConfig)\myfile.dll;$(DirBuildBinPlatformConfig)\myfile.pdb">
-            <DirBase>$(DirBuildBinPlatformConfig)</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
-        <ArchivePackageSpecs Include="$(DirBuildBinPlatformConfig)\myfile.dll;$(DirBuildBinPlatformConfig)\myfile.pdb">
-            <DirBase>$(DirBuildBinPlatformConfig)</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\myotherarchive-${VersionSemantic}.zip
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
+        <ArchivePackageSpecs Include="$(DirTemplate)\myarchive.zipspec" />
     </ItemGroup>
 
 
