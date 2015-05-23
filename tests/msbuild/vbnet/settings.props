@@ -42,6 +42,9 @@
         ${CopyrightShort}        - The short form of the copyright
         ${CopyrightLong}         - The long form of the copyright
 
+        ${FileReleaseNotesShort} - The file containing the short release notes
+        ${FileReleaseNotesFull}  - The file containing the full release notes
+
         ${DirBin}                - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
         ${DirDeploy}             - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
         ${DirLogs}               - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
@@ -76,7 +79,7 @@
             * Installer information
         -->
         <ProductDescription>
-            The test of the C# parts of nBuildKit
+            The test of the VB.NET parts of nBuildKit
         </ProductDescription>
 
         <!--
@@ -1184,12 +1187,7 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirBuildBinPlatformConfig)\*.dll;$(DirBuildBinPlatformConfig)\*.pdb">
-            <DirBase>$(DirBuildBinPlatformConfig)</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\nBuildKit.Test.VbNet-${VersionSemantic}.z
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
+        <ArchivePackageSpecs Include="$(DirWorkspace)\test.zipspec" />
     </ItemGroup>
 
 

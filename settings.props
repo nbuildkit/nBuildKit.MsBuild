@@ -42,6 +42,9 @@
         ${CopyrightShort}        - The short form of the copyright
         ${CopyrightLong}         - The long form of the copyright
 
+        ${FileReleaseNotesShort} - The file containing the short release notes
+        ${FileReleaseNotesFull}  - The file containing the full release notes
+
         ${DirBin}                - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
         ${DirDeploy}             - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
         ${DirLogs}               - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
@@ -1251,24 +1254,7 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirWorkspace)\README.md;$(DirWorkspace)\LICENSE">
-            <DirBase>$(DirWorkspace)</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
-        <ArchivePackageSpecs Include="$(FileReleaseNotesFull)">
-            <DirBase>$(DirBuildTemp)</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
-        <ArchivePackageSpecs Include="$(DirSrc)\msbuild\samples\**\*.*">
-            <DirBase>$(DirSrc)\msbuild\samples</DirBase>
-            <IncludeInPackage>
-                $(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip
-            </IncludeInPackage>
-        </ArchivePackageSpecs>
+        <ArchivePackageSpecs Include="$(DirTemplates)\samples.zipspec" />
     </ItemGroup>
 
 
