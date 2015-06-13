@@ -7,11 +7,18 @@
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion>true</ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion>
+
+        <!--
+            For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
+            However starting with version 14 that is no longer the case so have to differentiate between these cases.
+        -->
+        <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
+        <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
 
     <UsingTask TaskName="CalculateSemanticVersionWithGitHubFlowVersion"
                TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+               AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
             <ExePath ParameterType="System.String" Required="true" />
             <TempDir ParameterType="System.String" Required="true" />

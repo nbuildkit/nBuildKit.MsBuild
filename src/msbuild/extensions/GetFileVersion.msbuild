@@ -1,23 +1,30 @@
-<!-- 
+<!--
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003' 
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGetFileVersion>true</ExistsExtensionsGetFileVersion>
+
+        <!--
+            For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
+            However starting with version 14 that is no longer the case so have to differentiate between these cases.
+        -->
+        <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
+        <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
-    
+
     <!--
         Finds the version of a file
         Define:
         - FilePath: Full path to the file from which the version must be obtained.
         - Path: Return variable containing the version of the file
     -->
-    <UsingTask TaskName="GetFileVersion" 
-               TaskFactory="CodeTaskFactory" 
-               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+    <UsingTask TaskName="GetFileVersion"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
             <FilePath ParameterType="System.String" Required="true" />
             <FileVersion ParameterType="System.String" Output="true" />
@@ -26,7 +33,7 @@
             <Code Type="Fragment" Language="cs">
                 <![CDATA[
                     FileVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(FilePath).FileVersion.ToString();
-                ]]>  
+                ]]>
             </Code>
         </Task>
     </UsingTask>

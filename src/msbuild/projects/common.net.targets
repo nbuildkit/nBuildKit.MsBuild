@@ -3,7 +3,7 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <Import Project="$(DirNBuildKitMsBuildExtensions)\PublicKeySignatureFromKeyFile.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\PublicKeySignatureFromKeyFile.msbuild') AND '$()' != 'true' " />
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\PublicKeySignatureFromKeyFile.msbuild') AND '$(ExistsExtensionsPublicKeySignatureFromKeyFile)' != 'true' " />
 
     <!-- Locate the installed version of sn.exe -->
     <PropertyGroup>
@@ -14,15 +14,13 @@
             <Output TaskParameter="Path" PropertyName="WindowsSdkPath" />
         </GetFrameworkSdkPath>
 
-        <PropertyGroup>
-            <ToolsExternalSnPath>$(WindowsSdkPath)bin\sn.exe</ToolsExternalSnPath>
-        </PropertyGroup>
-
         <!-- For .NET 4.5 there is nothing in the WindowsSdkPath dir but there is in the deeper folder called 'NETFX 4.0 Tools'. -->
         <!-- For .NET 4.5.1 there is nothing in the WindowsSdkPath dir but there is in the deeper folder called 'NETFX 4.5.1 Tools'. -->
         <PropertyGroup>
-            <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe</ToolsExternalSnPath>
+            <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\sn.exe')">$(WindowsSdkPath)bin\sn.exe</ToolsExternalSnPath>
+            <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.6 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.6 Tools\sn.exe</ToolsExternalSnPath>
             <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.5.1 Tools\sn.exe</ToolsExternalSnPath>
+            <ToolsExternalSnPath Condition="!Exists($(ToolsExternalSnPath)) AND Exists('$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe')">$(WindowsSdkPath)bin\NETFX 4.0 Tools\sn.exe</ToolsExternalSnPath>
         </PropertyGroup>
         <Message Text="The sn executable was found at: $(ToolsExternalSnPath)"
                  Importance="low"
