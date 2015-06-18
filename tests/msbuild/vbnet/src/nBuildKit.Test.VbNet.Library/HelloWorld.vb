@@ -15,12 +15,12 @@ Public Class HelloWorld
     End Function
 
     Private Function AssemblyName() As String
-        Dim attr As AssemblyTitleAttribute = TryCast(Assembly.GetExecutingAssembly().GetCustomAttribute(GetType(AssemblyTitleAttribute)), AssemblyTitleAttribute)
+        Dim attr As AssemblyTitleAttribute = TryCast(Assembly.GetExecutingAssembly().GetCustomAttributes(GetType(AssemblyTitleAttribute), False)(0), AssemblyTitleAttribute)
         Return attr.Title
     End Function
 
     Private Function AssemblyVersion() As String
-        Dim attr As AssemblyInformationalVersionAttribute = TryCast(Assembly.GetExecutingAssembly().GetCustomAttribute(GetType(AssemblyInformationalVersionAttribute)), AssemblyInformationalVersionAttribute)
+        Dim attr As AssemblyInformationalVersionAttribute = TryCast(Assembly.GetExecutingAssembly().GetCustomAttributes(GetType(AssemblyInformationalVersionAttribute), False)(0), AssemblyInformationalVersionAttribute)
         Return attr.InformationalVersion
     End Function
 End Class

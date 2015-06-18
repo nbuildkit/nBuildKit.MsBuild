@@ -773,7 +773,7 @@
             Note for this file to compile successfully a reference to the Nuclei.Build assembly needs to be added.
             This assembly can be found on NuGet.org (http://www.nuget.org/packages/Nuclei.Build/)
         -->
-        <ShouldGenerateAssemblyBuildInfo>true</ShouldGenerateAssemblyBuildInfo>
+        <ShouldGenerateAssemblyBuildInfo>false</ShouldGenerateAssemblyBuildInfo>
 
         <!--
             A flag that indicates whether an application manifest file should be generated for executables. The
@@ -804,6 +804,7 @@
             for all projects that include the MsBuild.Projects.XXXX NuGet package.
         -->
         <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+        <TargetFrameworkVersion Condition=" '$(AssemblyName)' == 'NBuildKit.Test.VbNet.Library' ">v3.5</TargetFrameworkVersion>
 
         <!--
             The platform against which the code should be compiled. Note that the target should not have space in it,
@@ -1102,11 +1103,14 @@
             The locations of the files that should be analyzed by FxCop.
         -->
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\nBuildKit.Test.*.dll"
-                    Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll">
-            <Group>.NET 4.5</Group>
+                    Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll;$(DirBuildBinPlatformConfig)\nBuildKit.Test.VbNet.Library.dll">
+            <TargetFramework>4.5</TargetFramework>
         </FxCopFiles>
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\nBuildKit.Test.*.exe">
-            <Group>.NET 4.5</Group>
+            <TargetFramework>4.5</TargetFramework>
+        </FxCopFiles>
+        <FxCopFiles Include="$(DirBuildBinPlatformConfig)\nBuildKit.Test.VbNet.Library.dll">
+            <TargetFramework>3.5</TargetFramework>
         </FxCopFiles>
 
         <!--
