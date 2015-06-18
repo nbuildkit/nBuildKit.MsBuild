@@ -123,22 +123,22 @@
                                     var taskItem = Assemblies[i];
                                     // Expecting that the taskItems have:
                                     // - taskItem.ItemSpec: Name of the assembly to include in the attribute
-                                    // - taskItem.Group:    Name of the group the assemblies belong to
+                                    // - taskItem.TargetFramework:    Name of the group the assemblies belong to
                                     if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                                     {
                                         var path = Path.GetFullPath(taskItem.ItemSpec);
-                                        var group = taskItem.GetMetadata("Group");
-                                        if (string.IsNullOrEmpty(group))
+                                        var targetFramework = taskItem.GetMetadata("TargetFramework");
+                                        if (string.IsNullOrEmpty(targetFramework))
                                         {
                                             continue;
                                         }
 
-                                        if (!assemblyPaths.ContainsKey(group))
+                                        if (!assemblyPaths.ContainsKey(targetFramework))
                                         {
-                                            assemblyPaths.Add(group, new System.Collections.Generic.List<string>());
+                                            assemblyPaths.Add(targetFramework, new System.Collections.Generic.List<string>());
                                         }
 
-                                        var list = assemblyPaths[group];
+                                        var list = assemblyPaths[targetFramework];
                                         if (!list.Contains(path))
                                         {
                                             list.Add(path);
@@ -148,7 +148,7 @@
 
                                 foreach(var map in assemblyPaths)
                                 {
-                                    Log.LogMessage(MessageImportance.Normal, string.Format("Analyzing assemblies in group [{0}] with FxCop", map.Key));
+                                    Log.LogMessage(MessageImportance.Normal, string.Format("Analyzing assemblies with target framework [{0}] with FxCop", map.Key));
                                     InvokeFxCop(map.Key, map.Value);
                                 }
                             }
@@ -159,7 +159,7 @@
                             return !Log.HasLoggedErrors;
                         }
 
-                        private void InvokeFxCop(string groupName, System.Collections.Generic.IEnumerable<string> assemblyPaths)
+                        private void InvokeFxCop(string targetFramework, System.Collections.Generic.IEnumerable<string> assemblyPaths)
                         {
                             var builder = new System.Text.StringBuilder();
                             {
@@ -168,7 +168,7 @@
                                     string.Format(
                                         "{0}_{1}{2}",
                                         Path.GetFileNameWithoutExtension(OutputFile),
-                                        groupName.Replace(" ", "").Replace(".", ""),
+                                        targetFramework.Replace(" ", "").Replace(".", ""),
                                         Path.GetExtension(OutputFile))); 
                             
                                 builder.Append(string.Format("/ruleset:+\"{0}\" ", RuleSet.TrimEnd('\\')));
@@ -177,6 +177,7 @@
                                 builder.Append(string.Format("/searchgac "));
                                 builder.Append(string.Format("/forceoutput "));
                                 builder.Append(string.Format("/successfile "));
+                                builder.Append(string.Format("/targetframeworkversion:v{0} ", targetFramework));
 
                                 if (!string.IsNullOrEmpty(Dictionary))
                                 {
