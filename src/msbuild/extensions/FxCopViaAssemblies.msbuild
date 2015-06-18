@@ -149,7 +149,7 @@
                                 foreach(var map in assemblyPaths)
                                 {
                                     Log.LogMessage(MessageImportance.Normal, string.Format("Analyzing assemblies in group [{0}] with FxCop", map.Key));
-                                    InvokeFxCop(map.Value);
+                                    InvokeFxCop(map.Key, map.Value);
                                 }
                             }
 
@@ -159,12 +159,20 @@
                             return !Log.HasLoggedErrors;
                         }
 
-                        private void InvokeFxCop(System.Collections.Generic.IEnumerable<string> assemblyPaths)
+                        private void InvokeFxCop(string groupName, System.Collections.Generic.IEnumerable<string> assemblyPaths)
                         {
                             var builder = new System.Text.StringBuilder();
                             {
+                                var outputFilePath = Path.Combine(
+                                    Path.GetDirectoryName(OutputFile),
+                                    string.Format(
+                                        "{0}_{1}{2}",
+                                        Path.GetFileNameWithoutExtension(OutputFile),
+                                        groupName.Replace(" ", "").Replace(".", ""),
+                                        Path.GetExtension(OutputFile))); 
+                            
                                 builder.Append(string.Format("/ruleset:+\"{0}\" ", RuleSet.TrimEnd('\\')));
-                                builder.Append(string.Format("/out:\"{0}\" ", OutputFile.TrimEnd('\\')));
+                                builder.Append(string.Format("/out:\"{0}\" ", outputFilePath));
                                 builder.Append(string.Format("/ignoregeneratedcode "));
                                 builder.Append(string.Format("/searchgac "));
                                 builder.Append(string.Format("/forceoutput "));
