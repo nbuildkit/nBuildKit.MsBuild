@@ -161,7 +161,7 @@
                    OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
                    OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
                    UnitTestExe="$(ToolsExternalNUnitConsolePath)"
-                   UnitTestArguments="/framework:net-4.5 /result:&quot;nunit-console.xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:single @(UnitTestAssemblies->'%22%(FullPath)%22', ' ')"
+                   UnitTestArguments="/framework:net-$(TargetFrameworkVersion.TrimStart('v')) /result:&quot;nunit-console.xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:multiple @(UnitTestAssemblies->'%22%(FullPath)%22', ' ')"
                    BinDir="$(DirBuildBinPlatformConfig)"
                    Condition=" Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
 
