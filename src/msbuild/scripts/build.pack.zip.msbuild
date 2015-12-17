@@ -65,6 +65,9 @@
         <Message Text="Resolving build templates for: %(ArchivePackageSpecs.Identity)"
                  Importance="low"/>
 
+        <MakeDir Directories="$(DirBuildDeploy)"
+                 Condition="!Exists('$(DirBuildDeploy)') AND  '$(ShouldExecute)' == 'true' " />
+
         <TemplateText Template="%(ArchivePackageSpecs.Identity)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileArchiveSpec" />
