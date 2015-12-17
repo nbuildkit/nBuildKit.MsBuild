@@ -91,7 +91,13 @@
 
                         if (process.ExitCode != 0)
                         {
-                            Log.LogError("Failed to get semantic version information");
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            Log.LogError(string.Format("Output was: {0}", text));
+
                             return false;
                         }
 
