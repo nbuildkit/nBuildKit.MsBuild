@@ -101,11 +101,34 @@
                             System.AppDomain.CurrentDomain.AssemblyResolve +=
                                 (sender, e) =>
                                 {
-                                    var assemblySearchPath = System.IO.Path.Combine(searchPath, e.Name.Split(',')[0]);
+                                    Log.LogMessage(
+                                        MessageImportance.Low,
+                                        string.Format(
+                                            "Entering custom assembly resolve function. Searching for {0}",
+                                            e.Name));
+
+                                    var assemblySearchPath = System.IO.Path.Combine(
+                                        searchPath,
+                                        string.Format(
+                                            "{0}.dll",
+                                            e.Name.Split(',')[0]));
                                     if (System.IO.File.Exists(assemblySearchPath))
                                     {
+                                        Log.LogMessage(
+                                            MessageImportance.Low,
+                                            string.Format(
+                                                "Found {0} at {1}",
+                                                e.Name,
+                                                assemblySearchPath));
                                         return System.Reflection.Assembly.LoadFrom(assemblySearchPath);
                                     }
+
+                                    Log.LogMessage(
+                                        MessageImportance.Low,
+                                        string.Format(
+                                            "Did not find {0} at {1}",
+                                            e.Name,
+                                            assemblySearchPath));
 
                                     return null;
                                 };
@@ -117,12 +140,24 @@
                             var symbolsAssemblyLocalPath = System.IO.Path.Combine(BinDirectory, @"Microsoft.VisualStudio.Coverage.Symbols.dll");
                             if (!System.IO.File.Exists(symbolsAssemblyLocalPath))
                             {
+                                Log.LogMessage(
+                                    MessageImportance.Low,
+                                    string.Format(
+                                        "Copying {0} to {1}",
+                                        symbolsAssemblyDefaultPath,
+                                        symbolsAssemblyLocalPath));
                                 System.IO.File.Copy(symbolsAssemblyDefaultPath, symbolsAssemblyLocalPath);
                             }
                         }
 
                         private void ConvertCoverageFile()
                         {
+                            Log.LogMessage(
+                                    MessageImportance.Low,
+                                    string.Format(
+                                        "Converting VsTest coverage file {0} to {1}",
+                                        InputFile,
+                                        OutputFile));
                             using (CoverageInfo info = CoverageInfo.CreateFromFile(
                                 InputFile,
                                 new string[] { BinDirectory },
