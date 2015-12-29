@@ -35,8 +35,6 @@
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\VsTestCoverageOutputToXml.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\VsTestCoverageOutputToXml.msbuild') AND '$(ExistsExtensionsVsTestCoverageOutputToXml)' != 'true' "/>
 
     <Target Name="nBuildKit_Build_Test_Unit_VsTest_Run"
             DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_DisplayInfo">
@@ -123,8 +121,19 @@
                  Condition="!Exists('$(DirReportVsTestExpanded)') AND '$(ShouldExecute)' == 'true' " />
 
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
+                                            FileToLocate="VSCoverageToReportGenerator.exe"
+                                            Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
+          <Output TaskParameter="Path" PropertyName="ToolsExternalVSCoverageToReportGeneratorPath" />
+        </SearchPackagesDirectoryForToolPath>
+        <Message Text="The VSCoverageToReportGenerator executable was found at: $(ToolsExternalVSCoverageToReportGeneratorPath)"
+                 Importance="low"
+                 Condition="Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Warning Text="Could not locate the VSCoverageToReportGenerator executable path. Cannot convert the code coverage reports."
+                 Condition="!Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="ReportGenerator.exe"
-                                            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
+                                            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
         </SearchPackagesDirectoryForToolPath>
         <Message Text="The ReportGenerator executable was found at: $(ToolsExternalReportGeneratorPath)"
@@ -166,11 +175,10 @@
             <CoverageFilesToConvert Include="$(DirReportVsTestExpanded)\**\*.coverage" />
         </ItemGroup>
 
-        <VsTestCoverageOutputToXml InputFile="@(CoverageFilesToConvert)"
-                                   BinDirectory="$(DirBuildBinPlatformConfig)"
-                                   OutputFile="%(RootDir)%(Directory)\%(FileName).xml"
-                                   VisualStudioDirectory="$(ToolsExternalVisualStudioDir)"
-                                   Condition="Exists('%(FullPath)')" />
+        <Exec Command="&quot;$(ToolsExternalVSCoverageToReportGeneratorPath)&quot; --InputFile=&quot;@(CoverageFilesToConvert)&quot; --OutputFile=&quot;%(RootDir)%(Directory)\%(FileName).xml&quot; --BinDirectory=&quot;$(DirBuildBinPlatformConfig)&quot; --VisualStudioDirectory=&quot;$(ToolsExternalVisualStudioDir)&quot;"
+              IgnoreExitCode="False"
+              IgnoreStandardErrorWarningFormat="False"
+              Condition=" Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
 
         <ItemGroup>
             <ReportFilesToProcess Include="$(DirReportVsTestExpanded)\**\*.xml" />
