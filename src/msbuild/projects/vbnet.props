@@ -11,8 +11,8 @@
             Define the location of the current nuget package. Doing this here because the shared files (i.e. common.props and common.net.props)
             don't know in which package they exist, while the current file does.
         -->
-        <DirNBuildKitMsBuildProjects>$(DirPackages)\nBuildKit.MsBuild.Projects.VBNet.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjects>
-        <DirNBuildKitMsBuildProjectsTemplates>$(DirNBuildKitMsBuildProjects)\templates</DirNBuildKitMsBuildProjectsTemplates>
+        <DirNBuildKitMsBuildProjects Condition=" '$(DirNBuildKitMsBuildProjects)' == '' OR !Exists('$(DirNBuildKitMsBuildProjects)') ">$(DirPackages)\nBuildKit.MsBuild.Projects.VBNet.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjects>
+        <DirNBuildKitMsBuildProjectsTemplates Condition=" '$(DirNBuildKitMsBuildProjectsTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildProjectsTemplates)') ">$(DirNBuildKitMsBuildProjects)\templates</DirNBuildKitMsBuildProjectsTemplates>
 
         <!-- Build configuration -->
         <OptionExplicit>$(VbNetOptionExplicit)</OptionExplicit>

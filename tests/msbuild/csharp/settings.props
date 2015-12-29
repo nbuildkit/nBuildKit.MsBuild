@@ -4,54 +4,59 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
         Certain properties and items in this settings file allow replacement of the following templates:
-        ${VersionMajor}          - The major version number
-        ${VersionMinor}          - The minor version number
-        ${VersionPatch}          - The patch version number
-        ${VersionBuild}          - The build number of the version
-        ${VersionPreRelease}     - The pre-release code, e.g. 'unstable'
-        ${VersionSemantic}       - The semantic version, e.g. 1.2.3
-        ${VersionSemanticFull}   - The full semantic version, e.g. 1.2.3-unstable.1+001
-        ${VersionSEmanticNuGet}  - The full semantic version as used by nuget, e.g. 1.2.3-unstable0001
+        ${VersionMajor}           - The major version number
+        ${VersionMinor}           - The minor version number
+        ${VersionPatch}           - The patch version number
+        ${VersionBuild}           - The build number of the version
+        ${VersionPreRelease}      - The pre-release code, e.g. 'unstable'
+        ${VersionSemantic}        - The semantic version, e.g. 1.2.3
+        ${VersionSemanticFull}    - The full semantic version, e.g. 1.2.3-unstable.1+001
+        ${VersionSEmanticNuGet}   - The full semantic version as used by nuget, e.g. 1.2.3-unstable0001
 
-        ${Configuration}         - The configuration, e.g. Release
-        ${Platform}              - The platform name, e.g. Any CPU
-        ${PlatformWithoutSpaces} - The platform name without spaces in it, e.g. AnyCPU
+        ${Configuration}          - The configuration, e.g. Release
+        ${Platform}               - The platform name, e.g. Any CPU
+        ${PlatformWithoutSpaces}  - The platform name without spaces in it, e.g. AnyCPU
 
-        ${VcsRevision}           - The current VCS revision 'number'
-        ${VcsBranch}             - The name of the current VCS branch
+        ${VcsRevision}            - The current VCS revision 'number'
+        ${VcsBranch}              - The name of the current VCS branch
 
-        ${ReleaseNotesShort}     - The contents of the short release notes
-        ${ReleaseNotesFull}      - The contents of the full release notes
+        ${ReleaseNotesShort}      - The contents of the short release notes
+        ${ReleaseNotesFull}       - The contents of the full release notes
 
-        ${Now}                   - The current date and time in round trip format, e.g. 2015-05-15T19:31:45.1234567+12:00
-        ${Date}                  - The current date in the format year-month-dayofmonth, e.g. 2015-05-15
-        ${DayOfMonth}            - The current day of the month, e.g. 15
-        ${Month}                 - The current month, e.g. 05
-        ${Year}                  - The current year, e.g. 2015
+        ${Now}                    - The current date and time in round trip format, e.g. 2015-05-15T19:31:45.1234567+12:00
+        ${Date}                   - The current date in the format year-month-dayofmonth, e.g. 2015-05-15
+        ${DayOfMonth}             - The current day of the month, e.g. 15
+        ${Month}                  - The current month, e.g. 05
+        ${Year}                   - The current year, e.g. 2015
 
-        ${ProductName}           - The name of the product
-        ${ProductNameInFilePath} - The product name written in a way that it can be used in the file path
-        ${ProductDescription}    - The (short) description of the product
-        ${ProductNamespace}      - The namespace in which all the code for the product is placed
-        ${ProductStartingYear}   - The year the current product was created / released.
+        ${ProductName}            - The name of the product
+        ${ProductNameInFilePath}  - The product name written in a way that it can be used in the file path
+        ${ProductDescription}     - The (short) description of the product
+        ${ProductNamespace}       - The namespace in which all the code for the product is placed
+        ${ProductStartingYear}    - The year the current product was created / released.
 
-        ${CompanyName}           - The name of the company
-        ${CompanyNameInFilePath} - The name of the company written in a way that it can be used in the file path
-        ${CompanyUrl}            - The URL of the company website
+        ${CompanyName}            - The name of the company
+        ${CompanyNameInFilePath}  - The name of the company written in a way that it can be used in the file path
+        ${CompanyUrl}             - The URL of the company website
 
-        ${CopyrightShort}        - The short form of the copyright
-        ${CopyrightLong}         - The long form of the copyright
+        ${CopyrightShort}         - The short form of the copyright
+        ${CopyrightLong}          - The long form of the copyright
 
-        ${FileReleaseNotesShort} - The file containing the short release notes
-        ${FileReleaseNotesFull}  - The file containing the full release notes
+        ${FileReleaseNotesShort}  - The file containing the short release notes
+        ${FileReleaseNotesFull}   - The file containing the full release notes
 
-        ${DirBin}                - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
-        ${DirDeploy}             - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
-        ${DirLogs}               - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
-        ${DirSrc}                - The full path to the directory that contains the source files, e.g. c:\myproject\src
-        ${DirTemp}               - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
+        ${DirWorkspace}           - The full path to the directory that contains forms the base of the workspace for the project, e.g. c:\myproject
+        ${DirBin}                 - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
+        ${DirDeploy}              - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
+        ${DirLogs}                - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
+        ${DirSrc}                 - The full path to the directory that contains the source files, e.g. c:\myproject\src
+        ${DirTemp}                - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
 
-        ${VersionNBuildKit}      - The semantic version of nBuildKit that was used for the current build
+        ${DirNBuildKit}           - The full path to the directory that contains the nBuildKit scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build
+        ${DirNBuildKitExtensions} - The full path to the directory that contains the nBuildKit extension scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\extensions
+        ${DirNBuildKitTemplates}  - The full path to the directory that contains the nBuildKit template files, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\templates
+
+        ${VersionNBuildKit}       - The semantic version of nBuildKit that was used for the current build
 
 
         Special template parameters exists for additional version numbers. These are defined in the TemplateVersion ItemGroup
@@ -246,7 +251,7 @@
             Note that $(Platform) and $(Configuration) do not have to be defined in this settings file. They may be provided
             externally as long as they are provided before the settings file is loaded!
         -->
-        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)\'))</DirBuildBinPlatformConfig>
+        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
 
         <!-- The directory that will contain all the generated artifacts during the build process -->
         <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
@@ -412,6 +417,11 @@
         -->
     </ItemGroup>
 
+    <!-- Additional generated files -->
+    <PropertyGroup>
+        <FileGeneratedLicenses>$(DirBuildTemp)\licenses.xml</FileGeneratedLicenses>
+    </PropertyGroup>
+
 
 
 
@@ -493,11 +503,13 @@
         $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
                                                            Currently supported version control systems is GIT
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
+        $(BuildStepsPrepareGenerateLicenses)             - Generates an XML file containing the licenses for all the NuGet packages in use for the current build.
         $(BuildStepsAnalyzeSourceCcm)                    - Analyzes the source code files with CCM.
         $(BuildStepsAnalyzeSourceSouceMonitor)           - Analyzes the source code files with SourceMonitor.
         $(BuildStepsBuildVisualStudioSolution)           - Builds the binaries from a given Visual Studio solution.
         $(BuildStepsUnitTestNUnit)                       - Executes the unit tests with NUnit and measures code coverage with OpenCover.
         $(BuildStepsUnitTestMsTest)                      - Executes the unit tests with MsTest and measures code coverage with OpenCover.
+        $(BuildStepsUnitTestVsTest)                      - Executes the unit tests with VsTest and measures code coverage.
         $(BuildStepsAnalyzeBinariesMoma)                 - Analyzes the binary files with Moma (Mono Migration Analyzer).
         $(BuildStepsAnalyzeBinariesFxCop)                - Analyzes the binary files with FxCop.
         $(BuildStepsBuildApiDocumentationWithSandcastle) - Builds the API documentation with SandCastle from the inline XML documentation comments.
@@ -541,6 +553,10 @@
             </Properties>
         </BuildStepsToExecute>
         -->
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateLicenses)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateFiles)">
             <Properties>
             </Properties>
@@ -570,6 +586,12 @@
         </BuildStepsToExecute>
         <!--
         <BuildStepsToExecute Include="$(BuildStepsUnitTestMsTest)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestVsTest)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
@@ -1009,6 +1031,12 @@
         <FileReportMsTest Condition=" '$(FileReportMsTest)' == '' ">$(DirBuildLogs)\mstest.trx</FileReportMsTest>
 
         <!--
+            The full path to the directory where the VsTest report files should be created. This path can include build templates,
+            e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}.
+        -->
+        <DirReportVsTest Condition=" '$(DirReportVsTest)' == '' ">$(DirBuildLogs)\vstest</DirReportVsTest>
+
+        <!--
             The full path to the XML report file that is generated by OpenCover upon completion of the unit test execution.
             Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\opencover.xml.
         -->
@@ -1200,13 +1228,13 @@
     <!--
         *************************************
         *                                   *
-        *     Test SETTINGS                 *
+        *     TEST SETTINGS                 *
         *                                   *
         *************************************
     -->
 
     <!--
-        **** Test STEPS ****
+        **** TEST STEPS ****
     -->
     <!--
         The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
@@ -1543,6 +1571,13 @@
     <!-- Overrides for the tools paths -->
     <PropertyGroup>
         <!--
+            The full path to the Visual Studio installation directory
+        -->
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 14.0')">C:\Program Files (x86)\Microsoft Visual Studio 14.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0')">C:\Program Files (x86)\Microsoft Visual Studio 12.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0')">C:\Program Files (x86)\Microsoft Visual Studio 11.0</ToolsExternalVisualStudioDir>
+
+        <!--
             The full path to the CCM command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalCcmPath Condition=" '$(ToolsExternalCcmPath)' == '' ">UNDEFINED</ToolsExternalCcmPath>
@@ -1550,9 +1585,8 @@
         <!--
             The full path to the directory that contains the FxCop command line executable
         -->
+        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop')">$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
-        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 11.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
-        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 12.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir>
 
         <!--
@@ -1588,9 +1622,8 @@
         <!--
             The full path to the MsTest command line executable.
         -->
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
-        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
-        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">UNDEFINED</ToolsExternalMsTestPath>
 
         <!--
@@ -1614,6 +1647,11 @@
         <ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath>
 
         <!--
+            The full path to the sn.exe command line executable.
+        -->
+        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' ">UNDEFINED</ToolsExternalSnPath>
+
+        <!--
             The full path to the SourceMonitor command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalSourceMonitorPath Condition=" '$(ToolsExternalSourceMonitorPath)' == '' ">UNDEFINED</ToolsExternalSourceMonitorPath>
@@ -1622,6 +1660,17 @@
             The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable.
         -->
         <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath>
+
+        <!--
+            The full path to the VSCoverageToReportGenerator command line executable. If not defined the packages directory is searched.
+        -->
+        <ToolsExternalVSCoverageToReportGeneratorPath Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalVSCoverageToReportGeneratorPath>
+
+        <!--
+            The full path to the VsTest command line executable.
+        -->
+        <ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</ToolsExternalVsTestPath>
+        <ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' ">UNDEFINED</ToolsExternalVsTestPath>
     </PropertyGroup>
 
 
