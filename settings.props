@@ -423,6 +423,11 @@
         -->
     </ItemGroup>
 
+    <!-- Additional generated files -->
+    <PropertyGroup>
+        <FileGeneratedLicenses>$(DirBuildTemp)\licenses.xml</FileGeneratedLicenses>
+    </PropertyGroup>
+
 
 
 
@@ -504,6 +509,7 @@
         $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
                                                            Currently supported version control systems is GIT
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
+        $(BuildStepsPrepareGenerateLicenses)             - Generates an XML file containing the licenses for all the NuGet packages in use for the current build.
         $(BuildStepsAnalyzeSourceCcm)                    - Analyzes the source code files with CCM.
         $(BuildStepsAnalyzeSourceSouceMonitor)           - Analyzes the source code files with SourceMonitor.
         $(BuildStepsBuildVisualStudioSolution)           - Builds the binaries from a given Visual Studio solution.
@@ -553,6 +559,10 @@
             <Properties>
             </Properties>
         </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateLicenses)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateFiles)">
             <Properties>
             </Properties>
@@ -567,12 +577,14 @@
             <Properties>
             </Properties>
         </BuildStepsToExecute>
+        -->
 
         <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
             <Properties>
             </Properties>
         </BuildStepsToExecute>
 
+        <!--
         <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
             <Properties>
                 Configuration=$(TestConfiguration);
