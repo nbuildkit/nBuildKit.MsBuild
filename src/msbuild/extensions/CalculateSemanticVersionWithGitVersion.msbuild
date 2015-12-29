@@ -39,6 +39,7 @@
                     {
                         var builder = new System.Text.StringBuilder();
                         {
+                            builder.Append("-nofetch");
                             if (!string.IsNullOrEmpty(UserName))
                             {
                                 builder.Append(string.Format("/u \"{0}\" ", UserName));
@@ -91,7 +92,13 @@
 
                         if (process.ExitCode != 0)
                         {
-                            Log.LogError("Failed to get semantic version information");
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            Log.LogError(string.Format("Output was: {0}", text));
+
                             return false;
                         }
 
