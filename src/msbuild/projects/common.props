@@ -64,9 +64,9 @@
         <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND $([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(ConfigPackagesLocation)'))</DirPackages>
         <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND !$([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(DirWorkspace)\$(ConfigPackagesLocation)'))</DirPackages>
 
-        <DirNBuildKitMsBuild>$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
-        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(DirNBuildKitMsBuild)\extensions</DirNBuildKitMsBuildExtensions>
-        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(DirNBuildKitMsBuild)\templates</DirNBuildKitMsBuildTemplates>
+        <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' OR !Exists('$(DirNBuildKitMsBuild)') ">$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' OR !Exists('$(DirNBuildKitMsBuildExtensions)') ">$(DirNBuildKitMsBuild)\extensions</DirNBuildKitMsBuildExtensions>
+        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildTemplates)') ">$(DirNBuildKitMsBuild)\templates</DirNBuildKitMsBuildTemplates>
 
         <!--
             Note that {3AC096D0-A1C2-E12C-1390-A8335801FDAB} is the project type GUID for test projects in any language

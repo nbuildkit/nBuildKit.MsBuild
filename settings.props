@@ -463,10 +463,10 @@
         <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
 
         <!-- The build configuration (debug / release / ..) that will be used to create the binaries that should be deployed -->
-        <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">deploy</ProductionConfiguration>
+        <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">release</ProductionConfiguration>
 
         <!-- The platform for which the binaries will be build -->
-        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+        <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
         <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
     </PropertyGroup>
 
@@ -787,13 +787,7 @@
         The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
     <ItemGroup>
-        <SolutionsToBuild Include="$(DirSrc)\myproject.sln">
-            <Configuration>$(TestConfiguration)</Configuration>
-            <Platform>$(Platform)</Platform>
-            <Targets>Rebuild</Targets>
-            <Properties></Properties>
-        </SolutionsToBuild>
-        <SolutionsToBuild Include="$(DirSrc)\myproject.sln">
+        <SolutionsToBuild Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -825,7 +819,7 @@
             - The AssemblyCompanyAttribute with the company name
             - The AssemblyCopyrightAttribute with the text provided by the ${CopyrightLong} template parameter.
         -->
-        <ShouldGenerateAssemblyCompanyInfo>false</ShouldGenerateAssemblyCompanyInfo>
+        <ShouldGenerateAssemblyCompanyInfo>true</ShouldGenerateAssemblyCompanyInfo>
 
         <!--
             A flag that indicates whether an AssemblyInfo file with the version numbers should be generated. The file
@@ -841,7 +835,7 @@
             - The InstallVersion property with the version as provided by the ${VersionInstall} template parameter.
             - The ProductVersionFolder property with the version as provided by the ${VersionInstallFilePath} template parameter.
         -->
-        <ShouldGenerateAssemblyVersionInfo>false</ShouldGenerateAssemblyVersionInfo>
+        <ShouldGenerateAssemblyVersionInfo>true</ShouldGenerateAssemblyVersionInfo>
 
         <!--
             A flag that indicates whether an AssemblyInfo file with the build information should be generated. The file
@@ -855,7 +849,7 @@
             Note for this file to compile successfully a reference to the Nuclei.Build assembly needs to be added.
             This assembly can be found on NuGet.org (http://www.nuget.org/packages/Nuclei.Build/)
         -->
-        <ShouldGenerateAssemblyBuildInfo>false</ShouldGenerateAssemblyBuildInfo>
+        <ShouldGenerateAssemblyBuildInfo>true</ShouldGenerateAssemblyBuildInfo>
 
         <!--
             A flag that indicates whether an application manifest file should be generated for executables. The
@@ -904,12 +898,12 @@
         <!--
             The code analysis rule set that should be used for non-test assemblies.
         -->
-        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND !$(IsTest)">$(SolutionDir)\codeanalysis.base.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND !$(IsTest)">$(SolutionDir)\VSCoverageToReportGenerator.ruleset</CodeAnalysisRuleSet>
         <!--
             The code analysis rule set that should be used for test assemblies. If no code analysis should be executed on test
             assemblies then it can be turned off in the settings for the different build configurations below.
         -->
-        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND $(IsTest)">$(SolutionDir)\codeanalysis.test.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet Condition="$(ShouldPerformCodeAnalysis) AND $(IsTest)">$(SolutionDir)\VSCoverageToReportGenerator.ruleset</CodeAnalysisRuleSet>
         <!--
             The culture which will be used by the code analysis when searching for spelling errors. The culture name should
             be formatted using the .NET culture format.
@@ -939,7 +933,7 @@
         <!--
             A flag that indicates whether or not the assemblies should be strong named during the compilation process.
         -->
-        <ShouldSign Condition=" '$(ShouldSign)' == '' ">true</ShouldSign>
+        <ShouldSign Condition=" '$(ShouldSign)' == '' ">false</ShouldSign>
         <SignAssembly Condition="$(ShouldSign)">true</SignAssembly>
         <DelaySign Condition="$(ShouldSign)">false</DelaySign>
         <!--
@@ -1016,6 +1010,7 @@
         property, the 'AssemblyFromPackage' property and the 'PublicKey' property.
     -->
     <ItemGroup>
+        <!--
         <InternalsVisibleTo Include="MyTestProject">
             <Projects>
                 MyProject1;
@@ -1037,6 +1032,7 @@
             </Projects>
             <PublicKey>$(TheFullPublicKeyForTheExternalAssemblyThatDoesNotExistOnDisk)</PublicKey>
         </InternalsVisibleTo>
+        -->
     </ItemGroup>
 
     <!--
@@ -1258,6 +1254,9 @@
         </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.wix.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.tools.vscoveragetoreportgenerator.nuspec">
+            <ShouldBuildSymbols>true</ShouldBuildSymbols>
         </NuGetPackageSpecs>
     </ItemGroup>
 

@@ -7,20 +7,20 @@
                Condition="!Exists('$(BuildPropertyFile)')" />
         <Error Text="Build property file not loaded"
                Condition=" '$(ExistsSettings)' != 'true' " />
-        <Error Text="nBuildKit version is not set"
-               Condition=" '$(NBuildKitVersion)' == '' " />
         <Error Text="nBuildKit not found"
                Condition="!Exists('$(DirNBuildKitMsBuild)')" />
     </Target>
 
     <Import Project="$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild') AND '$(ExistsPrepareGenerateFiles)' != 'true' " />
+            Condition="Exists('$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild') AND '$(ExistsSharedPrepareGenerateFiles)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.generatelicenses.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.generatelicenses.msbuild') AND '$(ExistsSharedPrepareGenerateLicenses)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild') AND '$(ExistsPrepareGetVersion)' != 'true' " />
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild') AND '$(ExistsSharedPrepareGetVersion)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild') AND '$(ExistsPrepareNuGetRestore)' != 'true' " />
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild') AND '$(ExistsSharedPrepareNuGetRestore)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild') AND '$(ExistsPrepareVcsInfo)' != 'true' " />
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild') AND '$(ExistsSharedPrepareVcsInfo)' != 'true' " />
 
     <!-- Clean up all the files we generate ourselves -->
     <PropertyGroup>
@@ -74,6 +74,8 @@
                     Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareGetVersion)' " />
         <CallTarget Targets="nBuildKit_Shared_Prepare_VcsInfo_Run"
                     Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareVcsInfo)' " />
+        <CallTarget Targets="nBuildKit_Shared_Prepare_GenerateLicenses_Run"
+                    Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareGenerateLicenses)' " />
         <CallTarget Targets="nBuildKit_Build_Prepare_GenerateFiles_Run" />
     </Target>
 
