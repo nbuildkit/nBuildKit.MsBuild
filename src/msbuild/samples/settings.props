@@ -472,9 +472,13 @@
         The following ItemGroup defines which steps are taken during the build process. The order of the items in the item group
         determines in which order the build steps are executed.
 
+        The following default steps are always executed:
+        - Clearing the existing build artifacts from the workspace and creation of the required directories. Clearing the
+          existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
+        - Restoring the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally also restores the
+          NuGet packages as specified in the nBuildKit specific 'packages.config' files.
+
         The following build steps are by default provided through the given properties:
-        $(BuildStepsPrepareWorkspace)                    - Deletes the existing build artifacts and creates the required directories.
-        $(BuildStepsPrepareRestoreNuGet)                 - Restores the NuGet packages for the project.
         $(BuildStepsPrepareGetVersion)                   - Gathers version information and stores it in a temporary file for use by the rest of the build process.
                                                            Currently supported methods of gathering version information are using (in order):
                                                            - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
@@ -531,14 +535,6 @@
         Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
     <ItemGroup>
-        <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
-            <Properties>
-            </Properties>
-        </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNuGet)">
-            <Properties>
-            </Properties>
-        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
             <Properties>
             </Properties>
@@ -1236,9 +1232,13 @@
         The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
         determines in which order the test steps are executed.
 
+        The following default steps are always executed:
+        - Clearing the existing build artifacts from the workspace and creation of the required directories. Clearing the
+          existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
+        - Restoring the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally also restores the
+          NuGet packages as specified in the nBuildKit specific 'packages.config' files.
+
         The following test steps are by default provided through the given properties:
-        $(TestStepsPrepareWorkspace)     - Deletes the existing test files and logs and creates the required directories for the test to execute.
-        $(TestStepsPrepareRestoreNuGet)  - Restores the NuGet packages for the project.
         $(TestStepsPrepareGetVersion)    - Gathers version information and stores it in a temporary file for use by the rest of the test process.
                                            Currently supported methods of gathering version information are using (in order):
                                            - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
@@ -1281,14 +1281,6 @@
         $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
     -->
     <ItemGroup>
-        <TestStepsToExecute Include="$(TestStepsPrepareWorkspace)">
-            <Properties>
-            </Properties>
-        </TestStepsToExecute>
-        <TestStepsToExecute Include="$(TestStepsPrepareRestoreNuGet)">
-            <Properties>
-            </Properties>
-        </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareGetVersion)">
             <Properties>
             </Properties>
@@ -1384,6 +1376,10 @@
     <!--
         The following ItemGroup defines which steps are taken during the deploy process. The order of the items in the item group
         determines in which order the deploy steps are executed.
+
+        The following default steps are always executed:
+        - Restoring the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally also restores the
+          NuGet packages as specified in the nBuildKit specific 'packages.config' files.
 
         The following deploy steps are by default provided through the given properties:
         $(DeployStepsTagVcs)              - Tags the current commit with the version number. Currentlyl supported version control systems are TFS and GIT.

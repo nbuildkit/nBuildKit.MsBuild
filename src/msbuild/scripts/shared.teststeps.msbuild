@@ -14,4 +14,16 @@
         <TestStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
         <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
     </PropertyGroup>
+
+    <ItemGroup>
+        <TestStepsToExecute Include="$(TestStepsPrepareWorkspace)">
+            <Properties>
+            </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareRestoreNuGet)">
+            <Properties>
+                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\test.packages.config
+            </Properties>
+        </TestStepsToExecute>
+    </ItemGroup>
 </Project>
