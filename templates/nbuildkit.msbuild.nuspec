@@ -21,12 +21,17 @@
     </metadata>
     <files>
         <file src="$DirSrc$\msbuild\scripts\*.msbuild" target="build" />
+        <file src="$DirSrc$\msbuild\scripts\build\*.msbuild" target="build\build" />
+        <file src="$DirSrc$\msbuild\scripts\test\*.msbuild" target="build\test" />
+        <file src="$DirSrc$\msbuild\scripts\deploy\*.msbuild" target="build\deploy" />
         <file src="$DirSrc$\msbuild\extensions\*.msbuild" target="build/extensions" />
         <file src="$DirSrc$\templates\ccm.xml" target="build/templates" />
         <file src="$DirSrc$\templates\sourcemonitor.xml" target="build/templates" />
         <file src="$DirSrc$\templates\sandcastle.shfbproj" target="build/templates" />
 
-        <file src="$DirTemp$\msbuild\scripts\*.packages" target="build" />
+        <file src="$DirTemp$\msbuild\scripts\build\*.packages" target="build\build" />
+        <file src="$DirTemp$\msbuild\scripts\test\*.packages" target="build\test" />
+        <file src="$DirTemp$\msbuild\scripts\deploy\*.packages" target="build\deploy" />
         <file src="$DirTemp$\msbuild\nbuildkit.readme.txt" target="content" />
 
         <file src="$DirWorkspace$\README.md" />

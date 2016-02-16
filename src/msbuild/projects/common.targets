@@ -11,8 +11,8 @@
                Condition="!Exists('$(DirNBuildKitMsBuild)')" />
     </Target>
 
-    <Import Project="$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\build.prepare.generatefiles.msbuild') AND '$(ExistsSharedPrepareGenerateFiles)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\build\build.prepare.generatefiles.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\build\build.prepare.generatefiles.msbuild') AND '$(ExistsSharedPrepareGenerateFiles)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.generatelicenses.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.generatelicenses.msbuild') AND '$(ExistsSharedPrepareGenerateLicenses)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild"
