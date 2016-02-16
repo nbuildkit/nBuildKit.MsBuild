@@ -27,6 +27,8 @@
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\ReportGenerator.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ReportGenerator.msbuild') AND '$(ExistsExtensionsReportGenerator)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild"
@@ -131,6 +133,10 @@
         <Warning Text="Could not locate the VSCoverageToReportGenerator executable path. Cannot convert the code coverage reports."
                  Condition="!Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
 
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="ReportGenerator"
+                      PackageDirectory="$(DirPackages)"
+                      Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="ReportGenerator.exe"
                                             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">

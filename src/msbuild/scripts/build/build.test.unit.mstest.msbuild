@@ -23,6 +23,8 @@
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\OpenCover.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\OpenCover.msbuild') AND '$(ExistsExtensionsOpenCover)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\ReportGenerator.msbuild"
@@ -136,6 +138,10 @@
         <MakeDir Directories="$(DirReportGeneratorOutput)"
                  Condition="!Exists('$(DirReportGeneratorOutput)') AND '$(ShouldExecute)' == 'true' " />
 
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="OpenCover"
+                      PackageDirectory="$(DirPackages)"
+                      Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="opencover.console.exe"
                                             Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
@@ -147,6 +153,10 @@
         <Error Text="Could not locate the OpenCover executable path. Cannot execute unit tests."
                Condition="!Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
 
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="ReportGenerator"
+                      PackageDirectory="$(DirPackages)"
+                      Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="ReportGenerator.exe"
                                             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
