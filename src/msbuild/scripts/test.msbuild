@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Build_Run"
+         DefaultTargets="nBuildKit_Test_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <!-- Note the current script is not meant to be imported! -->
-        <ExistsBuild>true</ExistsBuild>
+        <ExistsTest>true</ExistsTest>
 
         <!-- The full path to the settings file that contains all the settings for the build process -->
         <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
@@ -23,8 +23,8 @@
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.buildsteps.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.buildsteps.msbuild') AND '$(ExistsBuildSteps)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' " />
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
@@ -44,30 +44,30 @@
         </DefaultProperties>
     </PropertyGroup>
 
-    <Target Name="nBuildKit_Build_Run"
-            DependsOnTargets="_nBuildKit_Build_DisplayInfo">
-        <Error Text="No build properties file was defined."
+    <Target Name="nBuildKit_Test_Run"
+            DependsOnTargets="_nBuildKit_Test_DisplayInfo">
+        <Error Text="No test properties file was defined."
                Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
 
-        <!-- Execute all the build tasks in the given order -->
-        <CallTarget Targets="_nBuildKit_Build_Execute" />
+        <!-- Execute all the test steps in the given order -->
+        <CallTarget Targets="_nBuildKit_Test_Execute" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Build_DebugLog">
-        <Message Text="Building ..."
+    <Target Name="_nBuildKit_Test_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Test_DebugLog">
+        <Message Text="Testing ..."
                  Importance="normal"/>
     </Target>
 
-    <Target Name="_nBuildKit_Build_DebugLog"
+    <Target Name="_nBuildKit_Test_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
         <!-- Display the targets that will be executed -->
-        <Message Text="Executing targets: @(BuildStepsToExecute->'%(identity)', '; ')"
+        <Message Text="Executing targets: @(TestStepsToExecute->'%(identity)', '; ')"
                  Importance="low"
-                 Condition=" '@(BuildStepsToExecute)' != ''" />
+                 Condition=" '@(TestStepsToExecute)' != ''" />
         <Message Text="Executing targets: NONE"
                  Importance="low"
-                 Condition=" '@(BuildStepsToExecute)' == ''" />
+                 Condition=" '@(TestStepsToExecute)' == ''" />
 
         <Message Text=" "
                  Importance="low"/>
@@ -87,13 +87,13 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Build_Execute"
-            Condition=" '@(BuildStepsToExecute)' != ''">
+    <Target Name="_nBuildKit_Test_Execute"
+            Condition=" '@(TestStepsToExecute)' != ''">
 
         <MSBuild
             BuildInParallel="False"
-            Projects="%(BuildStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(BuildStepsToExecute.Properties)"
+            Projects="%(TestStepsToExecute.Identity)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(TestStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -106,14 +106,14 @@
             UseResultsCache="True">
         </MSBuild>
 
-        <OnError ExecuteTargets="_nBuildKit_Build_OnError" />
+        <OnError ExecuteTargets="_nBuildKit_Test_OnError" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_OnError">
+    <Target Name="_nBuildKit_Test_OnError">
         <MSBuild
             BuildInParallel="False"
-            Projects="%(BuildFailureStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
+            Projects="%(TestFailureStepsToExecute.Identity)"
+            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(TestFailureStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -124,7 +124,7 @@
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True"
-            Condition=" '@(BuildFailureStepsToExecute)' != '' ">
+            Condition=" '@(TestFailureStepsToExecute)' != '' ">
         </MSBuild>
     </Target>
 </Project>

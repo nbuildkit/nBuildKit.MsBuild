@@ -23,8 +23,8 @@
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.deploysteps.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' " />
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
 
