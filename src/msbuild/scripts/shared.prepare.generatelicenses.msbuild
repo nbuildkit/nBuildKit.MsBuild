@@ -70,7 +70,8 @@
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GenerateLicenses_Generate"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GenerateLicenses_DisplayInfo">
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GenerateLicenses_DisplayInfo"
+            Condition="!Exists('$(FileGeneratedLicenses)')">
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="NTreva"
                       PackageDirectory="$(DirPackages)"
