@@ -122,6 +122,10 @@
         <MakeDir Directories="$(DirReportVsTestExpanded)"
                  Condition="!Exists('$(DirReportVsTestExpanded)') AND '$(ShouldExecute)' == 'true' " />
 
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="nBuildKit.Tools.VsCoverageToReportGenerator"
+                      PackageDirectory="$(DirPackages)"
+                      Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="VSCoverageToReportGenerator.exe"
                                             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
