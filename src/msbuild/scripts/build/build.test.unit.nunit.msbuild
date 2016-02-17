@@ -127,10 +127,11 @@
 
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="NUnit.Runners"
+                      PackageVersion="2.6.4"
                       PackageDirectory="$(DirPackages)"
                       Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
-                                            FileToLocate="nunit3-console.exe"
+                                            FileToLocate="nunit-console.exe"
                                             Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalNUnitConsolePath" />
         </SearchPackagesDirectoryForToolPath>
@@ -175,7 +176,7 @@
                    OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
                    OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
                    UnitTestExe="$(ToolsExternalNUnitConsolePath)"
-                   UnitTestArguments="--framework=net-$(TargetFrameworkVersion.TrimStart('v')) --result:&quot;nunit-console.xml&quot; --work:&quot;$(DirBuildLogs)&quot; --domain:multiple @(UnitTestAssemblies->'%22%(FullPath)%22', ' ')"
+                   UnitTestArguments="/framework:net-$(TargetFrameworkVersion.TrimStart('v')) /result:&quot;nunit-console.xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:multiple @(UnitTestAssemblies->'%22%(FullPath)%22', ' ')"
                    BinDir="$(DirBuildBinPlatformConfig)"
                    Condition=" Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
 
