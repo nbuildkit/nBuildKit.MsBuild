@@ -7,16 +7,6 @@
         <!-- Note the current script is not meant to be imported! -->
         <ExistsTest>true</ExistsTest>
 
-        <!-- The full path to the settings file that contains all the settings for the build process -->
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
-
-        <!--
-            Define the DirWorkspace before importing the BuildPropertyFile so that it is defined and can be used by
-            the properties in the BuildPropertyFile. Note that we can't define it in the BuildPropertyFile because that
-            is imported which means there is no way to get the path of the file.
-        -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
-
         <!-- The full path to the location of the scripts -->
         <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
@@ -25,8 +15,8 @@
 
     <Import Project="$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' " />
-    <Import Project="$(BuildPropertyFile)"
-            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.props"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsSharedSettings)' != 'true' " />
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
