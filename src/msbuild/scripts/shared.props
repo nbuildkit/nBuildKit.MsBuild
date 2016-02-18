@@ -760,14 +760,14 @@
         The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
     <ItemGroup>
-        <SolutionsToBuild Include="$(DirSrc)\*.sln">
+        <SolutionsToBuild Include="$(DirSrc)\*.sln"
+                          Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' " >
             <Configuration>$(TestConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
             <Properties></Properties>
         </SolutionsToBuild>
-        <SolutionsToBuild Include="$(DirSrc)\*.sln"
-                          Condition=" '$(ProductionConfiguration)' != '$(TestConfiguration)' ">
+        <SolutionsToBuild Include="$(DirSrc)\*.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -1090,19 +1090,21 @@
         -->
         <FileReportOpenCoverCsv Condition=" '$(FileReportOpenCoverCsv)' == '' ">$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '@(UnitTestAssemblies)' == '' ">
         <!--
             The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
             e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
         -->
         <UnitTestAssemblies Include="$(DirBuildBinPlatformConfig)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
-
+    </ItemGroup>
+    <ItemGroup Condition=" '@(OpenCoverIgnoreAttributes)' == '' ">
         <!--
             The ItemGroup items that define the attributes that indicate code that should be ignored by OpenCover.
         -->
         <OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
         <OpenCoverIgnoreAttributes Include="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
-
+    </ItemGroup>
+    <ItemGroup Condition=" '@(OpenCoverFilters)' == '' ">
         <!--
             The ItemGroup items that define the filters used by OpenCover.
             NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text.
@@ -1173,6 +1175,7 @@
         <!--
             The locations of the files that should be analyzed by FxCop.
         -->
+        <!--
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
                     Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll">
             <TargetFramework>4.5</TargetFramework>
@@ -1180,7 +1183,9 @@
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.exe">
             <TargetFramework>2.0</TargetFramework>
         </FxCopFiles>
-
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(FxCopReferenceFiles)' == '' ">
         <!--
             The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
             use as reference assemblies.
@@ -1189,7 +1194,8 @@
         <FxCopReferenceFiles Include=""
                              Exclude="" />
         -->
-
+    </ItemGroup>
+    <ItemGroup Condition=" '@(FxCopReferenceDirectories)' == '' ">
         <!--
             The directory locations that contain the assemblies (not including the .NET framework assemblies) which
             FxCop should use as reference assemblies
