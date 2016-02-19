@@ -81,11 +81,12 @@
         <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND !$([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(DirWorkspace)\$(ConfigPackagesLocation)'))</DirPackages>
     </PropertyGroup>
 
-    </PropertyGroup>
+    <PropertyGroup>
         <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' OR !Exists('$(DirNBuildKitMsBuild)') ">$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' OR !Exists('$(DirNBuildKitMsBuildShared)') ">$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' OR !Exists('$(DirNBuildKitMsBuildExtensions)') ">$(DirNBuildKitMsBuild)\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildTemplates)') ">$(DirNBuildKitMsBuild)\templates</DirNBuildKitMsBuildTemplates>
-    </PropertyGroup
+    </PropertyGroup>
 
     <!-- Import the settings files that has all the overriden settings -->
     <Import Project="$(BuildPropertyFile)"

@@ -7,8 +7,8 @@
         <ExistsSharedPrepareGatherReleaseNotes>true</ExistsSharedPrepareGatherReleaseNotes>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
     <Import Project="$(DirNBuildKitMsBuildExtensions)\GetReleaseNotesViaGitReleaseNotes.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetReleaseNotesViaGitReleaseNotes.msbuild') AND '$(ExistsGetReleaseNotesViaGitReleaseNotes)' != 'true' " />
