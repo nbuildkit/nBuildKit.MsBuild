@@ -7,8 +7,8 @@
         <ExistsTestPrepareWorkspace>true</ExistsTestPrepareWorkspace>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsSharedSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
     <Target Name="nBuildKit_Test_Prepare_Workspace_Run"
             DependsOnTargets="_nBuildKit_Test_Prepare_Workspace_DisplayInfo">

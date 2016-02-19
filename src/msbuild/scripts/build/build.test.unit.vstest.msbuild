@@ -7,8 +7,8 @@
         <ExistsBuildTestUnitMsTest>true</ExistsBuildTestUnitMsTest>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsSharedSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
     <PropertyGroup>
         <FileRunSettings>$(DirBuildTemp)\vstest.runsettings</FileRunSettings>

@@ -7,8 +7,8 @@
         <ExistsSharedPrepareNuGetRestore>true</ExistsSharedPrepareNuGetRestore>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsSharedSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild') AND '$(ExistsExtensionsNuGetRestore)' != 'true' "/>

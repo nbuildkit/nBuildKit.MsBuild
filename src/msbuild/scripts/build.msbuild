@@ -15,8 +15,8 @@
 
     <Import Project="$(DirNBuildKitMsBuild)\build\shared.buildsteps.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\build\shared.buildsteps.msbuild') AND '$(ExistsBuildSteps)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\shared.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsSharedSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
