@@ -803,7 +803,11 @@
             This value is defined here just so that there is a value when no other value is specified. Do not comment this
             value out unless you know what you are doing!
         -->
-        <IsTest Condition=" '$(IsTest)' == '' ">false</IsTest>
+        <!--
+            Note that {3AC096D0-A1C2-E12C-1390-A8335801FDAB} is the project type GUID for test projects in any language
+            See here: http://www.codeproject.com/Reference/720512/List-of-Visual-Studio-Project-Type-GUIDs
+        -->
+        <IsTest Condition=" '$(IsTest)' == '' ">$(ProjectTypeGuids.Contains('{3AC096D0-A1C2-E12C-1390-A8335801FDAB}'))</IsTest>
     </PropertyGroup>
 
     <!-- Build configuration -->
