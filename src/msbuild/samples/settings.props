@@ -457,7 +457,7 @@
         <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
 
         <!-- The build configuration (debug / release / ..) that will be used to create the binaries that should be deployed -->
-        <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">deploy</ProductionConfiguration>
+        <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">release</ProductionConfiguration>
 
         <!-- The platform for which the binaries will be build -->
         <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
@@ -719,13 +719,14 @@
         The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
     <ItemGroup>
-        <SolutionsToBuild Include="$(DirSrc)\myproject.sln">
+        <SolutionsToBuild Include="$(DirSrc)\*.sln"
+                          Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' " >
             <Configuration>$(TestConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
             <Properties></Properties>
         </SolutionsToBuild>
-        <SolutionsToBuild Include="$(DirSrc)\myproject.sln">
+        <SolutionsToBuild Include="$(DirSrc)\*.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -1118,7 +1119,7 @@
         <!--
             The culture that FxCop should use for the spelling rules.
         -->
-        <FxCopCulture Condition=" 'FxCopCulture' == '' ">$(CodeAnalysisCulture)</FxCopCulture>
+        <FxCopCulture Condition=" '$(FxCopCulture)' == '' ">$(CodeAnalysisCulture)</FxCopCulture>
 
         <!--
             A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
@@ -1216,8 +1217,9 @@
 
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
-    <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirTemplate)\myarchive.zipspec" />
+    <ItemGroup Condition=" '@(ArchivePackageSpecs)' == '' " >
+        <ArchivePackageSpecs Include="$(DirWorkspace)\**\*.zipspec"
+                             Exclude="$(DirBuild)\**\*.zipspec" />
     </ItemGroup>
 
 
