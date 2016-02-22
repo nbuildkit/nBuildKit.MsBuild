@@ -88,7 +88,17 @@
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildTemplates)') ">$(DirNBuildKitMsBuild)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
 
+    <Import Project="$(DirNBuildKitMsBuild)\build\shared.buildsteps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\build\shared.buildsteps.msbuild') AND '$(ExistsBuildSteps)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' " />
+
     <!-- Import the settings files that has all the overriden settings -->
+    <!--
+        Note that we rely on loading the user settings file first so that the 'TemplateVersion' items created by the user are first in their list.
+    -->
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.props"
