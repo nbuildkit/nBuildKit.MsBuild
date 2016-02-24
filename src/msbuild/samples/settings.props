@@ -559,14 +559,23 @@
 
     <!--
         *****************************************
-        *                                   *
+        *                                       *
         *     NBUILDKIT SPECIFIC SETTINGS       *
-        *                                   *
+        *                                       *
         *****************************************
     -->
 
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedSettings>true</ExistsSharedSettings>
+    </PropertyGroup>
+
+    <!--
+        Defines the minimum and maximum versions for nBuildKit which are used to grab the correct nBuildKit packages from
+        NuGet if no package is specified in the packages.config file.
+    -->
+    <PropertyGroup>
+        <NBuildKitMinimumVersion>0.1.0</NBuildKitMinimumVersion>
+        <NBuildKitMaximumVersion>1.0.0</NBuildKitMaximumVersion>
     </PropertyGroup>
 </Project>
