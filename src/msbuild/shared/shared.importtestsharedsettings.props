@@ -4,20 +4,26 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsSharedImportSharedSettings>true</ExistsSharedImportSharedSettings>
+        <ExistsSharedImportTestSharedSettings>true</ExistsSharedImportTestSharedSettings>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+
+    <PropertyGroup>
+        <TestPropertyFile Condition=" '$(TestPropertyFile)' == '' AND Exists('$(DirWorkspace)\test.settings.props')">$(DirWorkspace)\test.settings.props</TestPropertyFile>
+     </PropertyGroup>
 
     <!-- Import the settings files that has all the overriden settings -->
     <!--
         Note that we rely on loading the user settings file first so that the 'TemplateVersion' items created by the user are first in their list.
     -->
+    <Import Project="$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' " />
     <Import Project="$(TestPropertyFile)"
-            Condition="Exists('$(TestPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
+            Condition="Exists('$(TestPropertyFile)') AND '$(ExistsTestSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\test\test.shared.props"
             Condition="Exists('$(DirNBuildKitMsBuild)\test\test.shared.props') AND '$(ExistsTestSharedSettings)' != 'true' " />
 </Project>

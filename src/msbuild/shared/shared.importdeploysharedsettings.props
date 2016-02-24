@@ -7,15 +7,21 @@
         <ExistsSharedImportDeploySharedSettings>true</ExistsSharedImportDeploySharedSettings>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+
+    <PropertyGroup>
+        <DeployPropertyFile Condition=" '$(DeployPropertyFile)' == '' AND Exists('$(DirWorkspace)\deploy.settings.props')">$(DirWorkspace)\deploy.settings.props</DeployPropertyFile>
+     </PropertyGroup>
 
     <!-- Import the settings files that has all the overriden settings -->
     <!--
         Note that we rely on loading the user settings file first so that the 'TemplateVersion' items created by the user are first in their list.
     -->
+    <Import Project="$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' " />
     <Import Project="$(DeployPropertyFile)"
             Condition="Exists('$(DeployPropertyFile)') AND '$(ExistsDeploySettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\deploy\deploy.shared.props"
