@@ -62,6 +62,22 @@
         Special template parameters exists for additional version numbers. These are defined in the TemplateVersion ItemGroup
         as defined below.
     -->
+    <!-- Overrides for the global properties -->
+    <PropertyGroup>
+        <!-- A flag indicating whether or not to display debug log information, usually at the start of the script execution. -->
+        <ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">true</ShouldDisplayDebugLog>
+
+        <!--
+            A flag that indicates whether or not the workspace should be cleaned before the build is started. If set to
+            true then the 'DirBuild' directory will be removed as well as all known generated files.
+        -->
+        <ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>
+
+        <!--
+            Indicates that the execution of the build script runs through the steps but does not actually execute them.
+        -->
+        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
+    </PropertyGroup>
 
     <!-- Overrides for the project specific properties -->
     <PropertyGroup>
