@@ -109,7 +109,7 @@
         **** PREPARE - WORKSPACE ****
     -->
     <ItemGroup Condition=" '@(TestFilesToCopy)' == '' ">
-        <TestFilesToCopy Include="$(DirTest)\**\*.*">
+        <TestFilesToCopy Include="$(DirTest)\**\*.*" Condition="Exists('$(DirTest)')">
             <TargetDirectory>$(DirBuildTest)</TargetDirectory>
         </TestFilesToCopy>
     </ItemGroup>

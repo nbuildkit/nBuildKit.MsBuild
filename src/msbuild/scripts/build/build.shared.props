@@ -783,7 +783,8 @@
     -->
     <ItemGroup Condition=" '@(ArchivePackageSpecs)' == '' " >
         <ArchivePackageSpecs Include="$(DirWorkspace)\**\*.zipspec"
-                             Exclude="$(DirBuild)\**\*.zipspec" />
+                             Exclude="$(DirBuild)\**\*.zipspec"
+                             Condition="Exists('$(DirWorkspace)')" />
     </ItemGroup>
 
 
