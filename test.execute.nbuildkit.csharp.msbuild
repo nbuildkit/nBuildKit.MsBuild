@@ -7,14 +7,14 @@
         <ExistsTestPrepareWorkspace>true</ExistsTestPrepareWorkspace>
 
         <!-- The full path to the settings file that contains all the settings for the build process -->
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == '' ">UNDEFINED</SharedPropertyFile>
 
         <!--
-            Define the DirWorkspace before importing the BuildPropertyFile so that it is defined and can be used by
-            the properties in the BuildPropertyFile. Note that we can't define it in the BuildPropertyFile because that
+            Define the DirWorkspace before importing the SharedPropertyFile so that it is defined and can be used by
+            the properties in the SharedPropertyFile. Note that we can't define it in the SharedPropertyFile because that
             is imported which means there is no way to get the path of the file.
         -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(SharedPropertyFile)'))</DirWorkspace>
     </PropertyGroup>
 
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
