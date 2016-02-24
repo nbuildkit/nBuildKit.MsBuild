@@ -19,6 +19,10 @@
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
+        <DefaultPropertyFiles>
+            SharedPropertyFile=$(SharedPropertyFile);
+            TestPropertyFile=$(TestPropertyFile)
+        </DefaultPropertyFiles>
         <!--
             Each build file needs to have the paths passed in so that the default directory paths are always known.
             To prevent having to provide them in a lengthy line each time we'll store them here
@@ -36,9 +40,6 @@
 
     <Target Name="nBuildKit_Test_Run"
             DependsOnTargets="_nBuildKit_Test_DisplayInfo">
-        <Error Text="No test properties file was defined."
-               Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
-
         <!-- Execute all the test steps in the given order -->
         <CallTarget Targets="_nBuildKit_Test_Execute" />
     </Target>
@@ -83,7 +84,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(TestStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(TestStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(TestStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -103,7 +104,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(TestFailureStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(TestFailureStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(TestFailureStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

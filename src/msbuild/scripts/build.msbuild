@@ -19,6 +19,10 @@
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
+        <DefaultPropertyFiles>
+            SharedPropertyFile=$(SharedPropertyFile);
+            BuildPropertyFile=$(BuildPropertyFile)
+        </DefaultPropertyFiles>
         <!--
             Each build file needs to have the paths passed in so that the default directory paths are always known.
             To prevent having to provide them in a lengthy line each time we'll store them here
@@ -36,9 +40,6 @@
 
     <Target Name="nBuildKit_Build_Run"
             DependsOnTargets="_nBuildKit_Build_DisplayInfo">
-        <Error Text="No build properties file was defined."
-               Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
-
         <!-- Execute all the build tasks in the given order -->
         <CallTarget Targets="_nBuildKit_Build_Execute" />
     </Target>
@@ -83,7 +84,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(BuildStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(BuildStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(BuildStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -103,7 +104,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(BuildFailureStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

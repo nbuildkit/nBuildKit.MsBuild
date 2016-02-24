@@ -19,7 +19,7 @@
         <!--
             The file that contains all the properties for the build and deploy processes.
         -->
-        <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
+        <SharedPropertyFile>$(DirWorkspace)\settings.props</SharedPropertyFile>
         <!--
             The file that contains all the NuGet packages that are used by the non-compilation parts
             of the build and deploy process. NuGet package files that are used by the compilation parts
@@ -101,8 +101,8 @@
 
         <Message Text="Downloading the settings file from GitHub ..." />
         <DownloadFile Address="$(UrlNBuildKitOnGitHubMasterMsBuildSamples)/settings.props"
-                      Destination="$(BuildPropertyFile)"
-                      Condition="!Exists('$(BuildPropertyFile)')"/>
+                      Destination="$(SharedPropertyFile)"
+                      Condition="!Exists('$(SharedPropertyFile)')"/>
 
         <Message Text="Downloading the version file from GitHub ..."
                  Condition=" '$(IsGitWorkspace)' != 'true' "/>
@@ -135,7 +135,7 @@
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="/x:Project/x:PropertyGroup/x:ProductName"
             Value="$(ProductName)"
-            XmlInputPath="$(BuildPropertyFile)" />
+            XmlInputPath="$(SharedPropertyFile)" />
         <!--
             ProductNameInFilePath: ProductName property without spaces
         -->
@@ -143,7 +143,7 @@
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="/x:Project/x:PropertyGroup/x:ProductNameInFilePath"
             Value="$(ProductName.Replace(' ', ''))"
-            XmlInputPath="$(BuildPropertyFile)" />
+            XmlInputPath="$(SharedPropertyFile)" />
         <!--
             ProductNamespace: ProductName property with all spaces replaced by dots (.)
         -->
@@ -151,7 +151,7 @@
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="/x:Project/x:PropertyGroup/x:ProductNamespace"
             Value="$(ProductName.Replace(' ', '.'))"
-            XmlInputPath="$(BuildPropertyFile)" />
+            XmlInputPath="$(SharedPropertyFile)" />
         <!--
             ProductStartingYear: Set to the current year
         -->
@@ -160,7 +160,7 @@
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="/x:Project/x:PropertyGroup/x:ProductStartingYear"
             Value="$([System.DateTime]::Now.ToString('yyyy'))"
-            XmlInputPath="$(BuildPropertyFile)" />
+            XmlInputPath="$(SharedPropertyFile)" />
         <!--
             CompanyName: CompanyName property
         -->
@@ -169,7 +169,7 @@
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="/x:Project/x:PropertyGroup/x:CompanyName"
             Value="$(CompanyName)"
-            XmlInputPath="$(BuildPropertyFile)" />
+            XmlInputPath="$(SharedPropertyFile)" />
         <!--
             CompanyNameInFilePath: CompanyName property without spaces
         -->
@@ -177,7 +177,7 @@
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="/x:Project/x:PropertyGroup/x:CompanyNameInFilePath"
             Value="$(CompanyName.Replace(' ', ''))"
-            XmlInputPath="$(BuildPropertyFile)" />
+            XmlInputPath="$(SharedPropertyFile)" />
 
         <!--
             - CompanyUrl: companyname_withoutspaces.com
@@ -186,7 +186,7 @@
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="/x:Project/x:PropertyGroup/x:CompanyUrl"
             Value="http://$(CompanyName.Replace(' ', '')).com"
-            XmlInputPath="$(BuildPropertyFile)" />
+            XmlInputPath="$(SharedPropertyFile)" />
 
         <!--
             - GitRemoteRepository ==> if .git directory then get from git
@@ -201,7 +201,7 @@
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
             Query="/x:Project/x:PropertyGroup/x:GitRemoteRepository"
             Value="http://$(GitRemoteUrl)"
-            XmlInputPath="$(BuildPropertyFile)"
+            XmlInputPath="$(SharedPropertyFile)"
             Condition=" '$(IsGitWorkspace)' == 'true' AND '$(GitRemoteUrl)' != '' " />
     </Target>
 
@@ -215,7 +215,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\build.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -239,7 +239,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\test.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -263,7 +263,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\deploy.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

@@ -3,8 +3,8 @@
          InitialTargets="nBuildKit_Projects_Common_VerifyProperties"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <Target Name="nBuildKit_Projects_Common_VerifyProperties">
-        <Error Text="Build property file not found"
-               Condition="!Exists('$(BuildPropertyFile)')" />
+        <Error Text="Property file not found"
+               Condition="!Exists('$(SharedPropertyFile)')" />
         <Error Text="Build property file not loaded"
                Condition=" '$(ExistsSettings)' != 'true' " />
         <Error Text="nBuildKit not found"
@@ -43,7 +43,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(PreCleanScripts.FullPath)"
-            Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);%(PreCleanScripts.Properties)"
+            Properties="Configuration=$(Configuration);Platform=$(Platform);SharedPropertyFile=$(SharedPropertyFile);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);%(PreCleanScripts.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -86,7 +86,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(PreCompilationScripts.FullPath)"
-            Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);%(PreCompilationScripts.Properties)"
+            Properties="Configuration=$(Configuration);Platform=$(Platform);SharedPropertyFile=$(SharedPropertyFile);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);%(PreCompilationScripts.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

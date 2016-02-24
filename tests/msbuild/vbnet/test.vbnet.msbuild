@@ -19,7 +19,7 @@
         <!--
             The file that contains all the properties for the build and deploy processes.
         -->
-        <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
+        <SharedPropertyFile>$(DirWorkspace)\settings.props</SharedPropertyFile>
         <!--
             The file that contains all the NuGet packages that are used by the non-compilation parts
             of the build and deploy process. NuGet package files that are used by the compilation parts
@@ -64,7 +64,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\build.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -88,7 +88,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\test.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -112,7 +112,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\deploy.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
