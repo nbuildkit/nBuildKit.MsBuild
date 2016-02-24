@@ -86,5 +86,12 @@
         <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' OR !Exists('$(DirNBuildKitMsBuildShared)') ">$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' OR !Exists('$(DirNBuildKitMsBuildExtensions)') ">$(DirNBuildKitMsBuild)\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildTemplates)') ">$(DirNBuildKitMsBuild)\templates</DirNBuildKitMsBuildTemplates>
+
+        <DefaultPathProperties>
+            DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
+            DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
+            DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);
+            DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates);
+        </DefaultPathProperties>
     </PropertyGroup>
 </Project>
