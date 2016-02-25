@@ -12,35 +12,43 @@ foreach($file in $filesToInsert)
 {
     # calculate the relative path between the project and the props file
     $projectUri = New-Object System.Uri -ArgumentList $project.FullName
-    Write-Host "project file is at: $projectUri" 
+    Write-Host "project file is at: $projectUri"
 
-    $propsFileUri = New-Object System.Uri -ArgumentList (Join-Path (Join-Path $installPath "build") "$file.props")
-    Write-Host "properties file is at: $propsFileUri" 
+    $propsFilePath = Join-Path (Join-Path $installPath "build") "$file.props"
+    if (Test-Path $propsFilePath)
+    {
+        $propsFileUri = New-Object System.Uri -ArgumentList $propsFilePath
+        Write-Host "properties file is at: $propsFileUri"
 
-    $relativeFilePath = $projectUri.MakeRelativeUri($propsFileUri).ToString()
-    Write-Host "Relative path from projects file to props file is: $relativeFilePath" 
+        $relativeFilePath = $projectUri.MakeRelativeUri($propsFileUri).ToString()
+        Write-Host "Relative path from projects file to props file is: $relativeFilePath"
 
-    # create the Import node
-    $importElement = $msbuild.Xml.CreateImportElement($relativeFilePath)
-    $importElement.Condition = " Exists('$relativeFilePath') "
+        # create the Import node
+        $importElement = $msbuild.Xml.CreateImportElement($relativeFilePath)
+        $importElement.Condition = " Exists('$relativeFilePath') "
 
-    $itemGroupNode = $msbuild.Xml.ItemGroups | Select-Object -First 1
-    Write-Host ("Found first item group at: " + $itemGroupNode.ToString())
+        $itemGroupNode = $msbuild.Xml.ItemGroups | Select-Object -First 1
+        Write-Host ("Found first item group at: " + $itemGroupNode.ToString())
 
-    $msbuild.Xml.InsertBeforeChild($importElement, $itemGroupNode)
-    Write-Host ("Inserting before the first item group: " + $importElement.ToString())
+        $msbuild.Xml.InsertBeforeChild($importElement, $itemGroupNode)
+        Write-Host ("Inserting before the first item group: " + $importElement.ToString())
+    }
 
     # Calculate the relative path between the project and the targets file
-    $targetsFileUri = New-Object System.Uri -ArgumentList (Join-Path (Join-Path $installPath "build") "$file.targets")
-    Write-Host "properties file is at: $targetsFileUri" 
+    $targetsFilePath = Join-Path (Join-Path $installPath "build") "$file.targets"
+    if (Test-Path $targetsFilePath)
+    {
+        $targetsFileUri = New-Object System.Uri -ArgumentList $targetsFilePath
+        Write-Host "Targets file is at: $targetsFileUri"
 
-    $relativeFilePath = $projectUri.MakeRelativeUri($targetsFileUri).ToString()
-    Write-Host "Relative path from projects file to targets file is: $relativeFilePath" 
+        $relativeFilePath = $projectUri.MakeRelativeUri($targetsFileUri).ToString()
+        Write-Host "Relative path from projects file to targets file is: $relativeFilePath"
 
-    $importElement = $msbuild.Xml.CreateImportElement($relativeFilePath)
-    $importElement.Condition = " Exists('$relativeFilePath') "
-    
-    $msbuild.Xml.AppendChild($importElement)
+        $importElement = $msbuild.Xml.CreateImportElement($relativeFilePath)
+        $importElement.Condition = " Exists('$relativeFilePath') "
+
+        $msbuild.Xml.AppendChild($importElement)
+    }
 }
 
 $project.Save()

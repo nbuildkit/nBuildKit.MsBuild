@@ -36,6 +36,7 @@
     <DirNBuildKitMsBuildProjects Condition=" '$(DirNBuildKitMsBuildProjects)' == '' OR !Exists('$(DirNBuildKitMsBuildProjectsTemplates)') ">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\msbuild\projects'))</DirNBuildKitMsBuildProjects>
     <DirNBuildKitMsBuildProjectsTemplates Condition=" '$(DirNBuildKitMsBuildProjectsTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildProjectsTemplates)') ">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\templates'))</DirNBuildKitMsBuildProjectsTemplates>
   </PropertyGroup>
+  <Import Project="../../../msbuild/shared/shared.importsharedsettings.props" Condition=" Exists('../../../msbuild/shared/shared.importsharedsettings.props') " />
   <Import Project="../../../msbuild/projects/common.props" Condition=" Exists('../../../msbuild/projects/common.props') " />
   <Import Project="../../../msbuild/projects/common.net.props" Condition=" Exists('../../../msbuild/projects/common.net.props') " />
   <Import Project="../../../msbuild/projects/csharp.props" Condition=" Exists('../../../msbuild/projects/csharp.props') " />

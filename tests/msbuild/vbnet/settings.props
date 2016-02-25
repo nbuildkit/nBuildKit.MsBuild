@@ -529,6 +529,7 @@
         $(ShouldDisplayDebugLog)                         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
         $(NBuildKitVersion)                              - The full version of the nBuildKit library that is executing the build.
         $(DirNBuildKitMsBuild)                           - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)                     - The full path to the directory that contains the shared nBuildkit scripts.
         $(DirNBuildKitMsBuildExtensions)                 - The full path to the directory that contains the nBuildKit extension scripts.
         $(DirNBuildKitMsBuildTemplates)                  - The full path to the directory that contains the nBuildKit templates.
 
@@ -645,6 +646,7 @@
         $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
         $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
         $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
         $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
         $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
 
@@ -807,7 +809,11 @@
             This value is defined here just so that there is a value when no other value is specified. Do not comment this
             value out unless you know what you are doing!
         -->
-        <IsTest Condition=" '$(IsTest)' == '' ">false</IsTest>
+        <!--
+            Note that {3AC096D0-A1C2-E12C-1390-A8335801FDAB} is the project type GUID for test projects in any language
+            See here: http://www.codeproject.com/Reference/720512/List-of-Visual-Studio-Project-Type-GUIDs
+        -->
+        <IsTest Condition=" '$(IsTest)' == '' ">$(ProjectTypeGuids.Contains('{3AC096D0-A1C2-E12C-1390-A8335801FDAB}'))</IsTest>
     </PropertyGroup>
 
     <!-- Build configuration -->
@@ -986,6 +992,7 @@
         $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
         $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
         $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
         $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
         $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
 
@@ -1214,8 +1221,9 @@
 
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
-    <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirWorkspace)\test.zipspec" />
+    <ItemGroup Condition=" '@(ArchivePackageSpecs)' == '' " >
+        <ArchivePackageSpecs Include="$(DirWorkspace)\**\*.zipspec"
+                             Exclude="$(DirBuild)\**\*.zipspec" />
     </ItemGroup>
 
 
@@ -1282,6 +1290,7 @@
         $(ShouldDisplayDebugLog)          - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
         $(NBuildKitVersion)               - The full version of the nBuildKit library that is executing the build.
         $(DirNBuildKitMsBuild)            - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)      - The full path to the directory that contains the shared nBuildkit scripts.
         $(DirNBuildKitMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
         $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
     -->
@@ -1316,6 +1325,7 @@
         $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
         $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
         $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
         $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
         $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
 
@@ -1402,6 +1412,7 @@
         $(ShouldDisplayDebugLog)          - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
         $(NBuildKitVersion)               - The full version of the nBuildKit library that is executing the build.
         $(DirNBuildKitMsBuild)            - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)      - The full path to the directory that contains the shared nBuildkit scripts.
         $(DirNBuildKitMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
         $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
     -->
@@ -1450,6 +1461,7 @@
         $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
         $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
         $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
         $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
         $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
 

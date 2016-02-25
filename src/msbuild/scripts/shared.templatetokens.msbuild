@@ -236,9 +236,15 @@
         <!--
             Add the new value to the list of template tokens under the given name.
         -->
+        <!--
+            Implementation note:
+            Because of the overriding approach used for the TemplateVersion ItemGroup there may be duplicates
+            in the list so we have to filter those out by throwing away values that already exist in the new list.
+        -->
         <CreateItem
             Include="%(TemplateVersion.Identity)"
-            AdditionalMetadata="ReplacementValue=$(TemplateVersionWithReplacedParameters)">
+            AdditionalMetadata="ReplacementValue=$(TemplateVersionWithReplacedParameters)"
+            Condition="!$([System.String]::new('@(TemplateTokens)').Contains('%(TemplateVersion.Identity)'))">
            <Output
                TaskParameter="Include"
                ItemName="TemplateTokens"/>
