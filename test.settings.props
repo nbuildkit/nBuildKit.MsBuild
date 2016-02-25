@@ -117,7 +117,7 @@
     -->
     <ItemGroup>
         <TestFilesToCopy Include="$(DirTestMsBuildCSharp)\**\*.*"
-                         Exclude="$(DirTestMsBuildCSharp)\nuget.config;$(DirTestMsBuildCSharp)\**\packages.config;$(DirTestMsBuildCSharp)\**\*.csproj"
+                         Exclude="$(DirTestMsBuildCSharp)\nuget.config;$(DirTestMsBuildCSharp)\settings.props;$(DirTestMsBuildCSharp)\**\packages.config;$(DirTestMsBuildCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestMsBuildCSharp)')">
             <TargetDirectory>$(DirBuildTestMsBuildCSharp)</TargetDirectory>
         </TestFilesToCopy>
@@ -126,7 +126,7 @@
         </TestFilesToCopy>
 
         <TestFilesToCopy Include="$(DirTestMsBuildVbNet)\**\*.*"
-                         Exclude="$(DirTestMsBuildVbNet)\nuget.config;$(DirTestMsBuildVbNet)\**\packages.config;$(DirTestMsBuildVbNet)\**\*.vbproj"
+                         Exclude="$(DirTestMsBuildVbNet)\nuget.config;$(DirTestMsBuildVbNet)\settings.props;$(DirTestMsBuildVbNet)\**\packages.config;$(DirTestMsBuildVbNet)\**\*.vbproj"
                          Condition="Exists('$(DirTestMsBuildVbNet)')">
             <TargetDirectory>$(DirBuildTestMsBuildVbNet)</TargetDirectory>
         </TestFilesToCopy>
@@ -152,6 +152,9 @@
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestMsBuildCSharp)\packages.config">
             <Template>$(DirTestMsBuildCSharp)\packages.config</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildCSharp)\settings.props">
+            <Template>$(DirTestMsBuildCSharp)\settings.props</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestMsBuildCSharp)\src\nBuildKit.Test.CSharp.Console\nBuildKit.Test.CSharp.Console.csproj">
             <Template>$(DirTestMsBuildCSharp)\src\nBuildKit.Test.CSharp.Console\nBuildKit.Test.CSharp.Console.csproj</Template>
@@ -185,6 +188,9 @@
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\packages.config">
             <Template>$(DirTestMsBuildVbNet)\packages.config</Template>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\settings.props">
+            <Template>$(DirTestMsBuildVbNet)\settings.props</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj">
             <Template>$(DirTestMsBuildVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj</Template>
