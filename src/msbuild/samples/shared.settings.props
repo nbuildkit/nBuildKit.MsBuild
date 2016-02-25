@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        Certain properties and items in this settings file allow replacement of the following templates:
+        ${VersionMajor}           - The major version number
+        ${VersionMinor}           - The minor version number
+        ${VersionPatch}           - The patch version number
+        ${VersionBuild}           - The build number of the version
+        ${VersionPreRelease}      - The pre-release code, e.g. 'unstable'
+        ${VersionSemantic}        - The semantic version, e.g. 1.2.3
+        ${VersionSemanticFull}    - The full semantic version, e.g. 1.2.3-unstable.1+001
+        ${VersionSEmanticNuGet}   - The full semantic version as used by nuget, e.g. 1.2.3-unstable0001
+
+        ${Configuration}          - The configuration, e.g. Release
+        ${Platform}               - The platform name, e.g. Any CPU
+        ${PlatformWithoutSpaces}  - The platform name without spaces in it, e.g. AnyCPU
+
+        ${VcsRevision}            - The current VCS revision 'number'
+        ${VcsBranch}              - The name of the current VCS branch
+
+        ${ReleaseNotesShort}      - The contents of the short release notes
+        ${ReleaseNotesFull}       - The contents of the full release notes
+
+        ${Now}                    - The current date and time in round trip format, e.g. 2015-05-15T19:31:45.1234567+12:00
+        ${Date}                   - The current date in the format year-month-dayofmonth, e.g. 2015-05-15
+        ${DayOfMonth}             - The current day of the month, e.g. 15
+        ${Month}                  - The current month, e.g. 05
+        ${Year}                   - The current year, e.g. 2015
+
+        ${ProductName}            - The name of the product
+        ${ProductNameInFilePath}  - The product name written in a way that it can be used in the file path
+        ${ProductDescription}     - The (short) description of the product
+        ${ProductNamespace}       - The namespace in which all the code for the product is placed
+        ${ProductStartingYear}    - The year the current product was created / released.
+
+        ${CompanyName}            - The name of the company
+        ${CompanyNameInFilePath}  - The name of the company written in a way that it can be used in the file path
+        ${CompanyUrl}             - The URL of the company website
+
+        ${CopyrightShort}         - The short form of the copyright
+        ${CopyrightLong}          - The long form of the copyright
+
+        ${FileReleaseNotesShort}  - The file containing the short release notes
+        ${FileReleaseNotesFull}   - The file containing the full release notes
+
+        ${DirWorkspace}           - The full path to the directory that contains forms the base of the workspace for the project, e.g. c:\myproject
+        ${DirBin}                 - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
+        ${DirDeploy}              - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
+        ${DirLogs}                - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
+        ${DirSrc}                 - The full path to the directory that contains the source files, e.g. c:\myproject\src
+        ${DirTemp}                - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
+
+        ${DirNBuildKit}           - The full path to the directory that contains the nBuildKit scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build
+        ${DirNBuildKitExtensions} - The full path to the directory that contains the nBuildKit extension scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\extensions
+        ${DirNBuildKitTemplates}  - The full path to the directory that contains the nBuildKit template files, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\templates
+
+        ${VersionNBuildKit}       - The semantic version of nBuildKit that was used for the current build
+
+
+        Special template parameters exists for additional version numbers. These are defined in the TemplateVersion ItemGroup
+        as defined below.
+    -->
+    <!-- Overrides for the project specific properties -->
+    <PropertyGroup>
+        <!--
+            The name of the product. This is for instance used for:
+            * Copyrights
+            * API documentation
+        -->
+        <ProductName Condition=" '$(ProductName)' == '' ">My Product</ProductName>
+
+        <!--
+            The name of the product that can be used as part of a file path. This is for instance used for:
+            * CCM
+            * SourceMonitor
+            * Deployment directory naming
+        -->
+        <ProductNameInFilePath Condition=" '$(ProductNameInFilePath)' == '' ">MyProduct</ProductNameInFilePath>
+
+        <!--
+            The description of the product. This is for instance used for:
+            * Installer information
+        -->
+        <ProductDescription>
+            This is a short description of my awesome product
+        </ProductDescription>
+
+        <!--
+            The namespace in which all the code for the product is placed. This is for instance used for:
+            * Finding the correct assemblies and namespaces for unit testing and coverage reporting
+            * Generated code files that contain namespaces
+        -->
+        <ProductNamespace Condition=" '$(ProductNamespace)' == '' ">MyProduct</ProductNamespace>
+
+        <!--
+            The first year the product was available / created. This is for instance used for:
+            * Copyrights
+        -->
+        <ProductStartingYear Condition=" '$(ProductStartingYear)' == '' ">UNDEFINED</ProductStartingYear>
+
+        <!--
+            The name of the company. This is for instance used for:
+            * Copyrights
+            * API documentation
+        -->
+        <CompanyName Condition=" '$(CompanyName)' == '' ">UNDEFINED</CompanyName>
+
+        <!--
+            The name of the company that can be used as a part of a file path. This is for instance used for:
+            * Installer file paths
+        -->
+        <CompanyNameInFilePath Condition=" '$(CompanyNameInFilePath)' == '' ">UNDEFINED</CompanyNameInFilePath>
+
+        <!--
+            The URL of the company website. This is for instance used for:
+            * nuspec files
+        -->
+        <CompanyUrl Condition=" '$(CompanyUrl)' == '' ">UNDEFINED</CompanyUrl>
+
+        <!--
+            The email address that is specified in the documentation. This is for instance used for:
+            * API documentation
+        -->
+        <EmailDocumentation Condition=" '$(EmailDocumentation)' == '' ">UNDEFINED</EmailDocumentation>
+
+        <!--
+            The short form of the  copyright text. This is for instance used for:
+            * Documentation copyrights
+            * Generated file copyrights
+        -->
+        <!--<CopyrightShort>Copyright (c) - $(CompanyName). All rights reserved.</CopyrightShort>-->
+
+        <!--
+            The long form of the  copyright text. This is for instance used for:
+            * Assembly copyrights
+        -->
+        <!--<CopyrightLong>Copyright (c) - $(CompanyName) $(ProductStartingYear) - $([System.DateTime]::Now.ToString("yyyy")). All rights reserved.</CopyrightLong>-->
+    </PropertyGroup>
+
+    <!--
+        Overrides for the VCS specific properties
+    -->
+    <PropertyGroup>
+        <!-- The user name of the user who owns the repository on GitHub -->
+        <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
+
+        <!--
+            The github repository that contains the source code for the current product. Used when getting the release notes
+            from the github issues. The correct format is <USERNAME>/<REPOSITORYNAME>
+        -->
+        <GitHubRepositoryName Condition=" '$(GitHubRepositoryName)' == '' ">UNDEFINED</GitHubRepositoryName>
+
+        <!--
+            The full URL to the GIT repository. Can include the '%GitHubToken%' environment variable for authenticated
+            connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
+        -->
+        <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">origin</GitRemoteRepository>
+
+        <!--
+            A flag indicating whether or not the workspace is a GIT workspace or not. If no value is provided then
+            any workspace that contains a .git folder will be assumed to be a GIT workspace.
+        -->
+        <!--
+        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
+        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
+        -->
+
+        <!--
+            A flag that indicates whether or not the workspace is a TFS workspace. Defaults to false.
+        -->
+        <!--
+        <IsTfsWorkspace Condition=" '$(IsTfsWorkspace)' == '' ">false</IsTfsWorkspace>
+        -->
+    </PropertyGroup>
+
+    <!--
+        Defines the custom version numbers that should be available for template replacement.
+        The template consists of a name and a version number string. The name will be used as the
+        name of the template, i.e. 'VersionAssembly' will be available in the collection of template
+        parameters available for replacement.
+
+        Each version number may consist of zero or more template parameters. Template parameters
+        must be enclosed in '${}', e.g. ${VersionMajor} will be replaced by the major version number
+        as indicated at the top of the file.
+
+        Note that custom version number templates may not reference other custom version number templates.
+    -->
+    <ItemGroup>
+        <!--
+            The template for the version number that will be used in the 'AssemblyVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <!--
+        <TemplateVersion Include="VersionAssembly">
+            <Template>${VersionMajor}.${VersionMinor}.0.0</Template>
+        </TemplateVersion>
+        -->
+        <!--
+            The template for the version number that will be used in the 'AssemblyFileVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <!--
+        <TemplateVersion Include="VersionAssemblyFile">
+            <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}.${VersionBuild}</Template>
+        </TemplateVersion>
+        -->
+        <!--
+            The template for the version number that will be used in the 'AssemblyInformationalVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+
+            Also used as the 'ApplicationVersion' in the 'VersionNumber.wxi' file.
+        -->
+        <!--
+        <TemplateVersion Include="VersionProduct">
+            <Template>${VersionSemanticFull}</Template>
+        </TemplateVersion>
+        -->
+        <!--
+            The template for the version number that will be used as the 'InstallVersion' in the
+            'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <!--
+        <TemplateVersion Include="VersionInstall">
+            <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}</Template>
+        </TemplateVersion>
+        -->
+        <!--
+            The template for the version number that will be used as the 'ProductVersionFolder' in the
+            'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <!--
+        <TemplateVersion Include="VersionInstallFilePath">
+            <Template>${VersionMajor}.${VersionMinor}</Template>
+        </TemplateVersion>
+        -->
+    </ItemGroup>
+
+    <!--
+        Directories
+    -->
+    <PropertyGroup>
+        <!--
+            NOTE: The 'DirWorkspace' property is always set prior to loading the current file. The variable is set
+            to the directory which contains the current file.
+        -->
+
+        <!-- The directory that will contain all the files generated during the build process -->
+        <!-- <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild> -->
+
+        <!--
+            The directory that will contain all the binaries generated during the build process.
+            Note that there may be configuration and platform specific sub-directories.
+        -->
+        <!-- <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin> -->
+
+        <!--
+            The directory where the current binaries are placed after being generated.
+            Note that $(Platform) and $(Configuration) do not have to be defined in this settings file. They may be provided
+            externally as long as they are provided before the settings file is loaded!
+        -->
+        <!-- <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig> -->
+
+        <!-- The directory that will contain all the generated artifacts during the build process -->
+        <!-- <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy> -->
+
+        <!-- The directory that will contain all the documentation files which are generated during the build process -->
+        <!-- <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc> -->
+
+        <!-- The directory that will contain all the generated build logs during the build process -->
+        <!-- <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs> -->
+
+        <!-- The directory that will contain the reports generated by OpenCover and ReportGenerator describing the coverage of the unit tests. -->
+        <!-- <DirReportGeneratorOutput Condition=" '$(DirReportGeneratorOutput)' == '' ">$(DirBuildLogs)\coverage</DirReportGeneratorOutput> -->
+
+        <!-- The directory that contains the report files generated by MoMA -->
+        <!-- <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma> -->
+
+        <!-- The directory that will contain all the temporary files needed during the build process -->
+        <!-- <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp> -->
+
+        <!-- The directory that will contain all the test files generated during the test process -->
+        <!-- <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest> -->
+
+        <!-- The directory that contains all the NuGet packages for the project -->
+        <!-- <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages> -->
+
+        <!-- The directory that contains the source files for the project -->
+        <!-- <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc> -->
+
+        <!-- The directory that contains the template files for the project -->
+        <!-- <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates> -->
+
+        <!-- The directory that contains all the test files for the project -->
+        <!-- <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest> -->
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - VERSIONING ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the file that contains the current version of the project in MsBuild format.  The file is expected
+            to have the following structure:
+
+            <?xml version="1.0" encoding="utf-8"?>
+            <Project ToolsVersion="3.5"
+                     DefaultTargets="Build"
+                     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+                <PropertyGroup>
+                    <BuildNumber>$(BUILD_NUMBER)</BuildNumber>
+                    <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
+
+                    <VersionMajor>1</VersionMajor>
+                    <VersionMinor>2</VersionMinor>
+                    <VersionPatch>3</VersionPatch>
+                    <VersionBuild>$(BuildNumber)</VersionBuild>
+                    <VersionPreRelease></VersionPreRelease>
+                </PropertyGroup>
+            </Project>
+        -->
+        <!-- <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild> -->
+
+        <!--
+            The full path to the file that is used to store the version information during the build.
+        -->
+        <!-- <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion> -->
+
+        <!--
+            When using GitVersion with a git repository that needs authentication the following properties
+            have to be defined on via an environment variable (either local to the process that executes the build,
+            or global to the user):
+              GitPassword - The user token that provides access to GitHub
+
+            The following properties can be defined on the command line or via the current script:
+              GitUserName - The user name of the user who owns the Git repository
+
+            Note that if no authentication is required, e.g. the repository allows anonymous access or
+            the authentication is done through the user account, i.e. via Active Directory, then
+            the user name should be left empty.
+        -->
+        <!-- <GitUserName Condition=" '$(GitUserName)' == '' "></GitUserName> -->
+
+        <!--
+            The full directory path to the script that handles custom generation of the version numbers.
+
+            The script is expected be a custom implementation of the CalculateCustomVersion.msbuild script.
+            The script file can be called anything as long as it contains an inline task
+            called CalculateCustomVersion that takes no parameters and returns the version number parts as follows:
+                VersionMajor         - The major component of the version number, e.g. 1.
+                VersionMinor         - The minor component of the version number, e.g. 2.
+                VersionPatch         - The patch component of the version number, e.g. 3.
+                VersionBuild         - The build component of the version number, e.g. 4.
+                VersionPreRelease    - The pre-release section of the version number, e.g. 'unstable'
+                VersionSemantic      - The short semantic version, normally made up of
+                                       <MAJOR>.<MINOR>.<PATCH>, e.g. 1.2.3
+                VersionSemanticFull  - The full semantic version, normally made up of
+                                       <MAJOR>.<MINOR>.<PATCH>-<METADATA>+<BUILD>, e.g. 1.2.3-unstable+4
+                VersionSemanticNuget - The NuGet compatible semantic version, normally made up of
+                                       <MAJOR>.<MINOR>.<PATCH>-<PRERELEASE><BUILD>, e.g. 1.2.3-unstable4
+        -->
+        <!-- <VersionScriptPath Condition=" '$(VersionScriptPath)' == '' ">UNDEFINED</VersionScriptPath> -->
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - RELEASE NOTES ****
+    -->
+    <PropertyGroup>
+        <!-- The full path to the file that is used to store the release notes for the current release during the build. -->
+        <!-- <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort> -->
+
+        <!-- The full path to the file that is used to store the release notes for all the releases during the build. -->
+        <!-- <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull> -->
+
+        <!--
+            The following properties have to be defined on via an environment variable (either local to the process that
+            executes the build, or global to the user):
+            - Always
+              GitHubToken - The user token that provides access to GitHub
+
+            - When using YouTrack
+              IssueTrackerPassword - The password for the issue tracker user
+        -->
+
+        <!-- The user name of the user who owns the GitHub repository -->
+        <!-- <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName> -->
+
+        <!--- The URL of the YouTrack server, e.g. http://myuser.myjetbrains.com/youtrack -->
+        <!-- <YouTrackServer Condition=" '$(YouTrackServer)' == '' ">UNDEFINED</YouTrackServer> -->
+
+        <!-- The user name for YouTrack -->
+        <!-- <IssueTrackerUserName Condition=" '$(IssueTrackerUserName)' == '' ">UNDEFINED</IssueTrackerUserName> -->
+
+        <!-- The project ID that is used to identify the product in the issue tracker -->
+        <!-- <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId> -->
+
+        <!-- The filter for getting issues from YouTrack -->
+        <!-- <IssueFilter Condition=" '$(IssueFilter)' == '' ">UNDEFINED</IssueFilter> -->
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - VCS INFO ****
+    -->
+    <PropertyGroup>
+        <!-- The full path to the file that contains the information about the current VCS workspace. -->
+        <!-- <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo> -->
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!--
+        Additional items that should be available for the template replacement.
+        The default template parameters, as indicated at the top of this file, are always available.
+    -->
+    <ItemGroup>
+        <!--
+        <TemplateTokens Include="">
+            <ReplacementValue></ReplacementValue>
+        </TemplateTokens>
+        -->
+    </ItemGroup>
+
+    <!-- Additional generated files -->
+    <PropertyGroup>
+         <!-- <FileGeneratedLicenses>$(DirBuildTemp)\licenses.xml</FileGeneratedLicenses> -->
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
+        *     SHARED TOOLS                  *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the tools paths -->
+    <PropertyGroup>
+        <!--
+            The full path to the Visual Studio installation directory
+        -->
+        <!--<ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 14.0')">C:\Program Files (x86)\Microsoft Visual Studio 14.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0')">C:\Program Files (x86)\Microsoft Visual Studio 12.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0')">C:\Program Files (x86)\Microsoft Visual Studio 11.0</ToolsExternalVisualStudioDir>-->
+
+        <!--
+            The full path to the CCM command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalCcmPath Condition=" '$(ToolsExternalCcmPath)' == '' ">UNDEFINED</ToolsExternalCcmPath>-->
+
+        <!--
+            The full path to the directory that contains the FxCop command line executable
+        -->
+        <!--<ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop')">$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
+        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
+        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir>-->
+
+        <!--
+            The full path to the GitHubFlowVersion command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath>-->
+
+        <!--
+            The full path to the github-release command line executable.
+        -->
+        <!--<ToolsExternalGitHubReleasePath Condition=" '$(ToolsExternalGitHubReleasePath)' == '' ">github-release.exe</ToolsExternalGitHubReleasePath>-->
+
+        <!--
+            The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
+        -->
+        <!--<ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>-->
+
+        <!--
+            The full path to the GitReleaseNotes command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath>-->
+
+        <!--
+            The full path to the GitVersion command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath>-->
+
+        <!--
+            The full path to the MoMA command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath>-->
+
+        <!--
+            The full path to the MsTest command line executable.
+        -->
+        <!--<ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">UNDEFINED</ToolsExternalMsTestPath>-->
+
+        <!--
+            The full path to the NuGet command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">nuget.exe</ToolsExternalNuGetPath>-->
+
+        <!--
+            The full path to the nUnit command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalNUnitConsolePath Condition=" '$(ToolsExternalNUnitConsolePath)' == '' ">UNDEFINED</ToolsExternalNUnitConsolePath>-->
+
+        <!--
+            The full path to the OpenCover command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath>-->
+
+        <!--
+            The full path to the ReportGenerator command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath>-->
+
+        <!--
+            The full path to the sn.exe command line executable.
+        -->
+        <!--<ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' ">UNDEFINED</ToolsExternalSnPath>-->
+
+        <!--
+            The full path to the SourceMonitor command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalSourceMonitorPath Condition=" '$(ToolsExternalSourceMonitorPath)' == '' ">UNDEFINED</ToolsExternalSourceMonitorPath>-->
+
+        <!--
+            The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable.
+        -->
+        <!--<ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath>-->
+
+        <!--
+            The full path to the VSCoverageToReportGenerator command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalVSCoverageToReportGeneratorPath Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalVSCoverageToReportGeneratorPath>-->
+
+        <!--
+            The full path to the VsTest command line executable.
+        -->
+        <!--<ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</ToolsExternalVsTestPath>
+        <ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' ">UNDEFINED</ToolsExternalVsTestPath>-->
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                   *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                   *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedSettings>true</ExistsSharedSettings>
+    </PropertyGroup>
+</Project>

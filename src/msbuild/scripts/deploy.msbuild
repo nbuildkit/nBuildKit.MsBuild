@@ -14,30 +14,23 @@
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' " />
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
-        <!--
-            Each build file needs to have the paths passed in so that the default directory paths are always known.
-            To prevent having to provide them in a lengthy line each time we'll store them here
-        -->
-        <DefaultPathProperties>
-            DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
-            DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);
-            DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
-            DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)
-        </DefaultPathProperties>
+        <DefaultPropertyFiles>
+            SharedPropertyFile=$(SharedPropertyFile);
+            DeployPropertyFile=$(DeployPropertyFile)
+        </DefaultPropertyFiles>
         <DefaultProperties>
             NBuildKitVersion=$(NBuildKitVersion)
         </DefaultProperties>
     </PropertyGroup>
 
     <Target Name="nBuildKit_Deploy_Run" DependsOnTargets="_nBuildKit_Deploy_DisplayInfo">
-        <Error Text="No build properties file was defined."
-               Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
-
         <!-- Execute all the build tasks in the given order -->
         <CallTarget Targets="_nBuildKit_Deploy_Execute" />
     </Target>
@@ -80,7 +73,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(DeployStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(DeployStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(DeployStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -100,7 +93,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(DeployFailureStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

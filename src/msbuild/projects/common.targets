@@ -3,8 +3,8 @@
          InitialTargets="nBuildKit_Projects_Common_VerifyProperties"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <Target Name="nBuildKit_Projects_Common_VerifyProperties">
-        <Error Text="Build property file not found"
-               Condition="!Exists('$(BuildPropertyFile)')" />
+        <Error Text="Property file not found"
+               Condition="!Exists('$(SharedPropertyFile)')" />
         <Error Text="Build property file not loaded"
                Condition=" '$(ExistsSettings)' != 'true' " />
         <Error Text="nBuildKit not found"
@@ -13,8 +13,8 @@
 
     <Import Project="$(DirNBuildKitMsBuild)\build\build.prepare.generatefiles.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\build\build.prepare.generatefiles.msbuild') AND '$(ExistsSharedPrepareGenerateFiles)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.generatelicenses.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.generatelicenses.msbuild') AND '$(ExistsSharedPrepareGenerateLicenses)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\build\build.prepare.generatelicenses.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\build\build.prepare.generatelicenses.msbuild') AND '$(ExistsBuildPrepareGenerateLicenses)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild') AND '$(ExistsSharedPrepareGetVersion)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild"
@@ -43,7 +43,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(PreCleanScripts.FullPath)"
-            Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);%(PreCleanScripts.Properties)"
+            Properties="Configuration=$(Configuration);Platform=$(Platform);SharedPropertyFile=$(SharedPropertyFile);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);%(PreCleanScripts.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -74,7 +74,7 @@
                     Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareGetVersion)' " />
         <CallTarget Targets="nBuildKit_Shared_Prepare_VcsInfo_Run"
                     Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareVcsInfo)' " />
-        <CallTarget Targets="nBuildKit_Shared_Prepare_GenerateLicenses_Run"
+        <CallTarget Targets="nBuildKit_Build_Prepare_GenerateLicenses_Run"
                     Condition=" '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareGenerateLicenses)' " />
         <CallTarget Targets="nBuildKit_Build_Prepare_GenerateFiles_Run" />
     </Target>
@@ -86,7 +86,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(PreCompilationScripts.FullPath)"
-            Properties="Configuration=$(Configuration);Platform=$(Platform);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);%(PreCompilationScripts.Properties)"
+            Properties="Configuration=$(Configuration);Platform=$(Platform);SharedPropertyFile=$(SharedPropertyFile);BuildPropertyFile=$(BuildPropertyFile);$(DefaultPathProperties);%(PreCompilationScripts.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

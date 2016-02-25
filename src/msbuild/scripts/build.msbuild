@@ -14,21 +14,17 @@
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
-        <!--
-            Each build file needs to have the paths passed in so that the default directory paths are always known.
-            To prevent having to provide them in a lengthy line each time we'll store them here
-        -->
-        <DefaultPathProperties>
-            DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
-            DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);
-            DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
-            DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)
-        </DefaultPathProperties>
+        <DefaultPropertyFiles>
+            SharedPropertyFile=$(SharedPropertyFile);
+            BuildPropertyFile=$(BuildPropertyFile)
+        </DefaultPropertyFiles>
         <DefaultProperties>
             NBuildKitVersion=$(NBuildKitVersion)
         </DefaultProperties>
@@ -36,9 +32,6 @@
 
     <Target Name="nBuildKit_Build_Run"
             DependsOnTargets="_nBuildKit_Build_DisplayInfo">
-        <Error Text="No build properties file was defined."
-               Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
-
         <!-- Execute all the build tasks in the given order -->
         <CallTarget Targets="_nBuildKit_Build_Execute" />
     </Target>
@@ -83,7 +76,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(BuildStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(BuildStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(BuildStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -103,7 +96,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(BuildFailureStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
