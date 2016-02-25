@@ -325,7 +325,15 @@
         Get the full path to the nBuildkit package directory so that we can invoked the build scripts from there.
     -->
     <Target Name="_LocateNBuildKit"
-            DependsOnTargets="_LocatePackagesDir">
+            DependsOnTargets="_LocatePackagesDir;_LocateNBuildKitViaPackagesConfig;_LocateNBuildKitViaHighestAvailableVersion">
+        <Message Text="DirNBuildKit after search: $(DirNBuildKit)" />
+
+        <Error Text="Unable to find the nBuildKit directory."
+                Condition="!Exists('$(DirNBuildKit)')" />
+    </Target>
+
+    <Target Name="_LocateNBuildKitViaPackagesConfig"
+            Condition="Exists('$(DirPackages)')">
         <!-- Get the version of nBuildKit that is expected from the global packages file -->
         <XmlPeek XmlInputPath="$(NuGetPackageFile)"
                  Query="//package[@id='nBuildKit.MsBuild']/@version"
@@ -343,50 +351,49 @@
             If the packages directory exists then we assume that nBuildKit is in there. If that is not the case we'll get a
             non-existing path but that will lead to an error.
         -->
-        <CreateProperty Value="$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build" Condition="Exists('$(DirPackages)') AND !Exists('$(DirNBuildKit)')">
+        <CreateProperty Value="$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build"
+                        Condition="Exists('$(DirPackages)')">
             <Output TaskParameter="Value" PropertyName="DirNBuildKit" />
         </CreateProperty>
 
+        <Message Text="DirNBuildKit after searching packages.config: $(DirNBuildKit)" />
+    </Target>
+
+    <Target Name="_LocateNBuildKitViaHighestAvailableVersion"
+            Condition="!Exists('$(DirNBuildKit)')">
         <XmlPeek XmlInputPath="$(SharedPropertyFile)"
                  Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-                 Query="/x:Project/x:PropertyGroup/x:NBuildKitMinimumVersion/text()"
-                 Condition="!Exists('$(DirNBuildKit)')">
+                 Query="/x:Project/x:PropertyGroup/x:NBuildKitMinimumVersion/text()">
             <Output TaskParameter="Result" ItemName="VersionNBuildKitMinimumItem" />
         </XmlPeek>
-        <CreateProperty Value="%(VersionNBuildKitMinimumItem.Identity)"
-                        Condition="!Exists('$(DirNBuildKit)')">
+        <CreateProperty Value="%(VersionNBuildKitMinimumItem.Identity)">
             <Output TaskParameter="Value" PropertyName="VersionNBuildKitMinimum" />
         </CreateProperty>
 
         <XmlPeek XmlInputPath="$(SharedPropertyFile)"
                  Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-                 Query="/x:Project/x:PropertyGroup/x:NBuildKitMaximumVersion/text()"
-                 Condition="!Exists('$(DirNBuildKit)')">
+                 Query="/x:Project/x:PropertyGroup/x:NBuildKitMaximumVersion/text()">
             <Output TaskParameter="Result" ItemName="VersionNBuildKitMaximumItem" />
         </XmlPeek>
-        <CreateProperty Value="%(VersionNBuildKitMaximumItem.Identity)"
-                        Condition="!Exists('$(DirNBuildKit)')">
+        <CreateProperty Value="%(VersionNBuildKitMaximumItem.Identity)">
             <Output TaskParameter="Value" PropertyName="VersionNBuildKitMaximum" />
         </CreateProperty>
 
         <GetHighestSuitableNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)"
                                                      MinimumVersion="$(VersionNBuildKitMinimum)"
-                                                     MaximumVersion="$(VersionNBuildKitMaximum)"
-                                                     Condition="!Exists('$(DirNBuildKit)')">
+                                                     MaximumVersion="$(VersionNBuildKitMaximum)">
             <Output TaskParameter="Version" PropertyName="NBuildKitVersion" />
         </GetHighestSuitableNBuildKitVersionFromNuGet>
         <InstallNBuildKitFromNuGet NuGetPath="$(ToolsExternalNuGetPath)"
                                    Version="$(NBuildKitVersion)"
-                                   PackageDirectory="$(DirPackages)"
-                                   Condition="!Exists('$(DirNBuildKit)')" />
+                                   PackageDirectory="$(DirPackages)"/>
 
         <CreateProperty Value="$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build"
-                        Condition="Exists('$(DirPackages)') AND !Exists('$(DirNBuildKit)')">
+                        Condition="Exists('$(DirPackages)')">
             <Output TaskParameter="Value" PropertyName="DirNBuildKit" />
         </CreateProperty>
 
-        <Error Text="Unable to find the nBuildKit directory."
-                Condition="!Exists('$(DirNBuildKit)')" />
+        <Message Text="DirNBuildKit after getting highest allowed version: $(DirNBuildKit)" />
     </Target>
 
     <!--
