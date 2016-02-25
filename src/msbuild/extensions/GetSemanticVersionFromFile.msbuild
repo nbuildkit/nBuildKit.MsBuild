@@ -22,9 +22,13 @@
         <ParameterGroup>
             <VersionFile ParameterType="System.String" Required="true" />
             <VersionMajor ParameterType="System.String" Output="true" />
+            <VersionMajorNext ParameterType="System.String" Output="true" />
             <VersionMinor ParameterType="System.String" Output="true" />
+            <VersionMinorNext ParameterType="System.String" Output="true" />
             <VersionPatch ParameterType="System.String" Output="true" />
+            <VersionPatchNext ParameterType="System.String" Output="true" />
             <VersionBuild ParameterType="System.String" Output="true" />
+            <VersionBuildNext ParameterType="System.String" Output="true" />
             <VersionPreRelease ParameterType="System.String" Output="true" />
             <VersionSemantic ParameterType="System.String" Output="true" />
             <VersionSemanticFull ParameterType="System.String" Output="true" />
@@ -66,24 +70,28 @@
                             VersionMajor = text.Substring(
                                 index + majorVersionStart.Length,
                                 text.IndexOf("\"", index + majorVersionStart.Length) - (index + majorVersionStart.Length));
+                            VersionMajorNext = (int.Parse(VersionMajor) + 1).ToString();
 
                             const string minorVersionStart = "\"Minor\": \"";
                             index = text.IndexOf(minorVersionStart);
                             VersionMinor = text.Substring(
                                 index + minorVersionStart.Length,
                                 text.IndexOf("\"", index + minorVersionStart.Length) - (index + minorVersionStart.Length));
+                            VersionMinorNext = (int.Parse(VersionMinor) + 1).ToString();
 
                             const string patchVersionStart = "\"Patch\": \"";
                             index = text.IndexOf(patchVersionStart);
                             VersionPatch = text.Substring(
                                 index + patchVersionStart.Length,
                                 text.IndexOf("\"", index + patchVersionStart.Length) - (index + patchVersionStart.Length));
+                            VersionPatchNext = (int.Parse(VersionPatch) + 1).ToString();
 
                             const string buildVersionStart = "\"Build\": \"";
                             index = text.IndexOf(buildVersionStart);
                             VersionBuild = text.Substring(
                                 index + buildVersionStart.Length,
                                 text.IndexOf("\"", index + buildVersionStart.Length) - (index + buildVersionStart.Length));
+                            VersionBuildNext = (int.Parse(VersionBuild) + 1).ToString();
 
                             const string prereleaseVersionStart = "\"PreRelease\": \"";
                             index = text.IndexOf(prereleaseVersionStart);
