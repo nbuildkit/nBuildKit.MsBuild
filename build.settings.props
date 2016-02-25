@@ -790,6 +790,21 @@
     <!--
         **** PACK - NUGET ****
     -->
+    <PropertyGroup>
+        <!--
+            Defines how the version range for a dependency is generated in a NuGet package. Options are:
+
+                None   - The version range of the dependency is simply the version, e.g. 1.2.3
+                Major  - The version range of the dependency is from the current version up to, but not including, the next major version,
+                         e.g [1.2.3, 2)
+                Minor  - The version range of the dependency is from the current version up to, but not including, the next minor version,
+                         e.g [1.2.3, 1.3)
+                Patch  - The version range of the dependency is from the current version up to, but not including, the next patch version,
+                         e.g [1.2.3, 1.2.4)
+        -->
+        <!-- <NuGetDependencyVersionRangeStrategy Condition=" '$(NuGetDependencyVersionRangeStrategy)' == '' ">Major</NuGetDependencyVersionRangeStrategy> -->
+    </PropertyGroup>
+
     <!--
         The item group defining the location and contents of the NuGet packages that are generated during the build.
 

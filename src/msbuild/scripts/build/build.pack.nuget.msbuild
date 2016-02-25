@@ -122,6 +122,7 @@
         <GatherNuGetDependenciesForProject NuGetSpec="$(FileNuGetNuSpec)"
                                            Packages="@(PackageDependencies)"
                                            DesignTimePackages="@(DesignTimeDependencies)"
+                                           VersionRangeType="$(NuGetDependencyVersionRangeStrategy)"
                                            Condition=" '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Dependencies" PropertyName="NuGetDependencies" />
         </GatherNuGetDependenciesForProject>
