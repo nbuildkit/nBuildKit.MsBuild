@@ -6,7 +6,7 @@
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsExtensionsOpenCover>true</ExistsExtensionsOpenCover>
+        <ExistsExtensionsNuGetInstall>true</ExistsExtensionsNuGetInstall>
 
         <!--
             For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
@@ -16,54 +16,46 @@
         <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
 
-    <UsingTask TaskName="OpenCover"
+    <UsingTask TaskName="NuGetInstall"
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
-            <OpenCoverExe ParameterType="System.String" Required="true" />
-            <OpenCoverOutput ParameterType="System.String" Required="true" />
-            <OpenCoverFilters ParameterType="System.String" Required="true" />
-            <OpenCoverExcludeAttributes ParameterType="System.String" Required="true" />
-            <UnitTestExe ParameterType="System.String" Required="true" />
-            <UnitTestArguments ParameterType="System.String" Required="true" />
-            <BinDir ParameterType="System.String" Required="true" />
+            <NuGetPath ParameterType="System.String" Required="true" />
+            <PackageName ParameterType="System.String" Required="true" />
+            <PackageVersion ParameterType="System.String" Required="false" />
+            <PackageDirectory ParameterType="System.String" Required="true" />
         </ParameterGroup>
         <Task>
+            <Reference Include="System.Xml" />
+            <Reference Include="System.Xml.Linq" />
             <Code Type="Method" Language="cs">
                 <![CDATA[
                     public override bool Execute()
                     {
-                        // Fix for the issue reported here: https://github.com/Microsoft/msbuild/issues/397
-                        var encoding = System.Console.OutputEncoding;
-
                         var builder = new System.Text.StringBuilder();
                         {
-                            builder.Append(string.Format("-register:user "));
-                            builder.Append(string.Format("-showunvisited "));
-                            builder.Append(string.Format("-returntargetcode:3000 "));
-                            builder.Append(string.Format("-target:\"{0}\" ", UnitTestExe));
+                            builder.Append(string.Format("install \"{0}\" ", PackageName));
+                            if (!string.IsNullOrWhiteSpace(PackageVersion))
+                            {
+                                builder.Append(string.Format("-Version \"{0}\" ", PackageVersion));
+                            }
+
+                            builder.Append("-NonInteractive -Verbosity detailed -NoCache ");
 
                             // Make sure we remove the back-slash because if we don't then
                             // the closing quote will be eaten by the command line parser. Note that
                             // this is only necessary because we're dealing with a directory
-                            builder.Append(string.Format("-targetdir:\"{0}\" ", BinDir.TrimEnd('\\')));
-                            builder.Append(string.Format("-targetargs:\"{0}\" ", UnitTestArguments.TrimEnd('\\')));
-                            builder.Append(string.Format("-output:\"{0}\" ", OpenCoverOutput.TrimEnd('\\')));
-                            builder.Append(string.Format("-filter:\"{0}\" ", OpenCoverFilters.TrimEnd('\\')));
-                            builder.Append(string.Format("-excludebyattribute:{0} ", OpenCoverExcludeAttributes));
+                            builder.Append(string.Format("-OutputDirectory \"{0}\" ", PackageDirectory.TrimEnd('\\')));
                         }
 
                         var info = new System.Diagnostics.ProcessStartInfo
                         {
-                            FileName = OpenCoverExe,
+                            FileName = NuGetPath,
                             Arguments = builder.ToString(),
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
                             RedirectStandardError = true,
                         };
-
-                        Log.LogMessage(MessageImportance.Low, info.Arguments);
-
                         var process = new System.Diagnostics.Process();
                         process.StartInfo = info;
                         process.OutputDataReceived +=
@@ -79,22 +71,13 @@
                             {
                                 if (!string.IsNullOrWhiteSpace(e.Data))
                                 {
-                                    // Due to the change of the encoding of the error stream
-                                    // it is possible that the error stream contains the BOM marker for UTF-8
-                                    // So even if the error stream is actually empty, we still get something in
-                                    // it, which means we'll fail.
-                                    if ((System.Text.Encoding.UTF8.Equals(encoding)) && (e.Data.Length == 1))
-                                    {
-                                        return;
-                                    }
-
-                                    Log.LogError(string.Format("OpenCover error: {0}", e.Data));
+                                    Log.LogError(e.Data);
                                 }
                             };
                         process.Start();
 
-                        process.BeginErrorReadLine();
                         process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
                         process.WaitForExit();
 
                         if (process.ExitCode != 0)
@@ -110,7 +93,7 @@
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.
-                        return !Log.HasLoggedErrors && (process.ExitCode == 0);
+                        return !Log.HasLoggedErrors;
                     }
                 ]]>
             </Code>

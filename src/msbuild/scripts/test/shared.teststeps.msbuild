@@ -7,11 +7,23 @@
         <ExistsTestSteps>true</ExistsTestSteps>
     </PropertyGroup>
     <PropertyGroup>
-        <TestStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
+        <TestStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\test\test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
         <TestStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild</TestStepsPrepareRestoreNuGet>
         <TestStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</TestStepsPrepareGetVersion>
         <TestStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
         <TestStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
-        <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
+        <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\test\test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
     </PropertyGroup>
+
+    <ItemGroup>
+        <TestStepsToExecute Include="$(TestStepsPrepareWorkspace)">
+            <Properties>
+            </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareRestoreNuGet)">
+            <Properties>
+                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\test\packages.config
+            </Properties>
+        </TestStepsToExecute>
+    </ItemGroup>
 </Project>

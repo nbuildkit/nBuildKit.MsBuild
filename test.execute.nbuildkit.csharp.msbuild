@@ -72,7 +72,9 @@
             Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
             we won't be using the nBuildKit scripts from the nuget packages but from our source directory
         -->
-        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestMsBuildCSharp)\test.csharp.msbuild&quot; /t:Build" />
+        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestMsBuildCSharp)\test.csharp.msbuild&quot; /t:Build"
+              IgnoreStandardErrorWarningFormat="true"
+              WorkingDirectory="$(DirBuildTestMsBuildVBNet)" />
     </Target>
 
     <Target Name="_nBuildKit_Test_Execute_CSharp_Process_Results"

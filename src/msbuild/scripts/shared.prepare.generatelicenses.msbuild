@@ -19,6 +19,9 @@
 
     <Import Project="$(BuildPropertyFile)"
             Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
 
@@ -67,7 +70,12 @@
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GenerateLicenses_Generate"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GenerateLicenses_DisplayInfo">
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GenerateLicenses_DisplayInfo"
+            Condition="!Exists('$(FileGeneratedLicenses)')">
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="NTreva"
+                      PackageDirectory="$(DirPackages)"
+                      Condition=" '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="NTreva.exe"
                                             Condition=" '$(ShouldExecute)' == 'true' ">
