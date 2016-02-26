@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Build_Prepare_UpdateAssemblyInfo_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildPrepareGenerateLicenses>true</ExistsBuildPrepareGenerateLicenses>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\AddOrUpdateAttributeInCode.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\AddOrUpdateAttributeInCode.msbuild') AND '$(ExistsExtensionsAddOrUpdateAttributeInCode)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
+
+    <Target Name="nBuildKit_Build_Prepare_UpdateAssemblyInfo_Run"
+            DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update" />
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Configuration values:"
+                 Importance="low"/>
+        <Message Text="ShouldClean:             $(ShouldClean)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the source code is located at:            $(DirSrc)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
+                 Importance="low"/>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DebugLog">
+        <Message Text="Generating license files ..."
+                 Importance="normal"/>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update"
+            DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
+            Outputs="%(AssemblyInfoFilesToUpdate.Identity)"
+            Condition=" '@(AssemblyInfoFilesToUpdate)' != '' ">
+        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+                                    AttributeName="AssemblyVersion"
+                                    Value="${VersionAssembly}"
+                                    Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
+
+        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+                                    AttributeName="AssemblyFileVersion"
+                                    Value="${VersionAssemblyFile}"
+                                    Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
+
+        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+                                    AttributeName="AssemblyInformationalVersion"
+                                    Value="${VersionProduct}"
+                                    Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
+
+        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+                                    AttributeName="AssemblyConfiguration"
+                                    Value="$(Configuration)"
+                                    Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
+
+        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+                                    AttributeName="AssemblyCompany"
+                                    Value="$(CompanyName)"
+                                    Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>
+        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+                                    AttributeName="AssemblyCopyright"
+                                    Value="$(CopyrightLong)"
+                                    Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>
+
+        <TemplateFile Template="%(AssemblyInfoFilesToUpdate.Identity)"
+                      OutputFileName="%(AssemblyInfoFilesToUpdate.Identity)"
+                      Tokens="@(TemplateTokens)"
+                      Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)')"/>
+    </Target>
+ </Project>
