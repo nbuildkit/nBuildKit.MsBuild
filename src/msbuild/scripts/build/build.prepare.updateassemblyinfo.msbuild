@@ -93,6 +93,6 @@
         <TemplateFile Template="%(AssemblyInfoFilesToUpdate.Identity)"
                       OutputFileName="%(AssemblyInfoFilesToUpdate.Identity)"
                       Tokens="@(TemplateTokens)"
-                      Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)')"/>
+                      Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)') AND '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
     </Target>
  </Project>
