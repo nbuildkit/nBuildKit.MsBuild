@@ -22,9 +22,6 @@ using Nuclei.Build;
  * CHANGES WILL BE UNDONE THE NEXT TIME THE FILE IS GENERATED!
  */
 
-// The build configuration (e.g. debug/release)
-[assembly: AssemblyConfiguration("${Configuration}")]
-
 // The time the assembly was build
 [assembly: AssemblyBuildTime(buildTime: "${Now}")]
 

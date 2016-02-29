@@ -57,6 +57,8 @@
                                                            currently allows gathering release notes from GitHub, Jira and YouTrack
         $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
                                                            Currently supported version control systems is GIT
+        $(BuildStepsPrepareAssemblyInfo)                 - Updates all existing AssemblyInfo.cs and AssemblyInfo.vb files with the version numbers, company information,
+                                                           copyright information and optionally build time and build information.
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
         $(BuildStepsPrepareGenerateLicenses)             - Generates an XML file containing the licenses for all the NuGet packages in use for the current build.
         $(BuildStepsAnalyzeSourceCcm)                    - Analyzes the source code files with CCM.
@@ -101,6 +103,10 @@
             </Properties>
         </BuildStepsToExecute>
         -->
+        <BuildStepsToExecute Include="$(BuildStepsPrepareAssemblyInfo)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateLicenses)">
             <Properties>
             </Properties>
@@ -209,6 +215,17 @@
             <Properties>
             </Properties>
         </BuildFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
+    -->
+    <ItemGroup>
+        <!--
+        <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.cs" />
+        <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.vb" />
         -->
     </ItemGroup>
 
