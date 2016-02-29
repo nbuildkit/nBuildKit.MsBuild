@@ -60,31 +60,32 @@
             DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
             Outputs="%(AssemblyInfoFilesToUpdate.Identity)"
             Condition=" '@(AssemblyInfoFilesToUpdate)' != '' ">
-        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyVersion"
                                     Value="${VersionAssembly}"
                                     Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
 
-        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyFileVersion"
                                     Value="${VersionAssemblyFile}"
                                     Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
 
-        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyInformationalVersion"
                                     Value="${VersionProduct}"
                                     Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
 
-        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyConfiguration"
                                     Value="$(Configuration)"
                                     Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
 
-        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyCompany"
                                     Value="$(CompanyName)"
                                     Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>
-        <AddOrUpdateAttributeInCode File="%(AssemblyInfoFilesToUpdate.Identity)"
+
+        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyCopyright"
                                     Value="$(CopyrightLong)"
                                     Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>

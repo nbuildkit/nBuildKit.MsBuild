@@ -20,7 +20,7 @@
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
-            <File ParameterType="System.String" Required="true" />
+            <InputFile ParameterType="System.String" Required="true" />
             <AttributeName ParameterType="System.String" Required="true" />
             <Value ParameterType="System.String" Required="true" />
         </ParameterGroup>
@@ -31,7 +31,7 @@
                     {
                         if (!System.IO.File.Exists(InputFile))
                         {
-                            Log.LogError("Input File '{0}' cannot be found", Input);
+                            Log.LogError("Input File '{0}' cannot be found", InputFile);
                         }
                         else
                         {
@@ -59,7 +59,7 @@
                             {
                                 var text = lines[i];
 
-                                if (Regex.IsMatch(text, assemblyVersionMatcher))
+                                if (System.Text.RegularExpressions.Regex.IsMatch(text, assemblyVersionMatcher))
                                 {
                                     lines[i] = attribute;
 
@@ -74,6 +74,7 @@
                             }
 
                             System.IO.File.WriteAllLines(InputFile, lines.ToArray());
+                        }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
