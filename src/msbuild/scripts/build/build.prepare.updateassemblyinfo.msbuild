@@ -57,28 +57,28 @@
     </Target>
 
     <Target Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update"
-            DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
             Outputs="%(AssemblyInfoFilesToUpdate.Identity)"
             Condition=" '@(AssemblyInfoFilesToUpdate)' != '' ">
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyVersion"
                                     Value="${VersionAssembly}"
-                                    Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
+                                    Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyFileVersion"
                                     Value="${VersionAssemblyFile}"
-                                    Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
+                                    Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyInformationalVersion"
                                     Value="${VersionProduct}"
-                                    Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
+                                    Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyConfiguration"
                                     Value="$(Configuration)"
-                                    Condition=" '$(ShouldGnerateAssemblyVersionInfo)' == 'true' "/>
+                                    Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyCompany"

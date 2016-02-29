@@ -35,14 +35,14 @@
                         }
                         else
                         {
-                            var ext = System.IO.Path.GetExtension(InputFile);
+                            var ext = System.IO.Path.GetExtension(InputFile).TrimStart('.');
 
                             var attribute = string.Empty;
-                            var assemblyVersionMatcher = string.Empty;
+                            var assemblyVersionMatcher = "UNDEFINED";
                             switch (ext)
                             {
                                 case "cs":
-                                    attribute = string.Format("[assembly: {0}({1})]", AttributeName, Value);
+                                    attribute = string.Format("[assembly: {0}(\"{1}\")]", AttributeName, Value);
                                     assemblyVersionMatcher = string.Format("(^\\s*\\[assembly:\\s*{0})(.*$)", AttributeName);
                                     break;
                                 case "vb":
@@ -51,8 +51,15 @@
                                     break;
                             }
 
-                            var lines = System.IO.File.ReadAllLines(InputFile).ToList();
-
+                            var lines = new List<string>();
+                            using (var reader = new StreamReader(InputFile))
+                            {
+                                string line;
+                                while ((line = reader.ReadLine()) != null)
+                                {
+                                    lines.Add(line);
+                                }
+                            }
 
                             var found = false;
                             for (int i = 0; i < lines.Count; i++)
@@ -61,6 +68,7 @@
 
                                 if (System.Text.RegularExpressions.Regex.IsMatch(text, assemblyVersionMatcher))
                                 {
+                                    Log.LogMessage(MessageImportance.Low, string.Format("Replacing in file: {0}. Old line \"{1}\". New line: \"{2}\"", InputFile, lines[i], attribute));
                                     lines[i] = attribute;
 
                                     found = true;
@@ -70,10 +78,17 @@
 
                             if (!found)
                             {
+                                Log.LogMessage(MessageImportance.Low, string.Format("Adding to file: {0}. Line: \"{1}\"", InputFile, attribute));
                                 lines.Add(attribute);
                             }
 
-                            System.IO.File.WriteAllLines(InputFile, lines.ToArray());
+                            using (var writer = new StreamWriter(InputFile, false))
+                            {
+                                for (int i = 0; i < lines.Count; i++)
+                                {
+                                    writer.WriteLine(lines[i]);
+                                }
+                            }
                         }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
