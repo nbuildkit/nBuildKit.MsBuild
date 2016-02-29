@@ -752,7 +752,7 @@
         <!--
             The culture that FxCop should use for the spelling rules.
         -->
-        <!--<FxCopCulture Condition=" 'FxCopCulture' == '' ">$(CodeAnalysisCulture)</FxCopCulture>-->
+        <!--<FxCopCulture Condition=" '$(FxCopCulture)' == '' ">$(CodeAnalysisCulture)</FxCopCulture>-->
 
         <!--
             A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
@@ -771,7 +771,8 @@
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.exe">
             <TargetFramework>2.0</TargetFramework>
         </FxCopFiles>-->
-
+    </ItemGroup>
+    <ItemGroup>
         <!--
             The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
             use as reference assemblies.
@@ -780,7 +781,8 @@
         <FxCopReferenceFiles Include=""
                              Exclude="" />
         -->
-
+    </ItemGroup>
+    <ItemGroup>
         <!--
             The directory locations that contain the assemblies (not including the .NET framework assemblies) which
             FxCop should use as reference assemblies
