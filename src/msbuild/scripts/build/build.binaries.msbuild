@@ -102,13 +102,14 @@
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True"
             Condition=" '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="TargetOutputs" ItemName="GeneratedAssemblies" />
         </MSBuild>
 
         <MakeDir Directories="$(DirBuildLogs)"
                  Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
-            <LogFiles Include="$(DirBuildBinPlatformConfig)\*.CodeAnalysisLog.xml" />
+            <LogFiles Include="$([System.IO.Path]::GetDirectoryName('%(GeneratedAssemblies.Identity)'))\*.CodeAnalysisLog.xml" />
         </ItemGroup>
 
         <Move SourceFiles="@(LogFiles)"
