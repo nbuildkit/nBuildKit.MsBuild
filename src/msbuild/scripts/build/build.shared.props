@@ -4,6 +4,9 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!-- Overrides for the build configuration -->
     <PropertyGroup>
+        <!-- A flag that indicates whether or not the build output of the VS projects is redirected to the $(DirBuildBinPlatformConfig) directory. -->
+        <RedirectBuildOutputToSingleFolder Condition=" '$(RedirectBuildOutputToSingleFolder)' == '' ">false</RedirectBuildOutputToSingleFolder>
+
         <!-- The build configuration (debug / release / ...) that will be used to run all the unit tests and the static verification on -->
         <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
 
