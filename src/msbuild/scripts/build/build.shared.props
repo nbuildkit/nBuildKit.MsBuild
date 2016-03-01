@@ -627,7 +627,7 @@
             The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
             e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
         -->
-        <UnitTestAssemblies Include="$(DirBuildBinPlatformConfig)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
+        <UnitTestAssemblies Include="$(DirSrc)\**\bin\**\$(UnitTestAssemblyNamePrefix)*.dll" />
     </ItemGroup>
     <ItemGroup Condition=" '@(OpenCoverIgnoreAttributes)' == '' ">
         <!--
@@ -662,9 +662,9 @@
         <!--
             The locations of the files that should be analyzed by MoMA (Mono Migration Analyzer).
         -->
-        <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
-                        Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
-        <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
+        <MomaInputFiles Include="$(DirSrc)\**\bin\**\*.dll"
+                        Exclude="$(DirSrc)\**\bin\**\Test.*.dll" />
+        <MomaInputFiles Include="$(DirSrc)\**\bin\**\*.exe"/>
     </ItemGroup>
 
 
@@ -708,11 +708,11 @@
             The locations of the files that should be analyzed by FxCop.
         -->
         <!--
-        <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
-                    Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll">
+        <FxCopFiles Include="$(DirSrc)\**\bin\**\*.dll"
+                    Exclude="$(DirSrc)\**\bin\**\Test.*.dll">
             <TargetFramework>4.5</TargetFramework>
         </FxCopFiles>
-        <FxCopFiles Include="$(DirBuildBinPlatformConfig)\*.exe">
+        <FxCopFiles Include="$(DirSrc)\**\bin\**\*.exe">
             <TargetFramework>2.0</TargetFramework>
         </FxCopFiles>
         -->
