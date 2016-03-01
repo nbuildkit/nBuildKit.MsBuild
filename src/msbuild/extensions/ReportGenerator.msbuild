@@ -21,7 +21,7 @@
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
             <ReportGeneratorExe ParameterType="System.String" Required="true" />
-            <OpenCoverOutputFile ParameterType="System.String" Required="true" />
+            <OpenCoverOutputFile ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <OutputDir ParameterType="System.String" Required="true" />
         </ParameterGroup>
         <Task>
@@ -29,60 +29,78 @@
                 <![CDATA[
                     public override bool Execute()
                     {
-                        var builder = new System.Text.StringBuilder();
+                        if ((Packages == null) || (Packages.Length == 0))
                         {
-                            builder.Append(string.Format("-reports:\"{0}\" ", OpenCoverOutputFile.TrimEnd('\\')));
-                            builder.Append(string.Format("-reporttypes:Html;XmlSummary "));
-
-                            // Make sure we remove the back-slash because if we don't then
-                            // the closing quote will be eaten by the command line parser. Note that
-                            // this is only necessary because we're dealing with a directory
-                            builder.Append(string.Format("-targetdir:\"{0}\" ", OutputDir.TrimEnd('\\')));
+                            Log.LogError("At least one open cover output file has to be specified");
                         }
-
-                        var info = new System.Diagnostics.ProcessStartInfo
+                        else
                         {
-                            FileName = ReportGeneratorExe,
-                            Arguments = builder.ToString(),
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                        };
-
-                        Log.LogMessage(MessageImportance.Low, info.Arguments);
-
-                        var process = new System.Diagnostics.Process();
-                        process.StartInfo = info;
-                        process.OutputDataReceived +=
-                            (s, e) =>
+                            var builder = new System.Text.StringBuilder();
                             {
-                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                foreach(var token in Packages)
                                 {
-                                    Log.LogMessage(MessageImportance.Normal, e.Data);
+                                    var filePath = token.ToString();
+                                    if (!System.IO.File.Exists(filePath))
+                                    {
+                                        Log.LogMessage(MessageImportance.High, "File does not exist: {0}", filePath);
+                                        continue;
+                                    }
+
+                                    builder.Append(string.Format("-reports:\"{0}\" ", filePath.TrimEnd('\\')));
                                 }
-                            };
-                        process.ErrorDataReceived +=
-                            (s, e) =>
+
+                                builder.Append(string.Format("-reporttypes:Html;XmlSummary "));
+
+                                // Make sure we remove the back-slash because if we don't then
+                                // the closing quote will be eaten by the command line parser. Note that
+                                // this is only necessary because we're dealing with a directory
+                                builder.Append(string.Format("-targetdir:\"{0}\" ", OutputDir.TrimEnd('\\')));
+                            }
+
+                            var info = new System.Diagnostics.ProcessStartInfo
                             {
-                                if (!string.IsNullOrWhiteSpace(e.Data))
-                                {
-                                    Log.LogError(e.Data);
-                                }
+                                FileName = ReportGeneratorExe,
+                                Arguments = builder.ToString(),
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
                             };
-                        process.Start();
 
-                        process.BeginOutputReadLine();
-                        process.BeginErrorReadLine();
-                        process.WaitForExit();
+                            Log.LogMessage(MessageImportance.Low, info.Arguments);
 
-                        if (process.ExitCode != 0)
-                        {
-                            Log.LogError(
-                                string.Format(
-                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
-                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
-                                    process.ExitCode));
-                            return false;
+                            var process = new System.Diagnostics.Process();
+                            process.StartInfo = info;
+                            process.OutputDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogMessage(MessageImportance.Normal, e.Data);
+                                    }
+                                };
+                            process.ErrorDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogError(e.Data);
+                                    }
+                                };
+                            process.Start();
+
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
+                            process.WaitForExit();
+
+                            if (process.ExitCode != 0)
+                            {
+                                Log.LogError(
+                                    string.Format(
+                                        "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                        System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                        process.ExitCode));
+                                return false;
+                            }
                         }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
