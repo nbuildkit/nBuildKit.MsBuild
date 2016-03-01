@@ -103,12 +103,6 @@
         <Error Text="Could not locate the MoMA executable path. Cannot execute analysis of binaries."
                Condition="!Exists('$(ToolsExternalMomaPath)') AND '$(ShouldExecute)' == 'true' "/>
 
-        <ItemGroup Condition=" '@(MomaInputFiles)' == '' ">
-            <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
-                            Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
-            <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
-        </ItemGroup>
-
         <Exec Command="$(ToolsExternalMomaPath) --nogui --out &quot;$(FileReportMomaExpanded)&quot; @(MomaFiles->'%22%(FullPath)%22', ' ')"
               WorkingDirectory="$(DirBuildTemp)"
               Condition=" '$(ShouldExecute)' == 'true' "/>
