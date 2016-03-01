@@ -21,7 +21,7 @@
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
             <ReportGeneratorExe ParameterType="System.String" Required="true" />
-            <OpenCoverOutputFile ParameterType="System.String" Required="true" />
+            <OpenCoverOutputFile ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <OutputDir ParameterType="System.String" Required="true" />
         </ParameterGroup>
         <Task>
@@ -29,9 +29,26 @@
                 <![CDATA[
                     public override bool Execute()
                     {
+                        if ((OpenCoverOutputFile == null) || (OpenCoverOutputFile.Length == 0))
+                        {
+                            Log.LogError("At least one open cover output file has to be specified");
+                            return false;
+                        }
+
                         var builder = new System.Text.StringBuilder();
                         {
-                            builder.Append(string.Format("-reports:\"{0}\" ", OpenCoverOutputFile.TrimEnd('\\')));
+                            foreach(var token in OpenCoverOutputFile)
+                            {
+                                var filePath = token.ToString();
+                                if (!System.IO.File.Exists(filePath))
+                                {
+                                    Log.LogMessage(MessageImportance.High, "File does not exist: {0}", filePath);
+                                    continue;
+                                }
+
+                                builder.Append(string.Format("-reports:\"{0}\" ", filePath.TrimEnd('\\')));
+                            }
+
                             builder.Append(string.Format("-reporttypes:Html;XmlSummary "));
 
                             // Make sure we remove the back-slash because if we don't then

@@ -25,11 +25,17 @@
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild') AND '$(ExistsExtensionsReportGeneratorOutputToCsv)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SortFilesByDirectory.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SortFilesByDirectory.msbuild') AND '$(ExistsExtensionsSortFilesByDirectory)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
     <Target Name="nBuildKit_Build_Test_Unit_NUnit_Run"
             DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_Execute" />
     </Target>
 
@@ -79,43 +85,9 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
-        <Message Text="Resolving build templates ..."
-                 Importance="low"/>
-
-        <TemplateText Template="$(FileReportOpenCoverXml)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverXmlExpanded" />
-        </TemplateText>
-
-        <TemplateText Template="$(FileReportOpenCoverCsv)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverCsvExpanded" />
-        </TemplateText>
-    </Target>
-
-    <PropertyGroup>
-        <FileReportReportGeneratorXmlSummary>$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
-    </PropertyGroup>
-    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_Execute"
-            DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates">
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths">
         <Error Text="The packages directory does not exist. Cannot search for the unit test executables."
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
-
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
-        </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)" Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
-
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverCsvExpanded)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
-        </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)" Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
-
-        <!-- This directory is always present although users may change the location -->
-        <MakeDir Directories="$(DirReportGeneratorOutput)"
-                 Condition="!Exists('$(DirReportGeneratorOutput)') AND '$(ShouldExecute)' == 'true' " />
 
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="NUnit.Runners"
@@ -162,18 +134,85 @@
                  Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
         <Warning Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports."
                  Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
+        <Message Text="Resolving build templates ..."
+                 Importance="low"/>
+
+        <TemplateText Template="$(FileReportOpenCoverXml)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverXmlExpanded" />
+        </TemplateText>
+
+        <TemplateText Template="$(FileReportOpenCoverCsv)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverCsvExpanded" />
+        </TemplateText>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace"
+            DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverCsvExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)" Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+
+        <!-- This directory is always present although users may change the location -->
+        <MakeDir Directories="$(DirReportGeneratorOutput)"
+                 Condition="!Exists('$(DirReportGeneratorOutput)') AND '$(ShouldExecute)' == 'true' " />
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory">
+        <SortFilesByDirectory Files="@(UnitTestAssemblies)" >
+            <Output TaskParameter="Directories" ItemName="UnitTestDirectories" />
+        </SortFilesByDirectory>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_RunTests"
+            DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths;_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace;_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory"
+            Outputs="%(UnitTestDirectories.Identity)">
+        <!--
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="%(UnitTestDirectories.Files)">
+           <Output
+               TaskParameter="Include"
+               ItemName="UnitTestAssembliesForDirectory"/>
+        </CreateItem>
+        <CreateProperty Value="@(UnitTestAssembliesForDirectory->'%22%(FullPath)%22', ' ')">
+            <Output TaskParameter="Value" PropertyName="AssembliesToTest" />
+        </CreateProperty>
 
         <OpenCover OpenCoverExe="$(ToolsExternalOpenCoverPath)"
-                   OpenCoverOutput="$(FileReportOpenCoverXmlExpanded)"
+                   OpenCoverOutput="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-%(UnitTestDirectories.Index).$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))"
                    OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
                    OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
                    UnitTestExe="$(ToolsExternalNUnitConsolePath)"
-                   UnitTestArguments="/framework:net-$(TargetFrameworkVersion.TrimStart('v')) /result:&quot;nunit-console.xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:multiple @(UnitTestAssemblies->'%22%(FullPath)%22', ' ')"
-                   BinDir="$(DirBuildBinPlatformConfig)"
+                   UnitTestArguments="/framework:net-$(TargetFrameworkVersion.TrimStart('v')) /result:&quot;nunit-console-%(UnitTestDirectories.Index).xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:multiple $(AssembliesToTest)"
+                   BinDir="%(UnitTestDirectories.FullPath)"
                    Condition=" Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "/>
+    </Target>
+
+    <PropertyGroup>
+        <FileReportReportGeneratorXmlSummary>$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_Execute"
+            DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_NUnit_RunTests">
+        <ItemGroup>
+            <FilesReportOpenCoverXml Include="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-*.$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))" />
+        </ItemGroup>
 
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
-                         OpenCoverOutputFile="$(FileReportOpenCoverXmlExpanded)"
+                         OpenCoverOutputFile="@(FilesReportOpenCoverXml)"
                          OutputDir="$(DirReportGeneratorOutput)"
                          Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
 

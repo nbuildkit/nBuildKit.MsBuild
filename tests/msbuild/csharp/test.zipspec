@@ -2,7 +2,11 @@
 <archive>
     <name>nBuildKit.Test.CSharp-${VersionSemantic}</name>
     <files>
-        <file src="${DirBin}\**\*.dll" target="" />
-        <file src="${DirBin}\**\*.pdb" target="" />
+        <file src="${DirSrc}\**\*.dll"
+              exclude="${DirSrc}\Test.Unit.Library\**\*.dll"
+              target="" />
+        <file src="${DirSrc}\**\*.pdb"
+              exclude="${DirSrc}\Test.Unit.Library\**\*.pdb"
+              target="" />
     </files>
 </archive>

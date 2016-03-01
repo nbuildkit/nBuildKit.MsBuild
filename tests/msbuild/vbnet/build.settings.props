@@ -4,6 +4,9 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!-- Overrides for the build configuration -->
     <PropertyGroup>
+        <!-- A flag that indicates whether or not the build output of the VS projects is redirected to the $(DirBuildBinPlatformConfig) directory. -->
+        <RedirectBuildOutputToSingleFolder Condition=" '$(RedirectBuildOutputToSingleFolder)' == '' ">true</RedirectBuildOutputToSingleFolder>
+
         <!-- The build configuration (debug / release / ...) that will be used to run all the unit tests and the static verification on -->
         <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration>
 
@@ -712,6 +715,8 @@
             <TargetFramework>3.5</TargetFramework>
         </FxCopFiles>
 
+    </ItemGroup>
+    <ItemGroup>
         <!--
             The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
             use as reference assemblies.
@@ -720,7 +725,8 @@
         <FxCopReferenceFiles Include=""
                              Exclude="" />
         -->
-
+    </ItemGroup>
+    <ItemGroup>
         <!--
             The directory locations that contain the assemblies (not including the .NET framework assemblies) which
             FxCop should use as reference assemblies
@@ -759,7 +765,7 @@
                 Patch  - The version range of the dependency is from the current version up to, but not including, the next patch version,
                          e.g [1.2.3, 1.2.4)
         -->
-        <NuGetDependencyVersionRangeStrategy Condition=" '$(NuGetDependencyVersionRangeStrategy)' == '' ">Minor</NuGetDependencyVersionRangeStrategy>
+        <!-- <NuGetDependencyVersionRangeStrategy Condition=" '$(NuGetDependencyVersionRangeStrategy)' == '' ">Major</NuGetDependencyVersionRangeStrategy> -->
     </PropertyGroup>
 
     <!--

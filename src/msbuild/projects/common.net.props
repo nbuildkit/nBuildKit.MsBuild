@@ -6,17 +6,17 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsProjectCommonNet>true</ExistsProjectCommonNet>
     </PropertyGroup>
-            
+
     <!-- Default settings -->
     <PropertyGroup>
-        <!-- 
-            Override the default output paths so that they go into a single directory. Use OutDir for that because the individual projects use OutputPath to hint at the 
+        <!--
+            Override the default output paths so that they go into a single directory. Use OutDir for that because the individual projects use OutputPath to hint at the
             path they want. OutDir overrides that.
         -->
-        <OutputPath>$(DirBuildBinPlatformConfig)</OutputPath>
-        <OutDir>$(DirBuildBinPlatformConfig)</OutDir>
+        <OutputPath Condition=" '$(RedirectBuildOutputToSingleFolder)' == 'true' ">$(DirBuildBinPlatformConfig)</OutputPath>
+        <OutDir Condition=" '$(RedirectBuildOutputToSingleFolder)' == 'true' ">$(DirBuildBinPlatformConfig)</OutDir>
         <!-- Ensure OutDir has a trailing slash, so it can be concatenated -->
         <OutDir Condition="'$(OutDir)' != '' and !HasTrailingSlash('$(OutDir)')">$(OutDir)\</OutDir>
-        <IntermediateOutputPath>$([System.IO.Path]::GetFullPath('$(DirBuildTemp)\bin\obj\$(AssemblyName)\$(Platform)\$(Configuration)\'))</IntermediateOutputPath>
+        <IntermediateOutputPath Condition=" '$(RedirectBuildOutputToSingleFolder)' == 'true' ">$([System.IO.Path]::GetFullPath('$(DirBuildTemp)\bin\obj\$(AssemblyName)\$(Platform)\$(Configuration)\'))</IntermediateOutputPath>
     </PropertyGroup>
 </Project>
