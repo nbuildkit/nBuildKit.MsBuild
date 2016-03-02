@@ -242,6 +242,12 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\tools\vscoveragetoreportgenerator.readme.txt">
+            <Template>$(DirSrc)\readme.txt</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.Tools.VsCoverageToReportGenerator</ReplacementValue>
+        </BuildFilesToGenerate>
+
         <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\nbuildkit.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
             <Token>PackageName</Token>
