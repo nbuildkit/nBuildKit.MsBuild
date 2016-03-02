@@ -263,18 +263,15 @@
             <Template>$(DirSrc)\msbuild\scripts\deploy\packages.config</Template>
         </BuildFilesToGenerate>
 
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\common.props">
-            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\import.props">
+            <Template>$(DirSrc)\msbuild\projects\import.props</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\install.ps1">
-            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;common.net&quot;, &quot;csharp&quot;</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\uninstall.ps1">
-            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;common.net&quot;, &quot;csharp&quot;</ReplacementValue>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\import.targets">
+            <Template>$(DirSrc)\msbuild\projects\import.targets</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\nbuildkit.csharp.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
@@ -282,18 +279,15 @@
             <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </BuildFilesToGenerate>
 
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\common.props">
-            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\import.props">
+            <Template>$(DirSrc)\msbuild\projects\import.props</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\install.ps1">
-            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;common.net&quot;,&quot;vbnet&quot;</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\uninstall.ps1">
-            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;common.net&quot;,&quot;vbnet&quot;</ReplacementValue>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\import.targets">
+            <Template>$(DirSrc)\msbuild\projects\import.targets</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\nbuildkit.vbnet.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
@@ -301,18 +295,15 @@
             <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
         </BuildFilesToGenerate>
 
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\common.props">
-            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\import.props">
+            <Template>$(DirSrc)\msbuild\projects\import.props</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.WiX</ReplacementValue>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\install.ps1">
-            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;wix&quot;</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\uninstall.ps1">
-            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;wix&quot;</ReplacementValue>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\import.targets">
+            <Template>$(DirSrc)\msbuild\projects\import.targets</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.WiX</ReplacementValue>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\nbuildkit.wix.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
