@@ -36,12 +36,7 @@
     <DirNBuildKitMsBuildProjects Condition=" '$(DirNBuildKitMsBuildProjects)' == '' OR !Exists('$(DirNBuildKitMsBuildProjectsTemplates)') ">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\msbuild\projects'))</DirNBuildKitMsBuildProjects>
     <DirNBuildKitMsBuildProjectsTemplates Condition=" '$(DirNBuildKitMsBuildProjectsTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildProjectsTemplates)') ">$([System.IO.Path]::GetFullPath('$(SolutionDir)\..\..\templates'))</DirNBuildKitMsBuildProjectsTemplates>
   </PropertyGroup>
-  <Import Project="../../../msbuild/shared/shared.basesettings.props" Condition=" Exists('../../../msbuild/shared/shared.basesettings.props') " />
-  <Import Project="../../../msbuild/shared/shared.importsharedsettings.props" Condition=" Exists('../../../msbuild/shared/shared.importsharedsettings.props') " />
-  <Import Project="../../../msbuild/shared/shared.importbuildsharedsettings.props" Condition=" Exists('../../../msbuild/shared/shared.importbuildsharedsettings.props') " />
-  <Import Project="../../../msbuild/projects/common.props" Condition=" Exists('../../../msbuild/projects/common.props') " />
-  <Import Project="../../../msbuild/projects/common.net.props" Condition=" Exists('../../../msbuild/projects/common.net.props') " />
-  <Import Project="../../../msbuild/projects/csharp.props" Condition=" Exists('../../../msbuild/projects/csharp.props') " />
+  <Import Project="../../../msbuild/projects/import.props" Condition=" Exists('../../../msbuild/projects/import.props') " />
   <ItemGroup>
     <Reference Include="Autofac, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\Autofac.3.1.1\lib\net40\Autofac.dll</HintPath>
@@ -142,9 +137,7 @@
     </CodeAnalysisDictionary>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="../../../msbuild/projects/common.targets" Condition=" Exists('../../../msbuild/projects/common.targets') " />
-  <Import Project="../../../msbuild/projects/common.net.targets" Condition=" Exists('../../../msbuild/projects/common.net.targets') " />
-  <Import Project="../../../msbuild/projects/csharp.targets" Condition=" Exists('../../../msbuild/projects/csharp.targets') " />
+  <Import Project="../../../msbuild/projects/import.targets" Condition=" Exists('../../../msbuild/projects/import.targets') " />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
