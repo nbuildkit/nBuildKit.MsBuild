@@ -50,8 +50,8 @@
     <!-- NuGet restore -->
     <Target Name="_nBuildKit_Shared_Prepare_Npm_Restore_Packages"
             DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo">
-        <Error Text="No NuGet executable defined. Will not be able to restore the packages."
-               Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="No NPM executable defined. Will not be able to restore the packages."
+               Condition=" '$(ToolsExternalNpmPath)' == '' AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
             <NpmPackageFiles Include="$(DirSrc)\**\package.json"
