@@ -61,6 +61,7 @@
         $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
                                                            Currently supported version control systems is GIT
         $(BuildStepsPrepareRestoreNpm)                   - Restores all the NPM packages for the project.
+        $(BuildStepsPrepareRestoreBower)                 - Restores all the Bower packages for the project.
         $(BuildStepsPrepareAssemblyInfo)                 - Updates all existing AssemblyInfo.cs and AssemblyInfo.vb files with the version numbers, company information,
                                                            copyright information and optionally build time and build information.
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
@@ -110,6 +111,10 @@
 
         <!--
         <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNpm)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreBower)">
             <Properties>
             </Properties>
         </BuildStepsToExecute>
