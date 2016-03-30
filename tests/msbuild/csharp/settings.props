@@ -304,6 +304,30 @@
         <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
     </PropertyGroup>
 
+    <!--
+        Build server flags
+    -->
+    <PropertyGroup>
+        <!--
+            A flag indicating if the current build is running on a TFS build server or not.
+        -->
+        <!--<IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' != 'True'  ">false</IsOnTfsBuildServer>
+        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' == 'True' ">true</IsOnTfsBuildServer>-->
+
+        <!--
+            A flag indicating if the current build is running on a Jenkins build server or not.
+        -->
+        <!--<IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' == ''  ">false</IsOnJenkinsBuildServer>
+        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' != '' ">true</IsOnJenkinsBuildServer>-->
+
+        <!--
+            A flag indicating if the current build is running on the build server or not.
+        -->
+        <!--<IsOnBuildServer Condition=" '$(IsOnBuildServer)' == '' ">UNDEFINED</IsOnBuildServer>
+        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' != 'true' AND '$(IsOnJenkinsBuildServer)' != 'true' )">false</IsOnBuildServer>
+        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' == 'true' OR '$(IsOnJenkinsBuildServer)' == 'true' )">true</IsOnBuildServer>-->
+    </PropertyGroup>
+
 
     <!--
         **** PREPARE - VERSIONING ****
