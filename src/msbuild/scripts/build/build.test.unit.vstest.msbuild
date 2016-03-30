@@ -177,7 +177,28 @@
             <CoverageFilesToConvert Include="$(DirReportVsTestExpanded)\**\*.coverage" />
         </ItemGroup>
 
-        <Exec Command="&quot;$(ToolsExternalVSCoverageToReportGeneratorPath)&quot; --InputFile=&quot;@(CoverageFilesToConvert)&quot; --OutputFile=&quot;%(RootDir)%(Directory)\%(FileName).xml&quot; --BinDirectory=&quot;$(DirBuildBinPlatformConfig)&quot; --VisualStudioDirectory=&quot;$(ToolsExternalVisualStudioDir)&quot;"
+        <!--
+            Get the directory paths that contain the binaries used to run the unit tests with. Note that these paths cannot have a trailing backslash because on the command line the backslash escapes the quote and then we
+            get a path that ends in a quote.
+
+            Because MsBuild does not allow combining property functions and metadata expansions this isn't going to be pretty ....
+        -->
+        <ItemGroup>
+            <UnitTestAssemblyDirectoriesWithTrailingBackslash Include="@(UnitTestAssemblies->'%(RootDir)%(Directory)')" />
+        </ItemGroup>
+        <RemoveDuplicates Inputs="@(UnitTestAssemblyDirectoriesWithTrailingBackslash)">
+            <Output TaskParameter="Filtered" ItemName="UnitTestAssemblyDirectoriesWithTrailingBackslashFiltered" />
+        </RemoveDuplicates>
+        <ItemGroup>
+            <UnitTestAssemblyDirectoriesUnique Include="$([System.String]::new('%(UnitTestAssemblyDirectoriesWithTrailingBackslashFiltered.Identity)').Replace('\&#59;', '&#59;').Trim('\'))" />
+        </ItemGroup>
+        <CreateProperty Value="@(UnitTestAssemblyDirectoriesUnique-> '--BinDirectory=&quot;%(FullPath)&quot;', ' ')">
+            <Output TaskParameter="Value" PropertyName="CoverageBinDirectories" />
+        </CreateProperty>
+        <Message Text="Directories for unit test assemblies after removing duplicates" />
+        <Message Text="$(CoverageBinDirectories)" />
+
+        <Exec Command="&quot;$(ToolsExternalVSCoverageToReportGeneratorPath)&quot; --InputFile=&quot;@(CoverageFilesToConvert)&quot; --OutputFile=&quot;%(RootDir)%(Directory)\%(FileName).xml&quot; --VisualStudioDirectory=&quot;$(ToolsExternalVisualStudioDir)&quot; $(CoverageBinDirectories)"
               IgnoreExitCode="False"
               IgnoreStandardErrorWarningFormat="False"
               Condition=" Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
