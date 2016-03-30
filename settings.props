@@ -460,116 +460,52 @@
     <!-- Overrides for the tools paths -->
     <PropertyGroup>
         <!--
-            The full path to the Visual Studio installation directory
-        -->
-        <!--<ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 14.0')">C:\Program Files (x86)\Microsoft Visual Studio 14.0</ToolsExternalVisualStudioDir>
-        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0')">C:\Program Files (x86)\Microsoft Visual Studio 12.0</ToolsExternalVisualStudioDir>
-        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0')">C:\Program Files (x86)\Microsoft Visual Studio 11.0</ToolsExternalVisualStudioDir>-->
-
-        <!--
             The full path to the Bower command line executable
         -->
-        <!--<ToolsExternalBowerPath Condition=" '$(ToolsExternalBowerPath)' == '' ">bower</ToolsExternalBowerPath>-->
-
-        <!--
-            The full path to the CCM command line executable. If not defined the packages directory is searched.
-        -->
-        <!--<ToolsExternalCcmPath Condition=" '$(ToolsExternalCcmPath)' == '' ">UNDEFINED</ToolsExternalCcmPath>-->
-
-        <!--
-            The full path to the directory that contains the FxCop command line executable
-        -->
-        <!--<ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop')">$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
-        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
-        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir>-->
+        <!-- <ToolsExternalBowerPath Condition=" '$(ToolsExternalBowerPath)' == '' ">bower</ToolsExternalBowerPath> -->
 
         <!--
             The full path to the GitHubFlowVersion command line executable. If not defined the packages directory is searched.
         -->
-        <!--<ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath>-->
-
-        <!--
-            The full path to the github-release command line executable.
-        -->
-        <!--<ToolsExternalGitHubReleasePath Condition=" '$(ToolsExternalGitHubReleasePath)' == '' ">github-release.exe</ToolsExternalGitHubReleasePath>-->
+        <!-- <ToolsExternalGitHubFlowVersionPath Condition=" '$(ToolsExternalGitHubFlowVersionPath)' == '' ">UNDEFINED</ToolsExternalGitHubFlowVersionPath> -->
 
         <!--
             The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
         -->
-        <!--<ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath>-->
+        <!-- <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath> -->
 
         <!--
-            The full path to the GitReleaseNotes command line executable. If not defined the packages directory is searched.
+            The full path and version to the GitReleaseNotes command line executable. If not defined the packages directory is searched.
         -->
-        <!--<ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath>-->
+        <!-- <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath>
+        <ToolsExternalGitReleaseNotesVersion Condition=" '$(ToolsExternalGitReleaseNotesVersion)' == '' ">0.7.0</ToolsExternalGitReleaseNotesVersion> -->
 
         <!--
-            The full path to the GitVersion command line executable. If not defined the packages directory is searched.
+            The full path and version to the GitVersion command line executable. If not defined the packages directory is searched.
         -->
-        <!--<ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath>-->
-
-        <!--
-            The full path to the MoMA command line executable. If not defined the packages directory is searched.
-        -->
-        <!--<ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath>-->
-
-        <!--
-            The full path to the MsTest command line executable.
-        -->
-        <!--<ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
-        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
-        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">UNDEFINED</ToolsExternalMsTestPath>-->
+        <!-- <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath>
+        <ToolsExternalGitVersionVersion Condition=" '$(ToolsExternalGitVersionVersion)' == '' ">3.3.0</ToolsExternalGitVersionVersion> -->
 
         <!--
             The full path to the NPM command line executable.
         -->
-        <!--<ToolsExternalNpmPath Condition=" '$(ToolsExternalNpmPath)' == '' ">npm</ToolsExternalNpmPath>-->
+        <!-- <ToolsExternalNpmPath Condition=" '$(ToolsExternalNpmPath)' == '' ">npm</ToolsExternalNpmPath> -->
+
+        <!--
+            The full path and version to the NTreva command line executable. IF not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalNTrevaPath Condition=" '$(ToolsExternalNTrevaPath)' == '' ">UNDEFINED</ToolsExternalNTrevaPath>
+        <ToolsExternalNTrevaVersion Condition=" '$(ToolsExternalNTrevaVersion)' == '' ">0.4.0</ToolsExternalNTrevaVersion> -->
 
         <!--
             The full path to the NuGet command line executable. If not defined the packages directory is searched.
         -->
-        <!--<ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">nuget.exe</ToolsExternalNuGetPath>-->
-
-        <!--
-            The full path to the nUnit command line executable. If not defined the packages directory is searched.
-        -->
-        <!--<ToolsExternalNUnitConsolePath Condition=" '$(ToolsExternalNUnitConsolePath)' == '' ">UNDEFINED</ToolsExternalNUnitConsolePath>-->
-
-        <!--
-            The full path to the OpenCover command line executable. If not defined the packages directory is searched.
-        -->
-        <!--<ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath>-->
-
-        <!--
-            The full path to the ReportGenerator command line executable. If not defined the packages directory is searched.
-        -->
-        <!--<ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath>-->
-
-        <!--
-            The full path to the sn.exe command line executable.
-        -->
-        <!--<ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' ">UNDEFINED</ToolsExternalSnPath>-->
-
-        <!--
-            The full path to the SourceMonitor command line executable. If not defined the packages directory is searched.
-        -->
-        <!--<ToolsExternalSourceMonitorPath Condition=" '$(ToolsExternalSourceMonitorPath)' == '' ">UNDEFINED</ToolsExternalSourceMonitorPath>-->
+        <!-- <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">nuget.exe</ToolsExternalNuGetPath> -->
 
         <!--
             The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable.
         -->
-        <!--<ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath>-->
-
-        <!--
-            The full path to the VSCoverageToReportGenerator command line executable. If not defined the packages directory is searched.
-        -->
-        <!--<ToolsExternalVSCoverageToReportGeneratorPath Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalVSCoverageToReportGeneratorPath>-->
-
-        <!--
-            The full path to the VsTest command line executable.
-        -->
-        <!--<ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</ToolsExternalVsTestPath>
-        <ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' ">UNDEFINED</ToolsExternalVsTestPath>-->
+        <!-- <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath> -->
     </PropertyGroup>
 
 

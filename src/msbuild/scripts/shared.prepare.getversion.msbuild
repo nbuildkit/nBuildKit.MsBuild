@@ -130,7 +130,7 @@
             Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)')">
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="GitVersion.CommandLine"
-                      PackageVersion="3.3.0"
+                      PackageVersion="$(ToolsExternalGitVersionVersion)"
                       PackageDirectory="$(DirPackages)"
                       Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"

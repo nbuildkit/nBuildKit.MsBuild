@@ -66,17 +66,18 @@
             Condition="!Exists('$(FileGeneratedLicenses)')">
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="NTreva"
+                      PackageVersion="$(ToolsExternalNTrevaVersion)"
                       PackageDirectory="$(DirPackages)"
-                      Condition=" '$(ShouldExecute)' == 'true' "/>
+                      Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="NTreva.exe"
-                                            Condition=" '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="Path" PropertyName="PathNTrevaExe" />
+                                            Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED'  AND '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalNTrevaPath" />
         </SearchPackagesDirectoryForToolPath>
         <ItemGroup>
             <SolutionPackages Include="$(DirSrc)\**\packages.config"
                               Exclude="$(DirSrc)\test*\packages.config"/>
         </ItemGroup>
-        <Exec Command="&quot;$(PathNTrevaExe)&quot; -p &quot;$(DirPackages)&quot; -o &quot;$(FileGeneratedLicenses)&quot; @(SolutionPackages-> '-c &quot;%(RootDir)%(Directory)\&quot;', ' ')" />
+        <Exec Command="&quot;$(ToolsExternalNTrevaPath)&quot; -p &quot;$(DirPackages)&quot; -o &quot;$(FileGeneratedLicenses)&quot; @(SolutionPackages-> '-c &quot;%(RootDir)%(Directory)\&quot;', ' ')" />
     </Target>
  </Project>
