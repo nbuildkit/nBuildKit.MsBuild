@@ -250,6 +250,15 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An unhandled exception occurred while converting the coverage report. Exception was: {0}.
+        /// </summary>
+        internal static string Output_Error_UnhandledException_WithException {
+            get {
+                return ResourceManager.GetString("Output_Error_UnhandledException_WithException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The given Visual Studio directory does not exist. Expected it to be at {0} but no directory was found..
         /// </summary>
         internal static string Output_Error_VisualStudioDirectoryDoesNotExist_WithDirectory {

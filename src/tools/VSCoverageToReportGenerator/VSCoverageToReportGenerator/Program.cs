@@ -60,7 +60,7 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
         private const int InvalidVisualStudioDirectoryExitCode = 5;
 
         /// <summary>
-        /// The collection that contains the full paths to the directories which contain the binaries that were 
+        /// The collection that contains the full paths to the directories which contain the binaries that were
         /// used when running the tests.
         /// </summary>
         private static readonly List<string> s_BinDirectories = new List<string>();
@@ -180,12 +180,17 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
 
                 var searchPath = Path.Combine(s_VisualStudioDirectory, @"Common7\IDE\PrivateAssemblies");
                 SetupAdditionalAssemblySearchPaths(searchPath);
-                
-                CopySymbolsFile(searchPath);
+
                 ConvertCoverageFile(s_InputFile, s_OutputFile, s_BinDirectories.ToArray());
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                WriteErrorToConsole(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.Output_Error_UnhandledException_WithException,
+                        e));
+
                 return UnhandledExceptionApplicationExitCode;
             }
 
@@ -273,11 +278,11 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
 
         private static OptionSet CreateOptionSet()
         {
-            var options = new OptionSet 
+            var options = new OptionSet
                 {
-                    { 
-                        Resources.CommandLine_Options_Help_Key, 
-                        Resources.CommandLine_Options_Help_Description, 
+                    {
+                        Resources.CommandLine_Options_Help_Key,
+                        Resources.CommandLine_Options_Help_Description,
                         v => s_ShouldDisplayHelp = v != null
                     },
                     {
@@ -306,8 +311,8 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
 
 
         [SuppressMessage(
-            "Microsoft.Reliability", 
-            "CA2001:AvoidCallingProblematicMethods", 
+            "Microsoft.Reliability",
+            "CA2001:AvoidCallingProblematicMethods",
             MessageId = "System.Reflection.Assembly.LoadFrom",
             Justification = "Need to load the assembly manually because it normally will not be found.")]
         private static void SetupAdditionalAssemblySearchPaths(string searchPath)
@@ -352,24 +357,6 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
 
                     return null;
                 };
-        }
-
-        private static void CopySymbolsFile(string searchPath)
-        {
-            var appDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var symbolsAssemblyDefaultPath = Path.Combine(searchPath, @"Microsoft.VisualStudio.Coverage.Symbols.dll");
-
-            var symbolsAssemblyLocalPath = Path.Combine(appDirectory, @"Microsoft.VisualStudio.Coverage.Symbols.dll");
-            if (!System.IO.File.Exists(symbolsAssemblyLocalPath))
-            {
-                WriteToConsole(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Copying {0} to {1}",
-                        symbolsAssemblyDefaultPath,
-                        symbolsAssemblyLocalPath));
-                File.Copy(symbolsAssemblyDefaultPath, symbolsAssemblyLocalPath);
-            }
         }
 
         private static void ConvertCoverageFile(string inputFile, string outputFile, string[] binDirectories)
