@@ -19,13 +19,16 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="$DirBin$\*.exe"
-              exclude="$DirBin$\*.vshost.exe" />
-        <file src="$DirBin$\*.dll" />
-        <file src="$DirBin$\*.pdb"
-              exclude="$DirBin$\*.vshost.pdb" />
+        <file src="$DirSrc$\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator\bin\$configuration$\*.exe"
+              exclude="$DirSrc$\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator\bin\$configuration$\*.vshost.exe" />
+        <file src="$DirSrc$\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator\bin\$configuration$\*.dll" />
+        <!--<file src="$DirVisualStudio$\Common7\IDE\PrivateAssemblies\Microsoft.VisualStudio.Coverage.Symbols.dll" />-->
+        <file src="$DirSrc$\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator\bin\$configuration$\*.pdb"
+              exclude="$DirBin$\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator\bin\$configuration$\*.vshost.pdb" />
 
-        <file src="$DirSrc$\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator\**\*.cs" target="src\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator" />
+        <file src="$DirSrc$\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator\**\*.cs"
+              target="src\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator" />
+        <file src="$DirTemp$\tools\vscoveragetoreportgenerator.readme.txt" target="content" />
 
         <file src="$DirWorkspace$\README.md" />
         <file src="$DirWorkspace$\LICENSE" />

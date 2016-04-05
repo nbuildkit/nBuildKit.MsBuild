@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Build_Pack_NuGet_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildPackNuGet>true</ExistsBuildPackNuGet>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\FindAndReplaceInFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\FindAndReplaceInFile.msbuild') AND '$(ExistsExtensionsFindAndReplaceInFile)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild') AND '$(ExistsExtensionsGatherNuGetDependenciesForProject)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetPack.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetPack.msbuild') AND '$(ExistsExtensionsNuGetPack)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+
+    <Target Name="nBuildKit_Build_Pack_NuGet_Run"
+            DependsOnTargets="_nBuildKit_Build_Pack_NuGet_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Pack_NuGet_Pack" />
+    </Target>
+
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Build_Pack_NuGet_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Build_Pack_NuGet_DebugLog">
+        <Message Text="Creating NuGet package..."
+                 Importance="normal"/>
+
+        <Error Text="No NuGet spec files are specified!"
+               Condition=" '@(NuGetPackageSpecs)' == '' "/>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Pack_NuGet_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="The NuGet spec files are:"
+                 Importance="low"
+                 Condition=" '@(NuGetPackageSpecs)' != '' "/>
+        <Message Text="Template: %(NuGetPackageSpecs.Template) - Output: %(NuGetPackageSpecs.Identity)"
+                 Importance="low"
+                 Condition=" '@(NuGetPackageSpecs)' != '' " />
+    </Target>
+
+    <!--
+        Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
+        once for each entry in the NuGetPackagesSpecs ItemGroup.
+    -->
+    <Target Name="_nBuildKit_Build_Pack_NuGet_Pack"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+            Condition=" '@(NuGetPackageSpecs)' != '' "
+            Outputs="%(NuGetPackageSpecs.Identity)">
+        <Message Text="Resolving build templates for: %(NuGetPackageSpecs.Identity)"
+                 Importance="low"/>
+
+        <!-- Process the build templates in the nuspec file path -->
+        <TemplateText Template="%(NuGetPackageSpecs.Identity)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileNuGetNuSpec" />
+        </TemplateText>
+
+        <!-- Process the build templates in the included dependencies -->
+        <TemplateText Template="%(NuGetPackageSpecs.IncludedDependencies)"
+                      Tokens="@(TemplateTokens)"
+                      Condition=" '%(NuGetPackageSpecs.IncludedDependencies)' != '' ">
+            <Output TaskParameter="Result" PropertyName="FilesNuGetDependenciesIncluded" />
+        </TemplateText>
+
+        <!-- Process the build templates in the excluded dependencies -->
+        <TemplateText Template="%(NuGetPackageSpecs.ExcludedDependencies)"
+                      Tokens="@(TemplateTokens)"
+                      Condition=" '%(NuGetPackageSpecs.ExcludedDependencies)' != '' ">
+            <Output TaskParameter="Result" PropertyName="FilesNuGetDependenciesExcluded" />
+        </TemplateText>
+
+        <Message Text="Creating NuGet package from: $(FileNuGetNuSpec)"
+                 Importance="low"/>
+        <MakeDir Directories="$(DirBuildDeploy)"
+                 Condition="!Exists('$(DirBuildDeploy)') AND  '$(ShouldExecute)' == 'true' " />
+
+        <Message Text="Included dependencies: $(FilesNuGetDependenciesIncluded)"
+                 Importance="low"/>
+        <Message Text="Excluded dependencies: $(FilesNuGetDependenciesExcluded)"
+                 Importance="low"/>
+
+        <!--
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(FilesNuGetDependenciesIncluded.Split(';'))"
+            Exclude="$(FilesNuGetDependenciesExcluded.Split(';'))">
+           <Output
+               TaskParameter="Include"
+               ItemName="PackageDependencies"/>
+        </CreateItem>
+
+        <GatherNuGetDependenciesForProject NuGetSpec="$(FileNuGetNuSpec)"
+                                           Packages="@(PackageDependencies)"
+                                           DesignTimePackages="@(DesignTimeDependencies)"
+                                           VersionRangeType="$(NuGetDependencyVersionRangeStrategy)"
+                                           Condition=" '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Dependencies" PropertyName="NuGetDependencies" />
+        </GatherNuGetDependenciesForProject>
+
+        <ItemGroup>
+            <TemplateTokens Include="Dependencies">
+                <ReplacementValue>$(NuGetDependencies)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ReleaseNotes">
+                <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+        <NuGetPack NuGetPath="$(ToolsExternalNuGetPath)"
+                   File="$(FileNuGetNuSpec)"
+                   OutputDirectory="$(DirBuildDeploy)"
+                   ShouldBuildSymbols="%(NuGetPackageSpecs.ShouldBuildSymbols)"
+                   Properties="@(TemplateTokens)"
+                   Condition=" '$(ShouldExecute)' == 'true' "/>
+    </Target>
+ </Project>

@@ -16,6 +16,7 @@
             where all the files are.
         -->
         <DirNBuildKitMsBuildExtensions>$(DirWorkspace)\src\msbuild\extensions</DirNBuildKitMsBuildExtensions>
+        <DirNBuildKitMsBuildShared>$(DirWorkspace)\src\msbuild\shared</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildTemplates>$(DirWorkspace)\src\templates</DirNBuildKitMsBuildTemplates>
 
         <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
@@ -25,7 +26,7 @@
         <!--
             The file that contains all the properties for the build and deploy processes.
         -->
-        <BuildPropertyFile>$(DirWorkspace)\settings.props</BuildPropertyFile>
+        <SharedPropertyFile>$(DirWorkspace)\settings.props</SharedPropertyFile>
     </PropertyGroup>
 
     <!--
@@ -52,7 +53,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\build.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
+            Properties="SharedPropertyFile=$(SharedPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -75,7 +76,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\test.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
+            Properties="SharedPropertyFile=$(SharedPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -97,7 +98,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\deploy.msbuild"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
+            Properties="SharedPropertyFile=$(SharedPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

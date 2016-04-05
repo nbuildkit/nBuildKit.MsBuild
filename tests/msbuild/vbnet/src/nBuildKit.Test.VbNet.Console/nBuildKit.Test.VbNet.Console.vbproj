@@ -45,9 +45,7 @@
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/common.props" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/common.props') " />
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/common.net.props" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/common.net.props') " />
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/vbnet.props" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/vbnet.props') " />
+  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/import.props" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/import.props') " />
   <ItemGroup>
     <Reference Include="Autofac">
       <HintPath>..\..\packages\Autofac.2.2.4.900\lib\NET40\Autofac.dll</HintPath>
@@ -110,8 +108,6 @@
   <ItemGroup>
     <Compile Include="Module1.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
-    <Compile Include="My Project\AssemblyInfo.Company.vb" />
-    <Compile Include="My Project\AssemblyInfo.VersionNumber.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
@@ -155,9 +151,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/common.targets" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/common.targets') " />
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/common.net.targets" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/common.net.targets') " />
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/vbnet.targets" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/vbnet.targets') " />
+  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/import.targets" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionSemantic}/build/import.targets') " />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

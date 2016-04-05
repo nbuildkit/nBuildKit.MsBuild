@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Deploy_PushTo_NuGet_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsDeployPushToNuGet>true</ExistsDeployPushToNuGet>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetPush.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetPush.msbuild') AND '$(ExistsExtensionsNuGetPush)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+
+    <Target Name="nBuildKit_Deploy_PushTo_NuGet_Run" DependsOnTargets="_nBuildKit_Deploy_PushTo_NuGet_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_NuGet_Push" />
+    </Target>
+
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Deploy_PushTo_NuGet_DisplayInfo" DependsOnTargets="_nBuildKit_Deploy_PushTo_NuGet_DebugLog">
+        <Message Text="Pushing NuGet packages to: $(NuGetSourceUrl)"
+                 Importance="normal"
+                 Condition=" '$(NuGetSourceUrl)' != '' AND '$(NuGetSourceUrl)' != 'UNDEFINED' " />
+        <Message Text="No NuGet source defined, pushing to NuGet.org"
+                 Importance="normal"
+                 Condition=" '$(NuGetSourceUrl)' == '' OR '$(NuGetSourceUrl)' == 'UNDEFINED' " />
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_PushTo_NuGet_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="Pushing NuGet packages to:                                         nuget.org"
+                 Importance="low"
+                 Condition=" '$(NuGetSourceUrl)' == '' OR '$(NuGetSourceUrl)' == 'UNDEFINED' " />
+        <Message Text="Pushing NuGet packages to:                                         $(NuGetSourceUrl)"
+                 Importance="low"
+                 Condition=" '$(NuGetSourceUrl)' != '' AND '$(NuGetSourceUrl)' != 'UNDEFINED' " />
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_PushTo_NuGet_Push"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
+        <Error Text="No NuGet executable defined. Will not be able to restore the packages."
+               Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+
+        <CreateProperty Value="$(NuGetSourceUrl)"
+                        Condition=" '$(NuGetSourceUrl)' != '' AND '$(NuGetSourceUrl)' != 'UNDEFINED' ">
+            <Output TaskParameter="Value" PropertyName="NuGetRepositoryToPushTo" />
+        </CreateProperty>
+
+        <TemplateText Template="@(NuGetPackagesToPush)"
+                      Tokens="@(TemplateTokens)"
+                      Condition=" '@(NuGetPackagesToPush)' != '' AND '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Result" PropertyName="NuGetPackagesToPushExpanded" />
+        </TemplateText>
+
+        <!--
+            Create the ItemGroup dynamically because creating a normal ItemGroup in the target with dynamically
+            created properties fails to expand the wildcards.
+        -->
+        <CreateItem
+            Include="$(NuGetPackagesToPushExpanded.Split(';'))"
+            Condition=" '$(NuGetPackagesToPushExpanded)' != '' ">
+           <Output
+               TaskParameter="Include"
+               ItemName="NuGetPackagesToPushLocal"/>
+        </CreateItem>
+        <Message Text="The following NuGet packages were specified in the settings file: "
+                 Importance="low"
+                 Condition=" '@(NuGetPackagesToPushLocal)' != '' " />
+        <Message Text="@(NuGetPackagesToPushLocal)"
+                 Importance="low"
+                 Condition=" '@(NuGetPackagesToPushLocal)' != '' " />
+
+        <Error Text="There are no files to be pushed to the NuGet feed"
+               Condition=" '@(NuGetPackagesToPushLocal)' == '' AND '$(ShouldExecute)' == 'true' "/>
+
+        <Message Text="Pushing: @(NuGetPackagesToPushLocal)"
+                 Importance="low"/>
+        <NuGetPush NuGetPath="$(ToolsExternalNuGetPath)"
+                   Source="$(NuGetRepositoryToPushTo)"
+                   PackagesToPush="@(NuGetPackagesToPushLocal)"
+                   Condition=" '$(ShouldExecute)' == 'true' " />
+    </Target>
+</Project>

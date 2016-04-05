@@ -7,38 +7,24 @@
         <!-- Note the current script is not meant to be imported! -->
         <ExistsTest>true</ExistsTest>
 
-        <!-- The full path to the settings file that contains all the settings for the build process -->
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' ">UNDEFINED</BuildPropertyFile>
-
-        <!--
-            Define the DirWorkspace before importing the BuildPropertyFile so that it is defined and can be used by
-            the properties in the BuildPropertyFile. Note that we can't define it in the BuildPropertyFile because that
-            is imported which means there is no way to get the path of the file.
-        -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$([System.IO.Path]::GetDirectoryName('$(BuildPropertyFile)'))</DirWorkspace>
-
         <!-- The full path to the location of the scripts -->
         <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' ">$(MSBuildProjectDirectory)</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.teststeps.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' " />
-    <Import Project="$(BuildPropertyFile)"
-            Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' " />
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
-        <!--
-            Each build file needs to have the paths passed in so that the default directory paths are always known.
-            To prevent having to provide them in a lengthy line each time we'll store them here
-        -->
-        <DefaultPathProperties>
-            DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
-            DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
-            DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)
-        </DefaultPathProperties>
+        <DefaultPropertyFiles>
+            SharedPropertyFile=$(SharedPropertyFile);
+            TestPropertyFile=$(TestPropertyFile)
+        </DefaultPropertyFiles>
         <DefaultProperties>
             NBuildKitVersion=$(NBuildKitVersion)
         </DefaultProperties>
@@ -46,9 +32,6 @@
 
     <Target Name="nBuildKit_Test_Run"
             DependsOnTargets="_nBuildKit_Test_DisplayInfo">
-        <Error Text="No test properties file was defined."
-               Condition=" '$(BuildPropertyFile)' == 'UNDEFINED' " />
-
         <!-- Execute all the test steps in the given order -->
         <CallTarget Targets="_nBuildKit_Test_Execute" />
     </Target>
@@ -93,7 +76,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(TestStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(TestStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(TestStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -113,7 +96,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(TestFailureStepsToExecute.Identity)"
-            Properties="BuildPropertyFile=$(BuildPropertyFile);$(DefaultProperties);$(DefaultPathProperties);%(TestFailureStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(TestFailureStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

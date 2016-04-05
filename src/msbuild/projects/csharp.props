@@ -24,20 +24,12 @@
 
     <ItemGroup>
         <BuildFilesToGenerate Include="$(SolutionDir)\CompanyInformation.cs"
-                         Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
+                         Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' AND !$(BuildStepsToExecute.Contains('$(BuildStepsPrepareAssemblyInfo)')) ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\CompanyInformation.cs</Template>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(SolutionDir)\ProductInformation.cs"
-                         Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' ">
+                         Condition=" '$(ShouldGenerateCompanyAndProductInfo)' == 'true' AND !$(BuildStepsToExecute.Contains('$(BuildStepsPrepareAssemblyInfo)')) ">
             <Template>$(DirNBuildKitMsBuildProjectsTemplates)\ProductInformation.cs</Template>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.Company.cs"
-                         Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' ">
-            <Template>$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.Company.cs</Template>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.VersionNumber.cs"
-                         Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' ">
-            <Template>$(DirNBuildKitMsBuildProjectsTemplates)\AssemblyInfo.VersionNumber.cs</Template>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(MSBuildProjectDirectory)\$(AppDesignerFolder)\AssemblyInfo.BuildInformation.cs"
                          Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' ">

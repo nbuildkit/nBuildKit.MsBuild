@@ -23,6 +23,7 @@
             <NuGetSpec ParameterType="System.String" Required="true" />
             <Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <DesignTimePackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
+            <VersionRangeType ParameterType="System.String" Required="false" />
             <Dependencies ParameterType="System.String" Output="true" />
         </ParameterGroup>
         <Task>
@@ -109,7 +110,25 @@
                                     builder.Append(System.Environment.NewLine);
                                 }
 
-                                builder.Append(string.Format("<dependency id='{0}' version='{1}' />", package.Id, package.Version));
+                                var packageVersion = new Version(package.Version);
+                                var versionRange = package.Version;
+                                if (!string.IsNullOrEmpty(VersionRangeType))
+                                {
+                                    switch (VersionRangeType)
+                                    {
+                                        case "Major":
+                                            versionRange = string.Format("[{0}, {1})", package.Version, packageVersion.Major + 1);
+                                            break;
+                                        case "Minor":
+                                            versionRange = string.Format("[{0}, {1}.{2})", package.Version, packageVersion.Major, packageVersion.Minor + 1);
+                                            break;
+                                        case "Patch":
+                                            versionRange = string.Format("[{0}, {1}.{2}.{3})", package.Version, packageVersion.Major, packageVersion.Minor, packageVersion.Build + 1);
+                                            break;
+                                    }
+                                }
+
+                                builder.Append(string.Format("<dependency id='{0}' version='{1}' />", package.Id, versionRange));
                                 knownDependencies.Add(package.Id);
                             }
                         }

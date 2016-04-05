@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Test_Prepare_Workspace_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsTestPrepareWorkspace>true</ExistsTestPrepareWorkspace>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' " />
+
+    <Target Name="nBuildKit_Test_Prepare_Workspace_Run"
+            DependsOnTargets="_nBuildKit_Test_Prepare_Workspace_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Test_Prepare_Workspace_Clean" />
+        <CallTarget Targets="_nBuildKit_Test_Prepare_Workspace_CopyFiles" />
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Prepare_Workspace_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Configuration values:"
+                 Importance="low"/>
+        <Message Text="ShouldClean:             $(ShouldClean)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the build output is located at:           $(DirBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)"
+                 Importance="low"/>
+        <Message Text="The directory containing the build logs is located at:             $(DirBuildLogs)"
+                 Importance="low"/>
+        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
+                 Importance="low"/>
+        <Message Text="The directory containing the temporary test files is located at:   $(DirBuildTest)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the source code is located at:            $(DirSrc)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
+                 Importance="low"/>
+    </Target>
+
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Test_Prepare_Workspace_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Test_Prepare_Workspace_DebugLog">
+        <Message Text="Preparing workspace ..."
+                 Importance="normal"/>
+    </Target>
+
+    <!-- Clean -->
+    <Target Name="_nBuildKit_Test_Prepare_Workspace_Clean"
+            DependsOnTargets="_nBuildKit_Test_Prepare_Workspace_DisplayInfo"
+            Condition="$(ShouldClean)">
+        <!--
+            We'll try to delete the directory but that may fail randomly because
+            some file is being locked (by some other process). This could leads to a failing task, but ..
+            the next task is run and then the delete command still executes (delayed
+            by the OS).
+        -->
+        <ItemGroup>
+            <TestFilesToDelete Include="$(DirBuildTest)\**\*.*"/>
+        </ItemGroup>
+        <Delete Files="@(TestFilesToDelete)"
+                Condition=" '$(ShouldExecute)' == 'true' "
+                ContinueOnError="True" />
+
+        <ItemGroup>
+            <BuildDirectoriesToDelete Include="$(DirBuildTest)" />
+            <BuildDirectoriesToDelete Include="$(DirBuildTemp)" />
+        </ItemGroup>
+        <RemoveDir Directories="@(BuildDirectoriesToDelete)"
+                   Condition=" '$(ShouldExecute)' == 'true' "
+                   ContinueOnError="True" />
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Prepare_Workspace_CopyFiles"
+            DependsOnTargets="_nBuildKit_Test_Prepare_Workspace_DisplayInfo;_nBuildKit_Test_Prepare_Workspace_Clean"
+            Condition=" '@(TestFilesToCopy)' != '' ">
+        <!--
+            MsBuild can't seem to handle using item metadata (BuildFilesToGenerate.FullPath) inside a property function
+            inside the Exists() function, so we'll split the process and do the transfer separately.
+        -->
+        <ItemGroup>
+            <DirTestFilesToCopyTemp Include="$([System.IO.Path]::GetDirectoryName('%(TestFilesToCopy.FullPath)'))" />
+        </ItemGroup>
+
+        <MakeDir Directories="%(DirTestFilesToCopyTemp.Identity)"
+                 Condition="!Exists('%(DirTestFilesToCopyTemp.Identity)')" />
+
+        <Copy
+            SourceFiles="@(TestFilesToCopy)"
+            DestinationFiles="@(TestFilesToCopy->'%(TargetDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
+            OverwriteReadOnlyFiles="True"
+            Retries="5"
+            RetryDelayMilliseconds="1000"
+            SkipUnchangedFiles="False"
+            UseHardlinksIfPossible="False" />
+    </Target>
+ </Project>

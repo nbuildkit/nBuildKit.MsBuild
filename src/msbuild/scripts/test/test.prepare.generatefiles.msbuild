@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Test_Prepare_GenerateFiles_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildPrepareGenerateFiles>true</ExistsBuildPrepareGenerateFiles>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
+
+    <Target Name="nBuildKit_Test_Prepare_GenerateFiles_Run"
+            DependsOnTargets="_nBuildKit_Test_Prepare_GenerateFiles_DisplayInfo"
+            Outputs="%(TestFilesToGenerate.Identity)"
+            Condition=" '@(TestFilesToGenerate)' != '' ">
+        <CallTarget Targets="_nBuildKit_Test_Prepare_GenerateFiles_GenerateFiles" />
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Prepare_GenerateFiles_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)"
+                 Importance="low"/>
+        <Message Text="The VCS info file is located at:                                   $(FileVcsInfo)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+    </Target>
+
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Test_Prepare_GenerateFiles_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Test_Prepare_GenerateFiles_DebugLog">
+        <Message Text="Generating files ..."
+                 Importance="normal"/>
+    </Target>
+
+    <!-- Generate the required files -->
+    <Target Name="_nBuildKit_Test_Prepare_GenerateFiles_GenerateFiles"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+            Outputs="%(TestFilesToGenerate.Identity)"
+            Condition=" '@(TestFilesToGenerate)' != '' ">
+        <Message Text="Generating file %(TestFilesToGenerate.Identity)"
+                 Importance="normal"/>
+
+        <!--
+            MsBuild can't seem to handle using item metadata (TestFilesToGenerate.FullPath) inside a property function
+            inside the Exists() function, so we'll split the process and do the transfer separately.
+        -->
+        <ItemGroup>
+            <DirTestFilesToGenerateTemp Include="$([System.IO.Path]::GetDirectoryName('%(TestFilesToGenerate.FullPath)'))" />
+        </ItemGroup>
+
+        <MakeDir Directories="%(DirTestFilesToGenerateTemp.Identity)"
+                 Condition="!Exists('%(DirTestFilesToGenerateTemp.Identity)')" />
+
+        <!--
+            It seems MsBuild can't handle batched metadata in conditions either, so make a property and then use that.
+        -->
+        <CreateProperty Value="%(TestFilesToGenerate.Token)">
+            <Output TaskParameter="Value" PropertyName="AdditionalToken" />
+        </CreateProperty>
+        <ItemGroup Condition=" '$(AdditionalToken)' != '' ">
+            <TemplateTokens Include="%(TestFilesToGenerate.Token)">
+                <ReplacementValue>%(TestFilesToGenerate.ReplacementValue)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+
+        <TemplateFile Template="%(TestFilesToGenerate.Template)"
+                      OutputFileName="%(TestFilesToGenerate.Identity)"
+                      Tokens="@(TemplateTokens)"
+                      Condition="!Exists('%(TestFilesToGenerate.FullPath)')"/>
+    </Target>
+ </Project>

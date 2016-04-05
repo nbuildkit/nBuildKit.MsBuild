@@ -57,10 +57,22 @@
                                 }
                             }
 
-                            using (var streamReader = new System.IO.StreamReader(Template))
+                            var templateLines = new List<string>();
+                            using (var reader = new StreamReader(Template))
                             {
-                                string value = _regex.Replace(
-                                    streamReader.ReadToEnd(),
+                                string line;
+                                while ((line = reader.ReadLine()) != null)
+                                {
+                                    templateLines.Add(line);
+                                }
+                            }
+
+                            var outputLines = new List<string>();
+                            for (int i = 0; i < templateLines.Count; i++)
+                            {
+                                var line = templateLines[i];
+                                var value = _regex.Replace(
+                                    line,
                                     m =>
                                     {
                                         var output = m.Value;
@@ -70,13 +82,18 @@
                                         }
                                         return output;
                                     });
+                                outputLines.Add(value);
+                            }
 
-                                using (var streamWriter = new System.IO.StreamWriter(OutputFileName))
+                            using (var streamWriter = new System.IO.StreamWriter(OutputFileName))
+                            {
+                                for (int i = 0; i < outputLines.Count; i++)
                                 {
-                                    streamWriter.Write(value);
-                                    streamWriter.Flush();
-                                    Log.LogMessage(MessageImportance.Low, "Template replaced and written to '{0}'", OutputFileName);
+                                    streamWriter.WriteLine(outputLines[i]);
                                 }
+
+                                streamWriter.Flush();
+                                Log.LogMessage(MessageImportance.Low, "Template replaced and written to '{0}'", OutputFileName);
                             }
                         }
 

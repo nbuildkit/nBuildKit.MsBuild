@@ -16,20 +16,24 @@
         </releaseNotes>
         <dependencies>
             $Dependencies$
-            <dependency id="nBuildKit.MsBuild" version="[$VersionSemantic$]" />
+            <dependency id="nBuildKit.MsBuild" version="[$VersionSemantic$, $VersionMajorNext$)" />
         </dependencies>
     </metadata>
     <files>
+        <file src="$DirSrc$\msbuild\shared\*.props" target="build" />
+
+        <file src="$DirSrc$\msbuild\projects\common.props" target="build" />
         <file src="$DirSrc$\msbuild\projects\common.targets" target="build" />
 
         <file src="$DirSrc$\msbuild\projects\wix.props" target="build" />
         <file src="$DirSrc$\msbuild\projects\wix.targets" target="build" />
 
-        <file src="$DirTemp$\msbuild\projects\wix\common.props" target="build" />
+        <file src="$DirTemp$\msbuild\projects\wix\import.props" target="build" />
+        <file src="$DirTemp$\msbuild\projects\wix\import.targets" target="build" />
 
         <file src="$DirTemp$\msbuild\projects\wix\nbuildkit.wix.readme.txt" target="content" />
-        <file src="$DirTemp$\msbuild\projects\wix\install.ps1" target="tools" />
-        <file src="$DirTemp$\msbuild\projects\wix\uninstall.ps1" target="tools" />
+        <file src="$DirSrc$\msbuild\projects\install.ps1" target="tools" />
+        <file src="$DirSrc$\msbuild\projects\uninstall.ps1" target="tools" />
 
         <file src="$DirSrc$\templates\VersionNumber.wxi" target="build\templates" />
         <file src="$DirSrc$\templates\CompanyInformation.wxi" target="build\templates" />

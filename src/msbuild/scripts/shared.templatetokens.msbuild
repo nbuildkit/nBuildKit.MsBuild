@@ -44,9 +44,13 @@
         <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)"
                                     Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
+            <Output TaskParameter="VersionMajorNext" PropertyName="VersionMajorNext" />
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
+            <Output TaskParameter="VersionMinorNext" PropertyName="VersionMinorNext" />
             <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
+            <Output TaskParameter="VersionPatchNext" PropertyName="VersionPatchNext" />
             <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
+            <Output TaskParameter="VersionBuildNext" PropertyName="VersionBuildNext" />
             <Output TaskParameter="VersionPreRelease" PropertyName="VersionPreRelease" />
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
             <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
@@ -77,14 +81,26 @@
             <TemplateTokens Include="VersionMajor">
                 <ReplacementValue>$(VersionMajor)</ReplacementValue>
             </TemplateTokens>
+            <TemplateTokens Include="VersionMajorNext">
+                <ReplacementValue>$(VersionMajorNext)</ReplacementValue>
+            </TemplateTokens>
             <TemplateTokens Include="VersionMinor">
                 <ReplacementValue>$(VersionMinor)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="VersionMinorNext">
+                <ReplacementValue>$(VersionMinorNext)</ReplacementValue>
             </TemplateTokens>
             <TemplateTokens Include="VersionPatch">
                 <ReplacementValue>$(VersionPatch)</ReplacementValue>
             </TemplateTokens>
+            <TemplateTokens Include="VersionPatchNext">
+                <ReplacementValue>$(VersionPatchNext)</ReplacementValue>
+            </TemplateTokens>
             <TemplateTokens Include="VersionBuild">
                 <ReplacementValue>$(VersionBuild)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="VersionBuildNext">
+                <ReplacementValue>$(VersionBuildNext)</ReplacementValue>
             </TemplateTokens>
             <TemplateTokens Include="VersionPreRelease">
                 <ReplacementValue>$(VersionPreRelease)</ReplacementValue>
@@ -236,9 +252,15 @@
         <!--
             Add the new value to the list of template tokens under the given name.
         -->
+        <!--
+            Implementation note:
+            Because of the overriding approach used for the TemplateVersion ItemGroup there may be duplicates
+            in the list so we have to filter those out by throwing away values that already exist in the new list.
+        -->
         <CreateItem
             Include="%(TemplateVersion.Identity)"
-            AdditionalMetadata="ReplacementValue=$(TemplateVersionWithReplacedParameters)">
+            AdditionalMetadata="ReplacementValue=$(TemplateVersionWithReplacedParameters)"
+            Condition="!$([System.String]::new('@(TemplateTokens)').Contains('%(TemplateVersion.Identity)'))">
            <Output
                TaskParameter="Include"
                ItemName="TemplateTokens"/>

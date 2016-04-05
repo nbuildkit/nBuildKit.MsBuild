@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** DEPLOY STEPS ****
+    -->
+    <!--
+        The following ItemGroup defines which steps are taken during the deploy process. The order of the items in the item group
+        determines in which order the deploy steps are executed.
+
+        The following default steps are always executed:
+        - Restoring the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally also restores the
+          NuGet packages as specified in the nBuildKit specific 'packages.config' files.
+
+        The following deploy steps are by default provided through the given properties:
+        $(DeployStepsTagVcs)              - Tags the current commit with the version number. Currentlyl supported version control systems are TFS and GIT.
+        $(DeployStepsPushToNuget)         - Pushes one or more artifacts to a NuGet feed
+        $(DeployStepsPushToDirectory)     - Pushes one or more artifacts to a directory
+        $(DeployStepsPushToSymbolServer)  - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
+        $(DeployStepsPushToGitHubRelease) - Pushes zero or more files to a GitHub release
+
+        Additional deploy steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Each script has the following properties passed to it:
+        $(SharedPropertyFile)              - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog)          - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)               - The full version of the nBuildKit library that is executing the build.
+        $(DirNBuildKitMsBuild)            - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)      - The full path to the directory that contains the shared nBuildkit scripts.
+        $(DirNBuildKitMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
+    -->
+    <ItemGroup Condition=" '@(DeployStepsToExecute)' == '' ">
+        <DeployStepsToExecute Include="$(DeployStepsTagVcs)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToNuget)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToDirectory)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToSymbolServer)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitHubRelease)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+        </DeployStepsToExecute>
+    </ItemGroup>
+
+    <!--
+        Define the scripts that should be executed when any one of the deploy steps fails.
+
+        Steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Each script has the following properties passed to it:
+        $(SharedPropertyFile)             - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
+        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
+        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
+
+        Additionally any properties defined by the 'Properties' section are also pushed up.
+    -->
+    <ItemGroup Condition=" '@(DeployFailureStepsToExecute)' == '' ">
+        <!--
+        <DeployFailureStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - DIRECTORY / FILESERVER ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a given deployment directory.
+
+        The IncludedFiles and the ExcludedFiles are lists of files that
+        should be included (or excluded) in the list of files to deploy. Each entry is separated by a semi-colon(;).
+
+        The PushToDirectorySpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates,
+        e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
+    -->
+    <ItemGroup Condition=" '@(PushToDirectorySpecs)' == '' ">
+        <!--
+        <PushToDirectorySpecs Include="\\MyServer\${ProductNameInFilePath}\${VersionSemantic}">
+            <IncludedFiles>
+                $(DirBuildDeploy)\myfile.zip
+            </IncludedFiles>
+            <ExcludedFiles>
+            </ExcludedFiles>
+        </PushToDirectorySpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - NUGET ****
+    -->
+    <PropertyGroup>
+        <!--
+            The URL to which all NuGet packages should be pushed. By default it pushes to nuget.org.
+            If the repository needs authentication then the API key should be defined via an environment variable:
+            NuGetApiKey - The NuGet API key for the NuGet feed
+        -->
+        <NuGetSourceUrl Condition=" '$(NuGetSourceUrl)' == '' ">UNDEFINED</NuGetSourceUrl>
+    </PropertyGroup>
+    <!--
+        The ItemGroup defining which packages should be pushed up to the NuGet package source.
+        Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.nupkg.
+    -->
+    <ItemGroup Condition=" '@(NuGetPackagesToPush)' == '' ">
+        <NuGetPackagesToPush Include="$(DirBuildDeploy)\*.nupkg"
+                             Exclude="$(DirBuildDeploy)\*.symbols.nupkg" />
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - SYMBOL SERVER ****
+    -->
+    <!--
+        The ItemGroup defining which symbol packages should be pushed up to the symbol server.
+        Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.symbols.nupkg.
+    -->
+    <PropertyGroup>
+        <!--
+            The URL to which all NuGet symbol packages should be pushed. If the repository needs authentication then
+            the API key should be defined via an environment variable:
+            NuGetApiKey - The NuGet API key for the NuGet feed
+        -->
+        <NuGetSymbolSourceUrl Condition=" '$(NuGetSymbolSourceUrl)' == '' ">UNDEFINED</NuGetSymbolSourceUrl>
+
+        <!--
+            The URL / UNC path to which all the symbol packages should be pushed.
+        -->
+        <SymbolServerUncPath Condition=" '$(SymbolServerUncPath)' == '' ">UNDEFINED</SymbolServerUncPath>
+    </PropertyGroup>
+    <ItemGroup Condition=" '@(SymbolPackagesToPush)' == '' ">
+        <SymbolPackagesToPush Include="$(DirBuildDeploy)\*.symbols.nupkg" />
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - GITHUB RELEASE ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a GitHub release. All properties
+        except for the Repository allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+    -->
+    <ItemGroup Condition=" '@(PushToGitHubReleaseSpecs)' == '' ">
+        <!--
+        <PushToGitHubReleaseSpecs Include="${VersionSemantic} - My release">
+             <Repository>MyCoolProject</Repository>
+             <Description>${ReleaseNotesShort}</Description>
+             <IncludedFiles>
+                $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+             </IncludedFiles>
+             <ExcludedFiles>
+             </ExcludedFiles>
+        </PushToGitHubReleaseSpecs>
+        -->
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
+        *     SHARED TOOLS                  *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the tools paths -->
+    <PropertyGroup>
+        <!--
+            The full path to the github-release command line executable.
+        -->
+        <ToolsExternalGitHubReleasePath Condition=" '$(ToolsExternalGitHubReleasePath)' == '' ">github-release.exe</ToolsExternalGitHubReleasePath>
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsDeploySharedSettings>true</ExistsDeploySharedSettings>
+    </PropertyGroup>
+</Project>

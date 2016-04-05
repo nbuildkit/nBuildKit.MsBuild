@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Build_Analyze_Source_Ccm_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildAnalyzeSourceCcm>true</ExistsBuildAnalyzeSourceCcm>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\Ccm.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Ccm.msbuild') AND '$(ExistsExtensionsCcm)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+
+    <Target Name="nBuildKit_Build_Analyze_Source_Ccm_Run"
+            DependsOnTargets="_nBuildKit_Build_Analyze_Source_Ccm_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Analyze_Source_Ccm_Analyze" />
+    </Target>
+
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Build_Analyze_Source_Ccm_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Build_Analyze_Source_Ccm_DebugLog">
+        <Message Text="Running CCM..."
+                 Importance="normal"/>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Analyze_Source_Ccm_DebugLog"
+            Condition="$(ShouldDisplayDebugLog)"
+            DependsOnTargets="_nBuildKit_Build_Analyze_Source_Ccm_ReplaceBuildTemplates">
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
+                 Importance="low"/>
+        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="The CCM template file is located at:                               $(FileTemplateCcm)"
+                 Importance="low"/>
+        <Message Text="The CCM report file is located at:                                 $(FileReportCcmExpanded)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="CCM command line executable is located at:                         $(ToolsExternalCcmPath)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Analyze_Source_Ccm_ReplaceBuildTemplates"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
+        <Message Text="Resolving build templates for: $(FileReportCcm)"
+                 Importance="low"/>
+
+        <TemplateText Template="$(FileReportCcm)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportCcmExpanded" />
+        </TemplateText>
+    </Target>
+
+    <PropertyGroup>
+        <FileCcmExe>Ccm.exe</FileCcmExe>
+        <FileGeneratedCcm>$(DirBuildTemp)\ccm.input.xml</FileGeneratedCcm>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Build_Analyze_Source_Ccm_Analyze"
+            DependsOnTargets="_nBuildKit_Build_Analyze_Source_Ccm_ReplaceBuildTemplates">
+        <Error Text="The packages directory does not exist. Cannot search for the CCM executable."
+               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+        <Error Text="The CCM template file does not exist. Cannot execute source code analysis."
+               Condition="!Exists('$(FileTemplateCcm)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportCcmExpanded)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)"
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir Directories="$(DirBuildTemp)"
+                 Condition="!Exists('$(DirBuildTemp)') AND '$(ShouldExecute)' == 'true' " />
+
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
+                                            FileToLocate="$(FileCcmExe)"
+                                            Condition=" '$(ToolsExternalCcmPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalCcmPath" />
+        </SearchPackagesDirectoryForToolPath>
+        <Message Text="The CCM executable was found at: $(ToolsExternalCcmPath)"
+                 Importance="low"
+                 Condition="Exists('$(ToolsExternalCcmPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="Could not locate the CCM executable path. Cannot execute source code analysis."
+               Condition="!Exists('$(ToolsExternalCcmPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <TemplateFile Template="$(FileTemplateCcm)"
+                      OutputFileName="$(FileGeneratedCcm)"
+                      Tokens="@(TemplateTokens)"
+                      Condition=" '$(ShouldExecute)' == 'true' "/>
+
+        <Ccm CcmExe="$(ToolsExternalCcmPath)"
+             ConfigFile="$(FileGeneratedCcm)"
+             OutputFile="$(FileReportCcmExpanded)"
+             Condition=" '$(ShouldExecute)' == 'true' "/>
+    </Target>
+ </Project>
