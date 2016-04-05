@@ -60,6 +60,8 @@
                                                            currently allows gathering release notes from GitHub, Jira and YouTrack
         $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
                                                            Currently supported version control systems is GIT
+        $(BuildStepsPrepareRestoreNpm)                   - Restores all the NPM packages for the project.
+        $(BuildStepsPrepareRestoreBower)                 - Restores all the Bower packages for the project.
         $(BuildStepsPrepareAssemblyInfo)                 - Updates all existing AssemblyInfo.cs and AssemblyInfo.vb files with the version numbers, company information,
                                                            copyright information and optionally build time and build information.
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
@@ -92,21 +94,30 @@
         Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
     <ItemGroup>
-        <TestItem Include="A" />
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
             <Properties>
             </Properties>
         </BuildStepsToExecute>
-        <!--
         <BuildStepsToExecute Include="$(BuildStepsPrepareReleaseNotes)">
             <Properties>
             </Properties>
         </BuildStepsToExecute>
-        -->
         <BuildStepsToExecute Include="$(BuildStepsPrepareVcsInfo)">
             <Properties>
             </Properties>
         </BuildStepsToExecute>
+
+        <!--
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNpm)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreBower)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+        -->
+
         <BuildStepsToExecute Include="$(BuildStepsPrepareAssemblyInfo)">
             <Properties>
             </Properties>
@@ -242,6 +253,12 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\tools\vscoveragetoreportgenerator.readme.txt">
+            <Template>$(DirSrc)\readme.txt</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.Tools.VsCoverageToReportGenerator</ReplacementValue>
+        </BuildFilesToGenerate>
+
         <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\nbuildkit.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
             <Token>PackageName</Token>
@@ -257,18 +274,15 @@
             <Template>$(DirSrc)\msbuild\scripts\deploy\packages.config</Template>
         </BuildFilesToGenerate>
 
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\common.props">
-            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\import.props">
+            <Template>$(DirSrc)\msbuild\projects\import.props</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\install.ps1">
-            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;common.net&quot;, &quot;csharp&quot;</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\uninstall.ps1">
-            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;common.net&quot;, &quot;csharp&quot;</ReplacementValue>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\import.targets">
+            <Template>$(DirSrc)\msbuild\projects\import.targets</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\nbuildkit.csharp.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
@@ -276,18 +290,15 @@
             <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
         </BuildFilesToGenerate>
 
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\common.props">
-            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\import.props">
+            <Template>$(DirSrc)\msbuild\projects\import.props</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\install.ps1">
-            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;common.net&quot;,&quot;vbnet&quot;</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\uninstall.ps1">
-            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;common.net&quot;,&quot;vbnet&quot;</ReplacementValue>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\import.targets">
+            <Template>$(DirSrc)\msbuild\projects\import.targets</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\nbuildkit.vbnet.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
@@ -295,18 +306,15 @@
             <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
         </BuildFilesToGenerate>
 
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\common.props">
-            <Template>$(DirSrc)\msbuild\projects\common.props</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\import.props">
+            <Template>$(DirSrc)\msbuild\projects\import.props</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.WiX</ReplacementValue>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\install.ps1">
-            <Template>$(DirSrc)\msbuild\projects\install.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;wix&quot;</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\uninstall.ps1">
-            <Template>$(DirSrc)\msbuild\projects\uninstall.ps1</Template>
-            <Token>TargetsFiles</Token>
-            <ReplacementValue>&quot;common&quot;,&quot;shared.basesettings&quot;,&quot;shared.importsharedsettings&quot;,&quot;shared.importbuildsharedsettings&quot;,&quot;wix&quot;</ReplacementValue>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\import.targets">
+            <Template>$(DirSrc)\msbuild\projects\import.targets</Template>
+            <Token>PackageName</Token>
+            <ReplacementValue>nBuildKit.MsBuild.Projects.WiX</ReplacementValue>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\nbuildkit.wix.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
@@ -888,6 +896,91 @@
     <ItemGroup>
         <ArchivePackageSpecs Include="$(DirTemplates)\samples.zipspec" />
     </ItemGroup>
+
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
+        *     SHARED TOOLS                  *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the tools paths -->
+    <PropertyGroup>
+        <!--
+            The full path to the Visual Studio installation directory
+        -->
+        <!-- <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 14.0')">C:\Program Files (x86)\Microsoft Visual Studio 14.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0')">C:\Program Files (x86)\Microsoft Visual Studio 12.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0')">C:\Program Files (x86)\Microsoft Visual Studio 11.0</ToolsExternalVisualStudioDir> -->
+
+        <!--
+            The full path to the CCM command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalCcmPath Condition=" '$(ToolsExternalCcmPath)' == '' ">UNDEFINED</ToolsExternalCcmPath> -->
+
+        <!--
+            The full path to the directory that contains the FxCop command line executable
+        -->
+        <!-- <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop')">$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
+        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
+        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir> -->
+
+        <!--
+            The full path to the MoMA command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath> -->
+
+        <!--
+            The full path to the MsTest command line executable.
+        -->
+        <!-- <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">UNDEFINED</ToolsExternalMsTestPath> -->
+
+        <!--
+            The full path and version to the nUnit command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalNUnitConsolePath Condition=" '$(ToolsExternalNUnitConsolePath)' == '' ">UNDEFINED</ToolsExternalNUnitConsolePath>
+        <ToolsExternalNUnitConsoleVersion Condition=" '$(ToolsExternalNUnitConsoleVersion)' == '' ">2.6.4</ToolsExternalNUnitConsoleVersion> -->
+
+        <!--
+            The full path and version to the OpenCover command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath>
+        <ToolsExternalOpenCoverVersion Condition=" '$(ToolsExternalOpenCoverVersion)' == '' ">4.6.519</ToolsExternalOpenCoverVersion>-->
+
+        <!--
+            The full path and version to the ReportGenerator command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath>
+        <ToolsExternalReportGeneratorVersion Condition=" '$(ToolsExternalReportGeneratorVersion)' == '' ">2.4.4</ToolsExternalReportGeneratorVersion>-->
+
+        <!--
+            The full path to the sn.exe command line executable.
+        -->
+        <!-- <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' ">UNDEFINED</ToolsExternalSnPath>-->
+
+        <!--
+            The full path to the SourceMonitor command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalSourceMonitorPath Condition=" '$(ToolsExternalSourceMonitorPath)' == '' ">UNDEFINED</ToolsExternalSourceMonitorPath> -->
+
+        <!--
+            The full path to the VSCoverageToReportGenerator command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalVSCoverageToReportGeneratorPath Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalVSCoverageToReportGeneratorPath> -->
+
+        <!--
+            The full path to the VsTest command line executable.
+        -->
+        <!-- <ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</ToolsExternalVsTestPath>
+        <ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' ">UNDEFINED</ToolsExternalVsTestPath> -->
+    </PropertyGroup>
 
 
 

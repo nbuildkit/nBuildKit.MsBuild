@@ -12,13 +12,6 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
 
-    <PropertyGroup>
-        <!-- Directories -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
-        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
-    </PropertyGroup>
-
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
@@ -57,7 +50,6 @@
                  Importance="low"/>
     </Target>
 
-    <!-- Display info -->
     <Target Name="_nBuildKit_Build_Binaries_DisplayInfo"
             DependsOnTargets="_nBuildKit_Build_Binaries_DebugLog">
         <Message Text="Building the Visual Studio solutions ..."
@@ -68,7 +60,6 @@
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Condition=" '@(SolutionsToBuild)' != '' "
             Outputs="%(SolutionsToBuild.Identity)">
-        <!-- Process the build templates in the solution file path -->
         <TemplateText Template="%(SolutionsToBuild.FullPath)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileSln" />
@@ -76,16 +67,19 @@
 
         <Error Text="No NuGet executable defined. Will not be able to restore the packages."
                Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
-        <Error Text="The Visual Studio solution file does not point to a valid file."
+        <Error Text="Expected $(FileSln) to point to a valid path but it does not."
                Condition="!Exists('$(FileSln)') AND  '$(ShouldExecute)' == 'true' " />
 
-        <Message Text="Building from solution $(FileSln) for targets = %(SolutionsToBuild.Targets) with: Configuration = %(SolutionsToBuild.Configuration) and Platform = %(SolutionsToBuild.Platform) ..."
+        <Message Text="Building $(FileSln) for targets = %(SolutionsToBuild.Targets) with: Configuration = %(SolutionsToBuild.Configuration) and Platform = %(SolutionsToBuild.Platform) ..."
                  Importance="normal"/>
 
+        <CreateProperty Value="$([System.IO.Path]::GetExtension('$(FileSln)'))">
+            <Output TaskParameter="Value" PropertyName="FileExtension" />
+        </CreateProperty>
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageFile="$(FileSln)"
                       PackageDirectory="$(DirPackages)"
-                      Condition=" '$(ShouldExecute)' == 'true' "/>
+                      Condition=" '$(FileExtension)' == '.sln' AND '$(ShouldExecute)' == 'true' "/>
 
         <MSBuild
             BuildInParallel="False"
@@ -109,7 +103,8 @@
                  Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
-            <LogFiles Include="$([System.IO.Path]::GetDirectoryName('%(GeneratedAssemblies.Identity)'))\*.CodeAnalysisLog.xml" />
+            <LogFiles Include="$([System.IO.Path]::GetDirectoryName('%(GeneratedAssemblies.Identity)'))\*.CodeAnalysisLog.xml"
+                      Condition="Exists('%(GeneratedAssemblies.Identity)')" />
         </ItemGroup>
 
         <Move SourceFiles="@(LogFiles)"

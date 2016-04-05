@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <NBuildKitVersion>${VersionSemantic}</NBuildKitVersion>
+    </PropertyGroup>
+
+    <!--
+        Import the repository specific settings file. This file is expected to be found in the workspace directory
+    -->
+    <PropertyGroup Condition=" '$(SharedPropertyFile)' == '' ">
+        <DirLocalBase>UNDEFINED</DirLocalBase>
+        <DirLocalBase Condition=" '$(DirLocalBase)' == 'UNDEFINED' AND Exists('$(DirWorkspace)')">$(DirWorkspace)</DirLocalBase>
+        <DirLocalBase Condition=" '$(DirLocalBase)' == 'UNDEFINED' AND Exists('$(SolutionDir)')">$(SolutionDir)</DirLocalBase>
+
+        <!-- No idea towards the location is given so we'll just go from our location or the location of the file that is importing us -->
+        <DirLocalBase Condition=" '$(DirLocalBase)' == 'UNDEFINED'">$(MSBuildProjectDirectory)</DirLocalBase>
+
+        <!--
+            We can't search for the 'settings.props' file because MsBuild won't let us dynamically load files,
+            so we have to make some assumptions about the location of the file when working either from a
+            build script or from Visual Studio.
+
+            In some cases we can pass in the location of the workspace directory in which case we'll use that,
+            otherwise we'll play the guessing game.
+
+            Probe for the settings.props file up to 10 directories above our current one.
+        -->
+        <FileRepositorySettings>settings.props</FileRepositorySettings>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == '' ">UNDEFINED</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
+        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED' ">FAILED_TO_LOCATE_SharedPropertyFile</SharedPropertyFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(DirWorkspace)' == '' ">
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' AND Exists('$(SharedPropertyFile)') ">$([System.IO.Path]::GetDirectoryName('$(SharedPropertyFile)'))</DirWorkspace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(DirPackages)' == '' ">
+        <!--
+            Find the path to the PackagesDirectory manually so that we can load the shared build steps before loading the
+            'settings.props' file. This is necessary because otherwise the BuildStepsToExecute ItemGroup will only be partially populated
+
+            Searching for the package directory is complicated. Technically we would like to get it from the 'settings.props' file because
+            that would be easy, except that we can only load that file once. So the next best thing is to see if there is a 'nuget.config'
+            file somewhere that gives us the path. If not we'll assume it is in the workspace directory.
+        -->
+        <!--
+            Assume the 'nuget.config' file is in the workspace directory. If it's somewhere else we're stuffed and nBuildKit won't be working
+            correctly anyway.
+
+            Then get the content and strip out the whitespace for easier use.
+        -->
+        <FileNuGetConfig>$(DirWorkspace)\nuget.config</FileNuGetConfig>
+        <ContentNuGetConfig Condition="Exists('$(FileNuGetConfig)')">$([System.IO.File]::ReadAllText('$(FileNuGetConfig)'))</ContentNuGetConfig>
+        <ContentNuGetConfig Condition="Exists('$(FileNuGetConfig)')">$([System.Text.RegularExpressions.Regex]::Replace('$(ContentNuGetConfig)', '\s+', ''))</ContentNuGetConfig>
+
+        <!--
+            Now search for the element '<add key="repositorypath" value="foobar">'. Using a Regex here because that's the only way MsBuild allows us to find the element value.
+            This regex searches for the block 'addkey="repositorypath"value="' and then grabs the word characters (\w+) after it (?<= is the positive lookbehind operator).
+        -->
+        <ConfigPackagesLocation>$([System.Text.RegularExpressions.Regex]::Match('$(ContentNuGetConfig)', '(?&lt;=addkey\=\"repositorypath\"value\=\")\w+'))</ConfigPackagesLocation>
+
+        <!--
+            Now determine the packages path. If the packages path from the 'nuget.config' file is a full path (i.e. it is rooted) then we use that, otherwise we assume it's a
+            path relative to the workspace directory.
+        -->
+        <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND $([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(ConfigPackagesLocation)'))</DirPackages>
+        <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND !$([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(DirWorkspace)\$(ConfigPackagesLocation)'))</DirPackages>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' OR !Exists('$(DirNBuildKitMsBuild)') ">$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
+        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' OR !Exists('$(DirNBuildKitMsBuildShared)') ">$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuildShared>
+        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' OR !Exists('$(DirNBuildKitMsBuildExtensions)') ">$(DirNBuildKitMsBuild)\extensions</DirNBuildKitMsBuildExtensions>
+        <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildTemplates)') ">$(DirNBuildKitMsBuild)\templates</DirNBuildKitMsBuildTemplates>
+
+        <DefaultPathProperties>
+            DirNBuildKitMsBuild=$(DirNBuildKitMsBuild);
+            DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);
+            DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);
+            DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates);
+        </DefaultPathProperties>
+    </PropertyGroup>
+
+    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/common.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/common.props') " />
+    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.basesettings.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.basesettings.props') " />
+    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.importsharedsettings.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.importsharedsettings.props') " />
+    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.importbuildsharedsettings.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.importbuildsharedsettings.props') " />
+    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/common.net.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/common.net.props') " />
+
+    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/csharp.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/csharp.props') " />
+    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/vbnet.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/vbnet.props') " />
+    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/wix.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/wix.props') " />
+</Project>

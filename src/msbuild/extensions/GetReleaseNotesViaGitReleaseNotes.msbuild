@@ -14,6 +14,9 @@
         -->
         <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
         <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
+
+        <MsBuildUtilitiesAssembly>$(MSBuildToolsPath)\Microsoft.Build.Utilities.v$(MSBuildToolsVersion).dll</MsBuildUtilitiesAssembly>
+        <MsBuildUtilitiesAssembly Condition="!Exists('$(MsBuildUtilitiesAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</MsBuildUtilitiesAssembly>
     </PropertyGroup>
 
     <UsingTask TaskName="GetReleaseNotesViaGitReleaseNotes"
@@ -31,104 +34,224 @@
             <GetAllReleaseNotes ParameterType="System.Boolean" Required="true" />
         </ParameterGroup>
         <Task>
-            <Code Type="Method" Language="cs">
+            <Reference Include="System.Xml" />
+            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
+            <Reference Include="$(MsBuildUtilitiesAssembly)"/>
+            <Code Type="Class" Language="cs">
                 <![CDATA[
-                    public override bool Execute()
+                    using System;
+                    using System.Collections.Generic;
+                    using System.Linq;
+                    using System.IO;
+                    using System.Runtime.InteropServices;
+                    using System.Xml;
+                    using Microsoft.Build.Framework;
+                    using Microsoft.Build.Utilities;
+
+                    public sealed class GetReleaseNotesViaGitReleaseNotes : Microsoft.Build.Utilities.Task
                     {
-                        var builder = new System.Text.StringBuilder();
+                        /// <summary>
+                        /// Set the window's error mode for this process. Be very careful with this --- this is a process wide
+                        /// setting, so in a multi-threaded situation it can do crazy things!
+                        /// Code pulled from: http://msdn.microsoft.com/en-us/magazine/cc163866.aspx
+                        /// </summary>
+                        public struct ChangeErrorMode : IDisposable
                         {
-                            builder.Append("/Token %GitHubToken% ");
-                            builder.Append(string.Format("/Repo \"{0}\" ", RepositoryName));
-                            builder.Append(string.Format("/Version \"{0}\" ", Version));
-                            builder.Append(string.Format("/OutputFile \"{0}\" ", OutputFile));
-
-                            if (!string.IsNullOrEmpty(YouTrackUserName))
+                            /// <summary>
+                            /// Error modes that can be enabled or disabled.
+                            /// </summary>
+                            [Flags]
+                            public enum ErrorModes
                             {
-                                builder.Append("/IssueTracker YouTrack ");
-                                builder.Append(string.Format("/UserName \"{0}\" ", YouTrackUserName));
-                                builder.Append("/Password %IssueTrackerPassword% ");
-                                builder.Append(string.Format("/YouTrackServer \"{0}\" ", YouTrackServer));
-                                builder.Append(string.Format("/ProjectId \"{0}\" ", YouTrackProject));
-                                builder.Append(string.Format("/YouTrackFilter \"{0}\" ", YouTrackFilter));
-                            }
-                            else
-                            {
-                                builder.Append("/IssueTracker GitHub ");
+                                Default = 0x0,
+                                FailCriticalErrors = 0x1,
+                                NoGpFaultErrorBox = 0x2,
+                                NoAlignmentFaultExcept = 0x4,
+                                NoOpenFileErrorBox = 0x8000
                             }
 
-                            if (GetAllReleaseNotes)
+                            private int _oldMode;
+
+                            /// <summary>
+                            /// Set the new error mode. When Dispose is called it will reset
+                            /// to the original value (use the "using" statement).
+                            /// </summary>
+                            /// <param name="mode"></param>
+                            public ChangeErrorMode(ErrorModes mode)
                             {
-                                builder.Append("/AllTags ");
+                                _oldMode = SetErrorMode((int)mode);
                             }
+
+                            void IDisposable.Dispose() { SetErrorMode(_oldMode); }
+
+                            [DllImport("kernel32.dll")]
+                            private static extern int SetErrorMode(int newMode);
                         }
 
-                        var arguments = builder.ToString();
-                        Log.LogMessage(MessageImportance.Low, ExePath);
-                        Log.LogMessage(MessageImportance.Low, arguments);
 
-                        var info = new System.Diagnostics.ProcessStartInfo
+                        [Microsoft.Build.Framework.Required]
+                        public string ExePath
                         {
-                            FileName = ExePath,
-                            Arguments = System.Environment.ExpandEnvironmentVariables(arguments),
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                        };
+                            get;
+                            set;
+                        }
 
-                        var text = new System.Text.StringBuilder();
-                        var process = new System.Diagnostics.Process();
-                        process.StartInfo = info;
-                        process.OutputDataReceived +=
-                            (s, e) =>
+                        [Microsoft.Build.Framework.Required]
+                        public string RepositoryName
+                        {
+                            get;
+                            set;
+                        }
+
+                        public string YouTrackUserName
+                        {
+                            get;
+                            set;
+                        }
+
+                        public string YouTrackServer
+                        {
+                            get;
+                            set;
+                        }
+
+                        public string YouTrackProject
+                        {
+                            get;
+                            set;
+                        }
+
+                        public string YouTrackFilter
+                        {
+                            get;
+                            set;
+                        }
+
+                        [Microsoft.Build.Framework.Required]
+                        public string Version
+                        {
+                            get;
+                            set;
+                        }
+
+                        [Microsoft.Build.Framework.Required]
+                        public string OutputFile
+                        {
+                            get;
+                            set;
+                        }
+
+                        [Microsoft.Build.Framework.Required]
+                        public bool GetAllReleaseNotes
+                        {
+                            get;
+                            set;
+                        }
+
+                        public override bool Execute()
+                        {
+                            var builder = new System.Text.StringBuilder();
                             {
-                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                builder.Append("/Token %GitHubToken% ");
+                                builder.Append(string.Format("/Repo \"{0}\" ", RepositoryName));
+                                builder.Append(string.Format("/Version \"{0}\" ", Version));
+                                builder.Append(string.Format("/OutputFile \"{0}\" ", OutputFile));
+
+                                if (!string.IsNullOrEmpty(YouTrackUserName))
                                 {
-                                    Log.LogMessage(MessageImportance.Low, e.Data);
+                                    builder.Append("/IssueTracker YouTrack ");
+                                    builder.Append(string.Format("/UserName \"{0}\" ", YouTrackUserName));
+                                    builder.Append("/Password %IssueTrackerPassword% ");
+                                    builder.Append(string.Format("/YouTrackServer \"{0}\" ", YouTrackServer));
+                                    builder.Append(string.Format("/ProjectId \"{0}\" ", YouTrackProject));
+                                    builder.Append(string.Format("/YouTrackFilter \"{0}\" ", YouTrackFilter));
                                 }
-                            };
-                        process.ErrorDataReceived +=
-                            (s, e) =>
-                            {
-                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                else
                                 {
-                                    Log.LogError(e.Data);
+                                    builder.Append("/IssueTracker GitHub ");
                                 }
-                            };
-                        process.Start();
 
-                        process.BeginOutputReadLine();
-                        process.BeginErrorReadLine();
-                        process.WaitForExit();
-
-                        if (process.ExitCode != 0)
-                        {
-                            Log.LogError(
-                                string.Format(
-                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
-                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
-                                    process.ExitCode));
-                            return false;
-                        }
-
-                        // All lines in the short release notes start with a single space. When we try to read the
-                        // content of the files into a MsBuild property the starting whitespace on the first line
-                        // gets stripped.
-                        if (!GetAllReleaseNotes)
-                        {
-                            var strippedLines = new System.Collections.Generic.List<string>();
-                            var lines = File.ReadLines(OutputFile).ToArray();
-                            foreach(var line in lines)
-                            {
-                                strippedLines.Add(line.Trim());
+                                if (GetAllReleaseNotes)
+                                {
+                                    builder.Append("/AllTags ");
+                                }
                             }
 
-                            File.WriteAllLines(OutputFile, strippedLines.ToArray());
-                        }
+                            var arguments = builder.ToString();
+                            Log.LogMessage(MessageImportance.Low, ExePath);
+                            Log.LogMessage(MessageImportance.Low, arguments);
 
-                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
-                        // from a task's constructor or property setter. As long as this task is written to always log an error
-                        // when it fails, we can reliably return HasLoggedErrors.
-                        return !Log.HasLoggedErrors;
+                            var info = new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = ExePath,
+                                Arguments = System.Environment.ExpandEnvironmentVariables(arguments),
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+                            };
+
+                            var text = new System.Text.StringBuilder();
+                            var process = new System.Diagnostics.Process();
+                            process.StartInfo = info;
+                            process.OutputDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogMessage(MessageImportance.Low, e.Data);
+                                    }
+                                };
+                            process.ErrorDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogError(e.Data);
+                                    }
+                                };
+
+                            lock (this)
+                            {
+                                using (ChangeErrorMode newnewerr = new ChangeErrorMode(ChangeErrorMode.ErrorModes.FailCriticalErrors | ChangeErrorMode.ErrorModes.NoGpFaultErrorBox))
+                                {
+                                    process.Start();
+
+                                    process.BeginOutputReadLine();
+                                    process.BeginErrorReadLine();
+                                    process.WaitForExit();
+                                }
+                            }
+
+                            if (process.ExitCode != 0)
+                            {
+                                Log.LogError(
+                                    string.Format(
+                                        "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                        System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                        process.ExitCode));
+                                return false;
+                            }
+
+                            // All lines in the short release notes start with a single space. When we try to read the
+                            // content of the files into a MsBuild property the starting whitespace on the first line
+                            // gets stripped.
+                            if (!GetAllReleaseNotes)
+                            {
+                                var strippedLines = new System.Collections.Generic.List<string>();
+                                var lines = File.ReadLines(OutputFile).ToArray();
+                                foreach(var line in lines)
+                                {
+                                    strippedLines.Add(line.Trim());
+                                }
+
+                                File.WriteAllLines(OutputFile, strippedLines.ToArray());
+                            }
+
+                            // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                            // from a task's constructor or property setter. As long as this task is written to always log an error
+                            // when it fails, we can reliably return HasLoggedErrors.
+                            return !Log.HasLoggedErrors;
+                        }
                     }
                 ]]>
             </Code>
