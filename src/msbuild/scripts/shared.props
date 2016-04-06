@@ -491,9 +491,9 @@
     <!-- Overrides for the tools paths -->
     <PropertyGroup>
         <!--
-            The full path to the Bower command line executable
+            The full path to the Bower command line executable. If not defined the packages directory is searched.
         -->
-        <ToolsExternalBowerPath Condition=" '$(ToolsExternalBowerPath)' == '' ">bower</ToolsExternalBowerPath>
+        <ToolsExternalBowerPath Condition=" '$(ToolsExternalBowerPath)' == '' ">UNDEFINED</ToolsExternalBowerPath>
 
         <!--
             The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
@@ -513,9 +513,14 @@
         <ToolsExternalGitVersionVersion Condition=" '$(ToolsExternalGitVersionVersion)' == '' ">3.3.0</ToolsExternalGitVersionVersion>
 
         <!--
-            The full path to the NPM command line executable.
+            The full path to the Node.js command line executable. If not defined the packages directory is searched.
         -->
-        <ToolsExternalNpmPath Condition=" '$(ToolsExternalNpmPath)' == '' ">npm</ToolsExternalNpmPath>
+        <ToolsExternalNodeJsPath Condition=" '$(ToolsExternalNodeJsPath)' == '' ">UNDEFINED</ToolsExternalNodeJsPath>
+
+        <!--
+            The full path to the NPM command line executable. If not defined the packages directory is searched.
+        -->
+        <ToolsExternalNpmPath Condition=" '$(ToolsExternalNpmPath)' == '' ">UNDEFINED</ToolsExternalNpmPath>
 
         <!--
             The full path and version to the NTreva command line executable. IF not defined the packages directory is searched.
