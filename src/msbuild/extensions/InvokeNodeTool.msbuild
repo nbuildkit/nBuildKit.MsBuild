@@ -35,7 +35,6 @@
                     {
                         try
                         {
-                            var nodeWorkingDirectory = System.IO.Path.GetDirectoryName(NodeExecutablePath);
                             var info = new System.Diagnostics.ProcessStartInfo
                                     {
                                         FileName = NodeExecutablePath,
@@ -46,8 +45,14 @@
                                         RedirectStandardError = true,
                                     };
                             info.EnvironmentVariables["PATH"] = System.Environment.GetEnvironmentVariable("PATH");
-                            info.EnvironmentVariables["PATH"] += ";" + nodeWorkingDirectory;
-                            if (AdditionalEnvironmentPaths.Length > 0)
+
+                            var nodeWorkingDirectory = System.IO.Path.GetDirectoryName(NodeExecutablePath);
+                            if (!string.IsNullOrWhiteSpace(nodeWorkingDirectory))
+                            {
+                                info.EnvironmentVariables["PATH"] += ";" + nodeWorkingDirectory;
+                            }
+
+                            if ((AdditionalEnvironmentPaths != null) && (AdditionalEnvironmentPaths.Length > 0))
                             {
                                 foreach(var path in AdditionalEnvironmentPaths)
                                 {
