@@ -12,6 +12,8 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild') AND '$(ExistsExtensionsInvokeNodeTool)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
@@ -125,14 +127,21 @@
                         Condition="!$(ToolsExternalNpmPath.EndsWith('npm-cli.js'))">
             <Output TaskParameter="Value" PropertyName="ToolsExternalNpmInvocation" />
         </CreateProperty>
-        <CreateProperty Value="&quot;$(ToolsExternalNodeJsPath)&quot; &quot;$(ToolsExternalNpmPath)&quot;"
+        <CreateProperty Value="&quot;&quot; &quot;&quot;"
                         Condition="$(ToolsExternalNpmPath.EndsWith('npm-cli.js'))">
             <Output TaskParameter="Value" PropertyName="ToolsExternalNpmInvocation" />
         </CreateProperty>
 
-        <Exec Command="$(ToolsExternalNpmInvocation) install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
-              WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)"
-              IgnoreStandardErrorWarningFormat="True"
-              Condition=" '@(NpmPackageFiles)' != '' "/>
+        <ItemGroup>
+            <AdditionalEnvironmentPaths Include="$([System.IO.Path]::GetDirectoryName('$(ToolsExternalPythonPath)'))" />
+        </ItemGroup>
+        <InvokeNodeTool NodeExecutablePath="$(ToolsExternalNodeJsPath)"
+                        AdditionalEnvironmentPaths="@(AdditionalEnvironmentPaths)"
+                        ToolPath="$(ToolsExternalNpmPath)"
+                        Arguments="install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
+                        WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)"
+                        IgnoreErrors="true"
+                        IgnoreExitCode="false"
+                        Condition=" '@(NpmPackageFiles)' != '' "/>
     </Target>
  </Project>
