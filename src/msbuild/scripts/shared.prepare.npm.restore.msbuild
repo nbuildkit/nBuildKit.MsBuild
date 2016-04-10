@@ -73,6 +73,23 @@
                Condition="!Exists('$(ToolsExternalNodeJsPath)') AND '$(ShouldExecute)' == 'true' "/>
 
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="Python.Runtime"
+                      PackageVersion="$(ToolsExternalPythonVersion)"
+                      PackageDirectory="$(DirPackages)"
+                      Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "/>
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
+                                            FileToLocate="python.exe"
+                                            Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalPythonPath" />
+        </SearchPackagesDirectoryForToolPath>
+        <Message Text="The python executable was found at: $(ToolsExternalPythonPath)"
+                 Importance="low"
+                 Condition="Exists('$(ToolsExternalPythonPath)') AND '$(ShouldExecute)' == 'true' " />
+
+        <Warning Text="Could not locate the python executable path. It is not possible to invoke python scripts. This may fail the NPM restore process."
+                 Condition="!Exists('$(ToolsExternalPythonPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="Npm"
                       PackageVersion="$(ToolsExternalNpmVersion)"
                       PackageDirectory="$(DirPackages)"
