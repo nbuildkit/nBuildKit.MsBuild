@@ -57,6 +57,7 @@
                                                              - VersionPreRelease
                                                            - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
                                                            - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
+        $(BuildStepsPrepareVcsMerge)                     - Merges the current changes to the designated target branch (specified by $(BranchMergeTarget)).
         $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process. Release notes
                                                            are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
                                                            currently allows gathering release notes from GitHub, Jira and YouTrack
@@ -101,6 +102,10 @@
             </Properties>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsMerge)">
             <Properties>
             </Properties>
         </BuildStepsToExecute>

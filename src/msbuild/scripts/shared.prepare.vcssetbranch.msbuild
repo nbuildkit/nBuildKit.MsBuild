@@ -22,9 +22,9 @@
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog">
         <Message Text="Ensuring that the build is executed on the correct branch ..."
                  Importance="normal"/>
-        <Message Text="Expected branch: $(ExpectedGitBranch)"
+        <Message Text="Expected branch: $(BranchGitExpected)"
                  Importance="normal" />
-        <Message Text="Expected revision: $(ExpectedGitRevNo)"
+        <Message Text="Expected revision: $(GitRevNoExpected)"
                  Importance="normal" />
     </Target>
 
@@ -74,20 +74,20 @@
         <Message Text="Current branch: $(CurrentGitBranch)" />
 
         <Message Text="Not on expected branch, resetting ..."
-                 Condition=" '$(CurrentGitBranch)' != '$(ExpectedGitBranch)' " />
-        <Exec Command="git checkout $(ExpectedGitBranch)"
-              Condition=" '$(CurrentGitBranch)' != '$(ExpectedGitBranch)' " />
+                 Condition=" '$(CurrentGitBranch)' != '$(BranchGitExpected)' " />
+        <Exec Command="git checkout $(BranchGitExpected)"
+              Condition=" '$(CurrentGitBranch)' != '$(BranchGitExpected)' " />
 
         <Exec Command="git rev-parse HEAD"
               IgnoreExitCode="true"
               ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="CurrentGitRevNo" />
+            <Output TaskParameter="ConsoleOutput" PropertyName="GitRevNoCurrentBranch" />
         </Exec>
-        <Message Text="Current revision: $(CurrentGitRevNo)" />
+        <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
 
         <Message Text="Not at expected revision, resetting ..."
-                 Condition=" '$(CurrentGitRevNo)' != '$(ExpectedGitRevNo)' " />
-        <Exec Command="git reset --hard $(ExpectedGitRevNo)"
-              Condition=" '$(CurrentGitRevNo)' != '$(ExpectedGitRevNo)' " />
+                 Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' " />
+        <Exec Command="git reset --hard $(GitRevNoExpected)"
+              Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' " />
     </Target>
  </Project>
