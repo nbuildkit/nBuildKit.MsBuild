@@ -18,8 +18,7 @@
     <Target Name="nBuildKit_Shared_Prepare_VcsInfo_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsInfo_DisplayInfo"
             Condition="!Exists('$(FileVcsInfo)')">
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo_AfterMerge" />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo_NoMerge" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo" />
     </Target>
 
     <!-- Display info -->
@@ -62,8 +61,8 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo_NoMerge"
-            Condition="$(IsGitWorkspace) AND '$(BranchMergeTarget)' == 'UNDEFINED' ">
+    <Target Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo"
+            Condition="$(IsGitWorkspace)">
         <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
                Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
 
@@ -84,21 +83,6 @@
             <GitInfoItems Include="{" />
             <GitInfoItems Include="    &quot;revision&quot;: &quot;$(GitCurrentRevision)&quot;," />
             <GitInfoItems Include="    &quot;branch&quot;: &quot;$(GitCurrentBranch)&quot;" />
-            <GitInfoItems Include="}" />
-        </ItemGroup>
-
-        <WriteLinesToFile File="$(FileVcsInfo)"
-                          Lines="@(GitInfoItems)"
-                          Overwrite="true"
-                          Condition=" '$(ShouldExecute)' == 'true' "/>
-    </Target>
-
-    <Target Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo_AfterMerge"
-            Condition="$(IsGitWorkspace) AND '$(BranchMergeTarget)' != 'UNDEFINED'">
-        <ItemGroup>
-            <GitInfoItems Include="{" />
-            <GitInfoItems Include="    &quot;revision&quot;: &quot;$(GitRevNoExpected)&quot;," />
-            <GitInfoItems Include="    &quot;branch&quot;: &quot;$(BranchGitExpected)&quot;" />
             <GitInfoItems Include="}" />
         </ItemGroup>
 
