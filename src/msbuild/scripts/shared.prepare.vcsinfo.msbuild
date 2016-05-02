@@ -94,7 +94,7 @@
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo_AfterMerge"
-            Condition="$(IsGitWorkspace) AND '$(BranchMergeTarget)' != 'UNDEFINED' AND '%(BuildStepsToExecute.Identity)' == '$(BuildStepsPrepareVcsMerge)' ">
+            Condition="$(IsGitWorkspace) AND '$(BranchMergeTarget)' != 'UNDEFINED'">
         <ItemGroup>
             <GitInfoItems Include="{" />
             <GitInfoItems Include="    &quot;revision&quot;: &quot;$(GitRevNoExpected)&quot;," />
