@@ -14,7 +14,7 @@
     <Target Name="nBuildKit_Shared_Prepare_VcsSetBranch_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
             Condition="!Exists('$(FileVcsInfo)')">
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsSetBranch_GatherGitInfo" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsSetBranch_Jenkins_EnsureCorrectGitBranch" />
     </Target>
 
     <!-- Display info -->
@@ -22,6 +22,10 @@
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog">
         <Message Text="Ensuring that the build is executed on the correct branch ..."
                  Importance="normal"/>
+        <Message Text="Expected branch: $(ExpectedGitBranch)"
+                 Importance="normal" />
+        <Message Text="Expected revision: $(ExpectedGitRevNo)"
+                 Importance="normal" />
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog" Condition="$(ShouldDisplayDebugLog)">
@@ -61,9 +65,6 @@
             Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnJenkinsBuildServer)' == 'True' ">
         <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
                Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
-
-        <Message Text="Expected branch: $(ExpectedGitBranch)" />
-        <Message Text="Expected revision: $(ExpectedGitRevNo)" />
 
         <Exec Command="git symbolic-ref --short HEAD"
               IgnoreExitCode="true"
