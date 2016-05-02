@@ -78,6 +78,12 @@
               Condition=" '$(BranchGitExpected)' != '$(BranchMergeTarget)' " />
         <Exec Command="git tag $(VersionSemantic)" />
 
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsMergeInfo)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)"
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+
         <ItemGroup>
             <GitMergeItems Include="{" />
             <GitMergeItems Include="    &quot;origin_branch&quot;: &quot;$(BranchGitExpected)&quot;," />
