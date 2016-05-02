@@ -33,6 +33,8 @@
           NuGet packages as specified in the nBuildKit specific 'packages.config' files.
 
         The following build steps are by default provided through the given properties:
+        $(BuildStepsPrepareVcsBranch)                    - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
+                                                           name as the remote tracking branch.
         $(BuildStepsPrepareGetVersion)                   - Gathers version information and stores it in a temporary file for use by the rest of the build process.
                                                            Currently supported methods of gathering version information are using (in order):
                                                            - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
@@ -93,7 +95,11 @@
 
         Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '@(BuildStepsToExecute)' == '' ">
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsBranch)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
             <Properties>
             </Properties>
