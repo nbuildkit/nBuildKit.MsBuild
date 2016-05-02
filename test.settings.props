@@ -13,6 +13,8 @@
           NuGet packages as specified in the nBuildKit specific 'packages.config' files.
 
         The following test steps are by default provided through the given properties:
+        $(TestStepsPrepareVcsBranch)     - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
+                                           name as the remote tracking branch.
         $(TestStepsPrepareGetVersion)    - Gathers version information and stores it in a temporary file for use by the rest of the test process.
                                            Currently supported methods of gathering version information are using (in order):
                                            - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
@@ -56,6 +58,10 @@
         $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
     -->
     <ItemGroup>
+        <TestStepsToExecute Include="$(TestStepsPrepareVcsBranch)">
+            <Properties>
+            </Properties>
+        </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareGetVersion)">
             <Properties>
             </Properties>
