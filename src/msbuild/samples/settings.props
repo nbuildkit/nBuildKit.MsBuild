@@ -115,15 +115,15 @@
         -->
 
         <!--
-        <ExpectedGitBranch>UNDEFINED</ExpectedGitBranch>
-        <ExpectedGitBranch Condition=" '$(IsOnJenkinsBuildServer)' == 'True' " >$(GIT_BRANCH.SubString($(JenkinsGitBranchExpectedHeader.Length)))</ExpectedGitBranch>
-        <ExpectedGitBranch Condition=" '$(IsOnTfsBuildServer)' == 'True' " >$(TF_BUILD_SOURCEGETVERSION.SubString($(TfsGitBranchExpectedHeader.Length), $([MSBuild]::Subtract($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), $(TfsGitBranchExpectedHeader.Length)))))</ExpectedGitBranch>
+        <BranchGitExpected>UNDEFINED</BranchGitExpected>
+        <BranchGitExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' " >$(GIT_BRANCH.SubString($(JenkinsGitBranchExpectedHeader.Length)))</BranchGitExpected>
+        <BranchGitExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' " >$(TF_BUILD_SOURCEGETVERSION.SubString($(TfsGitBranchExpectedHeader.Length), $([MSBuild]::Subtract($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), $(TfsGitBranchExpectedHeader.Length)))))</BranchGitExpected>
         -->
 
         <!--
-        <ExpectedGitRevNo>UNDEFINED</ExpectedGitRevNo>
-        <ExpectedGitRevNo Condition=" '$(IsOnJenkinsBuildServer)' == 'True' ">$(GIT_COMMIT)</ExpectedGitRevNo>
-        <ExpectedGitRevNo Condition=" '$(IsOnTfsBuildServer)' == 'True' ">$(TF_BUILD_SOURCEGETVERSION.SubString($([MSBuild]::Add($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), 1))))</ExpectedGitRevNo>
+        <GitRevNoExpected>UNDEFINED</GitRevNoExpected>
+        <GitRevNoExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' ">$(GIT_COMMIT)</GitRevNoExpected>
+        <GitRevNoExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' ">$(TF_BUILD_SOURCEGETVERSION.SubString($([MSBuild]::Add($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), 1))))</GitRevNoExpected>
         -->
     </PropertyGroup>
 
@@ -364,6 +364,22 @@
 
         <!-- The directory that contains all the test files for the project -->
         <!-- <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest> -->
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - MERGE ****
+    -->
+    <PropertyGroup>
+        <!--
+            The name of the branch that the current changes should be merged to.
+        -->
+        <!-- <BranchMergeTarget Condition=" '$(BranchMergeTarget)' == '' ">UNDEFINED</BranchMergeTarget> -->
+
+        <!--
+            The full path to the file that will contain the VCS merge information describing the merge.
+        -->
+        <!-- <FileVcsMergeInfo Condition=" '$(FileVcsMergeInfo)' == '' ">$(DirBuildLogs)\vcs.mergeinfo.json</FileVcsMergeInfo> -->
     </PropertyGroup>
 
 
