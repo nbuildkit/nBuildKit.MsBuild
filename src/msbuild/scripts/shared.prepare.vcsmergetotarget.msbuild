@@ -11,10 +11,14 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
+
     <Target Name="nBuildKit_Shared_Prepare_VcsMergeToTarget_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_DisplayInfo"
             Condition=" '$(BranchMergeTarget)' != 'UNDEFINED' ">
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo" />
     </Target>
 
     <!-- Display info -->
@@ -57,7 +61,7 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git"
+    <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge"
             Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' ">
         <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
                Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
@@ -76,8 +80,11 @@
         <Message Text="Merging changes from branch $(BranchGitExpected) to branch  $(BranchMergeTarget) ..." />
         <Exec Command="git merge $(BranchGitExpected) --no-ff"
               Condition=" '$(BranchGitExpected)' != '$(BranchMergeTarget)' " />
-        <Exec Command="git tag $(VersionSemantic)" />
 
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo"
+            Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' " >
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsMergeInfo)'))">
             <Output TaskParameter="Value" PropertyName="DirToCreate" />
         </CreateProperty>
