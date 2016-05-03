@@ -14,6 +14,9 @@
         -->
         <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
         <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
+
+        <MsBuildUtilitiesAssembly>$(MSBuildToolsPath)\Microsoft.Build.Utilities.v$(MSBuildToolsVersion).dll</MsBuildUtilitiesAssembly>
+        <MsBuildUtilitiesAssembly Condition="!Exists('$(MsBuildUtilitiesAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</MsBuildUtilitiesAssembly>
     </PropertyGroup>
 
     <UsingTask TaskName="ExtractIssueIdsFromGitCommitMessages"
@@ -33,6 +36,9 @@
                 <![CDATA[
                     using System;
                     using System.Diagnostics;
+                    using System.Linq;
+                    using Microsoft.Build.Framework;
+                    using Microsoft.Build.Utilities;
 
                     public sealed class ExtractIssueIdsFromGitCommitMessages : Microsoft.Build.Utilities.Task
                     {
@@ -141,7 +147,7 @@
                         {
                             // Get the SHA1 values for all the commits that haven't been merged to the target branch yet
                             var gitOutput = InvokeGitWithArguments(string.Format("cherry {0}", MergeTargetBranch));
-                            return gitOutput.Replace("+ ", "").Split(System.Environment.NewLine);
+                            return gitOutput.Replace("+ ", System.Environment.NewLine).Split(new string[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                         }
                     }
                 ]]>
