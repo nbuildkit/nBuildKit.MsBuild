@@ -76,6 +76,8 @@
                                               MergeTargetBranch="$(BranchMergeTarget)">
             <Output TaskParameter="IssueIds" PropertyName="IssueIds" />
         </ExtractIssueIdsFromGitCommitMessages>
+        <Message Text="Issue's linked on the current branch: " />
+        <Message Text="%(IssueIds.Identity)" />
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GetIssueIds_WriteWorkItemsToFile">
