@@ -74,7 +74,7 @@
         <ExtractIssueIdsFromGitCommitMessages GitExecutablePath="$(ToolsExternalGitPath)"
                                               LocalPath="$(DirWorkspace)"
                                               MergeTargetBranch="$(BranchMergeTarget)">
-            <Output TaskParameter="IssueIds" PropertyName="IssueIds" />
+            <Output TaskParameter="IssueIds" ItemName="IssueIds" />
         </ExtractIssueIdsFromGitCommitMessages>
         <Message Text="Issue's linked on the current branch: " />
         <Message Text="%(IssueIds.Identity)" />
@@ -104,6 +104,6 @@
         <WriteLinesToFile File="$(FileIssueIds)"
                           Lines="@(Items_IssueIds)"
                           Overwrite="true"
-                          Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "/>
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
