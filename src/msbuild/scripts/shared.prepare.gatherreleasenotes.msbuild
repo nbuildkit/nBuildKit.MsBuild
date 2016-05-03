@@ -21,13 +21,16 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
 
+    <Import Project="$(ReleaseNotesScriptPath)"
+            Condition=" '$(ReleaseNotesScriptPath)' != '' AND '$(ReleaseNotesScriptPath)' != 'UNDEFINED' AND Exists('$(ReleaseNotesScriptPath)')" />
+
     <Target Name="nBuildKit_Shared_Prepare_GatherReleaseNotes_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DisplayInfo"
             Condition="!Exists('$(FileReleaseNotesShort)') OR !Exists('$(FileReleaseNotesFull)')">
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_Gather_FromGitHub"
-                    Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_Gather_FromYouTrack"
-                    Condition=" '$(YouTrackServer)' != 'UNDEFINED' " />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_FromCustomAlgorithm"/>
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_FromGithubMilestone" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WithGitReleaseNotes_FromGitHub" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WithGitReleaseNotes_FromYouTrack" />
     </Target>
 
     <!-- Display info -->
@@ -80,7 +83,9 @@
                                     Condition="Exists('$(FileSemanticVersion)')">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromFile>
+    </Target>
 
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetGitReleaseNotes">
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="GitReleaseNotes"
                       PackageVersion="$(ToolsExternalGitReleaseNotesVersion)"
@@ -112,9 +117,20 @@
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_Gather_FromGitHub"
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_FromCustomAlgorithm"
             DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites;_nBuildKit_Shared_Prepare_GatherReleaseNotes_PrepareOutputFiles"
-            Condition=" '$(YouTrackServer)' == 'UNDEFINED' ">
+            Condition="Exists('$(ReleaseNotesScriptPath)')">
+        <Message Text="Getting the release notes from the custom release note algorithm ..."
+                 Importance="low"/>
+
+        <GetReleaseNotesByCustomMethod ShortReleaseNotesFile="$(FileReleaseNotesShort)"
+                                       FullReleaseNotesFile="$(FileReleaseNotesFull)"
+                                       Condition=" '$(ShouldExecute)' == 'true' " />
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WithGitReleaseNotes_FromGitHub"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites;_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetGitReleaseNotes;_nBuildKit_Shared_Prepare_GatherReleaseNotes_PrepareOutputFiles"
+            Condition=" !Exists('$(ReleaseNotesScriptPath)') AND '$(YouTrackServer)' == 'UNDEFINED' ">
         <Error Text="The packages directory does not exist. Cannot search for the GitReleaseNotes executable."
                Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
 
@@ -145,9 +161,9 @@
                                            ContinueOnError="true" />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_Gather_FromYouTrack"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites;_nBuildKit_Shared_Prepare_GatherReleaseNotes_PrepareOutputFiles"
-            Condition=" '$(YouTrackServer)' != 'UNDEFINED' ">
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WithGitReleaseNotes_FromYouTrack"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites;_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetGitReleaseNotes;_nBuildKit_Shared_Prepare_GatherReleaseNotes_PrepareOutputFiles"
+            Condition=" !Exists('$(ReleaseNotesScriptPath)') AND '$(YouTrackServer)' != 'UNDEFINED' ">
         <Error Text="The packages directory does not exist. Cannot search for the GitReleaseNotes executable."
                Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
 
