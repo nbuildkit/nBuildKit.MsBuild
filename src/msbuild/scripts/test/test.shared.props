@@ -37,6 +37,7 @@
                                              - VersionPreRelease
                                              - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
                                              - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
+        $(TestStepsPrepareGetIssueIds)   - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
         $(TestStepsPrepareReleaseNotes)  - Gathers the release notes and stores them for later use during the test process. Release notes
                                            are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
                                            currently allows gathering release notes from GitHub, Jira and YouTrack
@@ -63,6 +64,10 @@
             </Properties>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareGetIssueIds)">
             <Properties>
             </Properties>
         </TestStepsToExecute>
