@@ -79,6 +79,54 @@
         <!--<ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>-->
     </PropertyGroup>
 
+    <!--
+        Build server flags
+    -->
+    <PropertyGroup>
+        <!--
+            A flag indicating if the current build is running on a TFS build server or not.
+        -->
+        <!--
+        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' != 'True'  ">false</IsOnTfsBuildServer>
+        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' == 'True' ">true</IsOnTfsBuildServer>
+        -->
+
+        <!--
+            A flag indicating if the current build is running on a Jenkins build server or not.
+        -->
+        <!--
+        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' == ''  ">false</IsOnJenkinsBuildServer>
+        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' != '' ">true</IsOnJenkinsBuildServer>
+        -->
+
+        <!--
+            A flag indicating if the current build is running on the build server or not.
+        -->
+        <!--
+        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == '' ">UNDEFINED</IsOnBuildServer>
+        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' != 'true' AND '$(IsOnJenkinsBuildServer)' != 'true' )">false</IsOnBuildServer>
+        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' == 'true' OR '$(IsOnJenkinsBuildServer)' == 'true' )">true</IsOnBuildServer>
+        -->
+
+        <!-- Git parameters -->
+        <!--
+        <JenkinsGitBranchExpectedHeader>origin/</JenkinsGitBranchExpectedHeader>
+        <TfsGitBranchExpectedHeader>LG:refs/heads/</TfsGitBranchExpectedHeader>
+        -->
+
+        <!--
+        <BranchGitExpected>UNDEFINED</BranchGitExpected>
+        <BranchGitExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' " >$(GIT_BRANCH.SubString($(JenkinsGitBranchExpectedHeader.Length)))</BranchGitExpected>
+        <BranchGitExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' " >$(TF_BUILD_SOURCEGETVERSION.SubString($(TfsGitBranchExpectedHeader.Length), $([MSBuild]::Subtract($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), $(TfsGitBranchExpectedHeader.Length)))))</BranchGitExpected>
+        -->
+
+        <!--
+        <GitRevNoExpected>UNDEFINED</GitRevNoExpected>
+        <GitRevNoExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' ">$(GIT_COMMIT)</GitRevNoExpected>
+        <GitRevNoExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' ">$(TF_BUILD_SOURCEGETVERSION.SubString($([MSBuild]::Add($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), 1))))</GitRevNoExpected>
+        -->
+    </PropertyGroup>
+
     <!-- Overrides for the project specific properties -->
     <PropertyGroup>
         <!--
@@ -147,13 +195,13 @@
             * Documentation copyrights
             * Generated file copyrights
         -->
-        <CopyrightShort>Copyright (c) - $(CompanyName). All rights reserved.</CopyrightShort>
+        <!--<CopyrightShort>Copyright (c) - $(CompanyName). All rights reserved.</CopyrightShort>-->
 
         <!--
             The long form of the  copyright text. This is for instance used for:
             * Assembly copyrights
         -->
-        <CopyrightLong>Copyright (c) - $(CompanyName) $(ProductStartingYear) - $([System.DateTime]::Now.ToString("yyyy")). All rights reserved.</CopyrightLong>
+        <!--<CopyrightLong>Copyright (c) - $(CompanyName) $(ProductStartingYear) - $([System.DateTime]::Now.ToString("yyyy")). All rights reserved.</CopyrightLong>-->
     </PropertyGroup>
 
     <!--
@@ -165,7 +213,7 @@
 
         <!--
             The github repository that contains the source code for the current product. Used when getting the release notes
-            from the github issues. The correct format is <USERNAME>/<REPOSITORYNAME>
+            from the github issues, e.g. nbuildkit.
         -->
         <GitHubRepositoryName Condition=" '$(GitHubRepositoryName)' == '' ">UNDEFINED</GitHubRepositoryName>
 
@@ -179,13 +227,17 @@
             A flag indicating whether or not the workspace is a GIT workspace or not. If no value is provided then
             any workspace that contains a .git folder will be assumed to be a GIT workspace.
         -->
+        <!--
         <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
         <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
+        -->
 
         <!--
             A flag that indicates whether or not the workspace is a TFS workspace. Defaults to false.
         -->
+        <!--
         <IsTfsWorkspace Condition=" '$(IsTfsWorkspace)' == '' ">false</IsTfsWorkspace>
+        -->
     </PropertyGroup>
 
     <!--
@@ -206,17 +258,21 @@
             'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
             property is set to 'true'
         -->
+        <!--
         <TemplateVersion Include="VersionAssembly">
             <Template>${VersionMajor}.${VersionMinor}.0.0</Template>
         </TemplateVersion>
+        -->
         <!--
             The template for the version number that will be used in the 'AssemblyFileVersionAttribute' in the
             'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
             property is set to 'true'
         -->
+        <!--
         <TemplateVersion Include="VersionAssemblyFile">
             <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}.${VersionBuild}</Template>
         </TemplateVersion>
+        -->
         <!--
             The template for the version number that will be used in the 'AssemblyInformationalVersionAttribute' in the
             'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
@@ -224,25 +280,31 @@
 
             Also used as the 'ApplicationVersion' in the 'VersionNumber.wxi' file.
         -->
+        <!--
         <TemplateVersion Include="VersionProduct">
             <Template>${VersionSemanticFull}</Template>
         </TemplateVersion>
+        -->
         <!--
             The template for the version number that will be used as the 'InstallVersion' in the
             'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
             property is set to 'true'
         -->
+        <!--
         <TemplateVersion Include="VersionInstall">
             <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}</Template>
         </TemplateVersion>
+        -->
         <!--
             The template for the version number that will be used as the 'ProductVersionFolder' in the
             'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
             property is set to 'true'
         -->
+        <!--
         <TemplateVersion Include="VersionInstallFilePath">
             <Template>${VersionMajor}.${VersionMinor}</Template>
         </TemplateVersion>
+        -->
     </ItemGroup>
 
     <!--
@@ -255,77 +317,69 @@
         -->
 
         <!-- The directory that will contain all the files generated during the build process -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
+        <!-- <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild> -->
 
         <!--
             The directory that will contain all the binaries generated during the build process.
             Note that there may be configuration and platform specific sub-directories.
         -->
-        <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin>
+        <!-- <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin> -->
 
         <!--
             The directory where the current binaries are placed after being generated.
             Note that $(Platform) and $(Configuration) do not have to be defined in this settings file. They may be provided
             externally as long as they are provided before the settings file is loaded!
         -->
-        <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
+        <!-- <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig> -->
 
         <!-- The directory that will contain all the generated artifacts during the build process -->
-        <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
+        <!-- <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy> -->
 
         <!-- The directory that will contain all the documentation files which are generated during the build process -->
-        <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc>
+        <!-- <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc> -->
 
         <!-- The directory that will contain all the generated build logs during the build process -->
-        <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
+        <!-- <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs> -->
 
         <!-- The directory that will contain the reports generated by OpenCover and ReportGenerator describing the coverage of the unit tests. -->
-        <DirReportGeneratorOutput Condition=" '$(DirReportGeneratorOutput)' == '' ">$(DirBuildLogs)\coverage</DirReportGeneratorOutput>
+        <!-- <DirReportGeneratorOutput Condition=" '$(DirReportGeneratorOutput)' == '' ">$(DirBuildLogs)\coverage</DirReportGeneratorOutput> -->
 
         <!-- The directory that contains the report files generated by MoMA -->
-        <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma>
+        <!-- <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma> -->
 
         <!-- The directory that will contain all the temporary files needed during the build process -->
-        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <!-- <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp> -->
 
         <!-- The directory that will contain all the test files generated during the test process -->
-        <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
+        <!-- <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest> -->
 
         <!-- The directory that contains all the NuGet packages for the project -->
-        <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
+        <!-- <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages> -->
 
         <!-- The directory that contains the source files for the project -->
-        <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc>
+        <!-- <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc> -->
 
         <!-- The directory that contains the template files for the project -->
-        <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
+        <!-- <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates> -->
 
         <!-- The directory that contains all the test files for the project -->
-        <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
+        <!-- <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest> -->
     </PropertyGroup>
 
+
     <!--
-        Build server flags
+        **** PREPARE - MERGE ****
     -->
     <PropertyGroup>
         <!--
-            A flag indicating if the current build is running on a TFS build server or not.
+            The name of the branch that the current changes should be merged to.
         -->
-        <!--<IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' != 'True'  ">false</IsOnTfsBuildServer>
-        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' == 'True' ">true</IsOnTfsBuildServer>-->
+        <!-- <BranchMergeTarget Condition=" '$(BranchMergeTarget)' == '' ">UNDEFINED</BranchMergeTarget> -->
 
         <!--
-            A flag indicating if the current build is running on a Jenkins build server or not.
+            The full path to the file that will contain the VCS merge information describing the merge.
         -->
-        <!--<IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' == ''  ">false</IsOnJenkinsBuildServer>
-        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' != '' ">true</IsOnJenkinsBuildServer>-->
-
-        <!--
-            A flag indicating if the current build is running on the build server or not.
-        -->
-        <!--<IsOnBuildServer Condition=" '$(IsOnBuildServer)' == '' ">UNDEFINED</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' != 'true' AND '$(IsOnJenkinsBuildServer)' != 'true' )">false</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' == 'true' OR '$(IsOnJenkinsBuildServer)' == 'true' )">true</IsOnBuildServer>-->
+        <!-- <FileVcsMergeInfo Condition=" '$(FileVcsMergeInfo)' == '' ">$(DirBuildLogs)\vcs.mergeinfo.json</FileVcsMergeInfo> -->
     </PropertyGroup>
 
 
@@ -353,12 +407,12 @@
                 </PropertyGroup>
             </Project>
         -->
-        <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild>
+        <!-- <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild> -->
 
         <!--
             The full path to the file that is used to store the version information during the build.
         -->
-        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+        <!-- <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion> -->
 
         <!--
             When using GitVersion with a git repository that needs authentication the following properties
@@ -373,10 +427,10 @@
             the authentication is done through the user account, i.e. via Active Directory, then
             the user name should be left empty.
         -->
-        <GitUserName Condition=" '$(GitUserName)' == '' "></GitUserName>
+        <!-- <GitUserName Condition=" '$(GitUserName)' == '' "></GitUserName> -->
 
         <!--
-            The full directory path to the script that handles custom generation of the version numbers.
+            The full file path to the script that handles custom generation of the version numbers.
 
             The script is expected be a custom implementation of the CalculateCustomVersion.msbuild script.
             The script file can be called anything as long as it contains an inline task
@@ -401,36 +455,53 @@
         **** PREPARE - RELEASE NOTES ****
     -->
     <PropertyGroup>
-        <!-- The full path to the file that is used to store the release notes for the current release during the build. -->
-        <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
+        <!-- The full path to the file that is used to store the issue IDs for the current branch -->
+        <!-- <FileIssueIds Condition=" '$(FileIssueIds)' == '' ">$(DirBuildTemp)\issue_ids.json</FileIssueIds> -->
 
-        <!-- The full path to the file that is used to store the release notes for all the releases during the build. -->
-        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
+        <!-- The full path to the text file that is used to store the release notes for the current release during the build. -->
+        <!-- <FileReleaseNotes Condition=" '$(FileReleaseNotes)' == '' ">UNDEFINED</FileReleaseNotes> -->
 
         <!--
-            The following properties have to be defined on via an environment variable (either local to the process that
-            executes the build, or global to the user):
-            - Always
-              GitHubToken - The user token that provides access to GitHub
-
-            - When using YouTrack
-              IssueTrackerPassword - The password for the issue tracker user
+            The template for the Github milestone name that will be used to get the closed work items for the
+            release note
         -->
+        <!-- <GitHubMilestoneName Condition=" '$(GitHubMilestoneName)' == '' ">${VersionMajor}.${VersionMinor}.${VersionPatch}</GitHubMilestoneName> -->
 
         <!-- The user name of the user who owns the GitHub repository -->
-        <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
+        <!-- <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName> -->
 
-        <!--- The URL of the YouTrack server, e.g. http://myuser.myjetbrains.com/youtrack -->
-        <YouTrackServer Condition=" '$(YouTrackServer)' == '' ">UNDEFINED</YouTrackServer>
+        <!--
+            The full file path to the script that handles custom collection of the issue information for the current
+            release.
 
-        <!-- The user name for YouTrack -->
-        <IssueTrackerUserName Condition=" '$(IssueTrackerUserName)' == '' ">UNDEFINED</IssueTrackerUserName>
+            The script is expected be a custom implementation of the GatherIssues.msbuild script.
+            The script file can be called anything as long as it contains a target called:
 
-        <!-- The project ID that is used to identify the product in the issue tracker -->
-        <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId>
+                '_Custom_GetIssueInformationForCurrentRelease'
 
-        <!-- The filter for getting issues from YouTrack -->
-        <IssueFilter Condition=" '$(IssueFilter)' == '' ">UNDEFINED</IssueFilter>
+            The target should run an ItemGroup containing the issue information. The each item in the item
+            group should describe one issue in the following format:
+
+            <item include="ISSUE_NUMBER">
+                <Title>ISSUE_TITLE</Title>
+                <State>ISSUE_STATE</State>
+                <Body>ISSUE_BODY</Body>
+                <UserName>ISSUE_USERNAME</UserName>
+                <UserUrl>ISSUE_USERURL</UserUrl>
+                <Labels>ISSUE_LABELS</Labels>
+            </item>
+
+            Where:
+
+                ISSUE_NUMBER   - The ID of the issue.
+                ISSUE_TITLE    - The title of the issue.
+                ISSUE_STATE    - The state of the issue, e.g. open, closed etc.
+                ISSUE_BODY     - The description of the issue.
+                ISSUE_USERNAME - The name of the user to whom the issue is assigned.
+                ISSUE_USERURL  - The URL for the user, if it exists.
+                ISSUE_LABELS   - The labels / type for the issue.
+        -->
+        <ReleaseNotesScriptPath Condition=" '$(ReleaseNotesScriptPath)' == '' ">$(DirWorkspace)\test.csharp.getissuesforrelease.msbuild</ReleaseNotesScriptPath>
     </PropertyGroup>
 
 
@@ -439,7 +510,7 @@
     -->
     <PropertyGroup>
         <!-- The full path to the file that contains the information about the current VCS workspace. -->
-        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
+        <!-- <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo> -->
     </PropertyGroup>
 
 
@@ -460,7 +531,7 @@
 
     <!-- Additional generated files -->
     <PropertyGroup>
-        <FileGeneratedLicenses>$(DirBuildTemp)\licenses.xml</FileGeneratedLicenses>
+         <!-- <FileGeneratedLicenses>$(DirBuildTemp)\licenses.xml</FileGeneratedLicenses> -->
     </PropertyGroup>
 
 
@@ -487,12 +558,6 @@
             The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
         -->
         <!-- <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath> -->
-
-        <!--
-            The full path and version of the GitReleaseNotes command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath>
-        <ToolsExternalGitReleaseNotesVersion Condition=" '$(ToolsExternalGitReleaseNotesVersion)' == '' ">0.7.0</ToolsExternalGitReleaseNotesVersion> -->
 
         <!--
             The full path and version of the GitVersion command line executable. If not defined the packages directory is searched.

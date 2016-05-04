@@ -213,7 +213,7 @@
 
         <!--
             The github repository that contains the source code for the current product. Used when getting the release notes
-            from the github issues. The correct format is <USERNAME>/<REPOSITORYNAME>
+            from the github issues, e.g. nbuildkit.
         -->
         <GitHubRepositoryName Condition=" '$(GitHubRepositoryName)' == '' ">UNDEFINED</GitHubRepositoryName>
 
@@ -430,7 +430,7 @@
         <!-- <GitUserName Condition=" '$(GitUserName)' == '' "></GitUserName> -->
 
         <!--
-            The full directory path to the script that handles custom generation of the version numbers.
+            The full file path to the script that handles custom generation of the version numbers.
 
             The script is expected be a custom implementation of the CalculateCustomVersion.msbuild script.
             The script file can be called anything as long as it contains an inline task
@@ -458,36 +458,50 @@
         <!-- The full path to the file that is used to store the issue IDs for the current branch -->
         <!-- <FileIssueIds Condition=" '$(FileIssueIds)' == '' ">$(DirBuildTemp)\issue_ids.json</FileIssueIds> -->
 
-        <!-- The full path to the file that is used to store the release notes for the current release during the build. -->
-        <!-- <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort> -->
-
-        <!-- The full path to the file that is used to store the release notes for all the releases during the build. -->
-        <!-- <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull> -->
+        <!-- The full path to the text file that is used to store the release notes for the current release during the build. -->
+        <!-- <FileReleaseNotes Condition=" '$(FileReleaseNotes)' == '' ">UNDEFINED</FileReleaseNotes> -->
 
         <!--
-            The following properties have to be defined on via an environment variable (either local to the process that
-            executes the build, or global to the user):
-            - Always
-              GitHubToken - The user token that provides access to GitHub
-
-            - When using YouTrack
-              IssueTrackerPassword - The password for the issue tracker user
+            The template for the Github milestone name that will be used to get the closed work items for the
+            release note
         -->
+        <!-- <GitHubMilestoneName Condition=" '$(GitHubMilestoneName)' == '' ">${VersionMajor}.${VersionMinor}.${VersionPatch}</GitHubMilestoneName> -->
 
         <!-- The user name of the user who owns the GitHub repository -->
         <!-- <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName> -->
 
-        <!--- The URL of the YouTrack server, e.g. http://myuser.myjetbrains.com/youtrack -->
-        <!-- <YouTrackServer Condition=" '$(YouTrackServer)' == '' ">UNDEFINED</YouTrackServer> -->
+        <!--
+            The full file path to the script that handles custom collection of the issue information for the current
+            release.
 
-        <!-- The user name for YouTrack -->
-        <!-- <IssueTrackerUserName Condition=" '$(IssueTrackerUserName)' == '' ">UNDEFINED</IssueTrackerUserName> -->
+            The script is expected be a custom implementation of the GatherIssues.msbuild script.
+            The script file can be called anything as long as it contains a target called:
 
-        <!-- The project ID that is used to identify the product in the issue tracker -->
-        <!-- <IssueTrackerProjectId Condition=" '$(IssueTrackerProjectId)' == '' ">UNDEFINED</IssueTrackerProjectId> -->
+                '_Custom_GetIssueInformationForCurrentRelease'
 
-        <!-- The filter for getting issues from YouTrack -->
-        <!-- <IssueFilter Condition=" '$(IssueFilter)' == '' ">UNDEFINED</IssueFilter> -->
+            The target should run an ItemGroup containing the issue information. The each item in the item
+            group should describe one issue in the following format:
+
+            <item include="ISSUE_NUMBER">
+                <Title>ISSUE_TITLE</Title>
+                <State>ISSUE_STATE</State>
+                <Body>ISSUE_BODY</Body>
+                <UserName>ISSUE_USERNAME</UserName>
+                <UserUrl>ISSUE_USERURL</UserUrl>
+                <Labels>ISSUE_LABELS</Labels>
+            </item>
+
+            Where:
+
+                ISSUE_NUMBER   - The ID of the issue.
+                ISSUE_TITLE    - The title of the issue.
+                ISSUE_STATE    - The state of the issue, e.g. open, closed etc.
+                ISSUE_BODY     - The description of the issue.
+                ISSUE_USERNAME - The name of the user to whom the issue is assigned.
+                ISSUE_USERURL  - The URL for the user, if it exists.
+                ISSUE_LABELS   - The labels / type for the issue.
+        -->
+        <!-- <ReleaseNotesScriptPath Condition=" '$(ReleaseNotesScriptPath)' == '' ">UNDEFINED</ReleaseNotesScriptPath> -->
     </PropertyGroup>
 
 
@@ -544,12 +558,6 @@
             The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
         -->
         <!-- <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath> -->
-
-        <!--
-            The full path and version of the GitReleaseNotes command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalGitReleaseNotesPath Condition=" '$(ToolsExternalGitReleaseNotesPath)' == '' ">UNDEFINED</ToolsExternalGitReleaseNotesPath>
-        <ToolsExternalGitReleaseNotesVersion Condition=" '$(ToolsExternalGitReleaseNotesVersion)' == '' ">0.7.0</ToolsExternalGitReleaseNotesVersion> -->
 
         <!--
             The full path and version of the GitVersion command line executable. If not defined the packages directory is searched.
