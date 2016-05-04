@@ -84,9 +84,7 @@
         <Message Text="Getting the release notes from the custom release note algorithm ..."
                  Importance="low"/>
 
-        <CallTarget Targets="_Custom_GetIssueInformationForCurrentRelease" >
-            <Output TaskParameter="TargetOutputs" ItemName="ReleaseNoteIssues" />
-        </CallTarget>
+        <CallTarget Targets="_Custom_GetIssueInformationForCurrentRelease" />
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
