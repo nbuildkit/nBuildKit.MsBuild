@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_GatherReleaseNotes_Run"
+         DefaultTargets="_Custom_GetIssueInformationForCurrentRelease"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
         The full file path to the script that handles custom collection of the issue information for the current
@@ -11,7 +11,7 @@
 
             '_Custom_GetIssueInformationForCurrentRelease'
 
-        The target should run an ItemGroup containing the issue information. The each item in the item
+        The target should create an ItemGroup called 'ReleaseNoteIssues' containing the issue information. The each item in the item
         group should describe one issue in the following format:
 
         <item include="ISSUE_NUMBER">
@@ -34,6 +34,33 @@
             ISSUE_LABELS   - The labels / type for the issue.
     -->
     <Target Name="_Custom_GetIssueInformationForCurrentRelease">
-
+        <CreateItem
+            Include="1"
+            AdditionalMetadata="Title=A;State=open;Body=B;UserName=C;UserUrl=D;Labels=E">
+           <Output
+               TaskParameter="Include"
+               ItemName="ReleaseNoteIssues"/>
+        </CreateItem>
+        <CreateItem
+            Include="2"
+            AdditionalMetadata="Title=F;State=open;Body=G;UserName=H;UserUrl=I;Labels=J">
+           <Output
+               TaskParameter="Include"
+               ItemName="ReleaseNoteIssues"/>
+        </CreateItem>
+        <CreateItem
+            Include="3"
+            AdditionalMetadata="Title=K;State=open;Body=L;UserName=M;UserUrl=N;Labels=O">
+           <Output
+               TaskParameter="Include"
+               ItemName="ReleaseNoteIssues"/>
+        </CreateItem>
+        <CreateItem
+            Include="4"
+            AdditionalMetadata="Title=P;State=open;Body=Q;UserName=R;UserUrl=S;Labels=T">
+           <Output
+               TaskParameter="Include"
+               ItemName="ReleaseNoteIssues"/>
+        </CreateItem>
     </Target>
  </Project>
