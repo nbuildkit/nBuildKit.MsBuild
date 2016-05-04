@@ -12,6 +12,9 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
     <Import Project="$(DirNBuildKitMsBuildExtensions)\GetIssuesForGitHubMilestone.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetIssuesForGitHubMilestone.msbuild') AND '$(ExistsExtensionsGetIssuesForGitHubMilestone)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild"
@@ -25,13 +28,12 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
-
     <Import Project="$(ReleaseNotesScriptPath)"
             Condition=" '$(ReleaseNotesScriptPath)' != '' AND '$(ReleaseNotesScriptPath)' != 'UNDEFINED' AND Exists('$(ReleaseNotesScriptPath)')" />
 
     <Target Name="nBuildKit_Shared_Prepare_GatherReleaseNotes_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DisplayInfo"
-            Condition="!Exists('$(FileReleaseNotes)')">
+            Condition=" '$(FileReleaseNotes)' != 'UNDEFINED' ">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm"/>
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile" />
@@ -88,7 +90,7 @@
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
             Condition="!Exists('$(ReleaseNotesScriptPath)') AND '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubRepositoryName)' != 'UNDEFINED' ">
         <Message Text="Getting the release notes from a github milestone ..."
                  Importance="low"/>
@@ -116,7 +118,7 @@
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
-            <ReleaseNoteLines Include="@(ReleaseNoteIssues->'[%(Identity)] %(Title) (%(UserName) - %(UserUrl))', '$([System.Environment]::NewLine)')" />
+            <ReleaseNoteLines Include="@(ReleaseNoteIssues->'[%(Identity)] %(Title) (%(UserName) - %(UserUrl))', '&#x0d;&#x0a;')" />
         </ItemGroup>
 
         <WriteLinesToFile File="$(FileReleaseNotes)"

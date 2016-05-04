@@ -31,10 +31,12 @@
         <Task>
             <Reference Include="System.Core" />
             <Reference Include="System.Runtime.Serialization" />
+            <Reference Include="System.Xml" />
             <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
             <Reference Include="$(MsBuildUtilitiesAssembly)"/>
             <Code Type="Class" Language="cs">
                 <![CDATA[
+                    using System;
                     using System.Collections.Generic;
                     using System.IO;
                     using System.Linq;
@@ -84,6 +86,7 @@
 
                         public override bool Execute()
                         {
+                            var list = new System.Collections.Generic.SortedList<int, ITaskItem>();
                             try
                             {
                                 Log.LogMessage(
@@ -93,15 +96,15 @@
                                                 IssueNumber));
 
                                 var issue = GetIssueWithNumber(IssueNumber);
-                                var list = new System.Collections.Generic.SortedList<string, ITaskItem>();
                                 if (!list.ContainsKey(issue.number))
                                 {
-                                    var newItem = new TaskItem(issue.number);
+                                    var newItem = new TaskItem(issue.number.ToString());
+
                                     newItem.SetMetadata(MetadataTitleTag, issue.title);
                                     newItem.SetMetadata(MetadataStateTag, issue.state);
                                     newItem.SetMetadata(MetadataBodyTag, issue.body);
-                                    newItem.SetMetadata(MetadataUserNameTag, issue.assignee.login);
-                                    newItem.SetMetadata(MetadataUserUrlTag, issue.assignee.url);
+                                    newItem.SetMetadata(MetadataUserNameTag, issue.assignee != null ? issue.assignee.login : string.Empty);
+                                    newItem.SetMetadata(MetadataUserUrlTag, issue.assignee != null ? issue.assignee.url : string.Empty);
                                     newItem.SetMetadata(MetadataLabelsTag, string.Join(";", issue.labels.Select(l => l.name)));
 
                                     list.Add(issue.number, newItem);
@@ -113,6 +116,8 @@
                                     "Failed to gather the issues for the given milestone on GitHub. Exception was: {0}",
                                     e));
                             }
+
+                            Issues = list.Values.ToArray();
 
                             // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                             // from a task's constructor or property setter. As long as this task is written to always log an error
@@ -149,6 +154,12 @@
                                     "{0}/issues/{1}",
                                     GitHubApiUri(),
                                     issueNumber);
+
+                                Log.LogMessage(
+                                    MessageImportance.Low,
+                                    string.Format(
+                                        "Getting issue information from: {0}. ",
+                                        uri));
 
                                 var content = client.DownloadString(uri);
                                 var serializer = new DataContractJsonSerializer(typeof(Issue));

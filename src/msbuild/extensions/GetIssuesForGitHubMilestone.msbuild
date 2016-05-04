@@ -32,10 +32,12 @@
         <Task>
             <Reference Include="System.Core" />
             <Reference Include="System.Runtime.Serialization" />
+            <Reference Include="System.Xml" />
             <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
             <Reference Include="$(MsBuildUtilitiesAssembly)"/>
             <Code Type="Class" Language="cs">
                 <![CDATA[
+                    using System;
                     using System.Collections.Generic;
                     using System.IO;
                     using System.Linq;
@@ -92,7 +94,7 @@
 
                         public override bool Execute()
                         {
-                            var list = new System.Collections.Generic.SortedList<string, ITaskItem>();
+                            var list = new System.Collections.Generic.SortedList<int, ITaskItem>();
                             try
                             {
                                 Log.LogMessage(
@@ -116,14 +118,14 @@
                                     {
                                         if (!list.ContainsKey(issue.number))
                                         {
-                                            var newItem = new TaskItem(issue.number);
+                                            var newItem = new TaskItem(issue.number.ToString());
 
-                                            newItem.SetMetadata(MetadataFilesTag, issue.title);
-                                            newItem.SetMetadata(MetadataFilesTag, issue.state);
-                                            newItem.SetMetadata(MetadataFilesTag, issue.body);
-                                            newItem.SetMetadata(MetadataFilesTag, issue.assignee.login);
-                                            newItem.SetMetadata(MetadataFilesTag, issue.assignee.url);
-                                            newItem.SetMetadata(MetadataFilesTag, string.Join(";", issue.labels.Select(l => l.name)));
+                                            newItem.SetMetadata(MetadataTitleTag, issue.title);
+                                            newItem.SetMetadata(MetadataStateTag, issue.state);
+                                            newItem.SetMetadata(MetadataBodyTag, issue.body);
+                                            newItem.SetMetadata(MetadataUserNameTag, issue.assignee != null ? issue.assignee.login : string.Empty);
+                                            newItem.SetMetadata(MetadataUserUrlTag, issue.assignee != null ? issue.assignee.url : string.Empty);
+                                            newItem.SetMetadata(MetadataLabelsTag, string.Join(";", issue.labels.Select(l => l.name)));
 
                                             list.Add(issue.number, newItem);
                                         }
@@ -144,7 +146,7 @@
                                     e));
                             }
 
-                            Issuess = list.Values.ToArray();
+                            Issues = list.Values.ToArray();
 
                             // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                             // from a task's constructor or property setter. As long as this task is written to always log an error
@@ -181,6 +183,12 @@
                                     "{0}/milestones",
                                     GitHubApiUri());
 
+                                Log.LogMessage(
+                                    MessageImportance.Low,
+                                    string.Format(
+                                        "Getting milestone information from: {0}. ",
+                                        uri));
+
                                 var content = client.DownloadString(uri);
                                 var serializer = new DataContractJsonSerializer(typeof(List<Milestone>));
 
@@ -216,10 +224,16 @@
                                 }
 
                                 var uri = string.Format(
-                                    "{0}/issues?milestone={1}",
+                                    "{0}/issues?milestone={1}{2}",
                                     GitHubApiUri(),
                                     milestone.number,
                                     state);
+
+                                Log.LogMessage(
+                                    MessageImportance.Low,
+                                    string.Format(
+                                        "Getting issue information from: {0}. ",
+                                        uri));
 
                                 var content = client.DownloadString(uri);
                                 var serializer = new DataContractJsonSerializer(typeof(List<Issue>));
