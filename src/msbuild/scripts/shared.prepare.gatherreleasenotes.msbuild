@@ -12,21 +12,29 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetIssuesForGitHubMilestone.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetIssuesForGitHubMilestone.msbuild') AND '$(ExistsExtensionsGetIssuesForGitHubMilestone)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+
 
     <Import Project="$(ReleaseNotesScriptPath)"
             Condition=" '$(ReleaseNotesScriptPath)' != '' AND '$(ReleaseNotesScriptPath)' != 'UNDEFINED' AND Exists('$(ReleaseNotesScriptPath)')" />
 
     <Target Name="nBuildKit_Shared_Prepare_GatherReleaseNotes_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DisplayInfo"
-            Condition="!Exists('$(FileReleaseNotesShort)') OR !Exists('$(FileReleaseNotesFull)')">
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_FromCustomAlgorithm"/>
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_FromGithubMilestone" />
+            Condition="!Exists('$(FileReleaseNotes)')">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm"/>
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile" />
     </Target>
 
     <!-- Display info -->
@@ -40,28 +48,22 @@
             Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:"
                  Importance="low"/>
-        <Message Text="The workspace is located at:                                                 $(DirWorkspace)"
+        <Message Text="The workspace is located at:                                                      $(DirWorkspace)"
                  Importance="low"/>
-        <Message Text="The directory containing the NuGet packages is located at:                   $(DirPackages)"
+        <Message Text="The directory containing the NuGet packages is located at:                        $(DirPackages)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:                  $(DirNBuildKitMsBuild)"
+        <Message Text="The directory containing the nBuildKit files is located at:                       $(DirNBuildKitMsBuild)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:                $(DirNBuildKitMsBuildExtensions)"
+        <Message Text="The directory containing the nBuildKit scripts is located at:                     $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:              $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
-
-        <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)"
-                 Importance="low"/>
-        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShort)"
-                 Importance="low"/>
-        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFull)"
+        <Message Text="The directory containing the nBuildKit templates is located at:                   $(DirNBuildKitMsBuildTemplates)"
                  Importance="low"/>
         <Message Text=" "
                  Importance="low"/>
 
+        <Message Text="The semantic version file is located at:                                          $(FileSemanticVersion)"
+                 Importance="low"/>
+        <Message Text="The text file containing the release notes for the current release is located at: $(FileReleaseNotes)"
                  Importance="low"/>
         <Message Text=" "
                  Importance="low"/>
@@ -74,31 +76,52 @@
         </GetSemanticVersionFromFile>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetGitReleaseNotes">
-    </Target>
-
-    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_PrepareOutputFiles">
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesShort)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
-        </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
-
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesFull)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
-        </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
-    </Target>
-
-    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_FromCustomAlgorithm"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites;_nBuildKit_Shared_Prepare_GatherReleaseNotes_PrepareOutputFiles"
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
             Condition="Exists('$(ReleaseNotesScriptPath)')">
         <Message Text="Getting the release notes from the custom release note algorithm ..."
                  Importance="low"/>
 
-        <GetReleaseNotesByCustomMethod ShortReleaseNotesFile="$(FileReleaseNotesShort)"
-                                       FullReleaseNotesFile="$(FileReleaseNotesFull)"
-                                       Condition=" '$(ShouldExecute)' == 'true' " />
+        <CallTarget Targets="_Custom_GetIssueInformationForCurrentRelease" >
+            <Output TaskParameter="TargetOutputs" ItemName="ReleaseNoteIssues" />
+        </CallTarget>
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
+            Condition="!Exists('$(ReleaseNotesScriptPath)') AND '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubRepositoryName)' != 'UNDEFINED' ">
+        <Message Text="Getting the release notes from a github milestone ..."
+                 Importance="low"/>
+
+        <TemplateText Template="$(GitHubMilestoneName)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="MilestoneName" />
+        </TemplateText>
+
+        <GetIssuesForGitHubMilestone GitHubUserName="$(GitHubUserName)"
+                                     GitHubProjectName="$(GitHubRepositoryName)"
+                                     MilestoneName="$(MilestoneName)"
+                                     IssueState="closed">
+            <Output TaskParameter="Issues" ItemName="ReleaseNoteIssues"/>
+        </GetIssuesForGitHubMilestone>
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm;_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
+            Condition=" '$(FileReleaseNotes)' != 'UNDEFINED' ">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotes)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)"
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+
+        <ItemGroup>
+            <ReleaseNoteLines Include="@(ReleaseNoteIssues->'[%(Identity)] %(Title) (%(UserName) - %(UserUrl))', '$([System.Environment]::NewLine)')" />
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(FileReleaseNotes)"
+                          Lines="@(ReleaseNoteLines)"
+                          Overwrite="true"
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
