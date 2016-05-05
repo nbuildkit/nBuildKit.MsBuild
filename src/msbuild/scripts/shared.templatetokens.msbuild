@@ -22,8 +22,7 @@
 
         <!-- Files -->
         <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
-        <FileReleaseNotesShort Condition=" '$(FileReleaseNotesShort)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotesShort>
-        <FileReleaseNotesFull Condition=" '$(FileReleaseNotesFull)' == '' ">$(DirBuildTemp)\releasenotes_full.md</FileReleaseNotesFull>
+        <FileReleaseNotes Condition=" '$(FileReleaseNotes)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotes>
         <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
     </PropertyGroup>
 
@@ -57,14 +56,9 @@
             <Output TaskParameter="VersionSemanticNuGet" PropertyName="VersionSemanticNuGet" />
         </GetSemanticVersionFromFile>
 
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesShort)'))"
-                        Condition="Exists('$(FileReleaseNotesShort)') AND '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="Value" PropertyName="ReleaseNotesShort" />
-        </CreateProperty>
-
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotesFull)'))"
-                        Condition="Exists('$(FileReleaseNotesFull)') AND '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="Value" PropertyName="ReleaseNotesFull" />
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotes)'))"
+                        Condition="Exists('$(FileReleaseNotes)') AND '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
         </CreateProperty>
 
         <GetVcsInfoFromFile InfoFile="$(FileVcsInfo)"
@@ -135,11 +129,8 @@
             </TemplateTokens>
 
             <!-- Release notes -->
-            <TemplateTokens Include="ReleaseNotesShort">
-                <ReplacementValue>$(ReleaseNotesShort)</ReplacementValue>
-            </TemplateTokens>
-            <TemplateTokens Include="ReleaseNotesFull">
-                <ReplacementValue>$(ReleaseNotesFull)</ReplacementValue>
+            <TemplateTokens Include="ReleaseNotes">
+                <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
             </TemplateTokens>
 
             <!-- Time & date -->
@@ -194,11 +185,8 @@
             </TemplateTokens>
 
             <!-- File paths -->
-            <TemplateTokens Include="FileReleaseNotesShort">
-                <ReplacementValue>$(FileReleaseNotesShort)</ReplacementValue>
-            </TemplateTokens>
-            <TemplateTokens Include="FileReleaseNotesFull">
-                <ReplacementValue>$(FileReleaseNotesFull)</ReplacementValue>
+            <TemplateTokens Include="FileReleaseNotes">
+                <ReplacementValue>$(FileReleaseNotes)</ReplacementValue>
             </TemplateTokens>
 
             <!-- Directory paths -->

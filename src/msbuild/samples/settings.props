@@ -24,8 +24,7 @@
         ${VcsRevision}            - The current VCS revision 'number'
         ${VcsBranch}              - The name of the current VCS branch
 
-        ${ReleaseNotesShort}      - The contents of the short release notes
-        ${ReleaseNotesFull}       - The contents of the full release notes
+        ${ReleaseNotes}           - The contents of the short release notes
 
         ${Now}                    - The current date and time in round trip format, e.g. 2015-05-15T19:31:45.1234567+12:00
         ${Date}                   - The current date in the format year-month-dayofmonth, e.g. 2015-05-15
@@ -46,8 +45,7 @@
         ${CopyrightShort}         - The short form of the copyright
         ${CopyrightLong}          - The long form of the copyright
 
-        ${FileReleaseNotesShort}  - The file containing the short release notes
-        ${FileReleaseNotesFull}   - The file containing the full release notes
+        ${FileReleaseNotes}       - The file containing the short release notes
 
         ${DirWorkspace}           - The full path to the directory that contains forms the base of the workspace for the project, e.g. c:\myproject
         ${DirBin}                 - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
@@ -459,7 +457,7 @@
         <!-- <FileIssueIds Condition=" '$(FileIssueIds)' == '' ">$(DirBuildTemp)\issue_ids.json</FileIssueIds> -->
 
         <!-- The full path to the text file that is used to store the release notes for the current release during the build. -->
-        <!-- <FileReleaseNotes Condition=" '$(FileReleaseNotes)' == '' ">UNDEFINED</FileReleaseNotes> -->
+        <!-- <FileReleaseNotes Condition=" '$(FileReleaseNotes)' == '' ">$(DirBuildTemp)\releasenotes.txt</FileReleaseNotes> -->
 
         <!--
             The template for the Github milestone name that will be used to get the closed work items for the
