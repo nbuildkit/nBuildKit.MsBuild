@@ -28,15 +28,18 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
-    <Import Project="$(ReleaseNotesScriptPath)"
-            Condition=" '$(ReleaseNotesScriptPath)' != '' AND '$(ReleaseNotesScriptPath)' != 'UNDEFINED' AND Exists('$(ReleaseNotesScriptPath)')" />
+    <Import Project="$(ScriptGatherIssues)"
+            Condition=" '$(ScriptGatherIssues)' != '' AND '$(ScriptGatherIssues)' != 'UNDEFINED' AND Exists('$(ScriptGatherIssues)')" />
+    <Import Project="$(ScriptWriteReleaseNotes)"
+            Condition=" '$(ScriptWriteReleaseNotes)' != '' AND '$(ScriptWriteReleaseNotes)' != 'UNDEFINED' AND Exists('$(ScriptWriteReleaseNotes)') " />
 
     <Target Name="nBuildKit_Shared_Prepare_GatherReleaseNotes_Run"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DisplayInfo"
-            Condition=" '$(FileReleaseNotes)' != 'UNDEFINED' ">
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm"/>
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToConsole" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToCustomFile" />
     </Target>
 
     <!-- Display info -->
@@ -80,7 +83,7 @@
 
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm"
             DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
-            Condition="Exists('$(ReleaseNotesScriptPath)')">
+            Condition="Exists('$(ScriptGatherIssues)')">
         <Message Text="Getting the release notes from the custom release note algorithm ..."
                  Importance="low"/>
 
@@ -89,7 +92,7 @@
 
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
-            Condition="!Exists('$(ReleaseNotesScriptPath)') AND '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubRepositoryName)' != 'UNDEFINED' ">
+            Condition="!Exists('$(ScriptGatherIssues)') AND '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubRepositoryName)' != 'UNDEFINED' ">
         <Message Text="Getting the release notes from a github milestone ..."
                  Importance="low"/>
 
@@ -106,9 +109,14 @@
         </GetIssuesForGitHubMilestone>
     </Target>
 
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToConsole"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm;_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone">
+        <Message Text="[%(ReleaseNoteIssues.Identity)] %(ReleaseNoteIssues.Title) (%(ReleaseNoteIssues.UserName))" />
+    </Target>
+
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile"
             DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm;_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
-            Condition=" '$(FileReleaseNotes)' != 'UNDEFINED' ">
+            Condition=" '$(FileReleaseNotes)' != '' AND '$(FileReleaseNotes)' != 'UNDEFINED' ">
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotes)'))">
             <Output TaskParameter="Value" PropertyName="DirToCreate" />
         </CreateProperty>
@@ -123,5 +131,11 @@
                           Lines="@(ReleaseNoteLines)"
                           Overwrite="true"
                           Condition=" '$(ShouldExecute)' == 'true' "/>
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToCustomFile"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm;_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
+            Condition=" '$(ScriptWriteReleaseNotes)' != 'UNDEFINED' ">
+        <CallTarget Targets="_Custom_WriteReleaseNotesForCurrentRelease" />
     </Target>
  </Project>
