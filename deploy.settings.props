@@ -13,6 +13,7 @@
         The following deploy steps are by default provided through the given properties:
         $(DeployStepsPrepareVcsBranch)    - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
                                             name as the remote tracking branch.
+        $(DeployStepsPrepareGetIssueIds)  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
         $(DeployStepsTagVcs)              - Tags the current commit with the version number. Currentlyl supported version control systems are TFS and GIT.
         $(DeployStepsPushToNuget)         - Pushes one or more artifacts to a NuGet feed
         $(DeployStepsPushToDirectory)     - Pushes one or more artifacts to a directory
@@ -34,6 +35,10 @@
     -->
     <ItemGroup>
         <DeployStepsToExecute Include="$(DeployStepsPrepareVcsBranch)">
+            <Properties>
+            </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
             <Properties>
             </Properties>
         </DeployStepsToExecute>
@@ -180,7 +185,7 @@
     <ItemGroup>
         <PushToGitHubReleaseSpecs Include="${VersionSemantic}">
             <Repository>nBuildKit</Repository>
-            <Description>${ReleaseNotesShort}</Description>
+            <Description>${ReleaseNotes}</Description>
             <IncludedFiles>
                 $(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip
             </IncludedFiles>

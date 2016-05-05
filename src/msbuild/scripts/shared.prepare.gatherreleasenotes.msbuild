@@ -12,22 +12,34 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetReleaseNotesViaGitReleaseNotes.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetReleaseNotesViaGitReleaseNotes.msbuild') AND '$(ExistsGetReleaseNotesViaGitReleaseNotes)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetIssuesForGitHubMilestone.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetIssuesForGitHubMilestone.msbuild') AND '$(ExistsExtensionsGetIssuesForGitHubMilestone)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+
+    <Import Project="$(ScriptGatherIssues)"
+            Condition=" '$(ScriptGatherIssues)' != '' AND '$(ScriptGatherIssues)' != 'UNDEFINED' AND Exists('$(ScriptGatherIssues)')" />
+    <Import Project="$(ScriptWriteReleaseNotes)"
+            Condition=" '$(ScriptWriteReleaseNotes)' != '' AND '$(ScriptWriteReleaseNotes)' != 'UNDEFINED' AND Exists('$(ScriptWriteReleaseNotes)') " />
 
     <Target Name="nBuildKit_Shared_Prepare_GatherReleaseNotes_Run"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DisplayInfo"
-            Condition="!Exists('$(FileReleaseNotesShort)') OR !Exists('$(FileReleaseNotesFull)')">
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_Gather_FromGitHub"
-                    Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_Gather_FromYouTrack"
-                    Condition=" '$(YouTrackServer)' != 'UNDEFINED' " />
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm"/>
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToConsole" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToCustomFile" />
     </Target>
 
     <!-- Display info -->
@@ -41,35 +53,22 @@
             Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:"
                  Importance="low"/>
-        <Message Text="The workspace is located at:                                                 $(DirWorkspace)"
+        <Message Text="The workspace is located at:                                                      $(DirWorkspace)"
                  Importance="low"/>
-        <Message Text="The directory containing the NuGet packages is located at:                   $(DirPackages)"
+        <Message Text="The directory containing the NuGet packages is located at:                        $(DirPackages)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:                  $(DirNBuildKitMsBuild)"
+        <Message Text="The directory containing the nBuildKit files is located at:                       $(DirNBuildKitMsBuild)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:                $(DirNBuildKitMsBuildExtensions)"
+        <Message Text="The directory containing the nBuildKit scripts is located at:                     $(DirNBuildKitMsBuildExtensions)"
                  Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:              $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
-
-        <Message Text="The semantic version file is located at:                                     $(FileSemanticVersion)"
-                 Importance="low"/>
-        <Message Text="The file containing the release notes for the current release is located at: $(FileReleaseNotesShort)"
-                 Importance="low"/>
-        <Message Text="The file containing the release notes for all releases is located at:        $(FileReleaseNotesFull)"
+        <Message Text="The directory containing the nBuildKit templates is located at:                   $(DirNBuildKitMsBuildTemplates)"
                  Importance="low"/>
         <Message Text=" "
                  Importance="low"/>
 
-        <Message Text="The YouTrack filter is:                                                      $(IssueFilter)"
-                 Importance="low"
-                 Condition=" '$(IssueFilter)' != 'UNDEFINED' " />
-        <Message Text=" "
+        <Message Text="The semantic version file is located at:                                          $(FileSemanticVersion)"
                  Importance="low"/>
-
-        <Message Text="GitReleaseNotes command line executable is located at:                       $(ToolsExternalGitReleaseNotesPath)"
+        <Message Text="The text file containing the release notes for the current release is located at: $(FileReleaseNotes)"
                  Importance="low"/>
         <Message Text=" "
                  Importance="low"/>
@@ -80,114 +79,63 @@
                                     Condition="Exists('$(FileSemanticVersion)')">
             <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
         </GetSemanticVersionFromFile>
-
-        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
-                      PackageName="GitReleaseNotes"
-                      PackageVersion="$(ToolsExternalGitReleaseNotesVersion)"
-                      PackageDirectory="$(DirPackages)"
-                      Condition=" '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
-                                            FileToLocate="GitReleaseNotes.exe"
-                                            Condition=" '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalGitReleaseNotesPath" />
-        </SearchPackagesDirectoryForToolPath>
-        <Message Text="The GitReleaseNote executable was found at: $(ToolsExternalGitReleaseNotesPath)"
-                 Importance="low"
-                 Condition="Exists('$(ToolsExternalGitReleaseNotesPath)') AND '$(ShouldExecute)' == 'true' " />
-        <Error Text="The GitReleaseNote executable does not exist. Cannot generate release notes."
-               Condition="!Exists('$(ToolsExternalGitReleaseNotesPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_PrepareOutputFiles">
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesShort)'))">
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
+            Condition="Exists('$(ScriptGatherIssues)')">
+        <Message Text="Getting the release notes from the custom release note algorithm ..."
+                 Importance="low"/>
+
+        <CallTarget Targets="_Custom_GetIssueInformationForCurrentRelease" />
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
+            Condition="!Exists('$(ScriptGatherIssues)') AND '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubRepositoryName)' != 'UNDEFINED' ">
+        <Message Text="Getting the release notes from a github milestone ..."
+                 Importance="low"/>
+
+        <TemplateText Template="$(GitHubMilestoneName)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="MilestoneName" />
+        </TemplateText>
+
+        <GetIssuesForGitHubMilestone GitHubUserName="$(GitHubUserName)"
+                                     GitHubProjectName="$(GitHubRepositoryName)"
+                                     MilestoneName="$(MilestoneName)"
+                                     IssueState="closed">
+            <Output TaskParameter="Issues" ItemName="ReleaseNoteIssues"/>
+        </GetIssuesForGitHubMilestone>
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToConsole"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm;_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone">
+        <Message Text="[%(ReleaseNoteIssues.Identity)] %(ReleaseNoteIssues.Title) (%(ReleaseNoteIssues.UserName))" />
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm;_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
+            Condition=" '$(FileReleaseNotes)' != '' AND '$(FileReleaseNotes)' != 'UNDEFINED' ">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotes)'))">
             <Output TaskParameter="Value" PropertyName="DirToCreate" />
         </CreateProperty>
         <MakeDir Directories="$(DirToCreate)"
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
 
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesFull)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
-        </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        <ItemGroup>
+            <ReleaseNoteLines Include="@(ReleaseNoteIssues->'[%(Identity)] %(Title) (%(UserName) - %(UserUrl))', '&#x0d;&#x0a;')" />
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(FileReleaseNotes)"
+                          Lines="@(ReleaseNoteLines)"
+                          Overwrite="true"
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_Gather_FromGitHub"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites;_nBuildKit_Shared_Prepare_GatherReleaseNotes_PrepareOutputFiles"
-            Condition=" '$(YouTrackServer)' == 'UNDEFINED' ">
-        <Error Text="The packages directory does not exist. Cannot search for the GitReleaseNotes executable."
-               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
-
-        <Message Text="Gathering release note information from GitHub"
-                 Importance="normal" />
-        <Warning Text="Github username not specified"
-                 Condition=" '$(GitHubUserName)' == 'UNDEFINED' " />
-
-        <Message Text="Gathering release notes for current release ..."
-                 Importance="normal" />
-        <GetReleaseNotesViaGitReleaseNotes ExePath="$(ToolsExternalGitReleaseNotesPath)"
-                                           RepositoryName="$(GitHubRepositoryName)"
-                                           Version="$(VersionSemantic)"
-                                           OutputFile="$(FileReleaseNotesShort)"
-                                           GetAllReleaseNotes="false"
-                                           Condition=" '$(ShouldExecute)' == 'true' "
-                                           ContinueOnError="true" />
-
-        <Message Text="Gathering release notes for all releases ..."
-                 Importance="normal"
-                 Condition=" '$(IssueTrackerConnection)' != '' " />
-        <GetReleaseNotesViaGitReleaseNotes ExePath="$(ToolsExternalGitReleaseNotesPath)"
-                                           RepositoryName="$(GitHubRepositoryName)"
-                                           Version="$(VersionSemantic)"
-                                           OutputFile="$(FileReleaseNotesFull)"
-                                           GetAllReleaseNotes="true"
-                                           Condition=" '$(ShouldExecute)' == 'true' "
-                                           ContinueOnError="true" />
-    </Target>
-
-    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_Gather_FromYouTrack"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites;_nBuildKit_Shared_Prepare_GatherReleaseNotes_PrepareOutputFiles"
-            Condition=" '$(YouTrackServer)' != 'UNDEFINED' ">
-        <Error Text="The packages directory does not exist. Cannot search for the GitReleaseNotes executable."
-               Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalGitReleaseNotesPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
-
-        <Message Text="Gathering release note information from YouTrack"
-                 Importance="normal"
-                 Condition=" '$(YouTrackServer)' != 'UNDEFINED' " />
-
-        <Warning Text="YouTrack server URI not specified"
-                 Condition=" '$(YouTrackServer)' == 'UNDEFINED' " />
-        <Warning Text="Issue tracker project ID not specified"
-                 Condition=" '$(IssueTrackerProjectId)' == 'UNDEFINED' " />
-
-        <Message Text="Gathering release notes for current release ..."
-                 Importance="normal"
-                 Condition=" '$(IssueTrackerConnection)' != '' " />
-        <GetReleaseNotesViaGitReleaseNotes ExePath="$(ToolsExternalGitReleaseNotesPath)"
-                                           RepositoryName="$(GitHubRepositoryName)"
-                                           Version="$(VersionSemantic)"
-                                           OutputFile="$(FileReleaseNotesShort)"
-                                           YouTrackUserName="$(IssueTrackerUserName)"
-                                           YouTrackServer="$(YouTrackServer)"
-                                           YouTrackProject="$(IssueTrackerProjectId)"
-                                           YouTrackFilter="$(IssueFilter)"
-                                           GetAllReleaseNotes="false"
-                                           Condition=" '$(ShouldExecute)' == 'true' "
-                                           ContinueOnError="true" />
-
-        <Message Text="Gathering release notes for all releases ..."
-                 Importance="normal"
-                 Condition=" '$(IssueTrackerConnection)' != '' " />
-        <GetReleaseNotesViaGitReleaseNotes ExePath="$(ToolsExternalGitReleaseNotesPath)"
-                                           RepositoryName="$(GitHubRepositoryName)"
-                                           Version="$(VersionSemantic)"
-                                           OutputFile="$(FileReleaseNotesFull)"
-                                           YouTrackUserName="$(IssueTrackerUserName)"
-                                           YouTrackServer="$(YouTrackServer)"
-                                           YouTrackProject="$(IssueTrackerProjectId)"
-                                           YouTrackFilter="$(IssueFilter)"
-                                           GetAllReleaseNotes="true"
-                                           Condition=" '$(ShouldExecute)' == 'true' "
-                                           ContinueOnError="true" />
+    <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToCustomFile"
+            DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm;_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
+            Condition=" '$(ScriptWriteReleaseNotes)' != 'UNDEFINED' ">
+        <CallTarget Targets="_Custom_WriteReleaseNotesForCurrentRelease" />
     </Target>
  </Project>

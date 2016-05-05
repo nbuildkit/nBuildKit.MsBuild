@@ -21,10 +21,10 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
 
-    <Import Project="$(VersionScriptPath)"
-            Condition=" '$(VersionScriptPath)' != '' AND '$(VersionScriptPath)' != 'UNDEFINED' AND Exists('$(VersionScriptPath)')" />
+    <Import Project="$(ScriptGetVersion)"
+            Condition=" '$(ScriptGetVersion)' != '' AND '$(ScriptGetVersion)' != 'UNDEFINED' AND Exists('$(ScriptGetVersion)')" />
     <Import Project="$(FileVersionMsBuild)"
-            Condition="Exists('$(FileVersionMsBuild)') AND ( '$(VersionScriptPath)' == '' OR '$(VersionScriptPath)' == 'UNDEFINED' OR !Exists('$(VersionScriptPath)'))" />
+            Condition="Exists('$(FileVersionMsBuild)') AND ( '$(ScriptGetVersion)' == '' OR '$(ScriptGetVersion)' == 'UNDEFINED' OR !Exists('$(ScriptGetVersion)'))" />
 
     <Target Name="nBuildKit_Shared_Prepare_GetVersion_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_GetVersion_DisplayInfo"
@@ -80,7 +80,7 @@
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm"
-            Condition="Exists('$(VersionScriptPath)')">
+            Condition="Exists('$(ScriptGetVersion)')">
         <Message Text="Getting version from the custom version algorithm ..."
                  Importance="low"/>
 
@@ -97,7 +97,7 @@
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile"
-            Condition="Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)')">
+            Condition="Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')">
         <Message Text="Getting version from the MsBuild version file ..."
                  Importance="low"/>
 
@@ -127,7 +127,7 @@
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GetVersion_GetToolPaths"
-            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)')">
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')">
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="GitVersion.CommandLine"
                       PackageVersion="$(ToolsExternalGitVersionVersion)"
@@ -147,7 +147,7 @@
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionViaGitVersion"
-            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(VersionScriptPath)') AND Exists('$(ToolsExternalGitVersionPath)') AND ('$(IsGitWorkspace)' == 'true')">
+            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)') AND Exists('$(ToolsExternalGitVersionPath)') AND ('$(IsGitWorkspace)' == 'true')">
         <Message Text="Getting version from the GitVersion ..."
                  Importance="low"/>
 

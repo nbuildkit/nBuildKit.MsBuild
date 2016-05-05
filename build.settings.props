@@ -59,6 +59,7 @@
                                                              - VersionPreRelease
                                                            - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
                                                            - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
+        $(BuildStepsPrepareGetIssueIds)                  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
         $(BuildStepsPrepareVcsMerge)                     - Merges the current changes to the designated target branch (specified by $(BranchMergeTarget)).
         $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process. Release notes
                                                            are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
@@ -106,6 +107,10 @@
             </Properties>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGetIssueIds)">
             <Properties>
             </Properties>
         </BuildStepsToExecute>
