@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedGenerateTokenProduct>true</ExistsSharedGenerateTokenProduct>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+
+    <Target Name="shared_generatetoken_product">
+        <ItemGroup>
+            <TemplateTokens Include="ProductName">
+                <ReplacementValue>$(ProductName)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ProductNameInFilePath">
+                <ReplacementValue>$(ProductNameInFilePath)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ProductDescription">
+                <ReplacementValue>$(ProductDescription)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ProductNamespace">
+                <ReplacementValue>$(ProductNamespace)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ProductStartingYear">
+                <ReplacementValue>$(ProductStartingYear)</ReplacementValue>
+            </TemplateTokens>
+
+            <TemplateTokens Include="CompanyName">
+                <ReplacementValue>$(CompanyName)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="CompanyNameInFilePath">
+                <ReplacementValue>$(CompanyNameInFilePath)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="CompanyUrl">
+                <ReplacementValue>$(CompanyUrl)</ReplacementValue>
+            </TemplateTokens>
+
+            <TemplateTokens Include="CopyrightShort">
+                <ReplacementValue>$(CopyrightShort)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="CopyrightLong">
+                <ReplacementValue>$(CopyrightLong)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+    </Target>
+</Project>
