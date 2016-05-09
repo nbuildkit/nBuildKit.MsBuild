@@ -275,67 +275,19 @@
             <ReplacementValue>nBuildKit.Tools.VsCoverageToReportGenerator</ReplacementValue>
         </BuildFilesToGenerate>
 
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\nbuildkit.readme.txt">
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\nbuildkit.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
             <Token>PackageName</Token>
             <ReplacementValue>nBuildKit.MsBuild</ReplacementValue>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\scripts\build\packages.config">
-            <Template>$(DirSrc)\msbuild\scripts\build\packages.config</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\scripts\build\packages.config">
+            <Template>$(DirSrc)\scripts\build\packages.config</Template>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\scripts\test\packages.config">
-            <Template>$(DirSrc)\msbuild\scripts\test\packages.config</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\scripts\test\packages.config">
+            <Template>$(DirSrc)\scripts\test\packages.config</Template>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\scripts\deploy\packages.config">
-            <Template>$(DirSrc)\msbuild\scripts\deploy\packages.config</Template>
-        </BuildFilesToGenerate>
-
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\import.props">
-            <Template>$(DirSrc)\msbuild\projects\import.props</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\import.targets">
-            <Template>$(DirSrc)\msbuild\projects\import.targets</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\csharp\nbuildkit.csharp.readme.txt">
-            <Template>$(DirSrc)\readme.txt</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.CSharp</ReplacementValue>
-        </BuildFilesToGenerate>
-
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\import.props">
-            <Template>$(DirSrc)\msbuild\projects\import.props</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\import.targets">
-            <Template>$(DirSrc)\msbuild\projects\import.targets</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\vbnet\nbuildkit.vbnet.readme.txt">
-            <Template>$(DirSrc)\readme.txt</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.VBNet</ReplacementValue>
-        </BuildFilesToGenerate>
-
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\import.props">
-            <Template>$(DirSrc)\msbuild\projects\import.props</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.WiX</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\import.targets">
-            <Template>$(DirSrc)\msbuild\projects\import.targets</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.WiX</ReplacementValue>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\msbuild\projects\wix\nbuildkit.wix.readme.txt">
-            <Template>$(DirSrc)\readme.txt</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild.Projects.WiX</ReplacementValue>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\scripts\deploy\packages.config">
+            <Template>$(DirSrc)\scripts\deploy\packages.config</Template>
         </BuildFilesToGenerate>
     </ItemGroup>
 
@@ -869,15 +821,6 @@
     -->
     <ItemGroup>
         <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.nuspec">
-            <ShouldBuildSymbols>false</ShouldBuildSymbols>
-        </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.csharp.nuspec">
-            <ShouldBuildSymbols>false</ShouldBuildSymbols>
-        </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.vbnet.nuspec">
-            <ShouldBuildSymbols>false</ShouldBuildSymbols>
-        </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.projects.wix.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.tools.vscoveragetoreportgenerator.nuspec">
