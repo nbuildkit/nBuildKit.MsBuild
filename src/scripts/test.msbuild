@@ -77,7 +77,7 @@
             Condition=" '@(TestStepsToExecute)' != ''"
             Outputs="%(TestStepsToExecute.Identity)">
 
-        <CreateItem Include="$(TestGroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
+        <CreateItem Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
             <Output TaskParameter="Include" ItemName="ExecutionGroupsFromUser"/>
         </CreateItem>
 
@@ -102,7 +102,7 @@
             <Output TaskParameter="Value" PropertyName="ShouldExecute" />
         </CreateProperty>
         <CreateProperty Value="true"
-                        Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '$(TestStepGroups)' == '' AND '$(TestGroupsToExecute.ToLower())' == 'all')">
+                        Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '$(TestStepGroups)' == '' AND '$(GroupsToExecute.ToLower())' == 'all')">
             <Output TaskParameter="Value" PropertyName="ShouldExecute" />
         </CreateProperty>
 
@@ -117,7 +117,7 @@
                  Condition=" $(ShouldExecuteAllSteps.ToLower()) != 'true' " />
         <Message Text="Execution group list is empty and 'All' execution group is not included in group list."
                  Importance="low"
-                 Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(TestGroupsToExecute.ToLower())' != 'all' " />
+                 Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(GroupsToExecute.ToLower())' != 'all' " />
 
         <Message Text="Executing %(TestStepsToExecute.Identity)"
                  Importance="normal"
@@ -147,7 +147,7 @@
             Condition=" '@(TestFailureStepsToExecute)' != '' "
             Outputs="%(TestFailureStepsToExecute.Identity)">
 
-        <CreateItem Include="$(TestGroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
+        <CreateItem Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
             <Output TaskParameter="Include" ItemName="ExecutionGroupsFromUser"/>
         </CreateItem>
 
@@ -172,7 +172,7 @@
             <Output TaskParameter="Value" PropertyName="ShouldExecute" />
         </CreateProperty>
         <CreateProperty Value="true"
-                        Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '%(TestFailureStepsToExecute.Groups)' == '' AND '$(TestGroupsToExecute.ToLower())' == 'all')">
+                        Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '%(TestFailureStepsToExecute.Groups)' == '' AND '$(GroupsToExecute.ToLower())' == 'all')">
             <Output TaskParameter="Value" PropertyName="ShouldExecute" />
         </CreateProperty>
 
@@ -187,7 +187,7 @@
                  Condition=" $(ShouldExecuteAllSteps.ToLower()) != 'true' " />
         <Message Text="Execution group list is empty and 'All' execution group is not included in group list."
                  Importance="low"
-                 Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(TestGroupsToExecute.ToLower())' != 'all' " />
+                 Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(GroupsToExecute.ToLower())' != 'all' " />
 
         <Message Text="Executing %(TestFailureStepsToExecute.Identity)"
                  Importance="normal"
