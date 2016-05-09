@@ -143,7 +143,8 @@
     </Target>
 
     <Target Name="_nBuildKit_Build_OnError"
-        Condition=" '@(BuildFailureStepsToExecute)' != '' ">
+        Condition=" '@(BuildFailureStepsToExecute)' != '' "
+        Outputs="%(BuildFailureStepsToExecute.Identity)">
 
         <CreateItem Include="$(BuildGroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
             <Output TaskParameter="Include" ItemName="ExecutionGroupsFromUser"/>
