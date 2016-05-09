@@ -22,6 +22,20 @@
     <!--
         **** BUILD STEPS ****
     -->
+    <PropertyGroup>
+        <!--
+            Defines the build groups that should be executed in the current build.
+
+            A build group is a collection of build steps which are executed in sequence in the same build process. One build step
+            can belong to multiple build groups and one build group may contain multiple build steps.
+
+            A build group is identified by a tag.
+
+            The tag 'all' is a special tag that will lead to the invocation of all build steps that are registered in the
+            ItemGroup below.
+        -->
+        <BuildGroupsToExecute Condition=" '$(BuildGroupsToExecute)' == '' ">All</BuildGroupsToExecute>
+    </PropertyGroup>
     <!--
         The following ItemGroup defines which steps are taken during the build process. The order of the items in the item group
         determines in which order the build steps are executed.
@@ -101,62 +115,109 @@
         <BuildStepsToExecute Include="$(BuildStepsPrepareVcsBranch)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareVcsInfo)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetIssueIds)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareVcsMerge)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareReleaseNotes)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNpm)">
             <Properties>
             </Properties>
+            <Groups>
+                Npm;
+                Prepare;
+                Restore;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreBower)">
             <Properties>
             </Properties>
+            <Groups>
+                Bower;
+                Prepare;
+                Restore;
+            </Groups>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsPrepareAssemblyInfo)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateLicenses)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateFiles)">
             <Properties>
             </Properties>
+            <Groups>
+                Generate;
+                Prepare;
+            </Groups>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceCcm)">
             <Properties>
             </Properties>
+            <Groups>
+                Analyze;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceSouceMonitor)">
             <Properties>
             </Properties>
+            <Groups>
+                Analyze;
+            </Groups>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
             <Properties>
             </Properties>
+            <Groups>
+                Compile;
+            </Groups>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
@@ -164,18 +225,27 @@
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
             </Properties>
+            <Groups>
+                UnitTest;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsUnitTestMsTest)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
             </Properties>
+            <Groups>
+                UnitTest;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsUnitTestVsTest)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
             </Properties>
+            <Groups>
+                UnitTest;
+            </Groups>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesMoma)">
@@ -183,12 +253,18 @@
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
             </Properties>
+            <Groups>
+                Analyze;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
             </Properties>
+            <Groups>
+                Analyze;
+            </Groups>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsBuildApiDocumentationWithSandcastle)">
@@ -196,6 +272,9 @@
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform)
             </Properties>
+            <Groups>
+                Compile;
+            </Groups>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
@@ -203,12 +282,18 @@
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform)
             </Properties>
+            <Groups>
+                Package;
+            </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPackZip)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform)
             </Properties>
+            <Groups>
+                Package;
+            </Groups>
         </BuildStepsToExecute>
     </ItemGroup>
 
@@ -235,6 +320,8 @@
         <BuildFailureStepsToExecute Include="">
             <Properties>
             </Properties>
+            <Groups>
+            </Groups>
         </BuildFailureStepsToExecute>
         -->
     </ItemGroup>
