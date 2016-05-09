@@ -571,6 +571,25 @@
     </PropertyGroup>
 
 
+    <!--
+        **** STEPS ****
+    -->
+    <PropertyGroup>
+        <!--
+            Defines the groups that should be executed in the current stage.
+
+            A group is a collection of steps which are executed in sequence in the same process. One step
+            can belong to multiple groups and one group may contain multiple steps.
+
+            A group is identified by a tag.
+
+            The tag 'all' is a special tag that will lead to the invocation of all steps that are registered for the
+            selected stage.
+        -->
+        <GroupsToExecute Condition=" '$(GroupsToExecute)' == '' ">All</GroupsToExecute>
+    </PropertyGroup>
+
+
 
 
 
