@@ -2,6 +2,20 @@
 <Project ToolsVersion="4.0"
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!--
+            Defines the deploy groups that should be executed in the current deploy.
+
+            A deploy group is a collection of deploy steps which are executed in sequence in the same deploy process. One deploy step
+            can belong to multiple deploy groups and one deploy group may contain multiple deploy steps.
+
+            A deploy group is identified by a tag.
+
+            The tag 'all' is a special tag that will lead to the invocation of all deploy steps that are registered in the
+            ItemGroup below.
+        -->
+        <!-- <DeployGroupsToExecute Condition=" '$(DeployGroupsToExecute)' == '' ">All</DeployGroupsToExecute> -->
+    </PropertyGroup>
     <!--
         The following ItemGroup defines which steps are taken during the deploy process. The order of the items in the item group
         determines in which order the deploy steps are executed.
@@ -37,10 +51,16 @@
         <DeployStepsToExecute Include="$(DeployStepsPrepareVcsBranch)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </DeployStepsToExecute>
         <!--
         <DeployStepsToExecute Include="$(DeployStepsTagVcs)">
@@ -48,6 +68,9 @@
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+            <Groups>
+                Tag;
+            </Groups>
         </DeployStepsToExecute>
         -->
         <DeployStepsToExecute Include="$(DeployStepsPushToNuget)">
@@ -55,6 +78,10 @@
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+            <Groups>
+                NuGet;
+                Push;
+            </Groups>
         </DeployStepsToExecute>
         <!--
         <DeployStepsToExecute Include="$(DeployStepsPushToDirectory)">
@@ -62,12 +89,20 @@
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+            <Groups>
+                Directory;
+                Push;
+            </Groups>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsPushToSymbolServer)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+            <Groups>
+                Push;
+                SymbolServer;
+            </Groups>
         </DeployStepsToExecute>
         -->
         <DeployStepsToExecute Include="$(DeployStepsPushToGitHubRelease)">
@@ -75,6 +110,10 @@
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+            <Groups>
+                GitHub;
+                Push;
+            </Groups>
         </DeployStepsToExecute>
     </ItemGroup>
 

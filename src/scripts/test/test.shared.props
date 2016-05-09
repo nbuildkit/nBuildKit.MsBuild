@@ -2,6 +2,21 @@
 <Project ToolsVersion="4.0"
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <!--
+            Defines the test groups that should be executed in the current test run.
+
+            A test group is a collection of test steps which are executed in sequence in the same Test process. One test step
+            can belong to multiple test groups and one test group may contain multiple test steps.
+
+            A test group is identified by a tag.
+
+            The tag 'all' is a special tag that will lead to the invocation of all test steps that are registered in the
+            ItemGroup below.
+        -->
+        <TestGroupsToExecute Condition=" '$(TestGroupsToExecute)' == '' ">All</TestGroupsToExecute>
+    </PropertyGroup>
     <!--
         The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
         determines in which order the test steps are executed.
@@ -62,26 +77,45 @@
         <TestStepsToExecute Include="$(TestStepsPrepareVcsBranch)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareGetVersion)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareGetIssueIds)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareReleaseNotes)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareVcsInfo)">
             <Properties>
             </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
             <Properties>
             </Properties>
+            <Groups>
+                Generate;
+                Prepare;
+            </Groups>
         </TestStepsToExecute>
     </ItemGroup>
 
