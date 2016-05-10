@@ -6,7 +6,7 @@
          ToolsVersion="4.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsExtensionsAddOrUpdateAttributeInCode>true</ExistsExtensionsAddOrUpdateAttributeInCode>
+        <ExistsExtensionsUpdateAttributeInCode>true</ExistsExtensionsUpdateAttributeInCode>
 
         <!--
             For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
@@ -16,7 +16,7 @@
         <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
 
-    <UsingTask TaskName="AddOrUpdateAttributeInCode"
+    <UsingTask TaskName="UpdateAttributeInCode"
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
@@ -76,17 +76,14 @@
                                 }
                             }
 
-                            if (!found)
+                            if (found)
                             {
-                                Log.LogMessage(MessageImportance.Low, string.Format("Adding to file: {0}. Line: \"{1}\"", InputFile, attribute));
-                                lines.Add(attribute);
-                            }
-
-                            using (var writer = new StreamWriter(InputFile, false))
-                            {
-                                for (int i = 0; i < lines.Count; i++)
+                                using (var writer = new StreamWriter(InputFile, false))
                                 {
-                                    writer.WriteLine(lines[i]);
+                                    for (int i = 0; i < lines.Count; i++)
+                                    {
+                                        writer.WriteLine(lines[i]);
+                                    }
                                 }
                             }
                         }

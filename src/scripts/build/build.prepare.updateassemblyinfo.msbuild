@@ -19,6 +19,8 @@
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\AddOrUpdateAttributeInCode.msbuild') AND '$(ExistsExtensionsAddOrUpdateAttributeInCode)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\UpdateAttributeInCode.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\UpdateAttributeInCode.msbuild') AND '$(ExistsExtensionsUpdateAttributeInCode)' != 'true' " />
 
     <Target Name="nBuildKit_Build_Prepare_UpdateAssemblyInfo_Run"
             DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo">
@@ -62,33 +64,43 @@
             Condition=" '@(AssemblyInfoFilesToUpdate)' != '' ">
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyVersion"
-                                    Value="${VersionAssembly}"
+                                    Value="&quot;${VersionAssembly}&quot;"
                                     Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyFileVersion"
-                                    Value="${VersionAssemblyFile}"
+                                    Value="&quot;${VersionAssemblyFile}&quot;"
                                     Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyInformationalVersion"
-                                    Value="${VersionProduct}"
-                                    Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
-
-        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-                                    AttributeName="AssemblyConfiguration"
-                                    Value="$(Configuration)"
+                                    Value="&quot;${VersionProduct}&quot;"
                                     Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyCompany"
-                                    Value="$(CompanyName)"
+                                    Value="&quot;$(CompanyName)&quot;"
                                     Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyCopyright"
-                                    Value="$(CopyrightLong)"
+                                    Value="&quot;$(CopyrightLong)&quot;"
                                     Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>
+
+        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+                                    AttributeName="AssemblyConfiguration"
+                                    Value="&quot;$(Configuration)&quot;"
+                                    Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "/>
+
+        <UpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+                               AttributeName="AssemblyBuildTime"
+                               Value="buildTime: &quot;${Now}&quot;"
+                               Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "/>
+
+        <UpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+                               AttributeName="AssemblyBuildInformation"
+                               Value="buildNumber: $(VersionBuild), versionControlInformation: &quot;${VcsRevision}&quot;"
+                               Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "/>
 
         <TemplateFile Template="%(AssemblyInfoFilesToUpdate.Identity)"
                       OutputFileName="%(AssemblyInfoFilesToUpdate.Identity)"
