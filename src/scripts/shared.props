@@ -79,6 +79,19 @@
             Indicates that the execution of the build script runs through the steps but does not actually execute them.
         -->
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
+
+        <!--
+            The default targets that should be executed when the build is started.
+
+            The possible values are:
+
+                Verify         - Execute the verification that will verify if all data is present or will be generated.
+                Run            - Execute the steps.
+                Revert         - Revert the actions done by the 'Run' steps.
+
+            Multiple targets may be combined in a comma separated fashion.
+        -->
+        <Targets Condition=" '$(Targets)' == '' ">run</Targets>
     </PropertyGroup>
 
     <!--

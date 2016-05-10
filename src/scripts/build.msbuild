@@ -74,6 +74,30 @@
     </Target>
 
     <Target Name="_nBuildKit_Build_Execute"
+            Condition=" '@(BuildStepsToExecute)' != '' AND '$(Targets)' != '' ">
+
+        <ItemGroup>
+            <TargetsToInvoke Include="$(Targets.ToLower().Split(','))" />
+        </ItemGroup>
+
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(MsBuildProjectFile)"
+            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);TargetToExecute=%(TargetsToInvoke.Identity)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets="_nBuildKit_Build_Execute_BuildSteps"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Execute_BuildSteps"
             Condition=" '@(BuildStepsToExecute)' != ''"
             Outputs="%(BuildStepsToExecute.Identity)">
 
@@ -106,7 +130,7 @@
             <Output TaskParameter="Value" PropertyName="ShouldExecute" />
         </CreateProperty>
 
-        <Message Text="Skipping %(BuildStepsToExecute.Identity)."
+        <Message Text="Skipping [%(BuildStepsToExecute.Identity)]"
                  Importance="normal"
                  Condition=" '$(ShouldExecute)' != 'true' " />
         <Message Text="Step not included in execution group list."
@@ -119,7 +143,7 @@
                  Importance="low"
                  Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(GroupsToExecute.ToLower())' != 'all' " />
 
-        <Message Text="Executing %(BuildStepsToExecute.Identity)"
+        <Message Text="Executing [%(BuildStepsToExecute.Identity)] for target [$(TargetToExecute)]"
                  Importance="normal"
                  Condition=" '$(ShouldExecute)' == 'true' " />
         <MSBuild
@@ -132,7 +156,7 @@
             SkipNonexistentProjects="False"
             StopOnFirstFailure="True"
             TargetAndPropertyListSeparators=""
-            Targets=""
+            Targets="$(TargetToExecute)"
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True"
