@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_VcsSetBranch_Run"
+         DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ExistsSharedPrepareVcsSetBranch>true</ExistsSharedPrepareVcsSetBranch>
@@ -11,6 +11,24 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
+    <!--
+        **** STANDARD TARGETS ****
+    -->
+    <Target Name="Verify">
+    </Target>
+
+    <Target Name="Run">
+        <CallTarget Targets="nBuildKit_Shared_Prepare_VcsSetBranch_Run" />
+    </Target>
+
+    <Target Name="Revert">
+        <!-- Revert is not relevant -->
+    </Target>
+
+
+    <!--
+        **** SCRIPT TARGETS ****
+    -->
     <Target Name="nBuildKit_Shared_Prepare_VcsSetBranch_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
             Condition="!Exists('$(FileVcsInfo)')">

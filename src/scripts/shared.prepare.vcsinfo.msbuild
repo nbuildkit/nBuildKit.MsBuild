@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_VcsInfo_Run"
+         DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
@@ -15,6 +15,24 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' " />
 
+    <!--
+        **** STANDARD TARGETS ****
+    -->
+    <Target Name="Verify">
+    </Target>
+
+    <Target Name="Run">
+        <CallTarget Targets="nBuildKit_Shared_Prepare_VcsInfo_Run" />
+    </Target>
+
+    <Target Name="Revert">
+        <!-- Revert is not relevant -->
+    </Target>
+
+
+    <!--
+        **** SCRIPT TARGETS ****
+    -->
     <Target Name="nBuildKit_Shared_Prepare_VcsInfo_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsInfo_DisplayInfo"
             Condition="!Exists('$(FileVcsInfo)')">

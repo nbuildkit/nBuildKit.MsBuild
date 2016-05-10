@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Build_Test_Unit_NUnit_Run"
+         DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
@@ -30,6 +30,24 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
+    <!--
+        **** STANDARD TARGETS ****
+    -->
+    <Target Name="Verify">
+    </Target>
+
+    <Target Name="Run">
+        <CallTarget Targets="nBuildKit_Build_Test_Unit_NUnit_Run" />
+    </Target>
+
+    <Target Name="Revert">
+        <!-- Revert is not relevant -->
+    </Target>
+
+
+    <!--
+        **** SCRIPT TARGETS ****
+    -->
     <Target Name="nBuildKit_Build_Test_Unit_NUnit_Run"
             DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths" />

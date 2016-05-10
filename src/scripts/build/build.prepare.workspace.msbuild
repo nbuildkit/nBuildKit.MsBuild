@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Build_Prepare_Workspace_Run"
+         DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
@@ -12,6 +12,24 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
 
+    <!--
+        **** STANDARD TARGETS ****
+    -->
+    <Target Name="Verify">
+    </Target>
+
+    <Target Name="Run">
+        <CallTarget Targets="nBuildKit_Build_Prepare_Workspace_Run" />
+    </Target>
+
+    <Target Name="Revert">
+        <!-- Revert is not relevant -->
+    </Target>
+
+
+    <!--
+        **** SCRIPT TARGETS ****
+    -->
     <Target Name="nBuildKit_Build_Prepare_Workspace_Run"
             DependsOnTargets="_nBuildKit_Build_Prepare_Workspace_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean" />
