@@ -124,7 +124,7 @@
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
-            <ReleaseNoteLines Include="@(ReleaseNoteIssues->'[%(Identity)] %(Title) (%(UserName) - %(UserUrl))', '&#x0d;&#x0a;')" />
+            <ReleaseNoteLines Include="@(ReleaseNoteIssues->'[%(Identity)] %(Title) (%(UserName))', '&#x0d;&#x0a;')" />
         </ItemGroup>
 
         <WriteLinesToFile File="$(FileReleaseNotes)"
