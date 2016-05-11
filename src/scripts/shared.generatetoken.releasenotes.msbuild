@@ -11,16 +11,37 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\HtmlEncodeText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\HtmlEncodeText.msbuild') AND '$(ExistsExtensionsHtmlEncodeText)' != 'true' "/>
+
     <Target Name="shared_generatetoken_releasenotes">
         <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotes)'))"
                         Condition="Exists('$(FileReleaseNotes)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
         </CreateProperty>
+        <HtmlEncodeText Text="$(ReleaseNotes)"
+                        Condition=" '$(ReleaseNotes)' != '' ">
+            <Output TaskParameter="EncodedText" PropertyName="ReleaseNotesHtmlEncoded" />
+        </HtmlEncodeText>
 
         <ItemGroup>
             <!-- Release notes -->
-            <TemplateTokens Include="ReleaseNotes">
+            <TemplateTokens Include="ReleaseNotes"
+                            Condition=" '$(ReleaseNotes)' != '' ">
                 <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ReleaseNotes"
+                            Condition=" '$(ReleaseNotes)' == '' ">
+                <ReplacementValue> </ReplacementValue>
+            </TemplateTokens>
+
+            <TemplateTokens Include="ReleaseNotesHtmlEncoded"
+                            Condition=" '$(ReleaseNotesHtmlEncoded)' != '' ">
+                <ReplacementValue>$(ReleaseNotesHtmlEncoded)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ReleaseNotesHtmlEncoded"
+                            Condition=" '$(ReleaseNotesHtmlEncoded)' == '' ">
+                <ReplacementValue> </ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
     </Target>

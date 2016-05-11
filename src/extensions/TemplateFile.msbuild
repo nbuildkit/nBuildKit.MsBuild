@@ -23,6 +23,7 @@
             <Template ParameterType="System.String" Required="true" />
             <OutputFileName ParameterType="System.String" Required="true" />
             <Tokens ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <SearchExpression ParameterType="System.String" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -30,8 +31,16 @@
                     public override bool Execute()
                     {
                         const string MetadataValueTag = "ReplacementValue";
+
+                        if (string.IsNullOrWhiteSpace(SearchExpression))
+                        {
+                            SearchExpression = "(?<token>\\$\\{(?<identifier>\\w*)\\})";
+                        }
+
+                        Log.LogMessage(MessageImportance.Low, "Searching for replacement tokens with the regular expression '{0}'", SearchExpression);
+
                         var _regex = new System.Text.RegularExpressions.Regex(
-                            "(?<token>\\$\\{(?<identifier>\\w*)\\})",
+                            SearchExpression,
                             System.Text.RegularExpressions.RegexOptions.IgnoreCase
                             | System.Text.RegularExpressions.RegexOptions.Multiline
                             | System.Text.RegularExpressions.RegexOptions.Compiled

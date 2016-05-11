@@ -22,6 +22,7 @@
         <ParameterGroup>
             <Template ParameterType="System.String" Required="true" />
             <Tokens ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <SearchExpression ParameterType="System.String" Required="false" />
             <Result ParameterType="System.String" Output="true" />
         </ParameterGroup>
         <Task>
@@ -30,13 +31,18 @@
                     public override bool Execute()
                     {
                         const string MetadataValueTag = "ReplacementValue";
+
+                        if (string.IsNullOrWhiteSpace(SearchExpression))
+                        {
+                            SearchExpression = "(?<token>\\$\\{(?<identifier>\\w*)\\})";
+                        }
+
                         var _regex = new System.Text.RegularExpressions.Regex(
-                            "(?<token>\\$\\{(?<identifier>\\w*)\\})",
+                            SearchExpression,
                             System.Text.RegularExpressions.RegexOptions.IgnoreCase
                             | System.Text.RegularExpressions.RegexOptions.Multiline
                             | System.Text.RegularExpressions.RegexOptions.Compiled
                             | System.Text.RegularExpressions.RegexOptions.Singleline);
-
 
                         var tokenPairs = new System.Collections.Generic.Dictionary<string, string>(System.StringComparer.InvariantCultureIgnoreCase);
                         if (Tokens != null)
