@@ -19,17 +19,20 @@
                         Condition="Exists('$(FileReleaseNotes)') AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
         </CreateProperty>
-        <HtmlEncodeText Text="$(ReleaseNotes)">
-            <Output TaskParameter="EncodedText" PropertyName="SanitizedReleaseNotes" />
+        <HtmlEncodeText Text="$(ReleaseNotes)"
+                        Condition=" '$(ReleaseNotes)' != '' ">
+            <Output TaskParameter="EncodedText" PropertyName="ReleaseNotesHtmlEncoded" />
         </HtmlEncodeText>
 
         <ItemGroup>
             <!-- Release notes -->
-            <TemplateTokens Include="ReleaseNotes">
+            <TemplateTokens Include="ReleaseNotes"
+                            Condition=" '$(ReleaseNotes)' != '' ">
                 <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
             </TemplateTokens>
-            <TemplateTokens Include="ReleaseNotesHtmlEncoded">
-                <ReplacementValue>$(SanitizedReleaseNotes)</ReplacementValue>
+            <TemplateTokens Include="ReleaseNotesHtmlEncoded"
+                            Condition=" '$(ReleaseNotesHtmlEncoded)' != '' ">
+                <ReplacementValue>$(ReleaseNotesHtmlEncoded)</ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
     </Target>
