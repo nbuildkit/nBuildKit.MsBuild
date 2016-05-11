@@ -17,8 +17,6 @@
 
     <Import Project="$(DirNBuildKitMsBuildExtensions)\FindAndReplaceInFile.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\FindAndReplaceInFile.msbuild') AND '$(ExistsExtensionsFindAndReplaceInFile)' != 'true' "/>
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\HtmlEncodeText.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\HtmlEncodeText.msbuild') AND '$(ExistsExtensionsHtmlEncodeText)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild') AND '$(ExistsExtensionsGatherNuGetDependenciesForProject)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetPack.msbuild"
@@ -129,20 +127,9 @@
             <Output TaskParameter="Dependencies" PropertyName="NuGetDependencies" />
         </GatherNuGetDependenciesForProject>
 
-        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotes)'))"
-                        Condition="Exists('$(FileReleaseNotes)') AND '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
-        </CreateProperty>
-        <HtmlEncodeText Text="$(ReleaseNotes)">
-            <Output TaskParameter="EncodedText" PropertyName="SanitizedReleaseNotes" />
-        </HtmlEncodeText>
-
         <ItemGroup>
             <TemplateTokens Include="Dependencies">
                 <ReplacementValue>$(NuGetDependencies)</ReplacementValue>
-            </TemplateTokens>
-            <TemplateTokens Include="ReleaseNotesNuget">
-                <ReplacementValue>$(SanitizedReleaseNotes)</ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
         <NuGetPack NuGetPath="$(ToolsExternalNuGetPath)"
