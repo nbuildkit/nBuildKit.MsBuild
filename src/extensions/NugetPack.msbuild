@@ -24,7 +24,7 @@
             <File ParameterType="System.String" Required="true" />
             <ShouldBuildSymbols ParameterType="System.Boolean" Required="true" />
             <OutputDirectory ParameterType="System.String" Required="true" />
-            <Properties ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <Properties ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -32,9 +32,11 @@
                     public override bool Execute()
                     {
                         const string MetadataValueTag = "ReplacementValue";
-                        var properties = new System.Collections.Generic.List<string>();
+                        var propertyText = string.Empty;
                         if (Properties != null)
                         {
+                            var properties = new System.Collections.Generic.List<string>();
+
                             ITaskItem[] processedProperties = Properties;
                             for (int i = 0; i < processedProperties.Length; i++)
                             {
@@ -45,9 +47,10 @@
                                     properties.Add(string.Format("{0}=\"{1}\"", taskItem.ItemSpec, metadataItem.TrimEnd('\\')));
                                 }
                             }
+
+                            propertyText = string.Join(";", properties);
                         }
 
-                        var propertyText = string.Join(";", properties);
                         var builder = new System.Text.StringBuilder();
                         {
                             builder.Append(string.Format("pack \"{0}\" ", File.TrimEnd('\\')));
@@ -60,7 +63,11 @@
                             // the closing quote will be eaten by the command line parser. Note that
                             // this is only necessary because we're dealing with a directory
                             builder.Append(string.Format("-OutputDirectory \"{0}\" ", OutputDirectory.TrimEnd('\\')));
-                            builder.Append(string.Format("-Properties {0} ", propertyText));
+
+                            if (!string.IsNullOrEmpty(propertyText))
+                            {
+                                builder.Append(string.Format("-Properties {0} ", propertyText));
+                            }
                         }
 
                         var info = new System.Diagnostics.ProcessStartInfo

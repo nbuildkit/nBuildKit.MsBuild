@@ -132,11 +132,25 @@
                 <ReplacementValue>$(NuGetDependencies)</ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
+
+        <CreateProperty Value="$(DirBuildTemp)\$([System.IO.Path]::GetFileName($(FileNuGetNuSpec)))">
+            <Output TaskParameter="Value" PropertyName="FileNuGetNuSpecTokensReplaced" />
+        </CreateProperty>
+
+        <!--
+            Replaced all instances of $TOKEN$ with the value for TOKEN. The regular expession
+            is rather mangled because XML doesn't like < and > and MsBuild doesn't
+            like $ (%24), * (%2A), ? (%3F)
+        -->
+        <TemplateFile Template="$(FileNuGetNuSpec)"
+                      OutputFileName="$(FileNuGetNuSpecTokensReplaced)"
+                      Tokens="@(TemplateTokens)"
+                      SearchExpression="(%3F&lt;token&gt;\%24(?&lt;identifier&gt;\w%2A)\%24)"
+                      Condition="Exists('$(FileNuGetNuSpec)') AND '$(ShouldExecute)' == 'true'"/>
         <NuGetPack NuGetPath="$(ToolsExternalNuGetPath)"
-                   File="$(FileNuGetNuSpec)"
+                   File="$(FileNuGetNuSpecTokensReplaced)"
                    OutputDirectory="$(DirBuildDeploy)"
                    ShouldBuildSymbols="%(NuGetPackageSpecs.ShouldBuildSymbols)"
-                   Properties="@(TemplateTokens)"
                    Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
