@@ -30,9 +30,18 @@
                             Condition=" '$(ReleaseNotes)' != '' ">
                 <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
             </TemplateTokens>
+            <TemplateTokens Include="ReleaseNotes"
+                            Condition=" '$(ReleaseNotes)' == '' ">
+                <ReplacementValue> </ReplacementValue>
+            </TemplateTokens>
+
             <TemplateTokens Include="ReleaseNotesHtmlEncoded"
                             Condition=" '$(ReleaseNotesHtmlEncoded)' != '' ">
                 <ReplacementValue>$(ReleaseNotesHtmlEncoded)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ReleaseNotesHtmlEncoded"
+                            Condition=" '$(ReleaseNotesHtmlEncoded)' == '' ">
+                <ReplacementValue> </ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
     </Target>
