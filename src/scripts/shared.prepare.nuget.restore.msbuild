@@ -79,8 +79,11 @@
     <!-- NuGet restore -->
     <Target Name="_nBuildKit_Shared_Prepare_NuGet_Restore_Packages"
             DependsOnTargets="_nBuildKit_Shared_Prepare_NuGet_Restore_DisplayInfo">
+        <VerificationDoesToolExist VerificationFile="$(FileVerification)"
+                                   ToolName="$(ToolsExternalNuGetPath)"
+                                   Condition=" '$(IsVerifying)' == 'true' " />
         <Error Text="No NuGet executable defined. Will not be able to restore the packages."
-               Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+               Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(IsVerifying)' != 'true' " />
 
         <ItemGroup>
             <NuGetPackageFiles Include="$(DirWorkspace)\packages.config"
@@ -97,7 +100,7 @@
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageFile="%(NuGetPackageFiles.FullPath)"
                       PackageDirectory="$(DirPackages)"
-                      Condition=" '@(NuGetPackageFiles)' != '' AND '$(ShouldExecute)' == 'true' "/>
+                      Condition=" '@(NuGetPackageFiles)' != '' AND '$(IsVerifying)' != 'true' "/>
     </Target>
 
     <PropertyGroup>
@@ -109,7 +112,7 @@
             <Output TaskParameter="Value" PropertyName="DirToCreate" />
         </CreateProperty>
         <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+                 Condition="!Exists('$(DirToCreate)') AND '$(IsVerifying)' != 'true' " />
 
         <ItemGroup>
             <Items_NuGetRestore Include="{" />
@@ -120,6 +123,10 @@
         <WriteLinesToFile File="$(FileNuGetRestoreComplete)"
                           Lines="@(Items_NuGetRestore)"
                           Overwrite="true"
-                          Condition=" '$(ShouldExecute)' == 'true' "/>
+                          Condition=" '$(IsVerifying)' != 'true' "/>
+        <VerificationMarkPathAsCreated VerificationFile="$(FileVerification)"
+                                       Directories="$(DirToCreate)"
+                                       Files="$(FileNuGetRestoreComplete)"
+                                       Condition=" '$(IsVerifying)' == 'true' " />
     </Target>
  </Project>

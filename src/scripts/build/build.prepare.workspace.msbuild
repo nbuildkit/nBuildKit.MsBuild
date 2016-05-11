@@ -12,10 +12,16 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\VerificationMarkPathAsCreated.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\VerificationMarkPathAsCreated.msbuild') AND '$(ExistsExtensionsVerificationMarkPathAsCreated)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\VerificationMarkPathAsDeleted.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\VerificationMarkPathAsDeleted.msbuild') AND '$(ExistsExtensionsVerificationMarkPathAsDeleted)' != 'true' "/>
+
     <!--
         **** STANDARD TARGETS ****
     -->
     <Target Name="Verify">
+        <CallTarget Targets="nBuildKit_Build_Prepare_Workspace_Run" />
     </Target>
 
     <Target Name="Run">
@@ -39,7 +45,7 @@
             Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Configuration values:"
                  Importance="low"/>
-        <Message Text="ShouldClean:             $(ShouldClean)"
+        <Message Text="ShouldClean:                                                       $(ShouldClean)"
                  Importance="low"/>
         <Message Text=" "
                  Importance="low"/>
@@ -88,7 +94,7 @@
             <BuildFilesToDelete Include="$(DirBuild)\**\*.*"/>
         </ItemGroup>
         <Delete Files="@(BuildFilesToDelete)"
-                Condition=" '$(ShouldExecute)' == 'true' "
+                Condition=" '$(IsVerifying)' != 'true' "
                 ContinueOnError="True" />
 
         <!--
@@ -122,7 +128,7 @@
                                     Condition="Exists('%(BuildFilesToGenerate.FullPath)')"/>
         </ItemGroup>
         <Delete Files="@(GeneratedFilesToDelete)"
-                Condition=" '$(ShouldExecute)' == 'true' "
+                Condition=" '$(IsVerifying)' != 'true' "
                 ContinueOnError="True" />
 
         <ItemGroup>
@@ -132,7 +138,16 @@
             <BuildDirectoriesToDelete Include="$(DirBuild)" />
         </ItemGroup>
         <RemoveDir Directories="@(BuildDirectoriesToDelete)"
-                   Condition=" '$(ShouldExecute)' == 'true' "
+                   Condition=" '$(IsVerifying)' != 'true' "
                    ContinueOnError="True" />
+
+        <!--
+            Only need to mark the top level directories as deleted because that automatically
+            implies that the files will be gone too.
+        -->
+        <VerificationMarkPathAsDeleted VerificationFile="$(FileVerification)"
+                                       Directories="@(BuildDirectoriesToDelete)"
+                                       Files=""
+                                       Condition=" '$(IsVerifying)' == 'true' " />
     </Target>
  </Project>

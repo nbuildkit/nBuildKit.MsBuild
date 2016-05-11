@@ -364,6 +364,24 @@
         <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
     </PropertyGroup>
 
+    <!--
+        **** VERIFICATION ****
+    -->
+    <PropertyGroup>
+        <!--
+            A flag that indicates whether or not the verification stage is being executed.
+        -->
+        <IsVerifying Condition=" '$(IsVerifying)' == '' AND '$(TargetToExecute.ToLower())' == 'verify' ">true</IsVerifying>
+        <IsVerifying Condition=" '$(IsVerifying)' == '' AND '$(TargetToExecute.ToLower())' != 'verify' ">false</IsVerifying>
+
+        <!--
+            The full path to the file in which the file and directory statuses will be written during the
+            verification process.
+        -->
+        <FileVerification Condition="">$(DirBuildTemp)\verification_filestatus.txt</FileVerification>
+    </PropertyGroup>
+
+
 
     <!--
         **** PREPARE - MERGE ****
