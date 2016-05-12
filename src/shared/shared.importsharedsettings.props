@@ -7,6 +7,8 @@
         <ExistsSharedImportSharedSettings>true</ExistsSharedImportSharedSettings>
     </PropertyGroup>
 
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
 
     <!-- Import the settings files that has all the overriden settings -->
     <!--
