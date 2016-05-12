@@ -10,6 +10,21 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
 
+    <!--
+        Import the environment specific settings. These settings may be different for different environments, e.g. there might be a difference
+        between a dev machine and a build machine, so the loading of these files is done slightly differently than other settings files.
+
+        We check the following locations in order:
+        * A user specified location as indicated by the variable: $(FileEnvironmentSettings)
+        * An environment variable named NBUILDKIT_ENVIRONMENT_FILE
+        * An environment variable named NBUILDKIT_ENVIRONMENT_FILE
+        * The the workspace
+    -->
+    <Import Project="$(DirNBuildKitMsBuild)\shared.props"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.environment.props"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' " />
+
     <!-- Import the settings files that has all the overriden settings -->
     <!--
         Note that we rely on loading the user settings file first so that the 'TemplateVersion' items created by the user are first in their list.
