@@ -96,6 +96,7 @@
                       PackageName="OpenCover"
                       PackageVersion="$(ToolsExternalOpenCoverVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="opencover.console.exe"
@@ -112,6 +113,7 @@
                       PackageName="ReportGenerator"
                       PackageVersion="$(ToolsExternalReportGeneratorVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="ReportGenerator.exe"

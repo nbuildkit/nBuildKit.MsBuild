@@ -79,6 +79,7 @@
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageFile="%(NuGetPackageFiles.FullPath)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '@(NuGetPackageFiles)' != '' AND '$(ShouldExecute)' == 'true' "/>
     </Target>
 

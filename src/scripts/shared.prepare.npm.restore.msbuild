@@ -61,6 +61,7 @@
                       PackageName="Node.js"
                       PackageVersion="$(ToolsExternalNodeJsVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="node.exe"
@@ -78,6 +79,7 @@
                       PackageName="Python.Runtime"
                       PackageVersion="$(ToolsExternalPythonVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="python.exe"
@@ -95,6 +97,7 @@
                       PackageName="Npm"
                       PackageVersion="$(ToolsExternalNpmVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="npm-cli.js"

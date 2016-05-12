@@ -68,6 +68,7 @@
                       PackageName="NTreva"
                       PackageVersion="$(ToolsExternalNTrevaVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="NTreva.exe"

@@ -117,6 +117,7 @@
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="nBuildKit.Tools.VsCoverageToReportGenerator"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="VSCoverageToReportGenerator.exe"
@@ -133,6 +134,7 @@
                       PackageName="ReportGenerator"
                       PackageVersion="$(ToolsExternalReportGeneratorVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="ReportGenerator.exe"
