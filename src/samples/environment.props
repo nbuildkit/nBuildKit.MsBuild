@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
     <!--
         Overrides for the VCS specific properties
     -->
@@ -10,13 +9,17 @@
             A flag indicating whether or not the workspace is a GIT workspace or not. If no value is provided then
             any workspace that contains a .git folder will be assumed to be a GIT workspace.
         -->
+        <!--
         <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
         <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
+        -->
 
         <!--
             A flag that indicates whether or not the workspace is a TFS workspace. Defaults to false.
         -->
+        <!--
         <IsTfsWorkspace Condition=" '$(IsTfsWorkspace)' == '' ">false</IsTfsWorkspace>
+        -->
     </PropertyGroup>
 
     <!--

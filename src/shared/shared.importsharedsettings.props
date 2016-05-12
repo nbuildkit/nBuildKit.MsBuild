@@ -16,12 +16,18 @@
 
         We check the following locations in order:
         * A user specified location as indicated by the variable: $(FileEnvironmentSettings)
-        * An environment variable named NBUILDKIT_ENVIRONMENT_FILE
-        * An environment variable named NBUILDKIT_ENVIRONMENT_FILE
+        * An user environment variable named NBUILDKIT_USER_ENVIRONMENT_FILE
+        * A machine environment variable named NBUILDKIT_MACHINE_ENVIRONMENT_FILE
         * The the workspace
     -->
-    <Import Project="$(DirNBuildKitMsBuild)\shared.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+    <Import Project="$(FileEnvironment)"
+            Condition="Exists('$(FileEnvironment)') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+    <Import Project="$(NBUILDKIT_USER_ENVIRONMENT_FILE)"
+            Condition="Exists('$(NBUILDKIT_USER_ENVIRONMENT_FILE)') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+    <Import Project="$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)"
+            Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+    <Import Project="$(DirWorkspace)\environment.props"
+            Condition="Exists('$(DirWorkspace)\environment.props') AND '$(ExistsEnvironmentSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.environment.props"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' " />
 
