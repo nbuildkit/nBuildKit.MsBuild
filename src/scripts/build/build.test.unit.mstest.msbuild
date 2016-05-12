@@ -7,8 +7,6 @@
         <ExistsBuildTestUnitMsTest>true</ExistsBuildTestUnitMsTest>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
 
@@ -96,6 +94,7 @@
                       PackageName="OpenCover"
                       PackageVersion="$(ToolsExternalOpenCoverVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="opencover.console.exe"
@@ -112,6 +111,7 @@
                       PackageName="ReportGenerator"
                       PackageVersion="$(ToolsExternalReportGeneratorVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="ReportGenerator.exe"

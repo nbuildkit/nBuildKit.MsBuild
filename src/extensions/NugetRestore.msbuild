@@ -23,6 +23,7 @@
             <NuGetPath ParameterType="System.String" Required="true" />
             <PackageFile ParameterType="System.String" Required="true" />
             <PackageDirectory ParameterType="System.String" Required="true" />
+            <Sources ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
         </ParameterGroup>
         <Task>
             <Reference Include="System.Xml" />
@@ -45,6 +46,18 @@
                             // the closing quote will be eaten by the command line parser. Note that
                             // this is only necessary because we're dealing with a directory
                             builder.Append(string.Format("-PackagesDirectory \"{0}\" ", PackageDirectory.TrimEnd('\\')));
+
+                            // If the user has specified any sources to install from then only search those sources.
+                            if (Sources != null)
+                            {
+                                foreach (var source in Sources)
+                                {
+                                    // Make sure we remove the back-slash because if we don't then
+                                    // the closing quote will be eaten by the command line parser. Note that
+                                    // this is only necessary because we're dealing with a directory
+                                    builder.Append(string.Format("-Source \"{0}\" ", source.ItemSpec.TrimEnd('\\')));
+                                }
+                            }
                         }
 
                         var info = new System.Diagnostics.ProcessStartInfo

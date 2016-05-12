@@ -7,8 +7,6 @@
         <ExistsSharedPrepareNpmRestore>true</ExistsSharedPrepareNpmRestore>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
@@ -61,6 +59,7 @@
                       PackageName="Node.js"
                       PackageVersion="$(ToolsExternalNodeJsVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="node.exe"
@@ -78,6 +77,7 @@
                       PackageName="Python.Runtime"
                       PackageVersion="$(ToolsExternalPythonVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="python.exe"
@@ -95,6 +95,7 @@
                       PackageName="Npm"
                       PackageVersion="$(ToolsExternalNpmVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="npm-cli.js"

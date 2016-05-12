@@ -7,8 +7,6 @@
         <ExistsSharedPrepareGetVersion>true</ExistsSharedPrepareGetVersion>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
@@ -132,6 +130,7 @@
                       PackageName="GitVersion.CommandLine"
                       PackageVersion="$(ToolsExternalGitVersionVersion)"
                       PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
                       Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="GitVersion.exe"

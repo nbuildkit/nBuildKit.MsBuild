@@ -55,13 +55,43 @@
         <Message Text="" />
         <Message Text="The following targets exist:" />
         <Message Text="" />
+
         <Message Text="- Init: Configures an empty directory to be used as a nBuildKit workspace." />
         <Message Text="  Additional properties that can be specified are:" />
         <Message Text="  * ProductName - The name of the product that will be built from the current workspace." />
         <Message Text="  * CompanyName - The name of the company that owns the copyright to the product." />
+
         <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'settings.props' file." />
+        <Message Text="  Additional properties that can be specified are:" />
+        <Message Text="  * BranchMergeTarget - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
+        <Message Text="  * GroupsToExecute   - A comma separated list of groups for which the build steps should be executed." />
+        <Message Text="                        Available groups are Clean and the groups defined in the BuildStepsToExecute list." />
+        <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
+        <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+
         <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'setttings.props' file." />
+        <Message Text="  Additional properties that can be specified are:" />
+        <Message Text="  * BranchMergeTarget - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
+        <Message Text="  * GroupsToExecute   - A comma separated list of groups for which the build steps should be executed." />
+        <Message Text="                        Available groups are Clean and the groups defined in the TestStepsToExecute list." />
+        <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
+        <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+
         <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'settings.props' file." />
+        <Message Text="  Additional properties that can be specified are:" />
+        <Message Text="  * BranchMergeTarget - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
+        <Message Text="  * GroupsToExecute   - A comma separated list of groups for which the build steps should be executed." />
+        <Message Text="                        Available groups are Clean and the groups defined in the DeployStepsToExecute list." />
+        <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
+        <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+
+        <Message Text="" />
+        <Message Text="Additionally the following environment variables may be defined:" />
+        <Message Text="- NBUILDKIT_USER_ENVIRONMENT_FILE    - A user level environment variable that defines the full path to an MsBuild properties file that contains the environment settings." />
+        <Message Text="                                       This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="- NBUILDKIT_MACHINE_ENVIRONMENT_FILE - A machine level environment variable that defines the full path to an MsBuild properties file that contains the environment settings." />
+        <Message Text="                                       This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+
         <Message Text="- Help: Displays this text." />
     </Target>
 

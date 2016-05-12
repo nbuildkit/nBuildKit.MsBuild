@@ -83,42 +83,6 @@
         <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
     </PropertyGroup>
 
-    <!--
-        Build server flags
-    -->
-    <PropertyGroup>
-        <!--
-            A flag indicating if the current build is running on a TFS build server or not.
-        -->
-        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' != 'True'  ">false</IsOnTfsBuildServer>
-        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' == 'True' ">true</IsOnTfsBuildServer>
-
-        <!--
-            A flag indicating if the current build is running on a Jenkins build server or not.
-        -->
-        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' == ''  ">false</IsOnJenkinsBuildServer>
-        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' != '' ">true</IsOnJenkinsBuildServer>
-
-        <!--
-            A flag indicating if the current build is running on the build server or not.
-        -->
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == '' ">UNDEFINED</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' != 'true' AND '$(IsOnJenkinsBuildServer)' != 'true' )">false</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' == 'true' OR '$(IsOnJenkinsBuildServer)' == 'true' )">true</IsOnBuildServer>
-
-        <!-- Git parameters -->
-        <JenkinsGitBranchExpectedHeader>origin/</JenkinsGitBranchExpectedHeader>
-        <TfsGitBranchExpectedHeader>LG:refs/heads/</TfsGitBranchExpectedHeader>
-
-        <BranchGitExpected>UNDEFINED</BranchGitExpected>
-        <BranchGitExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' " >$(GIT_BRANCH.SubString($(JenkinsGitBranchExpectedHeader.Length)))</BranchGitExpected>
-        <BranchGitExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' " >$(TF_BUILD_SOURCEGETVERSION.SubString($(TfsGitBranchExpectedHeader.Length), $([MSBuild]::Subtract($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), $(TfsGitBranchExpectedHeader.Length)))))</BranchGitExpected>
-
-        <GitRevNoExpected>UNDEFINED</GitRevNoExpected>
-        <GitRevNoExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' ">$(GIT_COMMIT)</GitRevNoExpected>
-        <GitRevNoExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' ">$(TF_BUILD_SOURCEGETVERSION.SubString($([MSBuild]::Add($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), 1))))</GitRevNoExpected>
-    </PropertyGroup>
-
     <!-- Overrides for the project specific properties -->
     <PropertyGroup>
         <!--
@@ -214,18 +178,6 @@
             connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
         -->
         <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">origin</GitRemoteRepository>
-
-        <!--
-            A flag indicating whether or not the workspace is a GIT workspace or not. If no value is provided then
-            any workspace that contains a .git folder will be assumed to be a GIT workspace.
-        -->
-        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
-        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
-
-        <!--
-            A flag that indicates whether or not the workspace is a TFS workspace. Defaults to false.
-        -->
-        <IsTfsWorkspace Condition=" '$(IsTfsWorkspace)' == '' ">false</IsTfsWorkspace>
     </PropertyGroup>
 
     <!--

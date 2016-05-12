@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        Overrides for the VCS specific properties
+    -->
+    <PropertyGroup>
+        <!--
+            A flag indicating whether or not the workspace is a GIT workspace or not. If no value is provided then
+            any workspace that contains a .git folder will be assumed to be a GIT workspace.
+        -->
+        <!--
+        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
+        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
+        -->
+
+        <!--
+            A flag that indicates whether or not the workspace is a TFS workspace. Defaults to false.
+        -->
+        <!--
+        <IsTfsWorkspace Condition=" '$(IsTfsWorkspace)' == '' ">false</IsTfsWorkspace>
+        -->
+    </PropertyGroup>
+
+    <!--
+        **** PACKAGE MANAGERS ****
+    -->
+    <!--
+        The collection that defines all the nuget sources that are allowed to be used during the
+        build. By default no sources are defined which means that the sources from the nuget.config
+        will be used.
+    -->
+    <ItemGroup>
+        <!--
+        <NuGetSources Include="https://www.nuget.org/api/v2/" />
+        -->
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsEnvironmentSettings>true</ExistsEnvironmentSettings>
+    </PropertyGroup>
+</Project>
