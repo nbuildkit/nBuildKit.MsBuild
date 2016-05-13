@@ -20,9 +20,15 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
+
     <Target Name="nBuildKit_Test_Execute_CSharp_Run"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_Run_Build">
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Process_Results" />
+            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Run_Build" />
+        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Build" />
+        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Run_Deploy" />
+        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Deploy" />
     </Target>
 
     <Target Name="_nBuildKit_Test_Execute_CSharp_DebugLog"
@@ -72,12 +78,98 @@
             Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
             we won't be using the nBuildKit scripts from the nuget packages but from our source directory
         -->
-        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestCSharp)\test.csharp.msbuild&quot; /t:Build"
+        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestCSharp)\test.csharp.msbuild&quot; /t:Build /p:FileEnvironment=&quot;$(DirBuildTestCSharp)\environment.props&quot;"
               IgnoreStandardErrorWarningFormat="true"
               WorkingDirectory="$(DirBuildTestCSharp)" />
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Process_Results"
+    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Build"
+            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_Run_Build">
+        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Build_NuGetPackage" />
+        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Build_ZipArchive" />
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Build_NuGetPackage">
+        <!--
+            * Verify that the nuget package has a DLL in it
+            * Verify that the dll in the nuget package has the right version number
+        -->
+        <PropertyGroup>
+            <ExpectedDeployDirectory>$(DirBuildTestCSharp)\build\deploy</ExpectedDeployDirectory>
+            <ExpectedNugetPackage>$(ExpectedDeployDirectory)\nBuildKit.Test.CSharp.Library.4.3.2.nupkg</ExpectedNugetPackage>
+            <ExpectedNuGetInstallLocation>$(DirBuildTestVerifyCSharp)\nBuildKit.Test.CSharp.Library.4.3.2</ExpectedNuGetInstallLocation>
+            <ExpectedDllLocation>$(ExpectedNuGetInstallLocation)\lib\net45\NBuildKit.Test.CSharp.Library.dll</ExpectedDllLocation>
+            <ExpectedPdbLocation>$(ExpectedNuGetInstallLocation)\lib\net45\NBuildKit.Test.CSharp.Library.pdb</ExpectedPdbLocation>
+        </PropertyGroup>
+        <Error Text="Expected a nuget package to be created at: $(ExpectedNugetPackage)"
+               Condition="!Exists('$(ExpectedNugetPackage)')" />
+
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="nBuildKit.Test.CSharp.Library"
+                      PackageDirectory="$(DirBuildTestVerifyCSharp)"
+                      Sources="$(ExpectedDeployDirectory)"/>
+        <Error Text="Failed to create NuGet package install directory. Expected it to be at: $(ExpectedNuGetInstallLocation)"
+               Condition="!Exists('$(ExpectedNuGetInstallLocation)')" />
+        <Error Text="The nuget package did not contain the DLL. Expected it to be at: $(ExpectedDllLocation)"
+               Condition="!Exists('$(ExpectedDllLocation)')" />
+        <Error Text="The nuget package did not contain the PDB. Expected it to be at: $(ExpectedPdbLocation)"
+               Condition="!Exists('$(ExpectedPdbLocation)')" />
+
+        <GetAssemblyIdentity AssemblyFiles="$(ExpectedDllLocation)">
+            <Output TaskParameter="Assemblies" ItemName="AssemblyIdentities" />
+        </GetAssemblyIdentity>
+
+        <Error Text="Expected the dlls to have the correct version. Assembly: %(AssemblyIdentities.Identity) has version: %(AssemblyIdentities.Version)"
+               Condition=" '%(AssemblyIdentities.Version)' == '4.3.2.1' " />
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Build_ZipArchive">
+        <!--
+            * Verify that there is a zip file with the right version number and the right name
+        -->
+        <PropertyGroup>
+            <ExpectedArchive>$(DirBuildTestCSharp)\build\deploy\nBuildKit.Test.CSharp-4.3.2.zip</ExpectedArchive>
+        </PropertyGroup>
+        <Error Text="Expected an archive to be created at: $(ExpectedArchive)"
+               Condition="!Exists('$(ExpectedArchive)')" />
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Execute_CSharp_Run_Deploy"
             DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
+        <!--
+            Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
+            we won't be using the nBuildKit scripts from the nuget packages but from our source directory
+        -->
+        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestCSharp)\test.csharp.msbuild&quot; /t:deploy /p:FileEnvironment=&quot;$(DirBuildTestCSharp)\environment.props&quot;"
+              IgnoreStandardErrorWarningFormat="true"
+              WorkingDirectory="$(DirBuildTestCSharp)" />
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Deploy"
+            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_Run_Deploy">
+        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_FileShare" />
+        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_NuGet" />
+        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_Symbols" />
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_FileShare">
+        <!--
+            * Verify that the nuget package has been 'published'
+            * Verify that the zip file has been 'published'
+        -->
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_NuGet">
+        <!--
+            * Verify that the nuget package has been 'published'
+            * Verify that the zip file has been 'published'
+        -->
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_Symbols">
+        <!--
+            * Verify that the nuget package has been 'published'
+            * Verify that the zip file has been 'published'
+        -->
     </Target>
  </Project>

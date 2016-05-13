@@ -155,7 +155,7 @@
     -->
     <ItemGroup>
         <TestFilesToCopy Include="$(DirTestCSharp)\**\*.*"
-                         Exclude="$(DirTestCSharp)\nuget.config;$(DirTestCSharp)\settings.props;$(DirTestCSharp)\**\packages.config;$(DirTestCSharp)\**\*.csproj"
+                         Exclude="$(DirTestCSharp)\environment.props;$(DirTestCSharp)\settings.props;$(DirTestCSharp)\**\packages.config;$(DirTestCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestCSharp)')">
             <TargetDirectory>$(DirBuildTestCSharp)</TargetDirectory>
         </TestFilesToCopy>
@@ -164,7 +164,7 @@
         </TestFilesToCopy>
 
         <TestFilesToCopy Include="$(DirTestVbNet)\**\*.*"
-                         Exclude="$(DirTestVbNet)\nuget.config;$(DirTestVbNet)\settings.props;$(DirTestVbNet)\**\packages.config;$(DirTestVbNet)\**\*.vbproj"
+                         Exclude="$(DirTestVbNet)\environment.props;$(DirTestVbNet)\settings.props;$(DirTestVbNet)\**\packages.config;$(DirTestVbNet)\**\*.vbproj"
                          Condition="Exists('$(DirTestVbNet)')">
             <TargetDirectory>$(DirBuildTestVbNet)</TargetDirectory>
         </TestFilesToCopy>
@@ -183,8 +183,8 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <TestFilesToGenerate Include="$(DirBuildTestCSharp)\nuget.config">
-            <Template>$(DirTestCSharp)\nuget.config</Template>
+        <TestFilesToGenerate Include="$(DirBuildTestCSharp)\environment.props">
+            <Template>$(DirTestCSharp)\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
         </TestFilesToGenerate>
@@ -219,8 +219,8 @@
             <Template>$(DirTestCSharp)\src\Test.Unit.Library\packages.config</Template>
         </TestFilesToGenerate>
 
-        <TestFilesToGenerate Include="$(DirBuildTestVbNet)\nuget.config">
-            <Template>$(DirTestVbNet)\nuget.config</Template>
+        <TestFilesToGenerate Include="$(DirBuildTestVbNet)\environment.props">
+            <Template>$(DirTestVbNet)\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
         </TestFilesToGenerate>
