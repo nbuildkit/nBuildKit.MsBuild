@@ -47,6 +47,27 @@
     </PropertyGroup>
 
     <!--
+        Import the environment specific settings. These settings may be different for different environments, e.g. there might be a difference
+        between a dev machine and a build machine, so the loading of these files is done slightly differently than other settings files.
+
+        We check the following locations in order:
+        * A user specified location as indicated by the variable: $(FileEnvironmentSettings)
+        * An user environment variable named NBUILDKIT_USER_ENVIRONMENT_FILE
+        * A machine environment variable named NBUILDKIT_MACHINE_ENVIRONMENT_FILE
+        * The the workspace
+    -->
+    <Import Project="$(FileEnvironment)"
+            Condition="Exists('$(FileEnvironment)') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+    <Import Project="$(NBUILDKIT_USER_ENVIRONMENT_FILE)"
+            Condition="Exists('$(NBUILDKIT_USER_ENVIRONMENT_FILE)') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+    <Import Project="$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)"
+            Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+    <Import Project="$(DirWorkspace)\environment.props"
+            Condition="Exists('$(DirWorkspace)\environment.props') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\shared.environment.props"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' " />
+
+    <!--
         Display the help text for the current script and then exit.
     -->
     <Target Name="Help">
@@ -157,7 +178,8 @@
 
         <!-- Create the packages.config file -->
         <Message Text="Generating package configuration file ..." />
-        <GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
+        <GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)"
+                                            Sources="@(NuGetSources)">
             <Output TaskParameter="Major" PropertyName="NBuildKitLatestMajorVersion" />
             <Output TaskParameter="Minor" PropertyName="NBuildKitLatestMinorVersion" />
             <Output TaskParameter="Patch" PropertyName="NBuildKitLatestPatchVersion" />
@@ -416,7 +438,8 @@
         </GetHighestSuitableNBuildKitVersionFromNuGet>
         <InstallNBuildKitFromNuGet NuGetPath="$(ToolsExternalNuGetPath)"
                                    Version="$(NBuildKitVersion)"
-                                   PackageDirectory="$(DirPackages)"/>
+                                   PackageDirectory="$(DirPackages)"
+                                   Sources="@(NuGetSources)"/>
 
         <CreateProperty Value="$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build"
                         Condition="Exists('$(DirPackages)')">
@@ -485,20 +508,39 @@
             <Major ParameterType="System.Int32" Output="true" />
             <Minor ParameterType="System.Int32" Output="true" />
             <Patch ParameterType="System.Int32" Output="true" />
+            <Sources ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
                 <![CDATA[
                     public override bool Execute()
                     {
-                        var info = new System.Diagnostics.ProcessStartInfo
+                        var builder = new System.Text.StringBuilder();
+                        {
+                            builder.Append("list packageId:NBuildKit.MsBuild ");
+                            builder.Append("-NonInteractive -Verbosity detailed ");
+
+                            // If the user has specified any sources to install from then only search those sources.
+                            if (Sources != null)
+                            {
+                                foreach (var source in Sources)
                                 {
-                                    FileName = NuGetPath,
-                                    Arguments = "list packageId:NBuildKit.MsBuild -Source https://nuget.org/api/v2",
-                                    UseShellExecute = false,
-                                    RedirectStandardOutput = true,
-                                    RedirectStandardError = true,
-                                };
+                                    // Make sure we remove the back-slash because if we don't then
+                                    // the closing quote will be eaten by the command line parser. Note that
+                                    // this is only necessary because we're dealing with a directory
+                                    builder.Append(string.Format("-Source \"{0}\" ", source.ItemSpec.TrimEnd('\\')));
+                                }
+                            }
+                        }
+
+                        var info = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = NuGetPath,
+                            Arguments = builder.ToString(),
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                        };
 
                         Log.LogMessage(MessageImportance.Low, string.Format("{0} {1}", info.FileName, info.Arguments));
 
@@ -714,6 +756,7 @@
             <NuGetPath ParameterType="System.String" Required="true" />
             <Version ParameterType="System.String" Required="true" />
             <PackageDirectory ParameterType="System.String" Required="true" />
+            <Sources ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -731,6 +774,18 @@
                             // the closing quote will be eaten by the command line parser. Note that
                             // this is only necessary because we're dealing with a directory
                             builder.Append(string.Format("-OutputDirectory \"{0}\" ", PackageDirectory.TrimEnd('\\')));
+
+                            // If the user has specified any sources to install from then only search those sources.
+                            if (Sources != null)
+                            {
+                                foreach (var source in Sources)
+                                {
+                                    // Make sure we remove the back-slash because if we don't then
+                                    // the closing quote will be eaten by the command line parser. Note that
+                                    // this is only necessary because we're dealing with a directory
+                                    builder.Append(string.Format("-Source \"{0}\" ", source.ItemSpec.TrimEnd('\\')));
+                                }
+                            }
                         }
 
                         var info = new System.Diagnostics.ProcessStartInfo
