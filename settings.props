@@ -352,9 +352,13 @@
 
         <!-- The directory that will contain all the test files generated during the test process -->
         <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
-        <DirBuildTestCSharp>$(DirBuildTest)\csharp</DirBuildTestCSharp>
-        <DirBuildTestVbNet>$(DirBuildTest)\vbnet</DirBuildTestVbNet>
+        <DirBuildTestLatest Condition=" '$(DirBuildTestLatest)' == '' ">$(DirBuildTest)\latest</DirBuildTestLatest>
+
+        <DirBuildTestLatestCSharp>$(DirBuildTestLatest)\csharp</DirBuildTestLatestCSharp>
+        <DirBuildTestLatestVbNet>$(DirBuildTestLatest)\vbnet</DirBuildTestLatestVbNet>
+
         <DirBuildTestVerify>$(DirBuildTest)\verify</DirBuildTestVerify>
+
         <DirBuildTestVerifyCSharp>$(DirBuildTestVerify)\csharp</DirBuildTestVerifyCSharp>
         <DirBuildTestVerifyVbNet>$(DirBuildTestVerify)\vbnet</DirBuildTestVerifyVbNet>
 
@@ -369,8 +373,15 @@
 
         <!-- The directory that contains all the test files for the project -->
         <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
-        <DirTestCSharp>$(DirTest)\csharp</DirTestCSharp>
-        <DirTestVbNet>$(DirTest)\vbnet</DirTestVbNet>
+        <DirTestLatest Condition=" '$(DirTestLatest)' == '' ">$(DirTest)\latest</DirTestLatest>
+
+        <DirTestLatestCSharp>$(DirTestLatest)\csharp</DirTestLatestCSharp>
+        <DirTestLatestCSharpSrc>$(DirTestLatestCSharp)\src</DirTestLatestCSharpSrc>
+        <DirTestLatestCSharpVerification>$(DirTestLatestCSharp)\verification</DirTestLatestCSharpVerification>
+
+        <DirTestLatestVbNet>$(DirTestLatest)\vbnet</DirTestLatestVbNet>
+        <DirTestLatestVbNetSrc>$(DirTestLatestVbNet)\src</DirTestLatestVbNetSrc>
+        <DirTestLatestVbNetVerification>$(DirTestLatestVbNet)\verification</DirTestLatestVbNetVerification>
     </PropertyGroup>
 
     <!--
