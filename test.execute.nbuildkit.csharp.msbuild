@@ -22,13 +22,16 @@
 
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\InvokePesterOnFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\InvokePesterOnFile.msbuild') AND '$(ExistsExtensionsInvokePesterOnFile)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
     <Target Name="nBuildKit_Test_Execute_CSharp_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Run_Build" />
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Build" />
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Run_Deploy" />
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Deploy" />
+        <CallTarget Targets="nBuildKit_Test_Execute_Latest_Run" />
     </Target>
 
     <Target Name="_nBuildKit_Test_Execute_CSharp_DebugLog"
@@ -52,7 +55,7 @@
                  Importance="low"/>
         <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
                  Importance="low"/>
-        <Message Text="The directory containing the C# test files is located at:          $(DirBuildTestCSharp)"
+        <Message Text="The directory containing the C# test files is located at:          $(DirBuildTestLatestCSharp)"
                  Importance="low"/>
         <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
                  Importance="low"/>
@@ -71,102 +74,83 @@
                  Importance="normal"/>
     </Target>
 
-    <!-- Clean -->
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Run_Build"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
-        <!--
-            Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
-            we won't be using the nBuildKit scripts from the nuget packages but from our source directory
-        -->
-        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestCSharp)\test.csharp.msbuild&quot; /t:Build /p:FileEnvironment=&quot;$(DirBuildTestCSharp)\environment.props&quot;"
-              IgnoreStandardErrorWarningFormat="true"
-              WorkingDirectory="$(DirBuildTestCSharp)" />
-    </Target>
-
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Build"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_Run_Build">
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Build_NuGetPackage" />
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Build_ZipArchive" />
-    </Target>
-
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Build_NuGetPackage">
-        <!--
-            * Verify that the nuget package has a DLL in it
-            * Verify that the dll in the nuget package has the right version number
-        -->
-        <PropertyGroup>
-            <ExpectedDeployDirectory>$(DirBuildTestCSharp)\build\deploy</ExpectedDeployDirectory>
-            <ExpectedNugetPackage>$(ExpectedDeployDirectory)\nBuildKit.Test.CSharp.Library.4.3.2.nupkg</ExpectedNugetPackage>
-            <ExpectedNuGetInstallLocation>$(DirBuildTestVerifyCSharp)\nBuildKit.Test.CSharp.Library.4.3.2</ExpectedNuGetInstallLocation>
-            <ExpectedDllLocation>$(ExpectedNuGetInstallLocation)\lib\net45\NBuildKit.Test.CSharp.Library.dll</ExpectedDllLocation>
-            <ExpectedPdbLocation>$(ExpectedNuGetInstallLocation)\lib\net45\NBuildKit.Test.CSharp.Library.pdb</ExpectedPdbLocation>
-        </PropertyGroup>
-        <Error Text="Expected a nuget package to be created at: $(ExpectedNugetPackage)"
-               Condition="!Exists('$(ExpectedNugetPackage)')" />
-
+    <Target Name="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
-                      PackageName="nBuildKit.Test.CSharp.Library"
-                      PackageDirectory="$(DirBuildTestVerifyCSharp)"
-                      Sources="$(ExpectedDeployDirectory)"/>
-        <Error Text="Failed to create NuGet package install directory. Expected it to be at: $(ExpectedNuGetInstallLocation)"
-               Condition="!Exists('$(ExpectedNuGetInstallLocation)')" />
-        <Error Text="The nuget package did not contain the DLL. Expected it to be at: $(ExpectedDllLocation)"
-               Condition="!Exists('$(ExpectedDllLocation)')" />
-        <Error Text="The nuget package did not contain the PDB. Expected it to be at: $(ExpectedPdbLocation)"
-               Condition="!Exists('$(ExpectedPdbLocation)')" />
-
-        <GetAssemblyIdentity AssemblyFiles="$(ExpectedDllLocation)">
-            <Output TaskParameter="Assemblies" ItemName="AssemblyIdentities" />
-        </GetAssemblyIdentity>
-
-        <Error Text="Expected the dlls to have the correct version. Assembly: %(AssemblyIdentities.Identity) has version: %(AssemblyIdentities.Version)"
-               Condition=" '%(AssemblyIdentities.Version)' == '4.3.2.1' " />
+                      PackageName="Pester"
+                      PackageVersion="$(ToolsExternalPesterVersion)"
+                      PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
+                      Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
+        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)"
+                                                 FileToLocate="Pester.psm1"
+                                                 Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalPesterPath" />
+        </SearchPackagesDirectoryForToolDirectory>
+        <Message Text="The Pester module was found at: $(ToolsExternalPesterPath)"
+                 Condition="Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="Could not locate the Pester module path. Cannot execute pester tests."
+               Condition="!Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Build_ZipArchive">
-        <!--
-            * Verify that there is a zip file with the right version number and the right name
-        -->
-        <PropertyGroup>
-            <ExpectedArchive>$(DirBuildTestCSharp)\build\deploy\nBuildKit.Test.CSharp-4.3.2.zip</ExpectedArchive>
-        </PropertyGroup>
-        <Error Text="Expected an archive to be created at: $(ExpectedArchive)"
-               Condition="!Exists('$(ExpectedArchive)')" />
+    <Target Name="nBuildKit_Test_Execute_Latest_Run"
+            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
+        <CallTarget Targets="_nBuildKit_Test_Execute_Latest_CSharp_Run_Build" />
+        <CallTarget Targets="_nBuildKit_Test_Execute_Latest_CSharp_Verify_Build" />
+        <CallTarget Targets="_nBuildKit_Test_Execute_Latest_CSharp_Run_Deploy" />
+        <CallTarget Targets="_nBuildKit_Test_Execute_Latest_CSharp_Verify_Deploy" />
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Run_Deploy"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
+    <!-- Clean -->
+    <Target Name="_nBuildKit_Test_Execute_Latest_CSharp_Run_Build">
         <!--
             Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
             we won't be using the nBuildKit scripts from the nuget packages but from our source directory
         -->
-        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestCSharp)\test.csharp.msbuild&quot; /t:deploy /p:FileEnvironment=&quot;$(DirBuildTestCSharp)\environment.props&quot;"
+        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestLatestCSharp)\test.csharp.msbuild&quot; /t:Build /p:FileEnvironment=&quot;$(DirBuildTestLatestCSharp)\environment.props&quot;"
               IgnoreStandardErrorWarningFormat="true"
-              WorkingDirectory="$(DirBuildTestCSharp)" />
+              WorkingDirectory="$(DirBuildTestLatestCSharp)" />
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Deploy"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_Run_Deploy">
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_FileShare" />
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_NuGet" />
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_Symbols" />
+    <Target Name="_nBuildKit_Test_Execute_Latest_CSharp_Verify_Build"
+            DependsOnTargets="_nBuildKit_Test_Execute_Latest_CSharp_Run_Build">
+        <TemplateText Template="$(FileReportVerificationLatestBuildCSharp)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
+        </TemplateText>
+
+        <ItemGroup>
+            <VerifyLatestCSharpBuildArguments Include="$(DirBuildTestLatestCSharp)" />
+        </ItemGroup>
+        <InvokePesterOnFile PowershellExePath="$(ToolsExternalPowershellPath)"
+                            PesterModulePath="$(ToolsExternalPesterPath)"
+                            TestFile="$(DirTestLatestCSharpVerification)\build\Build.Test.ps1"
+                            TestArguments="@(VerifyLatestCSharpBuildArguments)"
+                            ReportFile="$(FileReportPesterXmlExpanded)"
+                            TempDirectory="$(DirBuildTemp)"
+                            IgnoreErrors="false"
+                            IgnoreExitCode="false" />
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_FileShare">
+    <Target Name="_nBuildKit_Test_Execute_Latest_CSharp_Run_Deploy">
+        <!--
+            Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
+            we won't be using the nBuildKit scripts from the nuget packages but from our source directory
+        -->
+        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestLatestCSharp)\test.csharp.msbuild&quot; /t:deploy /p:FileEnvironment=&quot;$(DirBuildTestLatestCSharp)\environment.props&quot;"
+              IgnoreStandardErrorWarningFormat="true"
+              WorkingDirectory="$(DirBuildTestLatestCSharp)" />
+    </Target>
+
+    <Target Name="_nBuildKit_Test_Execute_Latest_CSharp_Verify_Deploy"
+            DependsOnTargets="_nBuildKit_Test_Execute_Latest_CSharp_Run_Deploy">
         <!--
             * Verify that the nuget package has been 'published'
             * Verify that the zip file has been 'published'
         -->
-    </Target>
-
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_NuGet">
         <!--
             * Verify that the nuget package has been 'published'
             * Verify that the zip file has been 'published'
         -->
-    </Target>
-
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Verify_Deploy_Symbols">
         <!--
             * Verify that the nuget package has been 'published'
             * Verify that the zip file has been 'published'
