@@ -348,7 +348,11 @@
         <!-- <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma> -->
 
         <!-- The directory that will contain all the temporary files needed during the build process -->
-        <!-- <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp> -->
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirBuildTempTest>$(DirBuildTemp)\tests</DirBuildTempTest>
+        <DirBuildTempTestLatest>$(DirBuildTempTest)\latest</DirBuildTempTestLatest>
+        <DirBuildTempTestLatestCSharp>$(DirBuildTempTestLatest)\csharp</DirBuildTempTestLatestCSharp>
+        <DirBuildTempTestLatestVbNet>$(DirBuildTempTestLatest)\vbnet</DirBuildTempTestLatestVbNet>
 
         <!-- The directory that will contain all the test files generated during the test process -->
         <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
@@ -599,6 +603,12 @@
     <ItemGroup>
         <TemplateTokens Include="DirVisualStudio">
             <ReplacementValue>$(ToolsExternalVisualStudioDir)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="DirBuildTempTestLatestCSharp">
+            <ReplacementValue>$(DirBuildTempTestLatestCSharp)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="DirBuildTempTestLatestVbNet">
+            <ReplacementValue>$(DirBuildTempTestLatestVbNet)</ReplacementValue>
         </TemplateTokens>
     </ItemGroup>
 

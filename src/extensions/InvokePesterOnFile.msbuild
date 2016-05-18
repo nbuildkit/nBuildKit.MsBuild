@@ -36,20 +36,30 @@
                     {
                         try
                         {
-                            var arguments = new System.Collections.Generic.List<string>();
+                            var arguments = new System.Collections.Generic.Dictionary<string, string>();
                             if (TestArguments != null)
                             {
                                 for (int i = 0; i < TestArguments.Length; i++)
                                 {
-                                    var taskItem = TestArguments[i];
+                                    var parameter = TestArguments[i];
+                                    var value = parameter.GetMetadata("Value");
                                     // Expecting that the taskItems have:
-                                    // - taskItem.ItemSpec: Name of the assembly to include in the attribute
-                                    // - taskItem.TargetFramework:    Name of the group the assemblies belong to
-                                    if (!string.IsNullOrEmpty(taskItem.ItemSpec))
+                                    // - parameter.ItemSpec: Name of the parameter to pass
+                                    // - parameter.Value:    Value of the parameter
+                                    if (!string.IsNullOrEmpty(parameter.ItemSpec) && !string.IsNullOrEmpty(value))
                                     {
-                                        arguments.Add(taskItem.ItemSpec);
+                                        arguments.Add(parameter.ItemSpec, value);
                                     }
                                 }
+                            }
+
+                            var parameterText = string.Empty;
+                            foreach(var pair in arguments)
+                            {
+                                parameterText += string.Format(
+                                    "{0} = \"{1}\";",
+                                    pair.Key,
+                                    pair.Value);
                             }
 
                             // Create the script
@@ -78,9 +88,9 @@
                                 // Execute pester tests
                                 writer.WriteLine(
                                     string.Format(
-                                        "$result = Invoke-Pester -Script @{ Path = '{0}'; Arguments = @( {1} )} -OutputFormat NUnitXml -OutputFile '{2}' -EnableExit -Verbose",
+                                        "$result = Invoke-Pester -Script @{{ Path = '{0}'; Parameters = @{{ {1} }} }} -OutputFormat NUnitXml -OutputFile '{2}' -EnableExit -Verbose",
                                         TestFile,
-                                        "\"" + string.Join("\", \"", arguments.ToArray()) + "\"",
+                                        parameterText,
                                         ReportFile));
                             }
 

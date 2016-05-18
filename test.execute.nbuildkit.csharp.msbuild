@@ -94,66 +94,29 @@
 
     <Target Name="nBuildKit_Test_Execute_Latest_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
-        <CallTarget Targets="_nBuildKit_Test_Execute_Latest_CSharp_Run_Build" />
-        <CallTarget Targets="_nBuildKit_Test_Execute_Latest_CSharp_Verify_Build" />
-        <CallTarget Targets="_nBuildKit_Test_Execute_Latest_CSharp_Run_Deploy" />
-        <CallTarget Targets="_nBuildKit_Test_Execute_Latest_CSharp_Verify_Deploy" />
-    </Target>
-
-    <!-- Clean -->
-    <Target Name="_nBuildKit_Test_Execute_Latest_CSharp_Run_Build">
-        <!--
-            Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
-            we won't be using the nBuildKit scripts from the nuget packages but from our source directory
-        -->
-        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestLatestCSharp)\test.csharp.msbuild&quot; /t:Build /p:FileEnvironment=&quot;$(DirBuildTestLatestCSharp)\environment.props&quot;"
-              IgnoreStandardErrorWarningFormat="true"
-              WorkingDirectory="$(DirBuildTestLatestCSharp)" />
-    </Target>
-
-    <Target Name="_nBuildKit_Test_Execute_Latest_CSharp_Verify_Build"
-            DependsOnTargets="_nBuildKit_Test_Execute_Latest_CSharp_Run_Build">
         <TemplateText Template="$(FileReportVerificationLatestBuildCSharp)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
         </TemplateText>
 
         <ItemGroup>
-            <VerifyLatestCSharpBuildArguments Include="$(DirBuildTestLatestCSharp)" />
+            <VerifyLatestCSharpBuildArguments Include="projectworkspaceLocation">
+                <Value>$(DirWorkspace)</Value>
+            </VerifyLatestCSharpBuildArguments>
+            <VerifyLatestCSharpBuildArguments Include="testOutputLocation">
+                <Value>$(DirBuildTemp)</Value>
+            </VerifyLatestCSharpBuildArguments>
+            <VerifyLatestCSharpBuildArguments Include="testworkspaceLocation">
+                <Value>$(DirBuildTestLatestCSharp)</Value>
+            </VerifyLatestCSharpBuildArguments>
         </ItemGroup>
         <InvokePesterOnFile PowershellExePath="$(ToolsExternalPowershellPath)"
                             PesterModulePath="$(ToolsExternalPesterPath)"
-                            TestFile="$(DirTestLatestCSharpVerification)\build\Build.Test.ps1"
+                            TestFile="$(DirTestLatestCSharpVerification)\tests.ps1"
                             TestArguments="@(VerifyLatestCSharpBuildArguments)"
                             ReportFile="$(FileReportPesterXmlExpanded)"
                             TempDirectory="$(DirBuildTemp)"
                             IgnoreErrors="false"
                             IgnoreExitCode="false" />
-    </Target>
-
-    <Target Name="_nBuildKit_Test_Execute_Latest_CSharp_Run_Deploy">
-        <!--
-            Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
-            we won't be using the nBuildKit scripts from the nuget packages but from our source directory
-        -->
-        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestLatestCSharp)\test.csharp.msbuild&quot; /t:deploy /p:FileEnvironment=&quot;$(DirBuildTestLatestCSharp)\environment.props&quot;"
-              IgnoreStandardErrorWarningFormat="true"
-              WorkingDirectory="$(DirBuildTestLatestCSharp)" />
-    </Target>
-
-    <Target Name="_nBuildKit_Test_Execute_Latest_CSharp_Verify_Deploy"
-            DependsOnTargets="_nBuildKit_Test_Execute_Latest_CSharp_Run_Deploy">
-        <!--
-            * Verify that the nuget package has been 'published'
-            * Verify that the zip file has been 'published'
-        -->
-        <!--
-            * Verify that the nuget package has been 'published'
-            * Verify that the zip file has been 'published'
-        -->
-        <!--
-            * Verify that the nuget package has been 'published'
-            * Verify that the zip file has been 'published'
-        -->
     </Target>
  </Project>
