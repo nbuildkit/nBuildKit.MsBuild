@@ -159,9 +159,41 @@ Describe 'For the C# test' {
             [System.IO.Compression.ZipFile]::ExtractToDirectory($archive, $packageUnzipLocation)
 
             It 'with the expected files' {
-            }
+                $consoleLocation = Join-Path $packageUnzipLocation 'console'
+                (Join-Path $consoleLocation 'autofac.dll') | Should Exist
+                (Join-Path $consoleLocation 'log4net.dll') | Should Exist
+                (Join-Path $consoleLocation 'Lokad.ActionPolicy.dll') | Should Exist
+                (Join-Path $consoleLocation 'Lokad.Logging.dll') | Should Exist
+                (Join-Path $consoleLocation 'Lokad.Quality.dll') | Should Exist
+                (Join-Path $consoleLocation 'Lokad.Shared.dll') | Should Exist
+                (Join-Path $consoleLocation 'Lokad.Stack.dll') | Should Exist
+                (Join-Path $consoleLocation 'Lokad.Testing.dll') | Should Exist
+                (Join-Path $consoleLocation 'Mono.Cecil.dll') | Should Exist
+                (Join-Path $consoleLocation 'Mono.Cecil.Mdb.dll') | Should Exist
+                (Join-Path $consoleLocation 'Mono.Cecil.Pdb.dll') | Should Exist
+                (Join-Path $consoleLocation 'Mono.Cecil.Rocks.dll') | Should Exist
+                (Join-Path $consoleLocation 'NBuildKit.Test.CSharp.Console.exe') | Should Exist
+                (Join-Path $consoleLocation 'NBuildKit.Test.CSharp.Console.pdb') | Should Exist
+                (Join-Path $consoleLocation 'NBuildKit.Test.CSharp.Library.dll') | Should Exist
+                (Join-Path $consoleLocation 'NBuildKit.Test.CSharp.Library.pdb') | Should Exist
 
-            It 'has files with the right metadata' {
+                $wpfLocation = Join-Path $packageUnzipLocation 'wpf'
+                (Join-Path $wpfLocation 'autofac.dll') | Should Exist
+                (Join-Path $wpfLocation 'log4net.dll') | Should Exist
+                (Join-Path $wpfLocation 'Lokad.ActionPolicy.dll') | Should Exist
+                (Join-Path $wpfLocation 'Lokad.Logging.dll') | Should Exist
+                (Join-Path $wpfLocation 'Lokad.Quality.dll') | Should Exist
+                (Join-Path $wpfLocation 'Lokad.Shared.dll') | Should Exist
+                (Join-Path $wpfLocation 'Lokad.Stack.dll') | Should Exist
+                (Join-Path $wpfLocation 'Lokad.Testing.dll') | Should Exist
+                (Join-Path $wpfLocation 'Mono.Cecil.dll') | Should Exist
+                (Join-Path $wpfLocation 'Mono.Cecil.Mdb.dll') | Should Exist
+                (Join-Path $wpfLocation 'Mono.Cecil.Pdb.dll') | Should Exist
+                (Join-Path $wpfLocation 'Mono.Cecil.Rocks.dll') | Should Exist
+                (Join-Path $wpfLocation 'NBuildKit.Test.CSharp.Wpf.exe') | Should Exist
+                (Join-Path $wpfLocation 'NBuildKit.Test.CSharp.Wpf.pdb') | Should Exist
+                (Join-Path $wpfLocation 'NBuildKit.Test.CSharp.Library.dll') | Should Exist
+                (Join-Path $wpfLocation 'NBuildKit.Test.CSharp.Library.pdb') | Should Exist
             }
         }
     }
