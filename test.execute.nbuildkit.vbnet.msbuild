@@ -20,9 +20,18 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\InvokePesterOnFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\InvokePesterOnFile.msbuild') AND '$(ExistsExtensionsInvokePesterOnFile)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+
     <Target Name="nBuildKit_Test_Execute_VbNet_Run"
-            DependsOnTargets="_nBuildKit_Test_Execute_VbNet_Run_Build">
-        <CallTarget Targets="_nBuildKit_Test_Execute_VbNet_Process_Results" />
+            DependsOnTargets="_nBuildKit_Test_Execute_VbNet_DisplayInfo">
+        <CallTarget Targets="nBuildKit_Test_Execute_VbNet_Latest_Run" />
     </Target>
 
     <Target Name="_nBuildKit_Test_Execute_VbNet_DebugLog"
@@ -61,23 +70,53 @@
     <!-- Display info -->
     <Target Name="_nBuildKit_Test_Execute_VbNet_DisplayInfo"
             DependsOnTargets="_nBuildKit_Test_Execute_VbNet_DebugLog">
-        <Message Text="Testing VB.NET packages ..."
+        <Message Text="Testing C# packages ..."
                  Importance="normal"/>
     </Target>
 
-    <!-- Clean -->
-    <Target Name="_nBuildKit_Test_Execute_VbNet_Run_Build"
-            DependsOnTargets="_nBuildKit_Test_Execute_VbNet_DisplayInfo">
-        <!--
-            Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
-            we won't be using the nBuildKit scripts from the nuget packages but from our source directory
-        -->
-        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestLatestVbNet)\test.vbnet.msbuild&quot; /t:Build"
-              IgnoreStandardErrorWarningFormat="true"
-              WorkingDirectory="$(DirBuildTestLatestVbNet)" />
+    <Target Name="_nBuildKit_Test_Execute_VbNet_GetToolPaths">
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="Pester"
+                      PackageVersion="$(ToolsExternalPesterVersion)"
+                      PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
+                      Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
+        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)"
+                                                 FileToLocate="Pester.psm1"
+                                                 Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalPesterPath" />
+        </SearchPackagesDirectoryForToolDirectory>
+        <Message Text="The Pester module was found at: $(ToolsExternalPesterPath)"
+                 Condition="Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="Could not locate the Pester module path. Cannot execute pester tests."
+               Condition="!Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_VbNet_Process_Results"
-            DependsOnTargets="_nBuildKit_Test_Execute_VbNet_DisplayInfo">
+    <Target Name="nBuildKit_Test_Execute_VbNet_Latest_Run"
+            DependsOnTargets="_nBuildKit_Test_Execute_VbNet_GetToolPaths">
+        <TemplateText Template="$(FileReportVerificationLatestBuildVbNet)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
+        </TemplateText>
+
+        <ItemGroup>
+            <VerifyLatestVbNetBuildArguments Include="projectworkspaceLocation">
+                <Value>$(DirWorkspace)</Value>
+            </VerifyLatestVbNetBuildArguments>
+            <VerifyLatestVbNetBuildArguments Include="testOutputLocation">
+                <Value>$(DirBuildTemp)</Value>
+            </VerifyLatestVbNetBuildArguments>
+            <VerifyLatestVbNetBuildArguments Include="testworkspaceLocation">
+                <Value>$(DirBuildTestLatestVbNet)</Value>
+            </VerifyLatestVbNetBuildArguments>
+        </ItemGroup>
+        <InvokePesterOnFile PowershellExePath="$(ToolsExternalPowershellPath)"
+                            PesterModulePath="$(ToolsExternalPesterPath)"
+                            TestFile="$(DirTest)\latest.vbnet.tests.ps1"
+                            TestArguments="@(VerifyLatestVbNetBuildArguments)"
+                            ReportFile="$(FileReportPesterXmlExpanded)"
+                            TempDirectory="$(DirBuildTemp)"
+                            IgnoreErrors="false"
+                            IgnoreExitCode="false" />
     </Target>
  </Project>
