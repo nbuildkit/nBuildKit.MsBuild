@@ -369,8 +369,11 @@
         so that we can be sure that the nBuildKit main package is extacted to the package directory.
     -->
     <Target Name="_RestoreGlobalNugetPackages" DependsOnTargets="_LocatePackagesDir">
-        <Exec Command="&quot;$(ToolsExternalNuGetPath)&quot; restore &quot;$(NuGetPackageFile)&quot; -NoCache -NonInteractive -Verbosity detailed -PackagesDirectory &quot;$(DirPackages)&quot;"
-              Condition="Exists('$(NuGetPackageFile)')" />
+        <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageFile="$(NuGetPackageFile)"
+                      PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
+                      Condition="Exists('$(NuGetPackageFile)')"/>
     </Target>
 
     <!--
@@ -683,6 +686,102 @@
                         catch(Exception e)
                         {
                             Log.LogError(e.ToString());
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <UsingTask TaskName="NuGetRestore"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MsBuildTasksAssembly)">
+        <ParameterGroup>
+            <NuGetPath ParameterType="System.String" Required="true" />
+            <PackageFile ParameterType="System.String" Required="true" />
+            <PackageDirectory ParameterType="System.String" Required="true" />
+            <Sources ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.Xml" />
+            <Reference Include="System.Xml.Linq" />
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        if (!System.IO.File.Exists(PackageFile))
+                        {
+                            Log.LogMessage(MessageImportance.High, "File does not exist: {0}", PackageFile);
+                        }
+
+                        var builder = new System.Text.StringBuilder();
+                        {
+                            builder.Append(string.Format("restore \"{0}\" ", PackageFile));
+                            builder.Append("-NonInteractive -Verbosity detailed -NoCache ");
+
+                            // Make sure we remove the back-slash because if we don't then
+                            // the closing quote will be eaten by the command line parser. Note that
+                            // this is only necessary because we're dealing with a directory
+                            builder.Append(string.Format("-PackagesDirectory \"{0}\" ", PackageDirectory.TrimEnd('\\')));
+
+                            // If the user has specified any sources to install from then only search those sources.
+                            if (Sources != null)
+                            {
+                                foreach (var source in Sources)
+                                {
+                                    // Make sure we remove the back-slash because if we don't then
+                                    // the closing quote will be eaten by the command line parser. Note that
+                                    // this is only necessary because we're dealing with a directory
+                                    builder.Append(string.Format("-Source \"{0}\" ", source.ItemSpec.TrimEnd('\\')));
+                                }
+                            }
+                        }
+
+                        var info = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = NuGetPath,
+                            Arguments = builder.ToString(),
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                        };
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogMessage(MessageImportance.Normal, e.Data);
+                                }
+                            };
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogError(e.Data);
+                                }
+                            };
+                        process.Start();
+
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            return false;
                         }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
