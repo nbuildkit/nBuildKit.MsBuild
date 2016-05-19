@@ -20,9 +20,18 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\InvokePesterOnFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\InvokePesterOnFile.msbuild') AND '$(ExistsExtensionsInvokePesterOnFile)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+
     <Target Name="nBuildKit_Test_Execute_CSharp_Run"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_Run_Build">
-        <CallTarget Targets="_nBuildKit_Test_Execute_CSharp_Process_Results" />
+            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
+        <CallTarget Targets="nBuildKit_Test_Execute_CSharp_Latest_Run" />
     </Target>
 
     <Target Name="_nBuildKit_Test_Execute_CSharp_DebugLog"
@@ -46,7 +55,7 @@
                  Importance="low"/>
         <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
                  Importance="low"/>
-        <Message Text="The directory containing the C# test files is located at:          $(DirBuildTestCSharp)"
+        <Message Text="The directory containing the C# test files is located at:          $(DirBuildTestLatestCSharp)"
                  Importance="low"/>
         <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
                  Importance="low"/>
@@ -65,19 +74,49 @@
                  Importance="normal"/>
     </Target>
 
-    <!-- Clean -->
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Run_Build"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
-        <!--
-            Run this in a separate process so that we don't get any of the properties from the current msbuild process. If that happens
-            we won't be using the nBuildKit scripts from the nuget packages but from our source directory
-        -->
-        <Exec Command="&quot;$(MSBuildBinPath)\msbuild.exe&quot; &quot;$(DirBuildTestCSharp)\test.csharp.msbuild&quot; /t:Build"
-              IgnoreStandardErrorWarningFormat="true"
-              WorkingDirectory="$(DirBuildTestCSharp)" />
+    <Target Name="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="Pester"
+                      PackageVersion="$(ToolsExternalPesterVersion)"
+                      PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
+                      Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
+        <SearchPackagesDirectoryForToolDirectory PackagesDir="$(DirPackages)"
+                                                 FileToLocate="Pester.psm1"
+                                                 Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalPesterPath" />
+        </SearchPackagesDirectoryForToolDirectory>
+        <Message Text="The Pester module was found at: $(ToolsExternalPesterPath)"
+                 Condition="Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Error Text="Could not locate the Pester module path. Cannot execute pester tests."
+               Condition="!Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_CSharp_Process_Results"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
+    <Target Name="nBuildKit_Test_Execute_CSharp_Latest_Run"
+            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
+        <TemplateText Template="$(FileReportVerificationLatestBuildCSharp)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
+        </TemplateText>
+
+        <ItemGroup>
+            <VerifyLatestCSharpBuildArguments Include="projectworkspaceLocation">
+                <Value>$(DirWorkspace)</Value>
+            </VerifyLatestCSharpBuildArguments>
+            <VerifyLatestCSharpBuildArguments Include="testOutputLocation">
+                <Value>$(DirBuildTemp)</Value>
+            </VerifyLatestCSharpBuildArguments>
+            <VerifyLatestCSharpBuildArguments Include="testworkspaceLocation">
+                <Value>$(DirBuildTestLatestCSharp)</Value>
+            </VerifyLatestCSharpBuildArguments>
+        </ItemGroup>
+        <InvokePesterOnFile PowershellExePath="$(ToolsExternalPowershellPath)"
+                            PesterModulePath="$(ToolsExternalPesterPath)"
+                            TestFile="$(DirTest)\latest.csharp.tests.ps1"
+                            TestArguments="@(VerifyLatestCSharpBuildArguments)"
+                            ReportFile="$(FileReportPesterXmlExpanded)"
+                            TempDirectory="$(DirBuildTemp)"
+                            IgnoreErrors="false"
+                            IgnoreExitCode="false" />
     </Target>
  </Project>

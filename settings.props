@@ -348,12 +348,23 @@
         <!-- <DirReportMoma Condition=" '$(DirReportMoma)' == '' ">$(DirBuildLogs)\moma</DirReportMoma> -->
 
         <!-- The directory that will contain all the temporary files needed during the build process -->
-        <!-- <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp> -->
+        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
+        <DirBuildTempTest>$(DirBuildTemp)\tests</DirBuildTempTest>
+        <DirBuildTempTestLatest>$(DirBuildTempTest)\latest</DirBuildTempTestLatest>
+        <DirBuildTempTestLatestCSharp>$(DirBuildTempTestLatest)\csharp</DirBuildTempTestLatestCSharp>
+        <DirBuildTempTestLatestVbNet>$(DirBuildTempTestLatest)\vbnet</DirBuildTempTestLatestVbNet>
 
         <!-- The directory that will contain all the test files generated during the test process -->
         <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
-        <DirBuildTestCSharp>$(DirBuildTest)\csharp</DirBuildTestCSharp>
-        <DirBuildTestVbNet>$(DirBuildTest)\vbnet</DirBuildTestVbNet>
+        <DirBuildTestLatest Condition=" '$(DirBuildTestLatest)' == '' ">$(DirBuildTest)\latest</DirBuildTestLatest>
+
+        <DirBuildTestLatestCSharp>$(DirBuildTestLatest)\csharp</DirBuildTestLatestCSharp>
+        <DirBuildTestLatestVbNet>$(DirBuildTestLatest)\vbnet</DirBuildTestLatestVbNet>
+
+        <DirBuildTestVerify>$(DirBuildTest)\verify</DirBuildTestVerify>
+
+        <DirBuildTestVerifyCSharp>$(DirBuildTestVerify)\csharp</DirBuildTestVerifyCSharp>
+        <DirBuildTestVerifyVbNet>$(DirBuildTestVerify)\vbnet</DirBuildTestVerifyVbNet>
 
         <!-- The directory that contains all the NuGet packages for the project -->
         <!-- <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages> -->
@@ -366,8 +377,10 @@
 
         <!-- The directory that contains all the test files for the project -->
         <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
-        <DirTestCSharp>$(DirTest)\csharp</DirTestCSharp>
-        <DirTestVbNet>$(DirTest)\vbnet</DirTestVbNet>
+        <DirTestLatest Condition=" '$(DirTestLatest)' == '' ">$(DirTest)\latest</DirTestLatest>
+
+        <DirTestLatestCSharp>$(DirTestLatest)\csharp</DirTestLatestCSharp>
+        <DirTestLatestVbNet>$(DirTestLatest)\vbnet</DirTestLatestVbNet>
     </PropertyGroup>
 
     <!--
@@ -585,6 +598,12 @@
     <ItemGroup>
         <TemplateTokens Include="DirVisualStudio">
             <ReplacementValue>$(ToolsExternalVisualStudioDir)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="DirBuildTempTestLatestCSharp">
+            <ReplacementValue>$(DirBuildTempTestLatestCSharp)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="DirBuildTempTestLatestVbNet">
+            <ReplacementValue>$(DirBuildTempTestLatestVbNet)</ReplacementValue>
         </TemplateTokens>
     </ItemGroup>
 

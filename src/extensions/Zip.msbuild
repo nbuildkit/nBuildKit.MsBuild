@@ -79,7 +79,7 @@
                             var name = xmlDoc.SelectSingleNode("//archive/name/text()").InnerText;
                             var outputFilePath = Path.Combine(OutputDirectory, string.Format("{0}.zip", name));
 
-                            var files = new Dictionary<string, string>();
+                            var files = new Dictionary<string, List<string>>();
                             var filesNode = xmlDoc.SelectSingleNode("//archive/files");
                             foreach (XmlNode child in filesNode.ChildNodes)
                             {
@@ -116,7 +116,13 @@
                                     foreach(var file in filesToInclude)
                                     {
                                         var relativePath = Path.Combine(target, GetRelativePath(file, directory));
-                                        files.Add(file, relativePath);
+                                        if (!files.ContainsKey(file))
+                                        {
+                                            files.Add(file, new List<string>());
+                                        }
+
+                                        var list = files[file];
+                                        list.Add(relativePath);
                                     }
                                 }
                             }
@@ -145,7 +151,7 @@
 
                         private void Compress(
                             string outputFile,
-                            System.Collections.Generic.IDictionary<string, string> files,
+                            System.Collections.Generic.IDictionary<string, List<string>> files,
                             bool overwriteExistingFile)
                         {
                             const int BufferSize = 64 * 1024;
@@ -159,18 +165,26 @@
                                 {
                                     foreach (var pair in files)
                                     {
-                                        var archiveEntry = archive.CreateEntry(pair.Value);
+                                        var filePath = pair.Key;
+                                        var list = pair.Value;
 
-                                        Log.LogMessage(MessageImportance.Low, string.Format("Adding: {0}. Storing as: {1}", pair.Key, pair.Value));
-                                        using (var fs = new FileStream(pair.Key, FileMode.Open))
+                                        using (var fs = new FileStream(filePath, FileMode.Open))
                                         {
-                                            using (var zipStream = archiveEntry.Open())
+                                            foreach(var relativePath in list)
                                             {
-                                                int bytesRead = -1;
-                                                while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
+                                                Log.LogMessage(MessageImportance.Low, string.Format("Adding: {0}. Storing as: {1}", filePath, relativePath));
+                                                var archiveEntry = archive.CreateEntry(relativePath);
+
+                                                using (var zipStream = archiveEntry.Open())
                                                 {
-                                                    zipStream.Write(buffer, 0, bytesRead);
+                                                    int bytesRead = -1;
+                                                    while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
+                                                    {
+                                                        zipStream.Write(buffer, 0, bytesRead);
+                                                    }
                                                 }
+
+                                                fs.Position = 0;
                                             }
                                         }
                                     }
