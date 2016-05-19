@@ -14,7 +14,7 @@ param(
     [string] $testWorkspaceLocation
 )
 
-. (Join-Path (Join-Path $projectWorkspaceLocation 'tests') 'TestFunctions.MsBuild.ps1')
+. (Join-Path $PSScriptRoot 'TestFunctions.MsBuild.ps1')
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
