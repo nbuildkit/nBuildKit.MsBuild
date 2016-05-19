@@ -154,14 +154,14 @@
         **** PREPARE - WORKSPACE ****
     -->
     <ItemGroup>
-        <TestFilesToCopy Include="$(DirTestLatestCSharpSrc)\**\*.*"
-                         Exclude="$(DirTestLatestCSharpSrc)\environment.props;$(DirTestLatestCSharpSrc)\settings.props;$(DirTestLatestCSharpSrc)\**\packages.config;$(DirTestLatestCSharpSrc)\**\*.csproj"
-                         Condition="Exists('$(DirTestLatestCSharpSrc)')">
+        <TestFilesToCopy Include="$(DirTestLatestCSharp)\**\*.*"
+                         Exclude="$(DirTestLatestCSharp)\environment.props;$(DirTestLatestCSharp)\settings.props;$(DirTestLatestCSharp)\**\packages.config;$(DirTestLatestCSharp)\**\*.csproj"
+                         Condition="Exists('$(DirTestLatestCSharp)')">
             <TargetDirectory>$(DirBuildTestLatestCSharp)</TargetDirectory>
         </TestFilesToCopy>
-        <TestFilesToCopy Include="$(DirTestLatestVbNetSrc)\**\*.*"
-                         Exclude="$(DirTestLatestVbNetSrc)\environment.props;$(DirTestLatestVbNetSrc)\settings.props;$(DirTestLatestVbNetSrc)\**\packages.config;$(DirTestLatestVbNetSrc)\**\*.vbproj"
-                         Condition="Exists('$(DirTestLatestVbNetSrc)')">
+        <TestFilesToCopy Include="$(DirTestLatestVbNet)\**\*.*"
+                         Exclude="$(DirTestLatestVbNet)\environment.props;$(DirTestLatestVbNet)\settings.props;$(DirTestLatestVbNet)\**\packages.config;$(DirTestLatestVbNet)\**\*.vbproj"
+                         Condition="Exists('$(DirTestLatestVbNet)')">
             <TargetDirectory>$(DirBuildTestLatestVbNet)</TargetDirectory>
         </TestFilesToCopy>
     </ItemGroup>
@@ -180,75 +180,75 @@
     -->
     <ItemGroup>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\environment.props">
-            <Template>$(DirTestLatestCSharpSrc)\environment.props</Template>
+            <Template>$(DirTestLatestCSharp)\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\packages.config">
-            <Template>$(DirTestLatestCSharpSrc)\packages.config</Template>
+            <Template>$(DirTestLatestCSharp)\packages.config</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\settings.props">
-            <Template>$(DirTestLatestCSharpSrc)\settings.props</Template>
+            <Template>$(DirTestLatestCSharp)\settings.props</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Console\nBuildKit.Test.CSharp.Console.csproj">
-            <Template>$(DirTestLatestCSharpSrc)\src\nBuildKit.Test.CSharp.Console\nBuildKit.Test.CSharp.Console.csproj</Template>
+            <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Console\nBuildKit.Test.CSharp.Console.csproj</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Console\packages.config">
-            <Template>$(DirTestLatestCSharpSrc)\src\nBuildKit.Test.CSharp.Console\packages.config</Template>
+            <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Console\packages.config</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Library\nBuildKit.Test.CSharp.Library.csproj">
-            <Template>$(DirTestLatestCSharpSrc)\src\nBuildKit.Test.CSharp.Library\nBuildKit.Test.CSharp.Library.csproj</Template>
+            <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Library\nBuildKit.Test.CSharp.Library.csproj</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Library\packages.config">
-            <Template>$(DirTestLatestCSharpSrc)\src\nBuildKit.Test.CSharp.Library\packages.config</Template>
+            <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Library\packages.config</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Wpf\nBuildKit.Test.CSharp.Wpf.csproj">
-            <Template>$(DirTestLatestCSharpSrc)\src\nBuildKit.Test.CSharp.Wpf\nBuildKit.Test.CSharp.Wpf.csproj</Template>
+            <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Wpf\nBuildKit.Test.CSharp.Wpf.csproj</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Wpf\packages.config">
-            <Template>$(DirTestLatestCSharpSrc)\src\nBuildKit.Test.CSharp.Wpf\packages.config</Template>
+            <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Wpf\packages.config</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\Test.Unit.Library\Test.Unit.Library.csproj">
-            <Template>$(DirTestLatestCSharpSrc)\src\Test.Unit.Library\Test.Unit.Library.csproj</Template>
+            <Template>$(DirTestLatestCSharp)\src\Test.Unit.Library\Test.Unit.Library.csproj</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\Test.Unit.Library\packages.config">
-            <Template>$(DirTestLatestCSharpSrc)\src\Test.Unit.Library\packages.config</Template>
+            <Template>$(DirTestLatestCSharp)\src\Test.Unit.Library\packages.config</Template>
         </TestFilesToGenerate>
 
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\environment.props">
-            <Template>$(DirTestLatestVbNetSrc)\environment.props</Template>
+            <Template>$(DirTestLatestVbNet)\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\packages.config">
-            <Template>$(DirTestLatestVbNetSrc)\packages.config</Template>
+            <Template>$(DirTestLatestVbNet)\packages.config</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\settings.props">
-            <Template>$(DirTestLatestVbNetSrc)\settings.props</Template>
+            <Template>$(DirTestLatestVbNet)\settings.props</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj">
-            <Template>$(DirTestLatestVbNetSrc)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj</Template>
+            <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Console\packages.config">
-            <Template>$(DirTestLatestVbNetSrc)\src\nBuildKit.Test.VbNet.Console\packages.config</Template>
+            <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Console\packages.config</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Library\nBuildKit.Test.VbNet.Library.vbproj">
-            <Template>$(DirTestLatestVbNetSrc)\src\nBuildKit.Test.VbNet.Library\nBuildKit.Test.VbNet.Library.vbproj</Template>
+            <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Library\nBuildKit.Test.VbNet.Library.vbproj</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Library\packages.config">
-            <Template>$(DirTestLatestVbNetSrc)\src\nBuildKit.Test.VbNet.Library\packages.config</Template>
+            <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Library\packages.config</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Wpf\nBuildKit.Test.VbNet.Wpf.vbproj">
-            <Template>$(DirTestLatestVbNetSrc)\src\nBuildKit.Test.VbNet.Wpf\nBuildKit.Test.VbNet.Wpf.vbproj</Template>
+            <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Wpf\nBuildKit.Test.VbNet.Wpf.vbproj</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Wpf\packages.config">
-            <Template>$(DirTestLatestVbNetSrc)\src\nBuildKit.Test.VbNet.Wpf\packages.config</Template>
+            <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Wpf\packages.config</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\Test.Unit.Library\Test.Unit.Library.vbproj">
-            <Template>$(DirTestLatestVbNetSrc)\src\Test.Unit.Library\Test.Unit.Library.vbproj</Template>
+            <Template>$(DirTestLatestVbNet)\src\Test.Unit.Library\Test.Unit.Library.vbproj</Template>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\Test.Unit.Library\packages.config">
-            <Template>$(DirTestLatestVbNetSrc)\src\Test.Unit.Library\packages.config</Template>
+            <Template>$(DirTestLatestVbNet)\src\Test.Unit.Library\packages.config</Template>
         </TestFilesToGenerate>
     </ItemGroup>
 
@@ -258,6 +258,7 @@
     -->
     <PropertyGroup>
         <FileReportVerificationLatestBuildCSharp>$(DirBuildLogs)\verification.latest.build.csharp.xml</FileReportVerificationLatestBuildCSharp>
+        <FileReportVerificationLatestBuildVbNet>$(DirBuildLogs)\verification.latest.build.vbnet.xml</FileReportVerificationLatestBuildVbNet>
     </PropertyGroup>
 
 
