@@ -31,7 +31,7 @@
 
     <Target Name="nBuildKit_Test_Execute_CSharp_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
-        <CallTarget Targets="nBuildKit_Test_Execute_Latest_Run" />
+        <CallTarget Targets="nBuildKit_Test_Execute_CSharp_Latest_Run" />
     </Target>
 
     <Target Name="_nBuildKit_Test_Execute_CSharp_DebugLog"
@@ -92,7 +92,7 @@
                Condition="!Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
 
-    <Target Name="nBuildKit_Test_Execute_Latest_Run"
+    <Target Name="nBuildKit_Test_Execute_CSharp_Latest_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
         <TemplateText Template="$(FileReportVerificationLatestBuildCSharp)"
                       Tokens="@(TemplateTokens)">
@@ -112,7 +112,7 @@
         </ItemGroup>
         <InvokePesterOnFile PowershellExePath="$(ToolsExternalPowershellPath)"
                             PesterModulePath="$(ToolsExternalPesterPath)"
-                            TestFile="$(DirTest)\latest.chsarp.tests.ps1"
+                            TestFile="$(DirTest)\latest.csharp.tests.ps1"
                             TestArguments="@(VerifyLatestCSharpBuildArguments)"
                             ReportFile="$(FileReportPesterXmlExpanded)"
                             TempDirectory="$(DirBuildTemp)"
