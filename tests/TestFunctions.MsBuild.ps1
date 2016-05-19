@@ -65,7 +65,7 @@ function Invoke-MsBuildFromCommandLine
 
     $startInfo = New-Object System.Diagnostics.ProcessStartInfo
     $startInfo.FileName = $msBuildPath
-    $startInfo.Arguments = "$($scriptToExecute) /t:$($target) $($propertiesAsString) /flp:LogFile=`"$($logPath)`" /noconsolelogger"
+    $startInfo.Arguments = "$($scriptToExecute) /t:$($target) $($propertiesAsString) /flp:LogFile=`"$($logPath)`" /noconsolelogger /nologo"
     $startInfo.WorkingDirectory = $workspaceLocation
     $startInfo.UseShellExecute = $false
     $startInfo.CreateNoWindow = $true
