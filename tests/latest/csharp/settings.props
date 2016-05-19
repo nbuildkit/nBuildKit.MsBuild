@@ -79,54 +79,6 @@
         <!--<ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>-->
     </PropertyGroup>
 
-    <!--
-        Build server flags
-    -->
-    <PropertyGroup>
-        <!--
-            A flag indicating if the current build is running on a TFS build server or not.
-        -->
-        <!--
-        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' != 'True'  ">false</IsOnTfsBuildServer>
-        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' == 'True' ">true</IsOnTfsBuildServer>
-        -->
-
-        <!--
-            A flag indicating if the current build is running on a Jenkins build server or not.
-        -->
-        <!--
-        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' == ''  ">false</IsOnJenkinsBuildServer>
-        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' != '' ">true</IsOnJenkinsBuildServer>
-        -->
-
-        <!--
-            A flag indicating if the current build is running on the build server or not.
-        -->
-        <!--
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == '' ">UNDEFINED</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' != 'true' AND '$(IsOnJenkinsBuildServer)' != 'true' )">false</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' == 'true' OR '$(IsOnJenkinsBuildServer)' == 'true' )">true</IsOnBuildServer>
-        -->
-
-        <!-- Git parameters -->
-        <!--
-        <JenkinsGitBranchExpectedHeader>origin/</JenkinsGitBranchExpectedHeader>
-        <TfsGitBranchExpectedHeader>LG:refs/heads/</TfsGitBranchExpectedHeader>
-        -->
-
-        <!--
-        <BranchGitExpected>UNDEFINED</BranchGitExpected>
-        <BranchGitExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' " >$(GIT_BRANCH.SubString($(JenkinsGitBranchExpectedHeader.Length)))</BranchGitExpected>
-        <BranchGitExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' " >$(TF_BUILD_SOURCEGETVERSION.SubString($(TfsGitBranchExpectedHeader.Length), $([MSBuild]::Subtract($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), $(TfsGitBranchExpectedHeader.Length)))))</BranchGitExpected>
-        -->
-
-        <!--
-        <GitRevNoExpected>UNDEFINED</GitRevNoExpected>
-        <GitRevNoExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' ">$(GIT_COMMIT)</GitRevNoExpected>
-        <GitRevNoExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' ">$(TF_BUILD_SOURCEGETVERSION.SubString($([MSBuild]::Add($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), 1))))</GitRevNoExpected>
-        -->
-    </PropertyGroup>
-
     <!-- Overrides for the project specific properties -->
     <PropertyGroup>
         <!--
@@ -222,22 +174,6 @@
             connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
         -->
         <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">origin</GitRemoteRepository>
-
-        <!--
-            A flag indicating whether or not the workspace is a GIT workspace or not. If no value is provided then
-            any workspace that contains a .git folder will be assumed to be a GIT workspace.
-        -->
-        <!--
-        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
-        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
-        -->
-
-        <!--
-            A flag that indicates whether or not the workspace is a TFS workspace. Defaults to false.
-        -->
-        <!--
-        <IsTfsWorkspace Condition=" '$(IsTfsWorkspace)' == '' ">false</IsTfsWorkspace>
-        -->
     </PropertyGroup>
 
     <!--
@@ -366,18 +302,6 @@
         <!-- <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest> -->
     </PropertyGroup>
 
-    <!--
-        **** PACKAGE MANAGERS ****
-    -->
-    <!--
-        The collection that defines all the nuget sources that are allowed to be used during the
-        build. Leave empty if the sources from the NuGet.config file should be used.
-    -->
-    <ItemGroup>
-        <!--
-        <NuGetSources Include="https://www.nuget.org/api/v2/" />
-        -->
-    </ItemGroup>
 
     <!--
         **** PREPARE - MERGE ****
@@ -666,6 +590,17 @@
             The full path to the NuGet command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">nuget.exe</ToolsExternalNuGetPath> -->
+
+        <!--
+            The full path to the Pester module. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalPesterPath Condition=" '$(ToolsExternalPesterPath)' == '' ">UNDEFINED</ToolsExternalPesterPath>
+        <ToolsExternalPesterVersion Condition=" '$(ToolsExternalPesterVersion)' == '' ">3.4.0</ToolsExternalPesterVersion> -->
+
+        <!--
+            The full path to the Powershell command line executable.
+        -->
+        <!-- <ToolsExternalPowershellPath Condition=" '$(ToolsExternalPowershellPath)' == '' ">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</ToolsExternalPowershellPath> -->
 
         <!--
             The full path and version of the python command line executable. If not defined the packages directory is searched.
