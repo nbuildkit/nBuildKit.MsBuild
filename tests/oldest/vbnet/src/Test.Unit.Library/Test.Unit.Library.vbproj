@@ -9,20 +9,21 @@
     <AssemblyName>Test.Unit.Library</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(MSBuildProjectDirectory)\..</SolutionDir>
+    <OutputPath>$(SolutionDir)\..\build\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>Test.Unit.Library.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
@@ -31,7 +32,6 @@
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>Test.Unit.Library.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
@@ -47,7 +47,6 @@
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.props" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.props') " />
   <ItemGroup>
     <Reference Include="Autofac">
       <HintPath>..\..\packages\Autofac.2.2.4.900\lib\NET40\Autofac.dll</HintPath>
@@ -87,9 +86,6 @@
     </Reference>
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq.4.1.1309.1617\lib\net40\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="Nuclei.Build">
-      <HintPath>..\..\packages\Nuclei.Build.0.8.0\lib\net45\Nuclei.Build.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -186,7 +182,6 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.targets" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.targets') " />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

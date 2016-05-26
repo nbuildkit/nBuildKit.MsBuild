@@ -9,8 +9,10 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>NBuildKit.Test.VbNet.Wpf</RootNamespace>
     <AssemblyName>NBuildKit.Test.VbNet.Wpf</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <MyType>Custom</MyType>
+    <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(MSBuildProjectDirectory)\..</SolutionDir>
+    <OutputPath>$(SolutionDir)\..\build\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -19,7 +21,6 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <IncrementalBuild>true</IncrementalBuild>
-    <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>NBuildKit.Test.VbNet.Wpf.xml</DocumentationFile>
     <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
   </PropertyGroup>
@@ -31,7 +32,6 @@
     <DefineTrace>true</DefineTrace>
     <IncrementalBuild>false</IncrementalBuild>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>nBuildKit.Test.VbNet.Wpf.xml</DocumentationFile>
     <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
   </PropertyGroup>
@@ -47,7 +47,6 @@
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.props" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.props') " />
   <ItemGroup>
     <Reference Include="Autofac">
       <HintPath>..\..\packages\Autofac.2.2.4.900\lib\NET40\Autofac.dll</HintPath>
@@ -84,9 +83,6 @@
     </Reference>
     <Reference Include="Mono.Cecil.Rocks">
       <HintPath>..\..\packages\Mono.Cecil.0.9.6.0\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
-    <Reference Include="Nuclei.Build">
-      <HintPath>..\..\packages\Nuclei.Build.0.8.0\lib\net45\Nuclei.Build.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -178,5 +174,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.targets" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.targets') " />
 </Project>

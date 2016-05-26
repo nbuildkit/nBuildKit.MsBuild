@@ -10,14 +10,15 @@
     <AssemblyName>NBuildKit.Test.VbNet.Library</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(MSBuildProjectDirectory)\..</SolutionDir>
+    <OutputPath>$(SolutionDir)\..\build\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>NBuildKit.Test.VbNet.Library.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
@@ -26,7 +27,6 @@
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>nBuildKit.Test.VbNet.Library.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
@@ -42,7 +42,6 @@
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.props" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.props') " />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -57,15 +56,8 @@
     <Import Include="System.Diagnostics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\CompanyInformation.vb">
-      <Link>CompanyInformation.vb</Link>
-    </Compile>
-    <Compile Include="..\ProductInformation.vb">
-      <Link>ProductInformation.vb</Link>
-    </Compile>
     <Compile Include="HelloWorld.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
-    <Compile Include="My Project\AssemblyInfo.InternalsVisibleTo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
@@ -103,7 +95,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
-  <Import Project="../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.targets" Condition=" Exists('../../packages/nBuildKit.MsBuild.Projects.VBNet.${VersionNBuildKitOldestSupported}/build/import.targets') " />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

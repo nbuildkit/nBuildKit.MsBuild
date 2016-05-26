@@ -4,62 +4,64 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
         Certain properties and items in this settings file allow replacement of the following templates:
-        ${VersionMajor}           - The major version number
-        ${VersionMajorNext}       - The next major version number
-        ${VersionMinor}           - The minor version number
-        ${VersionMinorNext}       - The next minor version number
-        ${VersionPatch}           - The patch version number
-        ${VersionPatchNext}       - The next patch version number
-        ${VersionBuild}           - The build number of the version
-        ${VersionBuildNext}       - The next build number of the version
-        ${VersionPreRelease}      - The pre-release code, e.g. 'unstable'
-        ${VersionSemantic}        - The semantic version, e.g. 1.2.3
-        ${VersionSemanticFull}    - The full semantic version, e.g. 1.2.3-unstable.1+001
-        ${VersionSemanticNuGet}   - The full semantic version as used by nuget, e.g. 1.2.3-unstable0001
+        ${VersionMajor}            - The major version number
+        ${VersionMajorNext}        - The next major version number
+        ${VersionMinor}            - The minor version number
+        ${VersionMinorNext}        - The next minor version number
+        ${VersionPatch}            - The patch version number
+        ${VersionPatchNext}        - The next patch version number
+        ${VersionBuild}            - The build number of the version
+        ${VersionBuildNext}        - The next build number of the version
+        ${VersionPreRelease}       - The pre-release code, e.g. 'unstable'
+        ${VersionSemantic}         - The semantic version, e.g. 1.2.3
+        ${VersionSemanticFull}     - The full semantic version, e.g. 1.2.3-unstable.1+001
+        ${VersionSemanticNuGet}    - The full semantic version as used by nuget, e.g. 1.2.3-unstable0001
 
-        ${Configuration}          - The configuration, e.g. Release
-        ${Platform}               - The platform name, e.g. Any CPU
-        ${PlatformWithoutSpaces}  - The platform name without spaces in it, e.g. AnyCPU
+        ${Configuration}           - The configuration, e.g. Release
+        ${Platform}                - The platform name, e.g. Any CPU
+        ${PlatformWithoutSpaces}   - The platform name without spaces in it, e.g. AnyCPU
 
-        ${VcsRevision}            - The current VCS revision 'number'
-        ${VcsBranch}              - The name of the current VCS branch
+        ${VcsRevision}             - The current VCS revision 'number'
+        ${VcsBranch}               - The name of the current VCS branch
 
-        ${ReleaseNotes}           - The contents of the short release notes
+        ${ReleaseNotes}            - The contents of the release notes.
+                                     Each line of the release notes is formatted as: [ISSUE_ID] - [ISSUE SUMMARY] ([ISSUE_ASSIGNEE])
+        ${ReleaseNotesHtmlEncoded} - The HTML encoded release notes to be used in XML and HTML
+                                     Each line of the release notes is formatted as: [ISSUE_ID] - [ISSUE SUMMARY] ([ISSUE_ASSIGNEE])
 
-        ${Now}                    - The current date and time in round trip format, e.g. 2015-05-15T19:31:45.1234567+12:00
-        ${Date}                   - The current date in the format year-month-dayofmonth, e.g. 2015-05-15
-        ${DayOfMonth}             - The current day of the month, e.g. 15
-        ${Month}                  - The current month, e.g. 05
-        ${Year}                   - The current year, e.g. 2015
+        ${Now}                     - The current date and time in round trip format, e.g. 2015-05-15T19:31:45.1234567+12:00
+        ${Date}                    - The current date in the format year-month-dayofmonth, e.g. 2015-05-15
+        ${DayOfMonth}              - The current day of the month, e.g. 15
+        ${Month}                   - The current month, e.g. 05
+        ${Year}                    - The current year, e.g. 2015
 
-        ${ProductName}            - The name of the product
-        ${ProductNameInFilePath}  - The product name written in a way that it can be used in the file path
-        ${ProductDescription}     - The (short) description of the product
-        ${ProductNamespace}       - The namespace in which all the code for the product is placed
-        ${ProductStartingYear}    - The year the current product was created / released.
+        ${ProductName}             - The name of the product
+        ${ProductNameInFilePath}   - The product name written in a way that it can be used in the file path
+        ${ProductDescription}      - The (short) description of the product
+        ${ProductNamespace}        - The namespace in which all the code for the product is placed
+        ${ProductStartingYear}     - The year the current product was created / released.
 
-        ${CompanyName}            - The name of the company
-        ${CompanyNameInFilePath}  - The name of the company written in a way that it can be used in the file path
-        ${CompanyUrl}             - The URL of the company website
+        ${CompanyName}             - The name of the company
+        ${CompanyNameInFilePath}   - The name of the company written in a way that it can be used in the file path
+        ${CompanyUrl}              - The URL of the company website
 
-        ${CopyrightShort}         - The short form of the copyright
-        ${CopyrightLong}          - The long form of the copyright
+        ${CopyrightShort}          - The short form of the copyright
+        ${CopyrightLong}           - The long form of the copyright
 
-        ${FileReleaseNotes}       - The file containing the short release notes
+        ${FileReleaseNotes}        - The file containing the release notes in text format
 
-        ${DirWorkspace}           - The full path to the directory that contains forms the base of the workspace for the project, e.g. c:\myproject
-        ${DirBin}                 - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
-        ${DirDeploy}              - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
-        ${DirLogs}                - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
-        ${DirSrc}                 - The full path to the directory that contains the source files, e.g. c:\myproject\src
-        ${DirTemp}                - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
+        ${DirWorkspace}            - The full path to the directory that contains forms the base of the workspace for the project, e.g. c:\myproject
+        ${DirBin}                  - The full path to the directory that contains the binaries, e.g. c:\myproject\build\bin\anycpu\release
+        ${DirDeploy}               - The full path to the directory that contains the artifacts, e.g. c:\myproject\build\deploy
+        ${DirLogs}                 - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
+        ${DirSrc}                  - The full path to the directory that contains the source files, e.g. c:\myproject\src
+        ${DirTemp}                 - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
 
-        ${DirNBuildKit}           - The full path to the directory that contains the nBuildKit scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build
-        ${DirNBuildKitExtensions} - The full path to the directory that contains the nBuildKit extension scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\extensions
-        ${DirNBuildKitTemplates}  - The full path to the directory that contains the nBuildKit template files, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\templates
+        ${DirNBuildKit}            - The full path to the directory that contains the nBuildKit scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build
+        ${DirNBuildKitExtensions}  - The full path to the directory that contains the nBuildKit extension scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\extensions
+        ${DirNBuildKitTemplates}   - The full path to the directory that contains the nBuildKit template files, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\templates
 
-        ${VersionNBuildKit}       - The semantic version of nBuildKit that was used for the current build
-
+        ${VersionNBuildKit}        - The semantic version of nBuildKit that was used for the current build
 
         Special template parameters exists for additional version numbers. These are defined in the TemplateVersion ItemGroup
         as defined below.
@@ -75,54 +77,6 @@
             true then the 'DirBuild' directory will be removed as well as all known generated files.
         -->
         <!--<ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>-->
-    </PropertyGroup>
-
-    <!--
-        Build server flags
-    -->
-    <PropertyGroup>
-        <!--
-            A flag indicating if the current build is running on a TFS build server or not.
-        -->
-        <!--
-        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' != 'True'  ">false</IsOnTfsBuildServer>
-        <IsOnTfsBuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' == 'True' ">true</IsOnTfsBuildServer>
-        -->
-
-        <!--
-            A flag indicating if the current build is running on a Jenkins build server or not.
-        -->
-        <!--
-        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' == ''  ">false</IsOnJenkinsBuildServer>
-        <IsOnJenkinsBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == '' AND '$(JENKINS_URL)' != '' ">true</IsOnJenkinsBuildServer>
-        -->
-
-        <!--
-            A flag indicating if the current build is running on the build server or not.
-        -->
-        <!--
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == '' ">UNDEFINED</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' != 'true' AND '$(IsOnJenkinsBuildServer)' != 'true' )">false</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND ( '$(IsOnTfsBuildServer)' == 'true' OR '$(IsOnJenkinsBuildServer)' == 'true' )">true</IsOnBuildServer>
-        -->
-
-        <!-- Git parameters -->
-        <!--
-        <JenkinsGitBranchExpectedHeader>origin/</JenkinsGitBranchExpectedHeader>
-        <TfsGitBranchExpectedHeader>LG:refs/heads/</TfsGitBranchExpectedHeader>
-        -->
-
-        <!--
-        <BranchGitExpected>UNDEFINED</BranchGitExpected>
-        <BranchGitExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' " >$(GIT_BRANCH.SubString($(JenkinsGitBranchExpectedHeader.Length)))</BranchGitExpected>
-        <BranchGitExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' " >$(TF_BUILD_SOURCEGETVERSION.SubString($(TfsGitBranchExpectedHeader.Length), $([MSBuild]::Subtract($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), $(TfsGitBranchExpectedHeader.Length)))))</BranchGitExpected>
-        -->
-
-        <!--
-        <GitRevNoExpected>UNDEFINED</GitRevNoExpected>
-        <GitRevNoExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' ">$(GIT_COMMIT)</GitRevNoExpected>
-        <GitRevNoExpected Condition=" '$(IsOnTfsBuildServer)' == 'True' ">$(TF_BUILD_SOURCEGETVERSION.SubString($([MSBuild]::Add($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), 1))))</GitRevNoExpected>
-        -->
     </PropertyGroup>
 
     <!-- Overrides for the project specific properties -->
@@ -220,22 +174,6 @@
             connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
         -->
         <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">origin</GitRemoteRepository>
-
-        <!--
-            A flag indicating whether or not the workspace is a GIT workspace or not. If no value is provided then
-            any workspace that contains a .git folder will be assumed to be a GIT workspace.
-        -->
-        <!--
-        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
-        <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
-        -->
-
-        <!--
-            A flag that indicates whether or not the workspace is a TFS workspace. Defaults to false.
-        -->
-        <!--
-        <IsTfsWorkspace Condition=" '$(IsTfsWorkspace)' == '' ">false</IsTfsWorkspace>
-        -->
     </PropertyGroup>
 
     <!--
@@ -550,6 +488,16 @@
     <!--
         **** PREPARE - GENERATE FILES ****
     -->
+    <PropertyGroup>
+        <!--
+            The full path to the system provided scripts that contain a task to generate
+            additional template tokens.
+
+            Each script should have a task with the same name as the file.
+        -->
+        <!-- <TemplateTokenGenerators Condition=" '$(TemplateTokenGenerators)' == '' ">UNDEFINED</TemplateTokenGenerators> -->
+    </PropertyGroup>
+
     <!--
         Additional items that should be available for the template replacement.
         The default template parameters, as indicated at the top of this file, are always available.
@@ -565,6 +513,25 @@
     <!-- Additional generated files -->
     <PropertyGroup>
          <!-- <FileGeneratedLicenses>$(DirBuildTemp)\licenses.xml</FileGeneratedLicenses> -->
+    </PropertyGroup>
+
+
+    <!--
+        **** STEPS ****
+    -->
+    <PropertyGroup>
+        <!--
+            Defines the groups that should be executed in the current stage.
+
+            A group is a collection of steps which are executed in sequence in the same process. One step
+            can belong to multiple groups and one group may contain multiple steps.
+
+            A group is identified by a tag.
+
+            The tag 'all' is a special tag that will lead to the invocation of all steps that are registered for the
+            selected stage.
+        -->
+        <!-- <GroupsToExecute Condition=" '$(GroupsToExecute)' == '' ">All</GroupsToExecute> -->
     </PropertyGroup>
 
 
@@ -620,6 +587,17 @@
             The full path to the NuGet command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">nuget.exe</ToolsExternalNuGetPath> -->
+
+        <!--
+            The full path to the Pester module. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalPesterPath Condition=" '$(ToolsExternalPesterPath)' == '' ">UNDEFINED</ToolsExternalPesterPath>
+        <ToolsExternalPesterVersion Condition=" '$(ToolsExternalPesterVersion)' == '' ">3.4.0</ToolsExternalPesterVersion> -->
+
+        <!--
+            The full path to the Powershell command line executable.
+        -->
+        <!-- <ToolsExternalPowershellPath Condition=" '$(ToolsExternalPowershellPath)' == '' ">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</ToolsExternalPowershellPath> -->
 
         <!--
             The full path and version of the python command line executable. If not defined the packages directory is searched.

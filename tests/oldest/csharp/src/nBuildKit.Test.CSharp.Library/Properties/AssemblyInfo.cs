@@ -26,6 +26,8 @@ using System.Runtime.InteropServices;
 // Indicate the assembly is CLS compliant.
 [assembly: CLSCompliant(true)]
 
+[assembly: InternalsVisibleTo("Test.Unit.Library")]
+
 // Version numbers
 [assembly: AssemblyVersion("1.2.3.4")]
 [assembly: AssemblyFileVersion("5.6.7.8")]
