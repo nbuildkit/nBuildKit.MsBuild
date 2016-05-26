@@ -22,7 +22,7 @@ Describe 'For the C# test' {
 
     Context 'the build executes successfully' {
         $exitCode = Invoke-MsBuildFromCommandLine `
-            -scriptToExecute (Join-Path $testWorkspaceLocation 'test.csharp.msbuild') `
+            -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
             -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.csharp.build.log') `
@@ -200,7 +200,7 @@ Describe 'For the C# test' {
 
     Context 'the deploy executes successfully' {
         $exitCode = Invoke-MsBuildFromCommandLine `
-            -scriptToExecute (Join-Path $testWorkspaceLocation 'test.csharp.msbuild') `
+            -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'deploy' `
             -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.csharp.deploy.log') `

@@ -22,7 +22,7 @@ Describe 'For the VB.NET test' {
 
     Context 'the build executes successfully' {
         $exitCode = Invoke-MsBuildFromCommandLine `
-            -scriptToExecute (Join-Path $testWorkspaceLocation 'test.vbnet.msbuild') `
+            -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
             -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.vbnet.build.log') `
@@ -195,7 +195,7 @@ Describe 'For the VB.NET test' {
 
     Context 'the deploy executes successfully' {
         $exitCode = Invoke-MsBuildFromCommandLine `
-            -scriptToExecute (Join-Path $testWorkspaceLocation 'test.vbnet.msbuild') `
+            -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'deploy' `
             -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.vbnet.deploy.log') `
