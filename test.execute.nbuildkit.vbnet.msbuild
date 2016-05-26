@@ -32,6 +32,7 @@
     <Target Name="nBuildKit_Test_Execute_VbNet_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_VbNet_DisplayInfo">
         <CallTarget Targets="nBuildKit_Test_Execute_VbNet_Latest_Run" />
+        <CallTarget Targets="nBuildKit_Test_Execute_VbNet_Oldest_Run" />
     </Target>
 
     <Target Name="_nBuildKit_Test_Execute_VbNet_DebugLog"
@@ -114,6 +115,34 @@
                             PesterModulePath="$(ToolsExternalPesterPath)"
                             TestFile="$(DirTest)\latest.vbnet.tests.ps1"
                             TestArguments="@(VerifyLatestVbNetBuildArguments)"
+                            ReportFile="$(FileReportPesterXmlExpanded)"
+                            TempDirectory="$(DirBuildTemp)"
+                            IgnoreErrors="false"
+                            IgnoreExitCode="false" />
+    </Target>
+
+    <Target Name="nBuildKit_Test_Execute_VbNet_Oldest_Run"
+            DependsOnTargets="_nBuildKit_Test_Execute_VbNet_GetToolPaths">
+        <TemplateText Template="$(FileReportVerificationOldestBuildVbNet)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
+        </TemplateText>
+
+        <ItemGroup>
+            <VerifyOldestVbNetBuildArguments Include="projectworkspaceLocation">
+                <Value>$(DirWorkspace)</Value>
+            </VerifyOldestVbNetBuildArguments>
+            <VerifyOldestVbNetBuildArguments Include="testOutputLocation">
+                <Value>$(DirBuildTemp)</Value>
+            </VerifyOldestVbNetBuildArguments>
+            <VerifyOldestVbNetBuildArguments Include="testworkspaceLocation">
+                <Value>$(DirBuildTestOldestVbNet)</Value>
+            </VerifyOldestVbNetBuildArguments>
+        </ItemGroup>
+        <InvokePesterOnFile PowershellExePath="$(ToolsExternalPowershellPath)"
+                            PesterModulePath="$(ToolsExternalPesterPath)"
+                            TestFile="$(DirTest)\oldest.vbnet.tests.ps1"
+                            TestArguments="@(VerifyOldestVbNetBuildArguments)"
                             ReportFile="$(FileReportPesterXmlExpanded)"
                             TempDirectory="$(DirBuildTemp)"
                             IgnoreErrors="false"

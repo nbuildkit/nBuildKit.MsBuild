@@ -32,6 +32,7 @@
     <Target Name="nBuildKit_Test_Execute_CSharp_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
         <CallTarget Targets="nBuildKit_Test_Execute_CSharp_Latest_Run" />
+        <CallTarget Targets="nBuildKit_Test_Execute_CSharp_Oldest_Run" />
     </Target>
 
     <Target Name="_nBuildKit_Test_Execute_CSharp_DebugLog"
@@ -114,6 +115,34 @@
                             PesterModulePath="$(ToolsExternalPesterPath)"
                             TestFile="$(DirTest)\latest.csharp.tests.ps1"
                             TestArguments="@(VerifyLatestCSharpBuildArguments)"
+                            ReportFile="$(FileReportPesterXmlExpanded)"
+                            TempDirectory="$(DirBuildTemp)"
+                            IgnoreErrors="false"
+                            IgnoreExitCode="false" />
+    </Target>
+
+    <Target Name="nBuildKit_Test_Execute_CSharp_Oldest_Run"
+            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
+        <TemplateText Template="$(FileReportVerificationOldestBuildCSharp)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
+        </TemplateText>
+
+        <ItemGroup>
+            <VerifyOldestCSharpBuildArguments Include="projectworkspaceLocation">
+                <Value>$(DirWorkspace)</Value>
+            </VerifyOldestCSharpBuildArguments>
+            <VerifyOldestCSharpBuildArguments Include="testOutputLocation">
+                <Value>$(DirBuildTemp)</Value>
+            </VerifyOldestCSharpBuildArguments>
+            <VerifyOldestCSharpBuildArguments Include="testworkspaceLocation">
+                <Value>$(DirBuildTestOldestCSharp)</Value>
+            </VerifyOldestCSharpBuildArguments>
+        </ItemGroup>
+        <InvokePesterOnFile PowershellExePath="$(ToolsExternalPowershellPath)"
+                            PesterModulePath="$(ToolsExternalPesterPath)"
+                            TestFile="$(DirTest)\oldest.csharp.tests.ps1"
+                            TestArguments="@(VerifyOldestCSharpBuildArguments)"
                             ReportFile="$(FileReportPesterXmlExpanded)"
                             TempDirectory="$(DirBuildTemp)"
                             IgnoreErrors="false"
