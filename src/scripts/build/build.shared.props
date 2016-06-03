@@ -663,7 +663,7 @@
         thus not be considered dependencies for the generated NuGet packages, even if they are included in the list
         of dependencies that should be included.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '@(DesignTimeDependencies)' == '' ">
         <DesignTimeDependencies Include="nBuildKit" />
         <DesignTimeDependencies Include="nUnit" />
     </ItemGroup>
