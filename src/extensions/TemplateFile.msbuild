@@ -24,6 +24,7 @@
             <OutputFileName ParameterType="System.String" Required="true" />
             <Tokens ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <SearchExpression ParameterType="System.String" Required="false" />
+            <Encoding ParameterType="System.String" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -94,7 +95,13 @@
                                 outputLines.Add(value);
                             }
 
-                            using (var streamWriter = new System.IO.StreamWriter(OutputFileName))
+                            var encoding = System.Text.Encoding.ASCII;
+                            if (!string.IsNullOrWhiteSpace(Encoding))
+                            {
+                                encoding = System.Text.Encoding.GetEncoding(Encoding);
+                            }
+
+                            using (var streamWriter = new System.IO.StreamWriter(OutputFileName, false, encoding))
                             {
                                 for (int i = 0; i < outputLines.Count; i++)
                                 {
