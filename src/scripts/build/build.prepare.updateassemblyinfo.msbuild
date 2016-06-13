@@ -63,46 +63,55 @@
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyVersion"
                                     Value="&quot;${VersionAssembly}&quot;"
+                                    Encoding="UTF-8"
                                     Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyFileVersion"
                                     Value="&quot;${VersionAssemblyFile}&quot;"
+                                    Encoding="UTF-8"
                                     Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyInformationalVersion"
                                     Value="&quot;${VersionProduct}&quot;"
+                                    Encoding="UTF-8"
                                     Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyCompany"
                                     Value="&quot;$(CompanyName)&quot;"
+                                    Encoding="UTF-8"
                                     Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyCopyright"
                                     Value="&quot;$(CopyrightLong)&quot;"
+                                    Encoding="UTF-8"
                                     Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>
 
         <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                     AttributeName="AssemblyConfiguration"
                                     Value="&quot;$(Configuration)&quot;"
+                                    Encoding="UTF-8"
                                     Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "/>
 
         <UpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                AttributeName="AssemblyBuildTime"
                                Value="buildTime: &quot;${Now}&quot;"
+                               Encoding="UTF-8"
                                Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "/>
 
         <UpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
                                AttributeName="AssemblyBuildInformation"
                                Value="buildNumber: $(VersionBuild), versionControlInformation: &quot;${VcsRevision}&quot;"
+                               Encoding="UTF-8"
                                Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "/>
 
         <TemplateFile Template="%(AssemblyInfoFilesToUpdate.Identity)"
                       OutputFileName="%(AssemblyInfoFilesToUpdate.Identity)"
                       Tokens="@(TemplateTokens)"
+                      Encoding="UTF-8"
                       Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)') AND '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
     </Target>
  </Project>
