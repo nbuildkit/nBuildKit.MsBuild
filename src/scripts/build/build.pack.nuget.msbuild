@@ -144,6 +144,7 @@
                       OutputFileName="$(FileNuGetNuSpecTokensReplaced)"
                       Tokens="@(TemplateTokens)"
                       SearchExpression="(%3F&lt;token&gt;\%24(?&lt;identifier&gt;\w%2A)\%24)"
+                      Encoding="UTF-8"
                       Condition="Exists('$(FileNuGetNuSpec)') AND '$(ShouldExecute)' == 'true'"/>
         <NuGetPack NuGetPath="$(ToolsExternalNuGetPath)"
                    File="$(FileNuGetNuSpecTokensReplaced)"
