@@ -211,7 +211,7 @@
         </ItemGroup>
 
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
-                         OpenCoverOutputFile="@(ReportFilesToProcess)"
+                         OpenCoverOutputFiles="@(ReportFilesToProcess)"
                          OutputDir="$(DirReportGeneratorOutput)"
                          Condition=" Exists('$(ToolsExternalReportGeneratorPath)') AND '@(ReportFilesToProcess)' != '' AND '$(ShouldExecute)' == 'true' "/>
 

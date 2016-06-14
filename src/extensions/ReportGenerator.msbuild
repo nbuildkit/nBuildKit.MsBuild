@@ -21,7 +21,7 @@
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
             <ReportGeneratorExe ParameterType="System.String" Required="true" />
-            <OpenCoverOutputFile ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <OpenCoverOutputFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <OutputDir ParameterType="System.String" Required="true" />
         </ParameterGroup>
         <Task>
@@ -29,7 +29,7 @@
                 <![CDATA[
                     public override bool Execute()
                     {
-                        if ((OpenCoverOutputFile == null) || (OpenCoverOutputFile.Length == 0))
+                        if ((OpenCoverOutputFiles == null) || (OpenCoverOutputFiles.Length == 0))
                         {
                             Log.LogError("At least one open cover output file has to be specified");
                             return false;
@@ -37,7 +37,7 @@
 
                         var builder = new System.Text.StringBuilder();
                         {
-                            foreach(var token in OpenCoverOutputFile)
+                            foreach(var token in OpenCoverOutputFiles)
                             {
                                 var filePath = token.ToString();
                                 if (!System.IO.File.Exists(filePath))
