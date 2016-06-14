@@ -191,6 +191,8 @@
             <Output TaskParameter="Value" PropertyName="AssembliesToTest" />
         </CreateProperty>
 
+        <Message Text="Executing unit tests for: " />
+        <Message Text="--- %(UnitTestAssemblies.FullPath)" />
         <OpenCover OpenCoverExe="$(ToolsExternalOpenCoverPath)"
                    OpenCoverOutput="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-%(UnitTestDirectories.Index).$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))"
                    OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"

@@ -168,6 +168,8 @@
             <Output TaskParameter="Value" PropertyName="VsTestAdditionalParams" />
         </CreateProperty>
 
+        <Message Text="Executing unit tests for: " />
+        <Message Text="--- %(UnitTestAssemblies.FullPath)" />
         <Exec
             Command="&quot;$(ToolsExternalVsTestPath)&quot; @(UnitTestAssemblies->'%22%(FullPath)%22', ' ') /EnableCodeCoverage /InIsolation /Platform:x86 /settings:&quot;$(FileRunSettings)&quot; /logger:trx $(VsTestAdditionalParams)"
             IgnoreExitCode="False"
