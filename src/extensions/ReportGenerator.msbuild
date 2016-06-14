@@ -37,6 +37,7 @@
 
                         var builder = new System.Text.StringBuilder();
                         {
+                            var reportFileBuilder = new System.Text.StringBuilder();
                             foreach(var token in OpenCoverOutputFiles)
                             {
                                 var filePath = token.ToString();
@@ -46,10 +47,22 @@
                                     continue;
                                 }
 
-                                builder.Append(string.Format("-reports:\"{0}\" ", filePath.TrimEnd('\\')));
+                                if (reportFileBuilder.Length > 0)
+                                {
+                                    reportFileBuilder.Append(";");
+                                }
+
+                                reportFileBuilder.Append(string.Format("\"{0}\"", filePath.TrimEnd('\\')));
                             }
 
-                            builder.Append(string.Format("-reporttypes:Html;XmlSummary "));
+                            if (reportFileBuilder.Length == 0)
+                            {
+                                Log.LogError("At least one valid open cover output file has to be specified");
+                                return false;
+                            }
+
+                            builder.Append(string.Format("-reports:{0} ", reportFileBuilder.ToString()));
+                            builder.Append(string.Format("-reporttypes:Html;HtmlSummary;XmlSummary;TextSummary;Badges "));
 
                             // Make sure we remove the back-slash because if we don't then
                             // the closing quote will be eaten by the command line parser. Note that

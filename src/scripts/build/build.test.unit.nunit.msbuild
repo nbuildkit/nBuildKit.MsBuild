@@ -198,7 +198,7 @@
         <Message Text="Executing unit tests for: " />
         <Message Text="--- %(UnitTestAssembliesForDirectory.FullPath)" />
         <OpenCover OpenCoverExe="$(ToolsExternalOpenCoverPath)"
-                   OpenCoverOutput="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-%(UnitTestDirectories.Index).$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))"
+                   OpenCoverOutput="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-%(UnitTestDirectories.Index)$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))"
                    OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
                    OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
                    UnitTestExe="$(ToolsExternalNUnitConsolePath)"
@@ -213,7 +213,7 @@
     <Target Name="_nBuildKit_Build_Test_Unit_NUnit_Execute"
             DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_NUnit_RunTests">
         <ItemGroup>
-            <FilesReportOpenCoverXml Include="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-*.$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))" />
+            <FilesReportOpenCoverXml Include="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-*$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))" />
         </ItemGroup>
 
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
