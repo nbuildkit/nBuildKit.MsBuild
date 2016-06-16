@@ -112,17 +112,17 @@
 
                                 var packageVersion = new Version(package.Version);
                                 var versionRange = package.Version;
-                                if (!string.IsNullOrEmpty(VersionRangeType))
+                                if (!string.IsNullOrEmpty(VersionRangeType) && !"none".Equals(VersionRangeType.ToLower()))
                                 {
-                                    switch (VersionRangeType)
+                                    switch (VersionRangeType.ToLower())
                                     {
-                                        case "Major":
+                                        case "major":
                                             versionRange = string.Format("[{0}, {1})", package.Version, packageVersion.Major + 1);
                                             break;
-                                        case "Minor":
+                                        case "minor":
                                             versionRange = string.Format("[{0}, {1}.{2})", package.Version, packageVersion.Major, packageVersion.Minor + 1);
                                             break;
-                                        case "Patch":
+                                        case "patch":
                                             versionRange = string.Format("[{0}, {1}.{2}.{3})", package.Version, packageVersion.Major, packageVersion.Minor, packageVersion.Build + 1);
                                             break;
                                     }
