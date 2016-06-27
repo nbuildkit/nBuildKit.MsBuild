@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0"
-         InitialTargets="nBuildKit_Projects_Common_VerifyProperties"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
@@ -13,8 +12,8 @@
             Define the location of the current nuget package. Doing this here because the shared files (i.e. common.props and common.net.props)
             don't know in which package they exist, while the current file does.
         -->
-        <DirNBuildKitMsBuildProjects>$(DirPackages)\nBuildKit.MsBuild.Projects.WiX.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjects>
-        <DirNBuildKitMsBuildProjectsTemplates>$(DirNBuildKitMsBuildProjects)\templates</DirNBuildKitMsBuildProjectsTemplates>
+        <DirNBuildKitMsBuildProjects Condition=" '$(DirNBuildKitMsBuildProjects)' == '' OR !Exists('$(DirNBuildKitMsBuildProjects)')">$(DirPackages)\nBuildKit.MsBuild.Projects.WiX.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjects>
+        <DirNBuildKitMsBuildProjectsTemplates Condition=" '$(DirNBuildKitMsBuildProjectsTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildProjectsTemplates)')">$(DirNBuildKitMsBuildProjects)\templates</DirNBuildKitMsBuildProjectsTemplates>
 
         <!-- Define the directory where all the installer files need to end up -->
         <DirDeployPlatformConfig Condition=" '$(DirDeployPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildDeploy)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirDeployPlatformConfig>

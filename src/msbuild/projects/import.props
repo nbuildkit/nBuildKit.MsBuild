@@ -82,7 +82,8 @@
 
     <PropertyGroup>
         <DirNBuildKitMsBuild Condition=" '$(DirNBuildKitMsBuild)' == '' OR !Exists('$(DirNBuildKitMsBuild)') ">$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuild>
-        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' OR !Exists('$(DirNBuildKitMsBuildShared)') ">$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build</DirNBuildKitMsBuildShared>
+        <DirNBuildKitMsBuildProjects Condition=" '$(DirNBuildKitMsBuildProjects)' == '' OR !Exists('$(DirNBuildKitMsBuildProjects)')">$(DirPackages)\${PackageName}.$(NBuildKitVersion)\build</DirNBuildKitMsBuildProjects>
+        <DirNBuildKitMsBuildShared Condition=" '$(DirNBuildKitMsBuildShared)' == '' OR !Exists('$(DirNBuildKitMsBuildShared)') ">$(DirNBuildKitMsBuildProjects)</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' OR !Exists('$(DirNBuildKitMsBuildExtensions)') ">$(DirNBuildKitMsBuild)\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' OR !Exists('$(DirNBuildKitMsBuildTemplates)') ">$(DirNBuildKitMsBuild)\templates</DirNBuildKitMsBuildTemplates>
 
@@ -94,13 +95,16 @@
         </DefaultPathProperties>
     </PropertyGroup>
 
-    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/common.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/common.props') " />
-    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.basesettings.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.basesettings.props') " />
-    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.importsharedsettings.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.importsharedsettings.props') " />
-    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.importbuildsharedsettings.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/shared.importbuildsharedsettings.props') " />
-    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/common.net.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/common.net.props') " />
+    <Import Project="$(DirNBuildKitMsBuildProjects)\common.props" Condition=" Exists('$(DirNBuildKitMsBuildProjects)\common.props') " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props" Condition=" Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" Condition=" Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') " />
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" Condition=" Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') " />
+    <Import Project="$(DirNBuildKitMsBuildProjects)\common.net.props" Condition=" Exists('$(DirNBuildKitMsBuildProjects)\common.net.props') " />
 
-    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/csharp.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/csharp.props') " />
-    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/vbnet.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/vbnet.props') " />
-    <Import Project="$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/wix.props" Condition=" Exists('$(DirPackages)/${PackageName}.$(NBuildKitVersion)/build/wix.props') " />
+    <Import Project="$(DirNBuildKitMsBuildProjects)\csharp.props"
+            Condition=" Exists('$(DirNBuildKitMsBuildProjects)\csharp.props') AND (('$(ProjectTypeGuids)' == '' AND '$(MSBuildProjectExtension)' == '.csproj') OR $(ProjectTypeGuids.Contains('{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}')))" />
+    <Import Project="$(DirNBuildKitMsBuildProjects)\vbnet.props"
+            Condition=" Exists('$(DirNBuildKitMsBuildProjects)\vbnet.props') AND (('$(ProjectTypeGuids)' == '' AND '$(MSBuildProjectExtension)' == '.vbproj') OR $(ProjectTypeGuids.Contains('{F184B08F-C81C-45F6-A57F-5ABD9991F28F}')))" />
+    <Import Project="$(DirNBuildKitMsBuildProjects)\wix.props"
+            Condition=" Exists('$(DirNBuildKitMsBuildProjects)\wix.props') AND '$(MSBuildProjectExtension)' == '.wixproj' " />
 </Project>
