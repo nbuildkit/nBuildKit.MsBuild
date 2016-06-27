@@ -81,7 +81,8 @@
         <Message Text="Getting the release notes from the custom release note algorithm ..."
                  Importance="low"/>
 
-        <CallTarget Targets="_Custom_GetIssueInformationForCurrentRelease" />
+        <CallTarget Targets="_Custom_GetIssueInformationForCurrentRelease"
+                    ContinueOnError="$(ContinueBuildIfReleaseNoteGatheringFails)" />
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone"
@@ -98,14 +99,16 @@
         <GetIssuesForGitHubMilestone GitHubUserName="$(GitHubUserName)"
                                      GitHubProjectName="$(GitHubRepositoryName)"
                                      MilestoneName="$(MilestoneName)"
-                                     IssueState="closed">
+                                     IssueState="closed"
+                                     ContinueOnError="$(ContinueBuildIfReleaseNoteGatheringFails)">
             <Output TaskParameter="Issues" ItemName="ReleaseNoteIssues"/>
         </GetIssuesForGitHubMilestone>
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToConsole"
             DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm;_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone">
-        <Message Text="[%(ReleaseNoteIssues.Identity)] %(ReleaseNoteIssues.Title) (%(ReleaseNoteIssues.UserName))" />
+        <Message Text="[%(ReleaseNoteIssues.Identity)] %(ReleaseNoteIssues.Title) (%(ReleaseNoteIssues.UserName))"
+                 Condition=" '@(ReleaseNoteIssues)' != '' "/>
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile"
@@ -118,7 +121,8 @@
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
-            <ReleaseNoteLines Include="@(ReleaseNoteIssues->'[%(Identity)] %(Title) (%(UserName))', '&#x0d;&#x0a;')" />
+            <ReleaseNoteLines Include="@(ReleaseNoteIssues->'[%(Identity)] %(Title) (%(UserName))', '&#x0d;&#x0a;')"
+                              Condition=" '@(ReleaseNoteIssues)' != '' " />
         </ItemGroup>
 
         <WriteLinesToFile File="$(FileReleaseNotes)"
