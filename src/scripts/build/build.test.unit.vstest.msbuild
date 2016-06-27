@@ -202,7 +202,7 @@
         <Exec Command="&quot;$(ToolsExternalVSCoverageToReportGeneratorPath)&quot; --InputFile=&quot;@(CoverageFilesToConvert)&quot; --OutputFile=&quot;%(RootDir)%(Directory)\%(FileName).xml&quot; --VisualStudioDirectory=&quot;$(ToolsExternalVisualStudioDir)&quot; $(CoverageBinDirectories)"
               IgnoreExitCode="False"
               IgnoreStandardErrorWarningFormat="False"
-              Condition=" Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
+              Condition=" Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '@(CoverageFilesToConvert)' != '' AND '$(ShouldExecute)' == 'true' "/>
 
         <ItemGroup>
             <ReportFilesToProcess Include="$(DirReportVsTestExpanded)\**\*.xml" />
@@ -211,14 +211,10 @@
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
                          OpenCoverOutputFile="@(ReportFilesToProcess)"
                          OutputDir="$(DirReportGeneratorOutput)"
-                         Condition=" Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
-
-        <ItemGroup>
-            <ReportFilesToProcess Include="$(DirReportVsTestExpanded)\**\*.xml" />
-        </ItemGroup>
+                         Condition=" Exists('$(ToolsExternalReportGeneratorPath)') AND '@(ReportFilesToProcess)' != '' AND '$(ShouldExecute)' == 'true' "/>
 
         <ReportGeneratorOutputToCsv InputFile="$(FileReportReportGeneratorXmlSummary)"
                                     OutputFile="$(FileReportOpenCoverCsvExpanded)"
-                                    Condition="Exists('$(FileReportReportGeneratorXmlSummary)') AND '$(ShouldExecute)' == 'true' "/>
+                                    Condition="Exists('$(FileReportReportGeneratorXmlSummary)') AND Exists('$(FileReportReportGeneratorXmlSummary)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
