@@ -71,7 +71,7 @@
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
 
         <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
-                 LocalPath="$(DirWorkspace)"
+                 WorkingDirectory="$(DirWorkspace)"
                  Condition=" '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="CurrentRevision" PropertyName="GitCurrentRevision" />
             <Output TaskParameter="CurrentBranch" PropertyName="GitCurrentBranch" />
