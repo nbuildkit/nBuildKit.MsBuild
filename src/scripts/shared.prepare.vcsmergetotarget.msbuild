@@ -65,10 +65,10 @@
                Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
 
         <Message Text="Checking out merge target branch: $(BranchMergeTarget) ..." />
-        <Exec Command="git checkout $(BranchMergeTarget)"
+        <Exec Command="$(ToolsExternalGitPath) checkout $(BranchMergeTarget)"
               IgnoreExitCode="true" />
 
-        <Exec Command="git rev-parse HEAD"
+        <Exec Command="$(ToolsExternalGitPath) rev-parse HEAD"
               IgnoreExitCode="true"
               ConsoleToMSBuild="true">
             <Output TaskParameter="ConsoleOutput" PropertyName="GitRevNoCurrentBranch" />
@@ -76,7 +76,7 @@
         <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
 
         <Message Text="Merging changes from branch $(BranchGitExpected) to branch  $(BranchMergeTarget) ..." />
-        <Exec Command="git merge $(BranchGitExpected) --no-ff"
+        <Exec Command="$(ToolsExternalGitPath) merge $(BranchGitExpected) --no-ff"
               Condition=" '$(BranchGitExpected)' != '$(BranchMergeTarget)' " />
 
     </Target>
