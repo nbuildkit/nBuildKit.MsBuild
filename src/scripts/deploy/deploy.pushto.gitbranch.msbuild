@@ -110,6 +110,11 @@
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FilesToPushIncluded" />
         </TemplateText>
+
+        <TemplateText Template="$(CommitMessage)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="CommitMessageToProvide" />
+        </TemplateText>
     </Target>
 
     <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_Clone"
@@ -203,8 +208,7 @@
             Outputs="%(PushToGitBranchSpecs.Identity)">
         <Message Text="Adding new files to list of changes to commit on branch $(BranchToPushTo) ..." />
         <GitNewFiles GitExecutablePath="$(ToolsExternalGitPath)"
-                     WorkingDirectory="$(DirRepositoryWorkspace)"
-                     Condition=" '$(CommitMessage)' != '' ">
+                     WorkingDirectory="$(DirRepositoryWorkspace)">
             <Output TaskParameter="NewFiles" ItemName="NewFilesForGit" />
         </GitNewFiles>
 
@@ -216,8 +220,8 @@
         <Message Text="Commiting changes on branch $(BranchToPushTo) ..." />
         <GitCommit GitExecutablePath="$(ToolsExternalGitPath)"
                    WorkingDirectory="$(DirRepositoryWorkspace)"
-                   Message="$(CommitMessage)"
-                   Condition=" '$(CommitMessage)' != '' " />
+                   Message="$(CommitMessageToProvide)"
+                   Condition=" '$(CommitMessageToProvide)' != '' " />
     </Target>
 
     <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_PushToRepository"
