@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="nBuildKit_Deploy_PushTo_GitBranch_Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsDeployPushToGitBranc>true</ExistsDeployPushToGitBranc>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitAdd.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitAdd.msbuild') AND '$(ExistsExtensionsGitAdd)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitClone.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitClone.msbuild') AND '$(ExistsExtensionsGitClone)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitCommit.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCommit.msbuild') AND '$(ExistsExtensionsGitCommit)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitNewFiles.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitNewFiles.msbuild') AND '$(ExistsExtensionsGitNewFiles)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild') AND '$(ExistsExtensionsGitPush)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild') AND '$(ExistsExtensionsUnzip)' != 'true' " />
+
+    <Target Name="nBuildKit_Deploy_PushTo_GitBranch_Run"
+            DependsOnTargets="_nBuildKit_Deploy_PushTo_GitBranch_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_Push" />
+    </Target>
+
+    <!-- Display info -->
+    <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Deploy_PushTo_GitBranch_DebugLog">
+        <Message Text="Pushing files to a GIT branch ..."
+                 Importance="normal"/>
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_DebugLog" Condition="$(ShouldDisplayDebugLog)">
+        <Message Text="Project directory structure:"
+                 Importance="low"/>
+        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
+                 Importance="low"/>
+        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+
+        <Message Text="Deploying: %(PushToGitBranchSpecs.Identity)"
+                 Importance="low"/>
+        <Message Text=" "
+                 Importance="low"/>
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_Push"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+            Outputs="%(PushToGitBranchSpecs.Identity)">
+        <Message Text="Resolving build templates for: %(PushToGitBranchSpecs.Identity)"
+                 Importance="low"/>
+
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_Clone" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_CopyFiles" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_Commit" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_PushToRepository" />
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+            Outputs="%(PushToGitBranchSpecs.Identity)">
+        <CreateProperty Value="%(PushToGitBranchSpecs.Identity)">
+            <Output TaskParameter="Value" PropertyName="FilesToPush" />
+        </CreateProperty>
+        <CreateProperty Value="%(PushToGitBranchSpecs.Repository)">
+            <Output TaskParameter="Value" PropertyName="RepositoryToPushTo" />
+        </CreateProperty>
+        <CreateProperty Value="%(PushToGitBranchSpecs.Branch)">
+            <Output TaskParameter="Value" PropertyName="BranchToPushTo" />
+        </CreateProperty>
+        <CreateProperty Value="%(PushToGitBranchSpecs.ExtractZipFiles)">
+            <Output TaskParameter="Value" PropertyName="ExtractZipFiles" />
+        </CreateProperty>
+        <CreateProperty Value="%(PushToGitBranchSpecs.CommitMessage)">
+            <Output TaskParameter="Value" PropertyName="CommitMessage" />
+        </CreateProperty>
+
+        <TemplateText Template="$(RepositoryToPushTo)"
+                      Tokens="@(TemplateTokens)"
+                      Condition=" '$(RepositoryToPushTo)' != '' ">
+            <Output TaskParameter="Result" PropertyName="RepositoryToPushTo" />
+        </TemplateText>
+
+        <TemplateText Template="$(BranchToPushTo)"
+                      Tokens="@(TemplateTokens)"
+                      Condition=" '$(BranchToPushTo)' != '' ">
+            <Output TaskParameter="Result" PropertyName="BranchToPushTo" />
+        </TemplateText>
+
+        <TemplateText Template="$(FilesToPush)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FilesToPushIncluded" />
+        </TemplateText>
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_Clone"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
+            Outputs="%(PushToGitBranchSpecs.Identity)">
+        <Message Text="Resolving build templates for: %(PushToGitBranchSpecs.Identity)"
+                 Importance="low"/>
+
+        <CreateProperty Value="$(RepositoryToPushTo.Substring($(RepositoryToPushTo.LastIndexOf('/'))).TrimStart('/'))">
+            <Output TaskParameter="Value" PropertyName="RepositoryName" />
+        </CreateProperty>
+        <CreateProperty Value="$(DirBuildTemp)\git\$(RepositoryName)">
+            <Output TaskParameter="Value" PropertyName="DirRepositoryWorkspace" />
+        </CreateProperty>
+
+        <!-- Clone the repository in the temporary directory -->
+        <Message Text="Cloning repository $(RepositoryToPushTo) and switching to branch $(BranchToPushTo) ..." />
+        <GitClone GitExecutablePath="$(ToolsExternalGitPath)"
+                  CloneLocation="$(DirRepositoryWorkspace)"
+                  Repository="$(RepositoryToPushTo)"
+                  Branch="$(BranchToPushTo)"
+                  Condition=" '$(RepositoryToPushTo)' != '' " />
+
+        <!-- Verify that we're on the branch!' -->
+        <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
+                 WorkingDirectory="$(DirRepositoryWorkspace)"
+                 Condition=" '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="CurrentBranch" PropertyName="GitCurrentBranch" />
+        </GitInfo>
+        <Error Text="Not on expected branch, expected to be on $(BranchToPushTo) but are on $(GitCurrentBranch)"
+               Condition=" '$(GitCurrentBranch)' != '$(BranchToPushTo)' " />
+
+        <!-- Remove everything except the .git folder and the .gitattributes and .gitignore files -->
+        <ItemGroup>
+            <OldFiles Include="$(DirRepositoryWorkspace)\**\*.*"
+                      Exclude="$(DirRepositoryWorkspace)\.git\**\*.*;$(DirRepositoryWorkspace)\.gitattributes;$(DirRepositoryWorkspace)\.gitignore" />
+        </ItemGroup>
+        <Delete Files="@(OldFiles)" />
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_CopyFiles"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
+            Outputs="%(PushToGitBranchSpecs.Identity)">
+        <!--
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(FilesToPushIncluded.Split(';'))">
+           <Output
+               TaskParameter="Include"
+               ItemName="FilesToPush"/>
+        </CreateItem>
+        <Error Text="There are no files to be pushed"
+               Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "/>
+
+        <PropertyGroup>
+            <DirBuildTempCopy>$(DirBuildTemp)\copy</DirBuildTempCopy>
+        </PropertyGroup>
+        <MakeDir Directories="$(DirBuildTempCopy)"
+                 Condition="!Exists('$(DirBuildTempCopy)') AND '$(ShouldExecute)' == 'true' " />
+
+        <Copy SourceFiles="@(FilesToPush)"
+              DestinationFolder="$(DirBuildTempCopy)"
+              Condition=" '@(FilesToPush)' != '' " />
+
+        <!-- Unzip files -->
+        <ItemGroup>
+            <FilesToUnzip Include="$(DirBuildTempCopy)\**\*.zip" />
+            <FilesNotToUnzip Include="$(DirBuildTempCopy)\**\*.*"
+                             Exclude="$(DirBuildTempCopy)\**\*.zip" />
+        </ItemGroup>
+        <Unzip InputFileName="%(FilesToUnzip.FullPath)"
+               DestinationDirectory="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)"
+               Condition=" '@(FilesToUnzip)' != '' " />
+        <ItemGroup>
+            <FilesToCopy Include="%(FilesNotToUnzip.FullPath)"
+                         Condition=" '@(FilesNotToUnzip)' != '' " />
+            <FilesToCopy Include="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)\**\*.*"
+                         Condition=" '@(FilesToUnzip)' != '' " />
+        </ItemGroup>
+
+        <!-- Copy files -->
+        <Copy SourceFiles="@(FilesToCopy)"
+              DestinationFiles="@(FilesToCopy->'$(DirRepositoryWorkspace)\%(RecursiveDir)%(Filename)%(Extension)')"
+              Condition=" '@(FilesToCopy)' != '' " />
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_Commit"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
+            Outputs="%(PushToGitBranchSpecs.Identity)">
+        <Message Text="Adding new files to list of changes to commit on branch $(BranchToPushTo) ..." />
+        <GitNewFiles GitExecutablePath="$(ToolsExternalGitPath)"
+                     WorkingDirectory="$(DirRepositoryWorkspace)"
+                     Condition=" '$(CommitMessage)' != '' ">
+            <Output TaskParameter="NewFiles" ItemName="NewFilesForGit" />
+        </GitNewFiles>
+
+        <GitAdd GitExecutablePath="$(ToolsExternalGitPath)"
+                WorkingDirectory="$(DirRepositoryWorkspace)"
+                FilesToAdd="@(NewFilesForGit)"
+                Condition=" '@(NewFilesForGit)' != '' " />
+
+        <Message Text="Commiting changes on branch $(BranchToPushTo) ..." />
+        <GitCommit GitExecutablePath="$(ToolsExternalGitPath)"
+                   WorkingDirectory="$(DirRepositoryWorkspace)"
+                   Message="$(CommitMessage)"
+                   Condition=" '$(CommitMessage)' != '' " />
+    </Target>
+
+    <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_PushToRepository"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
+            Outputs="%(PushToGitBranchSpecs.Identity)">
+        <Message Text="Pushing changes on branch $(BranchToPushTo) back to repository $(RepositoryToPushTo) ..." />
+        <GitPush GitExecutablePath="$(ToolsExternalGitPath)"
+                 WorkingDirectory="$(DirRepositoryWorkspace)"
+                 Branch="$(BranchToPushTo)"
+                 Condition=" '$(RepositoryToPushTo)' != '' " />
+    </Target>
+</Project>

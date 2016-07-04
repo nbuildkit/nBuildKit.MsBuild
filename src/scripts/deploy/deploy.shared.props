@@ -97,6 +97,16 @@
                 Push;
             </Groups>
         </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+            <Groups>
+                Git;
+                Push;
+            </Groups>
+        </DeployStepsToExecute>
     </ItemGroup>
 
     <!--
@@ -216,6 +226,25 @@
              <ExcludedFiles>
              </ExcludedFiles>
         </PushToGitHubReleaseSpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - GIT BRANCH ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a GIT branch. All properties
+        allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+    -->
+    <ItemGroup Condition=" '@(PushToGitBranchSpecs)' == '' ">
+        <!--
+        <PushToGitBranchSpecs Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
+             <Repository>$(GitRemoteRepository)</Repository>
+             <Branch>master</Branch>
+             <ExtractZipFiles>true</ExtractZipFiles>
+             <CommitMessage>New changes</CommitMessage>
+        </PushToGitBranchSpecs>
         -->
     </ItemGroup>
 
