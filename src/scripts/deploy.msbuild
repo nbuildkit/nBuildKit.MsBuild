@@ -83,14 +83,16 @@
         <CreateItem Include="$(DeployStepGroups.ToLower().Split(';'))">
            <Output TaskParameter="Include" ItemName="ExecutionGroupsForStep"/>
         </CreateItem>
-        <IsInCollection List="@(ExecutionGroupsForStep)" Items="@(ExecutionGroupsFromUser)">
+        <IsInCollection Collection="@(ExecutionGroupsFromUser)"
+                        Items="@(ExecutionGroupsForStep)">
             <Output TaskParameter="IsInList" PropertyName="ShouldExecuteStep" />
         </IsInCollection>
 
         <CreateItem Include="all">
            <Output TaskParameter="Include" ItemName="ExecutionGroupsForAllSteps"/>
         </CreateItem>
-        <IsInCollection List="@(ExecutionGroupsFromUser)" Items="@(ExecutionGroupsForAllSteps)">
+        <IsInCollection Collection="@(ExecutionGroupsForAllSteps)"
+                        Items="@(ExecutionGroupsFromUser)">
             <Output TaskParameter="IsInList" PropertyName="ShouldExecuteAllSteps" />
         </IsInCollection>
 
@@ -153,14 +155,16 @@
         <CreateItem Include="$(DeployFailureStepGroups.ToLower().Split(';'))">
            <Output TaskParameter="Include" ItemName="ExecutionGroupsForStep"/>
         </CreateItem>
-        <IsInCollection List="@(ExecutionGroupsForStep)" Items="@(ExecutionGroupsFromUser)">
+        <IsInCollection Collection="@(ExecutionGroupsFromUser)"
+                        Items="@(ExecutionGroupsForStep)">
             <Output TaskParameter="IsInList" PropertyName="ShouldExecuteStep" />
         </IsInCollection>
 
         <CreateItem Include="all">
            <Output TaskParameter="Include" ItemName="ExecutionGroupsForAllSteps"/>
         </CreateItem>
-        <IsInCollection List="@(ExecutionGroupsFromUser)" Items="@(ExecutionGroupsForAllSteps)">
+        <IsInCollection Collection="@(ExecutionGroupsForAllSteps)"
+                        Items="@(ExecutionGroupsFromUser)">
             <Output TaskParameter="IsInList" PropertyName="ShouldExecuteAllSteps" />
         </IsInCollection>
 

@@ -20,8 +20,9 @@
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
-            <List ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-            <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <Collection ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
+            <Item ParameterType="System.String" Required="false" />
             <IsInList ParameterType="System.Boolean" Output="true" />
         </ParameterGroup>
         <Task>
@@ -33,9 +34,9 @@
                         try
                         {
                             var listOfItems = new System.Collections.Generic.List<string>();
-                            if (List != null)
+                            if (Items != null)
                             {
-                                ITaskItem[] processedItems = List;
+                                ITaskItem[] processedItems = Items;
                                 for (int i = 0; i < processedItems.Length; i++)
                                 {
                                     ITaskItem taskItem = processedItems[i];
@@ -45,28 +46,35 @@
                                     }
                                 }
                             }
-
-                            var collection = new System.Collections.Generic.List<string>();
-                            if (Items != null)
+                            else
                             {
-                                ITaskItem[] processedItems = Items;
+                                if (!string.IsNullOrEmpty(Item))
+                                {
+                                    listOfItems.Add(Item);
+                                }
+                            }
+
+                            var listOfCollectionItems = new System.Collections.Generic.List<string>();
+                            if (Collection != null)
+                            {
+                                ITaskItem[] processedItems = Collection;
                                 for (int i = 0; i < processedItems.Length; i++)
                                 {
                                     ITaskItem taskItem = processedItems[i];
                                     if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                                     {
-                                        collection.Add(taskItem.ItemSpec);
+                                        listOfCollectionItems.Add(taskItem.ItemSpec);
                                     }
                                 }
                             }
 
-                            IsInList = collection.Intersect(listOfItems).Any();
+                            IsInList = listOfCollectionItems.Intersect(listOfItems).Any();
                         }
                         catch (Exception e)
                         {
                             Log.LogError(
                                 string.Format(
-                                    "Failed to determine if the list contains any of the items. Error was: {0}",
+                                    "Failed to determine if the collection contains any of the items. Error was: {0}",
                                     e));
                         }
 
