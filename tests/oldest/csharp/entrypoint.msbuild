@@ -128,8 +128,8 @@
         <DirSrcDefault>$(DirWorkspace)\src</DirSrcDefault>
         <DirTestsDefault>$(DirWorkspace)\tests</DirTestsDefault>
 
-        <UrlNBuildKitOnGitHub>https://raw.githubusercontent.com/pvandervelde/nBuildKit</UrlNBuildKitOnGitHub>
-        <UrlNBuildKitOnGitHubMasterMsBuildSamples>$(UrlNBuildKitOnGitHub)/master/src/msbuild/samples</UrlNBuildKitOnGitHubMasterMsBuildSamples>
+        <UrlNBuildKitOnGitHub>https://raw.githubusercontent.com/nbuildkit/nBuildKit.MsBuild</UrlNBuildKitOnGitHub>
+        <UrlNBuildKitOnGitHubMasterMsBuildSamples>$(UrlNBuildKitOnGitHub)/master/src/samples</UrlNBuildKitOnGitHubMasterMsBuildSamples>
     </PropertyGroup>
     <Target Name="Init">
         <Error Text="In order to initialize the workspace please provide the name of the product through the 'ProductName' property."
@@ -416,21 +416,34 @@
 
     <Target Name="_LocateNBuildKitViaHighestAvailableVersion"
             Condition="!Exists('$(DirNBuildKit)')">
+        <CreateProperty Value="$(NBuildKitMinimumVersion)"
+                        Condition=" '$(NBuildKitMinimumVersion)' != '' ">
+            <Output TaskParameter="Value" PropertyName="VersionNBuildKitMinimum" />
+        </CreateProperty>
+        <CreateProperty Value="$(NBuildKitMaximumVersion)"
+                        Condition=" '$(NBuildKitMaximumVersion)' != '' ">
+            <Output TaskParameter="Value" PropertyName="VersionNBuildKitMaximum" />
+        </CreateProperty>
+
         <XmlPeek XmlInputPath="$(SharedPropertyFile)"
                  Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-                 Query="/x:Project/x:PropertyGroup/x:NBuildKitMinimumVersion/text()">
+                 Query="/x:Project/x:PropertyGroup/x:NBuildKitMinimumVersion/text()"
+                 Condition=" '$(NBuildKitMinimumVersion)' == '' ">
             <Output TaskParameter="Result" ItemName="VersionNBuildKitMinimumItem" />
         </XmlPeek>
-        <CreateProperty Value="%(VersionNBuildKitMinimumItem.Identity)">
+        <CreateProperty Value="%(VersionNBuildKitMinimumItem.Identity)"
+                        Condition=" '$(NBuildKitMinimumVersion)' == '' ">
             <Output TaskParameter="Value" PropertyName="VersionNBuildKitMinimum" />
         </CreateProperty>
 
         <XmlPeek XmlInputPath="$(SharedPropertyFile)"
                  Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-                 Query="/x:Project/x:PropertyGroup/x:NBuildKitMaximumVersion/text()">
+                 Query="/x:Project/x:PropertyGroup/x:NBuildKitMaximumVersion/text()"
+                 Condition=" '$(NBuildKitMaximumVersion)' == '' ">
             <Output TaskParameter="Result" ItemName="VersionNBuildKitMaximumItem" />
         </XmlPeek>
-        <CreateProperty Value="%(VersionNBuildKitMaximumItem.Identity)">
+        <CreateProperty Value="%(VersionNBuildKitMaximumItem.Identity)"
+                        Condition=" '$(NBuildKitMaximumVersion)' == '' ">
             <Output TaskParameter="Value" PropertyName="VersionNBuildKitMaximum" />
         </CreateProperty>
 

@@ -5,6 +5,12 @@
 
 param(
     [Parameter(Mandatory)]
+    [string] $nbuildkitminimumversion,
+
+    [Parameter(Mandatory)]
+    [string] $nbuildkitmaximumversion,
+
+    [Parameter(Mandatory)]
     [string] $projectWorkspaceLocation,
 
     [Parameter(Mandatory)]
@@ -21,10 +27,16 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Describe 'For the VB.NET test' {
 
     Context 'the build executes successfully' {
+        $msBuildProperties = @{
+            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
+            'NBuildKitMinimumVersion' = $nbuildkitminimumversion
+            'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+        }
+
         $exitCode = Invoke-MsBuildFromCommandLine `
             -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
-            -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
+            -properties $msBuildProperties `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.vbnet.build.log') `
             -Verbose
 
@@ -194,10 +206,16 @@ Describe 'For the VB.NET test' {
     }
 
     Context 'the deploy executes successfully' {
+        $msBuildProperties = @{
+            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
+            'NBuildKitMinimumVersion' = $nbuildkitminimumversion
+            'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+        }
+
         $exitCode = Invoke-MsBuildFromCommandLine `
             -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'deploy' `
-            -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
+            -properties $msBuildProperties `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.vbnet.deploy.log') `
             -Verbose
 

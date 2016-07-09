@@ -638,7 +638,7 @@
         NuGet if no package is specified in the packages.config file.
     -->
     <PropertyGroup>
-        <NBuildKitMinimumVersion>${VersionNBuildKitOldestSupported}</NBuildKitMinimumVersion>
-        <NBuildKitMaximumVersion>${VersionMajorNext}.0.0</NBuildKitMaximumVersion>
+        <NBuildKitMinimumVersion Condition=" '$(NBuildKitMinimumVersion)' == '' ">${VersionNBuildKitOldestSupported}</NBuildKitMinimumVersion>
+        <NBuildKitMaximumVersion Condition=" '$(NBuildKitMaximumVersion)' == '' ">${VersionMajorNext}.0.0</NBuildKitMaximumVersion>
     </PropertyGroup>
 </Project>

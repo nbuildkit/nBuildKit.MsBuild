@@ -5,6 +5,12 @@
 
 param(
     [Parameter(Mandatory)]
+    [string] $nbuildkitminimumversion,
+
+    [Parameter(Mandatory)]
+    [string] $nbuildkitmaximumversion,
+
+    [Parameter(Mandatory)]
     [string] $projectWorkspaceLocation,
 
     [Parameter(Mandatory)]
@@ -21,10 +27,16 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Describe 'For the C# test' {
 
     Context 'the build executes successfully' {
+        $msBuildProperties = @{
+            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
+            'NBuildKitMinimumVersion' = $nbuildkitminimumversion
+            'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+        }
+
         $exitCode = Invoke-MsBuildFromCommandLine `
             -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
-            -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
+            -properties $msBuildProperties `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.csharp.build.log') `
             -Verbose
 
@@ -73,7 +85,7 @@ Describe 'For the C# test' {
             }
 
             It 'has files with the right metadata' {
-                [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be '4.3.0.0'
+                [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be '4.0.0.0'
 
                 $file = [System.IO.FileInfo]$assemblyFile
                 $file.VersionInfo.FileVersion | Should Be '4.3.2.1'
@@ -129,7 +141,7 @@ Describe 'For the C# test' {
             }
 
             It 'has files with the right metadata' {
-                [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be '4.3.0.0'
+                [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be '4.0.0.0'
 
                 $file = [System.IO.FileInfo]$assemblyFile
                 $file.VersionInfo.FileVersion | Should Be '4.3.2.1'
@@ -199,10 +211,16 @@ Describe 'For the C# test' {
     }
 
     Context 'the deploy executes successfully' {
+        $msBuildProperties = @{
+            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
+            'NBuildKitMinimumVersion' = $nbuildkitminimumversion
+            'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+        }
+
         $exitCode = Invoke-MsBuildFromCommandLine `
             -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'deploy' `
-            -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
+            -properties $msBuildProperties `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.csharp.deploy.log') `
             -Verbose
 
