@@ -186,7 +186,6 @@
             <Output TaskParameter="Value" PropertyName="CompilerConstantsCombined" />
         </CreateProperty>
         <ItemGroup Condition=" '$(InternalsVisibleToAttributes)' != '' ">
-            <InternalsVisibleToLines Include=" " />
             <InternalsVisibleToLines Include="#if $(CompilerConstantsCombined)"
                                      Condition=" '$(CompilerConstantsCombined)' != '' " />
             <InternalsVisibleToLines Include="$(InternalsVisibleToAttributes)" />
@@ -194,9 +193,15 @@
                                      Condition=" '$(CompilerConstantsCombined)' != '' " />
         </ItemGroup>
 
+        <PropertyGroup>
+            <CurrentFileContent>$([System.IO.File]::ReadAllText(%(AssemblyInfoFilesToUpdate.FullPath)))</CurrentFileContent>
+            <HasInternalsVisibleToAttributes>$(CurrentFileContent.Contains('$InternalsVisibleToAttributes'))</HasInternalsVisibleToAttributes>
+        </PropertyGroup>
+
         <WriteLinesToFile
-            File="%(AssemblyInfoFilesToUpdate.Identity)"
+            File="%(AssemblyInfoFilesToUpdate.FullPath)"
             Lines="@(InternalsVisibleToLines)"
-            Overwrite="false" />
+            Overwrite="false"
+            Condition=" '$(HasInternalsVisibleToAttributes)' != 'true' " />
     </Target>
  </Project>
