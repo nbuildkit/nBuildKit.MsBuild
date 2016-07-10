@@ -64,7 +64,7 @@
                             if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                             {
                                 var projects = taskItem.GetMetadata("Projects");
-                                if (string.IsNullOrEmpty(projects) || !projects.Contains(Project))
+                                if (string.IsNullOrEmpty(projects) || (projects.IndexOf(Project, StringComparison.OrdinalIgnoreCase) < 0))
                                 {
                                     continue;
                                 }
