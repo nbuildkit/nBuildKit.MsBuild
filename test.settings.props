@@ -156,12 +156,12 @@
         **** PREPARE - WORKSPACE ****
     -->
     <ItemGroup>
-        <TestFilesToCopy Include="$(DirTestLatestCSharp)\**\*.*"
+        <TestFilesToCopy Include="$(DirTestLatestCSharp)\**\*.*;$(DirTest)\nbuildkit.msbuild.tests.snk"
                          Exclude="$(DirTestLatestCSharp)\environment.props;$(DirTestLatestCSharp)\**\packages.config;$(DirTestLatestCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestLatestCSharp)')">
             <TargetDirectory>$(DirBuildTestLatestCSharp)</TargetDirectory>
         </TestFilesToCopy>
-        <TestFilesToCopy Include="$(DirTestOldestCSharp)\**\*.*"
+        <TestFilesToCopy Include="$(DirTestOldestCSharp)\**\*.*;$(DirTest)\nbuildkit.msbuild.tests.snk"
                          Exclude="$(DirTestOldestCSharp)\environment.props;$(DirTestOldestCSharp)\**\packages.config;$(DirTestOldestCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestOldestCSharp)')">
             <TargetDirectory>$(DirBuildTestOldestCSharp)</TargetDirectory>

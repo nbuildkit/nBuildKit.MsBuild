@@ -12,6 +12,12 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
+  <PropertyGroup>
+    <ShouldSign Condition=" '$(ShouldSign)' == '' ">true</ShouldSign>
+    <SignAssembly Condition=" '$(ShouldSign)' == 'true' ">true</SignAssembly>
+    <DelaySign Condition=" '$(ShouldSign)' == 'true' ">false</DelaySign>
+    <AssemblyOriginatorKeyFile Condition=" '$(ShouldSign)' == 'true' ">$(MSBuildThisFileDirectory)\..\..\nbuildkit.msbuild.tests.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
