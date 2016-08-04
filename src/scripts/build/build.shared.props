@@ -387,7 +387,7 @@
         The item group defining the location of the Vistual Studio solutions that should be build.
         The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '@(SolutionsToBuild)' == '' ">
         <SolutionsToBuild Include="$(DirSrc)\*.sln"
                           Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' " >
             <Configuration>$(TestConfiguration)</Configuration>
