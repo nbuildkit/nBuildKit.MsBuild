@@ -69,6 +69,8 @@
                                Condition="Exists('$(DirNBuildKitMsBuild)\packages.config')" />
             <NuGetPackageFiles Include="$(StageSpecificNuGetPackageFilesToRestore)"
                                Condition=" '$(StageSpecificNuGetPackageFilesToRestore)' != '' " />
+            <NuGetPackageFiles Include="$(DirSrc)\**\packages.config"
+                               Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config" />
         </ItemGroup>
 
         <Message Text="No NuGet package configuration files found to restore packages from."
