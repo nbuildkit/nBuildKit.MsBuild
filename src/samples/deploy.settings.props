@@ -13,6 +13,28 @@
         The following deploy steps are by default provided through the given properties:
         $(DeployStepsPrepareVcsBranch)    - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
                                             name as the remote tracking branch.
+        $(DeployStepsPrepareGetVersion)   - Gathers version information and stores it in a temporary file for use by the rest of the deploy process.
+                                            Currently supported methods of gathering version information are using (in order):
+                                            - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
+                                                in the 'VersionScriptPath' property. The task should output:
+                                                - VersionMajor
+                                                - VersionMinor
+                                                - VersionPatch
+                                                - VersionBuild
+                                                - VersionPreRelease
+                                                - VersionSemantic
+                                                - VersionSemanticFull
+                                                - VersionSemanticNuget
+                                            - The version stored in an 'version.xml' file which contains an MsBuild property group with
+                                                the properties:
+                                                - BuildNumber
+                                                - VersionMajor
+                                                - VersionMinor
+                                                - VersionPatch
+                                                - VersionBuild
+                                                - VersionPreRelease
+                                            - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
+                                            - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
         $(DeployStepsPrepareGetIssueIds)  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
         $(DeployStepsTagVcs)              - Tags the current commit with the version number. Currentlyl supported version control systems are TFS and GIT.
         $(DeployStepsPushToNuget)         - Pushes one or more artifacts to a NuGet feed
@@ -35,6 +57,13 @@
     -->
     <ItemGroup>
         <DeployStepsToExecute Include="$(DeployStepsPrepareVcsBranch)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareGetVersion)">
             <Properties>
             </Properties>
             <Groups>
