@@ -159,8 +159,8 @@
         </CreateProperty>
 
         <PropertyGroup>
-            <InternalsVisibleToForSignedAssembliesTemplate>[assembly: InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)]</InternalsVisibleToForSignedAssembliesTemplate>
-            <InternalsVisibleToForUnsignedAssembliesTemplate>[assembly: InternalsVisibleTo(&quot;${AssemblyName}&quot;)]</InternalsVisibleToForUnsignedAssembliesTemplate>
+            <InternalsVisibleToForSignedAssembliesTemplate>[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)]</InternalsVisibleToForSignedAssembliesTemplate>
+            <InternalsVisibleToForUnsignedAssembliesTemplate>[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}&quot;)]</InternalsVisibleToForUnsignedAssembliesTemplate>
         </PropertyGroup>
         <GenerateInternalsVisibleToAttributes SnExe="$(ToolsExternalSnPath)"
                                               Project="$(AssemblyName)"
@@ -195,7 +195,7 @@
 
         <PropertyGroup>
             <CurrentFileContent>$([System.IO.File]::ReadAllText(%(AssemblyInfoFilesToUpdate.FullPath)))</CurrentFileContent>
-            <HasInternalsVisibleToAttributes>$(CurrentFileContent.Contains('$InternalsVisibleToAttributes'))</HasInternalsVisibleToAttributes>
+            <HasInternalsVisibleToAttributes>$(CurrentFileContent.Contains('assembly: System.Runtime.CompilerServices.InternalsVisibleTo'))</HasInternalsVisibleToAttributes>
         </PropertyGroup>
 
         <WriteLinesToFile
