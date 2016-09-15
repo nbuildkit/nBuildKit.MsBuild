@@ -55,15 +55,27 @@
         * An user environment variable named NBUILDKIT_USER_ENVIRONMENT_FILE
         * A machine environment variable named NBUILDKIT_MACHINE_ENVIRONMENT_FILE
         * The the workspace
+        * The default environment settings file provided by nBuildkit
+
+        The user can override the location where the file should be loaded from by specifying the 'UseEnvironmentFrom' property and setting it to
+        one of the following values:
+        * File      - Load the environment information from the user specified file, if it exists
+        * User      - Load the environment information from file pointed to by the user environment variable
+                      NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists
+        * Machine   - Load the environment information from file pointed to by the machine environment variable
+                      NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists
+        * Workspace - Load the environment information from the file in the workspace, if it exists
+
+        If no files are found then the default environment settings file provided by nBuildkit will be loaded.
     -->
     <Import Project="$(FileEnvironment)"
-            Condition="Exists('$(FileEnvironment)') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+            Condition="Exists('$(FileEnvironment)') AND (('$(UseEnvironmentFrom)' == 'File')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
     <Import Project="$(NBUILDKIT_USER_ENVIRONMENT_FILE)"
-            Condition="Exists('$(NBUILDKIT_USER_ENVIRONMENT_FILE)') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+            Condition="Exists('$(NBUILDKIT_USER_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'User')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
     <Import Project="$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)"
-            Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+            Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'Machine')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
     <Import Project="$(DirWorkspace)\environment.props"
-            Condition="Exists('$(DirWorkspace)\environment.props') AND '$(ExistsEnvironmentSettings)' != 'true' " />
+            Condition="Exists('$(DirWorkspace)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.environment.props"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' " />
 
@@ -89,6 +101,14 @@
         <Message Text="                        Available groups are Clean and the groups defined in the BuildStepsToExecute list." />
         <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
         <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="  * UseEnvironmentFrom - A property that indicates where the environment.props file should be loaded from." />
+        <Message Text="                         Valid options are:" />
+        <Message Text="                         - 'File'      - Load the environment information from the user specified file, if it exists." />
+        <Message Text="                         - 'User'      - Load the environment information from file pointed to by the user environment variable" />
+        <Message Text="                                         NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                         - 'Machine'   - Load the environment information from file pointed to by the machine environment variable" />
+        <Message Text="                                         NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                         - 'Workspace' - Load the environment information from the file in the workspace, if it exists" />
 
         <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'test.settings.props' file." />
         <Message Text="  Additional properties that can be specified are:" />
@@ -97,6 +117,14 @@
         <Message Text="                        Available groups are Clean and the groups defined in the TestStepsToExecute list." />
         <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
         <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="  * UseEnvironmentFrom - A property that indicates where the environment.props file should be loaded from." />
+        <Message Text="                         Valid options are:" />
+        <Message Text="                         - 'File'      - Load the environment information from the user specified file, if it exists." />
+        <Message Text="                         - 'User'      - Load the environment information from file pointed to by the user environment variable" />
+        <Message Text="                                         NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                         - 'Machine'   - Load the environment information from file pointed to by the machine environment variable" />
+        <Message Text="                                         NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                         - 'Workspace' - Load the environment information from the file in the workspace, if it exists" />
 
         <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'deploy.settings.props' file." />
         <Message Text="  Additional properties that can be specified are:" />
@@ -105,6 +133,14 @@
         <Message Text="                        Available groups are Clean and the groups defined in the DeployStepsToExecute list." />
         <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
         <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="  * UseEnvironmentFrom - A property that indicates where the environment.props file should be loaded from." />
+        <Message Text="                         Valid options are:" />
+        <Message Text="                         - 'File'      - Load the environment information from the user specified file, if it exists." />
+        <Message Text="                         - 'User'      - Load the environment information from file pointed to by the user environment variable" />
+        <Message Text="                                         NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                         - 'Machine'   - Load the environment information from file pointed to by the machine environment variable" />
+        <Message Text="                                         NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                         - 'Workspace' - Load the environment information from the file in the workspace, if it exists" />
 
         <Message Text="" />
         <Message Text="Additionally the following environment variables may be defined:" />
