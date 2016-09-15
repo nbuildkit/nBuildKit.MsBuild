@@ -51,7 +51,7 @@
         between a dev machine and a build machine, so the loading of these files is done slightly differently than other settings files.
 
         We check the following locations in order:
-        * A user specified location as indicated by the variable: $(FileEnvironmentSettings)
+        * A user specified location as indicated by the variable: $(FileEnvironment)
         * An user environment variable named NBUILDKIT_USER_ENVIRONMENT_FILE
         * A machine environment variable named NBUILDKIT_MACHINE_ENVIRONMENT_FILE
         * The the workspace
@@ -82,7 +82,7 @@
         <Message Text="  * ProductName - The name of the product that will be built from the current workspace." />
         <Message Text="  * CompanyName - The name of the company that owns the copyright to the product." />
 
-        <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'settings.props' file." />
+        <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'build.settings.props' file." />
         <Message Text="  Additional properties that can be specified are:" />
         <Message Text="  * BranchMergeTarget - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
         <Message Text="  * GroupsToExecute   - A comma separated list of groups for which the build steps should be executed." />
@@ -90,7 +90,7 @@
         <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
         <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
 
-        <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'setttings.props' file." />
+        <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'test.settings.props' file." />
         <Message Text="  Additional properties that can be specified are:" />
         <Message Text="  * BranchMergeTarget - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
         <Message Text="  * GroupsToExecute   - A comma separated list of groups for which the build steps should be executed." />
@@ -98,7 +98,7 @@
         <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
         <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
 
-        <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'settings.props' file." />
+        <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'deploy.settings.props' file." />
         <Message Text="  Additional properties that can be specified are:" />
         <Message Text="  * BranchMergeTarget - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
         <Message Text="  * GroupsToExecute   - A comma separated list of groups for which the build steps should be executed." />
