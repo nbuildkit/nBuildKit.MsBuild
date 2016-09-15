@@ -96,11 +96,11 @@
 
         <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'build.settings.props' file." />
         <Message Text="  Additional properties that can be specified are:" />
-        <Message Text="  * BranchMergeTarget - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
-        <Message Text="  * GroupsToExecute   - A comma separated list of groups for which the build steps should be executed." />
-        <Message Text="                        Available groups are Clean and the groups defined in the BuildStepsToExecute list." />
-        <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
-        <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="  * BranchMergeTarget  - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
+        <Message Text="  * GroupsToExecute    - A comma separated list of groups for which the build steps should be executed." />
+        <Message Text="                         Available groups are Clean and the groups defined in the BuildStepsToExecute list." />
+        <Message Text="  * FileEnvironment    - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
+        <Message Text="                         This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
         <Message Text="  * UseEnvironmentFrom - A property that indicates where the environment.props file should be loaded from." />
         <Message Text="                         Valid options are:" />
         <Message Text="                         - 'File'      - Load the environment information from the user specified file, if it exists." />
@@ -112,11 +112,11 @@
 
         <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'test.settings.props' file." />
         <Message Text="  Additional properties that can be specified are:" />
-        <Message Text="  * BranchMergeTarget - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
-        <Message Text="  * GroupsToExecute   - A comma separated list of groups for which the build steps should be executed." />
-        <Message Text="                        Available groups are Clean and the groups defined in the TestStepsToExecute list." />
-        <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
-        <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="  * BranchMergeTarget  - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
+        <Message Text="  * GroupsToExecute    - A comma separated list of groups for which the build steps should be executed." />
+        <Message Text="                         Available groups are Clean and the groups defined in the TestStepsToExecute list." />
+        <Message Text="  * FileEnvironment    - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
+        <Message Text="                         This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
         <Message Text="  * UseEnvironmentFrom - A property that indicates where the environment.props file should be loaded from." />
         <Message Text="                         Valid options are:" />
         <Message Text="                         - 'File'      - Load the environment information from the user specified file, if it exists." />
@@ -128,11 +128,11 @@
 
         <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'deploy.settings.props' file." />
         <Message Text="  Additional properties that can be specified are:" />
-        <Message Text="  * BranchMergeTarget - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
-        <Message Text="  * GroupsToExecute   - A comma separated list of groups for which the build steps should be executed." />
-        <Message Text="                        Available groups are Clean and the groups defined in the DeployStepsToExecute list." />
-        <Message Text="  * FileEnvironment   - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
-        <Message Text="                        This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="  * BranchMergeTarget  - The name of the branch that the current branch should be merged to to verify that the merge can be executed successfully." />
+        <Message Text="  * GroupsToExecute    - A comma separated list of groups for which the build steps should be executed." />
+        <Message Text="                         Available groups are Clean and the groups defined in the DeployStepsToExecute list." />
+        <Message Text="  * FileEnvironment    - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
+        <Message Text="                         This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
         <Message Text="  * UseEnvironmentFrom - A property that indicates where the environment.props file should be loaded from." />
         <Message Text="                         Valid options are:" />
         <Message Text="                         - 'File'      - Load the environment information from the user specified file, if it exists." />
@@ -159,8 +159,6 @@
         <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND !Exists('$(DirWorkspace)\.git')">false</IsGitWorkspace>
         <IsGitWorkspace Condition=" '$(IsGitWorkspace)' == '' AND Exists('$(DirWorkspace)\.git')">true</IsGitWorkspace>
 
-        <DirBuildDefault>$(DirWorkspace)\build</DirBuildDefault>
-        <DirBuildTempDefault>$(DirBuildDefault)\temp</DirBuildTempDefault>
         <DirSrcDefault>$(DirWorkspace)\src</DirSrcDefault>
         <DirTestsDefault>$(DirWorkspace)\tests</DirTestsDefault>
 
