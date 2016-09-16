@@ -326,9 +326,41 @@
 
 
     <!--
-        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
+        **** PREPARE - WORKSPACE ****
+    -->
+    <!--
+        The list of all files that should be deleted prior to starting the build process.
+
+        If the deletion process fails the build will continue and a warning will be printed.
     -->
     <ItemGroup>
+        <!--
+        <BuildFilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the build process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the build will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <BuildDirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
+    -->
+    <!--
+        The list of all assembly info files that should be updated with version and copyright information.
+
+        For additional information see the ShouldGenerateAssemblyXXXX properties below.
+    -->
+    <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
         <!--
         <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.cs" />
         <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.vb" />

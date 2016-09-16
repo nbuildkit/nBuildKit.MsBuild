@@ -314,9 +314,41 @@
 
 
     <!--
-        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
+        **** PREPARE - WORKSPACE ****
+    -->
+    <!--
+        The list of all files that should be deleted prior to starting the build process.
+
+        If the deletion process fails the build will continue and a warning will be printed.
     -->
     <ItemGroup>
+        <!--
+        <BuildFilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the build process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the build will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <BuildDirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
+    -->
+    <!--
+        The list of all assembly info files that should be updated with version and copyright information.
+
+        For additional information see the ShouldGenerateAssemblyXXXX properties below.
+    -->
+    <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
         <!--
         <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.cs" />
         <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.vb" />
@@ -549,6 +581,13 @@
             Allows build templates. , e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\coverage.csv.
         -->
         <!--<FileReportOpenCoverCsv Condition=" '$(FileReportOpenCoverCsv)' == '' ">$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv>-->
+
+        <!--
+            The full path to the Cobertura report directory which will contain the cobertura report files which are generated
+            by converting the OpenCover results to Cobertura.
+            Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}
+        -->
+        <DirReportOpenCoverCobertura Condition=" '$(DirReportOpenCoverCobertura)' == '' ">$(DirBuildLogs)</DirReportOpenCoverCobertura>
     </PropertyGroup>
     <ItemGroup>
         <!--
@@ -803,6 +842,12 @@
         -->
         <!-- <ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath>
         <ToolsExternalOpenCoverVersion Condition=" '$(ToolsExternalOpenCoverVersion)' == '' ">4.6.519</ToolsExternalOpenCoverVersion>-->
+
+        <!--
+            The full path and version of the OpenCoverToCobertura converter command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalOpenCoverToCoberturaConverterPath Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverToCoberturaConverterPath>
+        <ToolsExternalOpenCoverToCoberturaConverterVersion Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterVersion)' == '' ">0.2.4</ToolsExternalOpenCoverToCoberturaConverterVersion>-->
 
         <!--
             The full path and version to the ReportGenerator command line executable. If not defined the packages directory is searched.

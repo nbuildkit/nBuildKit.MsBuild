@@ -76,10 +76,10 @@
                 ContinueOnError="True" />
 
         <ItemGroup>
-            <BuildDirectoriesToDelete Include="$(DirBuildTest)" />
-            <BuildDirectoriesToDelete Include="$(DirBuildTemp)" />
+            <TestDirectoriesToDelete Include="$(DirBuildTest)" />
+            <TestDirectoriesToDelete Include="$(DirBuildTemp)" />
         </ItemGroup>
-        <RemoveDir Directories="@(BuildDirectoriesToDelete)"
+        <RemoveDir Directories="@(TestDirectoriesToDelete)"
                    Condition=" '$(ShouldExecute)' == 'true' "
                    ContinueOnError="True" />
     </Target>

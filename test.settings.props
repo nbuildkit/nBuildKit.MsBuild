@@ -155,6 +155,32 @@
     <!--
         **** PREPARE - WORKSPACE ****
     -->
+        <!--
+        The list of all files that should be deleted prior to starting the test process.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <TestFilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the test process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <TestDirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all files that should be copied prior to starting the tests.
+    -->
     <ItemGroup>
         <TestFilesToCopy Include="$(DirTestLatestCSharp)\**\*.*;$(DirTest)\nbuildkit.msbuild.tests.snk"
                          Exclude="$(DirTestLatestCSharp)\environment.props;$(DirTestLatestCSharp)\**\packages.config;$(DirTestLatestCSharp)\**\*.csproj"
