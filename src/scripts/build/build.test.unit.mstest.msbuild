@@ -123,6 +123,22 @@
                  Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
         <Warning Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports."
                  Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="OpenCoverToCoberturaConverter"
+                      PackageVersion="$(ToolsExternalOpenCoverToCoberturaConverterVersion)"
+                      PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
+                      Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
+                                            FileToLocate="OpenCoverToCoberturaConverter.exe"
+                                            Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
+          <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath" />
+        </SearchPackagesDirectoryForToolPath>
+        <Message Text="The OpenCoverToCoberturaConverter executable was found at: $(ToolsExternalOpenCoverToCoberturaConverterPath)"
+                 Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Warning Text="Could not locate the OpenCoverToCoberturaConverter executable path. Cannot convert code coverage reports."
+                 Condition="!Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
 
     <Target Name="_nBuildKit_Build_Test_Unit_MsTest_ReplaceBuildTemplates"
@@ -143,6 +159,11 @@
         <TemplateText Template="$(FileReportOpenCoverCsv)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportOpenCoverCsvExpanded" />
+        </TemplateText>
+
+        <TemplateText Template="$(DirReportOpenCoverCobertura)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="DirReportOpenCoverCoberturaExpanded" />
         </TemplateText>
     </Target>
 
@@ -220,5 +241,8 @@
         <ReportGeneratorOutputToCsv InputFile="$(FileReportReportGeneratorXmlSummary)"
                                     OutputFile="$(FileReportOpenCoverCsvExpanded)"
                                     Condition="Exists('$(FileReportReportGeneratorXmlSummary)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <Exec Command="&quot;$(ToolsExternalOpenCoverToCoberturaConverterPath)&quot; -input:&quot;%(FilesReportOpenCoverXml.Identity)&quot; -output:&quot;$([System.IO.Path]::GetDirectoryName('$(DirReportOpenCoverCoberturaExpanded)'))\cobertura-$([System.IO.Path]::GetFileName('%(FilesReportOpenCoverXml.Identity)'))&quot; -sources:&quot;$(DirSrc)&quot;"
+              Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
