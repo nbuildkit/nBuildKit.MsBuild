@@ -105,6 +105,15 @@
 
     <Target Name="nBuildKit_Test_Execute_CSharp_Latest_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths;_nBuildKit_Test_Execute_CSharp_GetPrerequisites">
+        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)"
+                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)')" />
+        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)\artifacts"
+                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)\artifacts')" />
+        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)\nuget"
+                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)\nuget')" />
+        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)\symbols"
+                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)\symbols')" />
+
         <TemplateText Template="$(FileReportVerificationLatestBuildCSharp)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
@@ -139,6 +148,15 @@
 
     <Target Name="nBuildKit_Test_Execute_CSharp_Oldest_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths;_nBuildKit_Test_Execute_CSharp_GetPrerequisites">
+        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)"
+                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)')" />
+        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)\artifacts"
+                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)\artifacts')" />
+        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)\nuget"
+                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)\nuget')" />
+        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)\symbols"
+                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)\symbols')" />
+
         <TemplateText Template="$(FileReportVerificationOldestBuildCSharp)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />

@@ -105,6 +105,15 @@
 
     <Target Name="nBuildKit_Test_Execute_VbNet_Latest_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_VbNet_GetToolPaths;_nBuildKit_Test_Execute_VbNet_GetPrerequisites">
+        <MakeDir Directories="$(DirBuildTempTestLatestVbNet)"
+                 Condition="!Exists('$(DirBuildTempTestLatestVbNet)')" />
+        <MakeDir Directories="$(DirBuildTempTestLatestVbNet)\artifacts"
+                 Condition="!Exists('$(DirBuildTempTestLatestVbNet)\artifacts')" />
+        <MakeDir Directories="$(DirBuildTempTestLatestVbNet)\nuget"
+                 Condition="!Exists('$(DirBuildTempTestLatestVbNet)\nuget')" />
+        <MakeDir Directories="$(DirBuildTempTestLatestVbNet)\symbols"
+                 Condition="!Exists('$(DirBuildTempTestLatestVbNet)\symbols')" />
+
         <TemplateText Template="$(FileReportVerificationLatestBuildVbNet)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
@@ -139,6 +148,15 @@
 
     <Target Name="nBuildKit_Test_Execute_VbNet_Oldest_Run"
             DependsOnTargets="_nBuildKit_Test_Execute_VbNet_GetToolPaths;_nBuildKit_Test_Execute_VbNet_GetPrerequisites">
+        <MakeDir Directories="$(DirBuildTempTestOldestVbNet)"
+                 Condition="!Exists('$(DirBuildTempTestOldestVbNet)')" />
+        <MakeDir Directories="$(DirBuildTempTestOldestVbNet)\artifacts"
+                 Condition="!Exists('$(DirBuildTempTestOldestVbNet)\artifacts')" />
+        <MakeDir Directories="$(DirBuildTempTestOldestVbNet)\nuget"
+                 Condition="!Exists('$(DirBuildTempTestOldestVbNet)\nuget')" />
+        <MakeDir Directories="$(DirBuildTempTestOldestVbNet)\symbols"
+                 Condition="!Exists('$(DirBuildTempTestOldestVbNet)\symbols')" />
+
         <TemplateText Template="$(FileReportVerificationOldestBuildVbNet)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
