@@ -638,11 +638,6 @@
         <!--<FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop>-->
 
         <!--
-            The full path to the rules file that indicates which rules FxCop should use to analyse the binaries.
-        -->
-        <!--<FileFxCopRuleSet Condition=" '$(FileFxCopRuleSet)' == '' ">$(DirSrc)\codeanalysis.base.ruleset</FileFxCopRuleSet>-->
-
-        <!--
             The full path to the XML file that contains the custom dictionary for FxCop.
         -->
         <!--<FxCopCustomDictionary Condition=" '$(FxCopCustomDictionary)' == '' ">$(DirWorkspace)\customdictionary.xml</FxCopCustomDictionary>-->
@@ -665,9 +660,11 @@
         <FxCopFiles Include="$(DirSrc)\**\bin\**\*.dll"
                     Exclude="$(DirSrc)\**\bin\**\Test.*.dll">
             <TargetFramework>4.5</TargetFramework>
+            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>
         <FxCopFiles Include="$(DirSrc)\**\bin\**\*.exe">
             <TargetFramework>4.5</TargetFramework>
+            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>
 
     </ItemGroup>
