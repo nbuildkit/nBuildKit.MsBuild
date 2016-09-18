@@ -21,7 +21,7 @@
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
             <GitExecutablePath ParameterType="System.String" Required="true" />
-            <WorkingDirectory ParameterType="System.String" Required="true" />
+            <WorkingDirectory ParameterType="System.String" Required="false" />
             <Branch ParameterType="System.String" Required="true" />
         </ParameterGroup>
         <Task>
@@ -38,11 +38,14 @@
                             {
                                 FileName = GitExecutablePath,
                                 Arguments = builder.ToString(),
-                                WorkingDirectory = WorkingDirectory,
                                 UseShellExecute = false,
                                 RedirectStandardOutput = true,
                                 RedirectStandardError = true,
                             };
+                        if (!string.IsNullOrWhiteSpace(WorkingDirectory))
+                        {
+                            info.WorkingDirectory = WorkingDirectory;
+                        }
 
                         var process = new System.Diagnostics.Process();
                         process.StartInfo = info;
@@ -67,6 +70,16 @@
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
                         process.WaitForExit();
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            return false;
+                        }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error

@@ -61,6 +61,7 @@
                                                            - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
         $(BuildStepsPrepareGetIssueIds)                  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
         $(BuildStepsPrepareVcsMerge)                     - Merges the current changes to the designated target branch (specified by $(BranchMergeTarget)).
+        $(BuildStepsPrepareTagVcs)                       - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
         $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process. Release notes
                                                            are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
                                                            currently allows gathering release notes from GitHub, Jira and YouTrack
@@ -126,6 +127,13 @@
             </Groups>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareVcsMerge)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareTagVcs)">
             <Properties>
             </Properties>
             <Groups>

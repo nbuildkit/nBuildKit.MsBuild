@@ -306,15 +306,30 @@
     -->
     <PropertyGroup>
         <!--
-            The name of the branch that the current changes should be merged to.
-        -->
-        <BranchMergeTarget Condition=" '$(BranchMergeTarget)' == '' ">UNDEFINED</BranchMergeTarget>
-
-        <!--
             The full path to the file that will contain the VCS merge information describing the merge.
         -->
         <FileVcsMergeInfo Condition=" '$(FileVcsMergeInfo)' == '' ">$(DirBuildLogs)\vcs.mergeinfo.json</FileVcsMergeInfo>
     </PropertyGroup>
+    <!--
+        The collection of branches that the changes should be merged to. The build will be executed on the last
+        merged branch, e.g. if the list is:
+
+            branch_1
+            branch_2
+            branch_3
+
+        Then the build process will merge to the branches in the given order and will finally execute the following
+        build steps on 'branch_3'.
+
+        Any failure during the branching process will stop the build process.
+
+        If the branch should be tagged then that can be done as a separate build step.
+    -->
+    <ItemGroup Condition=" '@(BranchMergeTarget)' == '' ">
+        <!--
+        <BranchMergeTarget Include="" />
+        -->
+    </ItemGroup>
 
 
     <!--

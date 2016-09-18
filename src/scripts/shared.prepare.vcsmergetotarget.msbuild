@@ -11,12 +11,15 @@
 
     <Import Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild') AND '$(ExistsExtensionsGitCheckout)' != 'true' " />
 
     <Target Name="nBuildKit_Shared_Prepare_VcsMergeToTarget_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_DisplayInfo"
-            Condition=" '$(BranchMergeTarget)' != 'UNDEFINED' ">
+            Condition=" '@(BranchMergeTarget)' != '' ">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Prepare" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge" />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Finalize" />
     </Target>
 
     <!-- Display info -->
@@ -59,29 +62,7 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge"
-            Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' ">
-        <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
-               Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
-
-        <Message Text="Checking out merge target branch: $(BranchMergeTarget) ..." />
-        <Exec Command="$(ToolsExternalGitPath) checkout $(BranchMergeTarget)"
-              IgnoreExitCode="true" />
-
-        <Exec Command="$(ToolsExternalGitPath) rev-parse HEAD"
-              IgnoreExitCode="true"
-              ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="GitRevNoCurrentBranch" />
-        </Exec>
-        <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
-
-        <Message Text="Merging changes from branch $(BranchGitExpected) to branch  $(BranchMergeTarget) ..." />
-        <Exec Command="$(ToolsExternalGitPath) merge $(BranchGitExpected) --no-ff"
-              Condition=" '$(BranchGitExpected)' != '$(BranchMergeTarget)' " />
-
-    </Target>
-
-    <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo"
+    <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Prepare"
             Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' " >
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsMergeInfo)'))">
             <Output TaskParameter="Value" PropertyName="DirToCreate" />
@@ -93,14 +74,60 @@
             <GitMergeItems Include="{" />
             <GitMergeItems Include="    &quot;origin_branch&quot;: &quot;$(BranchGitExpected)&quot;," />
             <GitMergeItems Include="    &quot;origin_revision&quot;: &quot;$(GitRevNoExpected)&quot;," />
-            <GitMergeItems Include="    &quot;target_branch&quot;: &quot;$(BranchMergeTarget)&quot;" />
-            <GitMergeItems Include="    &quot;target_revision&quot;: &quot;$(GitRevNoCurrentBranch)&quot;" />
-            <GitMergeItems Include="}" />
+            <GitMergeItems Include="    &quot;targets&quot;: [" />
         </ItemGroup>
 
         <WriteLinesToFile File="$(FileVcsMergeInfo)"
                           Lines="@(GitMergeItems)"
                           Overwrite="true"
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge"
+            Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' "
+            Outputs="%(BranchMergeTarget.Identity)">
+        <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
+               Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+
+        <Message Text="Checking out merge target branch: %(BranchMergeTarget.Identity) ..." />
+        <GitCheckout GitExecutablePath="$(ToolsExternalGitPath)"
+                     Branch="%(BranchMergeTarget.Identity)" />
+
+        <Exec Command="$(ToolsExternalGitPath) rev-parse HEAD"
+              IgnoreExitCode="true"
+              ConsoleToMSBuild="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="GitRevNoCurrentBranch" />
+        </Exec>
+        <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
+
+        <Message Text="Merging changes from branch $(BranchGitExpected) to branch  %(BranchMergeTarget.Identity) ..." />
+        <Exec Command="$(ToolsExternalGitPath) merge $(BranchGitExpected) --no-ff"
+              Condition=" '$(BranchGitExpected)' != '%(BranchMergeTarget.Identity)' " />
+
+        <ItemGroup>
+            <GitMergeItems Include="        {" />
+            <GitMergeItems Include="            &quot;target_branch&quot;: &quot;%(BranchMergeTarget.Identity)&quot;" />
+            <GitMergeItems Include="            &quot;target_revision&quot;: &quot;$(GitRevNoCurrentBranch)&quot;" />
+            <GitMergeItems Include="        }" />
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(FileVcsMergeInfo)"
+                          Lines="@(GitMergeItems)"
+                          Overwrite="false"
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Finalize"
+            Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' " >
+
+        <ItemGroup>
+            <GitMergeItems Include="    ]" />
+            <GitMergeItems Include="}" />
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(FileVcsMergeInfo)"
+                          Lines="@(GitMergeItems)"
+                          Overwrite="false"
                           Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
  </Project>
