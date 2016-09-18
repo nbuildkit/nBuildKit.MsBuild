@@ -745,10 +745,12 @@
         The item group defining the location and contents of the archive files that are generated during the build
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
-    <ItemGroup Condition=" '@(ArchivePackageSpecs)' == '' " >
+    <ItemGroup>
         <ArchivePackageSpecs Include="$(DirWorkspace)\**\*.zipspec"
                              Exclude="$(DirBuild)\**\*.zipspec"
-                             Condition="Exists('$(DirWorkspace)')" />
+                             Condition="Exists('$(DirWorkspace)') AND '@(ArchivePackageSpecs)' == '' " />
+        <ArchivePackageSpecs Include="$(DirNBuildKitMsBuild)\build\gitmerge.zipspec"
+                             Condition=" '$(IsGitWorkspace)' == 'true' AND '@(BranchMergeTarget)' == '' " />
     </ItemGroup>
 
 
