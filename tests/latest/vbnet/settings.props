@@ -299,21 +299,84 @@
         <!-- <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest> -->
     </PropertyGroup>
 
+    <!--
+        Workflow
+    -->
+    <PropertyGroup>
+        <!--
+            A flag that indicates whether or not the current build should assume that the GitFlow (http://nvie.com/posts/a-successful-git-branching-model/)
+            workflow is being used.
+        -->
+        <!-- <IsGitFlow Condition=" '$(IsGitFlow)' == '' ">UNDEFINED</IsGitFlow> -->
+    </PropertyGroup>
+
 
     <!--
         **** PREPARE - MERGE ****
     -->
     <PropertyGroup>
         <!--
-            The name of the branch that the current changes should be merged to.
-        -->
-        <!-- <BranchMergeTarget Condition=" '$(BranchMergeTarget)' == '' ">UNDEFINED</BranchMergeTarget> -->
-
-        <!--
             The full path to the file that will contain the VCS merge information describing the merge.
         -->
-        <!-- <FileVcsMergeInfo Condition=" '$(FileVcsMergeInfo)' == '' ">$(DirBuildLogs)\vcs.mergeinfo.json</FileVcsMergeInfo> -->
+        <FileVcsMergeInfo Condition=" '$(FileVcsMergeInfo)' == '' ">$(DirBuildLogs)\vcs.mergeinfo.json</FileVcsMergeInfo>
     </PropertyGroup>
+    <PropertyGroup>
+        <!--
+            The flag that indicates if the input branch is a GitFlow feature branch.
+        -->
+        <!-- <IsFeatureBranch Condition=" '$(IsFeatureBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(BranchGitExpected)', '.*(feature\/).*'))</IsFeatureBranch> -->
+
+        <!--
+            The flag that indicates if the input branch is a GitFlow release branch.
+        -->
+        <!-- <IsReleaseBranch Condition=" '$(IsReleaseBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(BranchGitExpected)', '.*(release\/).*'))</IsReleaseBranch> -->
+
+        <!--
+            The flag that indicates if the input branch is a GitFlow hotfix branch.
+        -->
+        <!-- <IsHotfixBranch Condition=" '$(IsHotfixBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(BranchGitExpected)', '.*(hotfix\/).*'))</IsHotfixBranch> -->
+    </PropertyGroup>
+    <!--
+        The collection of branches that the changes should be merged to. The build will be executed on the last
+        merged branch, e.g. if the list is:
+
+            branch_1
+            branch_2
+            branch_3
+
+        Then the build process will merge to the branches in the given order and will finally execute the following
+        build steps on 'branch_3'.
+        If the branch should be tagged then that can be done as a separate build step.
+        Finally if the zip packaging step is included in the build process it will automatically zip the .git folder
+        so that other builds can reproduce the current workspace exactly.
+
+        Any failure during the branching process will stop the build process.
+    -->
+    <ItemGroup Condition=" '@(BranchMergeTarget)' == '' ">
+        <!-- GITFLOW: If the input branch (BranchGitExpected) is a feature branch then we merge to develop -->
+        <!--
+        <BranchMergeTarget Include="develop"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsFeatureBranch)' == 'true' " />
+        -->
+
+        <!-- GITFLOW: If the input branch (BranchGitExpected) is a release branch then we merge to develop and master -->
+        <!--
+        <BranchMergeTarget Include="develop"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
+        <BranchMergeTarget Include="master"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
+        -->
+
+        <!-- GITFLOW: If the input branch (BranchGitExpected) is a hotfix branch then we merge to develop and master -->
+        <!--
+        <BranchMergeTarget Include="develop"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />
+        <BranchMergeTarget Include="master"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />
+        -->
+    </ItemGroup>
+
+
 
 
     <!--
