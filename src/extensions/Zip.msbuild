@@ -168,7 +168,7 @@
                                         var filePath = pair.Key;
                                         var list = pair.Value;
 
-                                        using (var fs = new FileStream(filePath, FileMode.Open))
+                                        using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                                         {
                                             foreach(var relativePath in list)
                                             {
