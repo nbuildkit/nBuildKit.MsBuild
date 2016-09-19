@@ -37,6 +37,8 @@
                                                            name as the remote tracking branch.
         $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
                                                            Currently supported version control systems is GIT
+        $(BuildStepsPrepareGetIssueIds)                  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
+        $(BuildStepsPrepareVcsMerge)                     - Merges the current changes to the designated target branch (specified by @(BranchMergeTarget)).
         $(BuildStepsPrepareGetVersion)                   - Gathers version information and stores it in a temporary file for use by the rest of the build process.
                                                            Currently supported methods of gathering version information are using (in order):
                                                            - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
@@ -59,8 +61,6 @@
                                                              - VersionPreRelease
                                                            - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
                                                            - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
-        $(BuildStepsPrepareGetIssueIds)                  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
-        $(BuildStepsPrepareVcsMerge)                     - Merges the current changes to the designated target branch (specified by $(BranchMergeTarget)).
         $(BuildStepsPrepareTagVcs)                       - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
         $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process. Release notes
                                                            are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
@@ -98,6 +98,10 @@
         Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
     <ItemGroup Condition=" '@(BuildStepsToExecute)' == '' ">
+        <!--
+            The following steps need to be executed on the original branch (i.e. the branch we are interested in
+            building.
+        -->
         <BuildStepsToExecute Include="$(BuildStepsPrepareVcsBranch)">
             <Properties>
             </Properties>
@@ -112,13 +116,6 @@
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Prepare;
-            </Groups>
-        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetIssueIds)">
             <Properties>
             </Properties>
@@ -126,6 +123,12 @@
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
+
+        <!--
+            This step potentially changes the local branch we are building. If one or more merge targets have been
+            specified then this step will merge to all merge targets and leave the current branch as the last branch
+            we merged to.
+        -->
         <BuildStepsToExecute Include="$(BuildStepsPrepareVcsMerge)">
             <Properties>
             </Properties>
@@ -133,13 +136,27 @@
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildStepsPrepareTagVcs)">
+
+        <!--
+            All steps from here on may be executed on a different branch than the orginal branch we we started the
+            build on because we might have done some merging.
+        -->
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
             <Properties>
             </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareTagVcs)"
+                             Condition=" '$(IsGitFlow)' == 'true' AND ('$(IsReleaseBranch)' == 'true' OR '$(IsHotfixBranch)' == 'true') ">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </BuildStepsToExecute>
+
         <BuildStepsToExecute Include="$(BuildStepsPrepareReleaseNotes)">
             <Properties>
             </Properties>
@@ -750,7 +767,7 @@
                              Exclude="$(DirBuild)\**\*.zipspec"
                              Condition="Exists('$(DirWorkspace)') AND '@(ArchivePackageSpecs)' == '' " />
         <ArchivePackageSpecs Include="$(DirNBuildKitMsBuild)\build\gitmerge.zipspec"
-                             Condition=" '$(IsGitWorkspace)' == 'true' AND '@(BranchMergeTarget)' == '' " />
+                             Condition=" '$(IsGitWorkspace)' == 'true' AND '@(BranchMergeTarget)' != '' " />
     </ItemGroup>
 
 

@@ -75,7 +75,7 @@
         <Message Text="Getting issue IDs from the GIT commit messages relative to $(WorkItemTargetBranch)"
                  Condition=" '$(WorkItemTargetBranch)' != '' "/>
         <Error Text="Could not determine what relative to which branch the commit messages should be examined."
-               Condition=" '$(WorkItemTargetBranch)' != '' "/>
+               Condition=" '$(WorkItemTargetBranch)' == '' "/>
 
         <ExtractIssueIdsFromGitCommitMessages GitExecutablePath="$(ToolsExternalGitPath)"
                                               LocalPath="$(DirWorkspace)"
