@@ -138,7 +138,7 @@
     <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_PushToRepository"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates"
             Outputs="%(PushToGitRepositorySpecs.Identity)">
-        <Message Text="Pushing changes from $(FilesToPushIncluded) back to repository $(RepositoryToPushTo) ..." />
+        <Message Text="Pushing changes from $(FilesToPushIncluded) back to the origin ..." />
         <GitPush GitExecutablePath="$(ToolsExternalGitPath)"
                  WorkingDirectory="$(DirRepositoryWorkspace)"
                  Tags="true"
