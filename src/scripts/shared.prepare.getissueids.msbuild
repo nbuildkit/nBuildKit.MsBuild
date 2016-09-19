@@ -11,10 +11,12 @@
 
     <Import Project="$(DirNBuildKitMsBuildExtensions)\ExtractIssueIdsFromGitCommitMessages.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ExtractIssueIdsFromGitCommitMessages.msbuild') AND '$(ExistsExtensionsExtractIssueIdsFromGitCommitMessages)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild') AND '$(ExistsExtensionsLastItemInGroup)' != 'true' " />
 
     <Target Name="nBuildKit_Shared_Prepare_GetIssueIds_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_GetIssueIds_DisplayInfo"
-            Condition="!Exists('$(FileWorkItems)') AND '$(BranchMergeTarget)' != 'UNDEFINED' ">
+            Condition="!Exists('$(FileWorkItems)') AND '@(BranchMergeTarget)' != '' ">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetIssueIds_ForCurrentBranch_GetWorkItemsFromCommits_FromGit" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetIssueIds_WriteWorkItemsToFile" />
     </Target>
@@ -66,12 +68,18 @@
 
     <Target Name="_nBuildKit_Shared_Prepare_GetIssueIds_ForCurrentBranch_GetWorkItemsFromCommits_FromGit"
             Condition=" '$(IsGitWorkspace)' == 'true' ">
-        <Message Text="Getting issue IDs from the GIT commit messages ..."
-                 Importance="low"/>
+
+        <LastItemInGroup Items="@(BranchMergeTarget)">
+            <Output TaskParameter="Item" PropertyName="WorkItemTargetBranch" />
+        </LastItemInGroup>
+        <Message Text="Getting issue IDs from the GIT commit messages relative to $(WorkItemTargetBranch)"
+                 Condition=" '$(WorkItemTargetBranch)' != '' "/>
+        <Error Text="Could not determine what relative to which branch the commit messages should be examined."
+               Condition=" '$(WorkItemTargetBranch)' != '' "/>
 
         <ExtractIssueIdsFromGitCommitMessages GitExecutablePath="$(ToolsExternalGitPath)"
                                               LocalPath="$(DirWorkspace)"
-                                              MergeTargetBranch="$(BranchMergeTarget)">
+                                              MergeTargetBranch="$(WorkItemTargetBranch)">
             <Output TaskParameter="IssueIds" ItemName="IssueIds" />
         </ExtractIssueIdsFromGitCommitMessages>
         <Message Text="Issue's linked on the current branch: " />
