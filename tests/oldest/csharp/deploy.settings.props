@@ -42,6 +42,9 @@
         $(DeployStepsPushToDirectory)     - Pushes one or more artifacts to a directory
         $(DeployStepsPushToSymbolServer)  - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
         $(DeployStepsPushToGitHubRelease) - Pushes zero or more files to a GitHub release
+        $(DeployStepsPushToGitBranch)     - Pushes zero or more files to a Git branch. Any files that currently exist on that branch are removed
+                                            and replaced by the specified files.
+        $(DeployStepsPushToGitRepository) - Pushes an archived local workspace to a Git repository.
 
         Additional deploy steps can be defined by providing the path to the MsBuild script that should be executed
         for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
@@ -72,6 +75,7 @@
                 Prepare;
             </Groups>
         </DeployStepsToExecute>
+        -->
         <!--
         <DeployStepsToExecute Include="$(DeployStepsPrepareTagVcs)">
             <Properties>
@@ -144,9 +148,19 @@
                 Push;
             </Groups>
         </DeployStepsToExecute>
+         <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+            <Groups>
+                Git;
+                Push;
+            </Groups>
+        </DeployStepsToExecute>
         -->
         <!--
-         <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitRepository)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -291,6 +305,22 @@
              <ExtractZipFiles>true</ExtractZipFiles>
              <CommitMessage>New changes</CommitMessage>
         </PushToGitBranchSpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - GIT REPOSITORY ****
+    -->
+    <!--
+        The ItemGroup defining the zip files containing a git workspace that should be pushed to a GIT repository.
+        All properties allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+    -->
+    <ItemGroup Condition=" '@(PushToGitRepositorySpecs)' == '' ">
+        <!--
+        <PushToGitRepositorySpecs Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
+             <Repository>$(GitRemoteRepository)</Repository>
+        </PushToGitRepositorySpecs>
         -->
     </ItemGroup>
 
