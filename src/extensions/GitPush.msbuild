@@ -22,7 +22,8 @@
         <ParameterGroup>
             <GitExecutablePath ParameterType="System.String" Required="true" />
             <WorkingDirectory ParameterType="System.String" Required="true" />
-            <Branch ParameterType="System.String" Required="true" />
+            <Branch ParameterType="System.String" Required="false" />
+            <PushTags ParameterType="System.Boolean" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -32,7 +33,20 @@
                         var builder = new System.Text.StringBuilder();
                         {
                             builder.Append("push origin ");
-                            builder.Append(string.Format("\"{0}\" ", Branch.TrimEnd('\\')));
+                            if (!string.IsNullOrWhiteSpace(Branch))
+                            {
+                                builder.Append(string.Format("\"{0}\" ", Branch.TrimEnd('\\')));
+                            }
+                            else
+                            {
+                                builder.Append("--all ");
+                            }
+
+                            if (PushTags)
+                            {
+                                builder.Append("--tags ");
+                            }
+
                             builder.Append("--porcelain ");
                         }
 
@@ -69,6 +83,16 @@
                         process.BeginOutputReadLine();
                         process.BeginErrorReadLine();
                         process.WaitForExit();
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogMessage(
+                                MessageImportance.Normal,
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                        }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error

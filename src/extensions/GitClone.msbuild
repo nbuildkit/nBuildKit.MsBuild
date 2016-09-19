@@ -75,6 +75,16 @@
                         process.BeginErrorReadLine();
                         process.WaitForExit();
 
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogMessage(
+                                MessageImportance.Normal,
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                        }
+
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
                         // from a task's constructor or property setter. As long as this task is written to always log an error
                         // when it fails, we can reliably return HasLoggedErrors.

@@ -67,6 +67,16 @@
                         process.BeginErrorReadLine();
                         process.WaitForExit();
 
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogMessage(
+                                MessageImportance.Normal,
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                        }
+
                         var list = new System.Collections.Generic.List<ITaskItem>();
                         foreach(var line in text.ToString().Split(new string[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
                         {
