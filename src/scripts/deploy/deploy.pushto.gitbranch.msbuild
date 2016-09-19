@@ -4,7 +4,7 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsDeployPushToGitBranc>true</ExistsDeployPushToGitBranc>
+        <ExistsDeployPushToGitBranch>true</ExistsDeployPushToGitBranch>
     </PropertyGroup>
 
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props"
@@ -65,9 +65,6 @@
     <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_Push"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Outputs="%(PushToGitBranchSpecs.Identity)">
-        <Message Text="Resolving build templates for: %(PushToGitBranchSpecs.Identity)"
-                 Importance="low"/>
-
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_Clone" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_CopyFiles" />
@@ -78,39 +75,42 @@
     <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
             Outputs="%(PushToGitBranchSpecs.Identity)">
+        <Message Text="Resolving build templates for: %(PushToGitBranchSpecs.Identity)"
+                 Importance="low"/>
+
         <CreateProperty Value="%(PushToGitBranchSpecs.Identity)">
             <Output TaskParameter="Value" PropertyName="FilesToPush" />
         </CreateProperty>
+        <TemplateText Template="$(FilesToPush)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FilesToPushIncluded" />
+        </TemplateText>
+
         <CreateProperty Value="%(PushToGitBranchSpecs.Repository)">
             <Output TaskParameter="Value" PropertyName="RepositoryToPushTo" />
         </CreateProperty>
-        <CreateProperty Value="%(PushToGitBranchSpecs.Branch)">
-            <Output TaskParameter="Value" PropertyName="BranchToPushTo" />
-        </CreateProperty>
-        <CreateProperty Value="%(PushToGitBranchSpecs.ExtractZipFiles)">
-            <Output TaskParameter="Value" PropertyName="ExtractZipFiles" />
-        </CreateProperty>
-        <CreateProperty Value="%(PushToGitBranchSpecs.CommitMessage)">
-            <Output TaskParameter="Value" PropertyName="CommitMessage" />
-        </CreateProperty>
-
         <TemplateText Template="$(RepositoryToPushTo)"
                       Tokens="@(TemplateTokens)"
                       Condition=" '$(RepositoryToPushTo)' != '' ">
             <Output TaskParameter="Result" PropertyName="RepositoryToPushTo" />
         </TemplateText>
 
+        <CreateProperty Value="%(PushToGitBranchSpecs.Branch)">
+            <Output TaskParameter="Value" PropertyName="BranchToPushTo" />
+        </CreateProperty>
         <TemplateText Template="$(BranchToPushTo)"
                       Tokens="@(TemplateTokens)"
                       Condition=" '$(BranchToPushTo)' != '' ">
             <Output TaskParameter="Result" PropertyName="BranchToPushTo" />
         </TemplateText>
 
-        <TemplateText Template="$(FilesToPush)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FilesToPushIncluded" />
-        </TemplateText>
+        <CreateProperty Value="%(PushToGitBranchSpecs.ExtractZipFiles)">
+            <Output TaskParameter="Value" PropertyName="ExtractZipFiles" />
+        </CreateProperty>
 
+        <CreateProperty Value="%(PushToGitBranchSpecs.CommitMessage)">
+            <Output TaskParameter="Value" PropertyName="CommitMessage" />
+        </CreateProperty>
         <TemplateText Template="$(CommitMessage)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="CommitMessageToProvide" />
@@ -120,7 +120,7 @@
     <Target Name="_nBuildKit_Deploy_PushTo_GitBranch_Clone"
             DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
             Outputs="%(PushToGitBranchSpecs.Identity)">
-        <Message Text="Resolving build templates for: %(PushToGitBranchSpecs.Identity)"
+        <Message Text="Cloning repository from: $(RepositoryToPushTo)"
                  Importance="low"/>
 
         <CreateProperty Value="$(RepositoryToPushTo.Substring($(RepositoryToPushTo.LastIndexOf('/'))).TrimStart('/'))">
