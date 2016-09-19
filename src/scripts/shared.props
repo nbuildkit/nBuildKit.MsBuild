@@ -568,12 +568,15 @@
         Additional items that should be available for the template replacement.
         The default template parameters, as indicated at the top of this file, are always available.
     -->
-    <ItemGroup Condition=" '@(TemplateTokens)' == '' ">
-        <!--
-        <TemplateTokens Include="">
-            <ReplacementValue></ReplacementValue>
+    <ItemGroup>
+        <TemplateTokens Include="GitRevNo"
+                        Condition=" '$(GitRevNoExpected)' != '' AND '$(GitRevNoExpected)' != 'UNDEFINED' ">
+            <ReplacementValue>$(GitRevNoExpected)</ReplacementValue>
         </TemplateTokens>
-        -->
+        <TemplateTokens Include="GitBranch"
+                        Condition=" '$(BranchGitExpected)' != '' AND '$(BranchGitExpected)' != 'UNDEFINED' ">
+            <ReplacementValue>$(BranchGitExpected)</ReplacementValue>
+        </TemplateTokens>
     </ItemGroup>
 
     <!-- Additional generated files -->
