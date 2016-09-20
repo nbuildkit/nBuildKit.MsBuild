@@ -71,14 +71,14 @@
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
-            <GitMergeItems Include="{" />
-            <GitMergeItems Include="    &quot;origin_branch&quot;: &quot;$(BranchGitExpected)&quot;," />
-            <GitMergeItems Include="    &quot;origin_revision&quot;: &quot;$(GitRevNoExpected)&quot;," />
-            <GitMergeItems Include="    &quot;targets&quot;: [" />
+            <GitMergeItemsPrepare Include="{" />
+            <GitMergeItemsPrepare Include="    &quot;origin_branch&quot;: &quot;$(BranchGitExpected)&quot;," />
+            <GitMergeItemsPrepare Include="    &quot;origin_revision&quot;: &quot;$(GitRevNoExpected)&quot;," />
+            <GitMergeItemsPrepare Include="    &quot;targets&quot;: [" />
         </ItemGroup>
 
         <WriteLinesToFile File="$(FileVcsMergeInfo)"
-                          Lines="@(GitMergeItems)"
+                          Lines="@(GitMergeItemsPrepare)"
                           Overwrite="true"
                           Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
@@ -106,9 +106,9 @@
 
         <ItemGroup>
             <GitMergeItems Include="        {" />
-            <GitMergeItems Include="            &quot;target_branch&quot;: &quot;%(BranchMergeTarget.Identity)&quot;" />
+            <GitMergeItems Include="            &quot;target_branch&quot;: &quot;%(BranchMergeTarget.Identity)&quot;," />
             <GitMergeItems Include="            &quot;target_revision&quot;: &quot;$(GitRevNoCurrentBranch)&quot;" />
-            <GitMergeItems Include="        }" />
+            <GitMergeItems Include="        }," />
         </ItemGroup>
 
         <WriteLinesToFile File="$(FileVcsMergeInfo)"
@@ -121,12 +121,15 @@
             Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' " >
 
         <ItemGroup>
-            <GitMergeItems Include="    ]" />
-            <GitMergeItems Include="}" />
+            <GitMergeItemsFinalize Include="        {" />
+            <GitMergeItemsFinalize Include="            &quot;ignore&quot;: &quot;msbuild_itemgroup_issues&quot;" />
+            <GitMergeItemsFinalize Include="        }" />
+            <GitMergeItemsFinalize Include="    ]" />
+            <GitMergeItemsFinalize Include="}" />
         </ItemGroup>
 
         <WriteLinesToFile File="$(FileVcsMergeInfo)"
-                          Lines="@(GitMergeItems)"
+                          Lines="@(GitMergeItemsFinalize)"
                           Overwrite="false"
                           Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>

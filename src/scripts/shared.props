@@ -318,8 +318,12 @@
     <PropertyGroup>
         <!--
             The full path to the file that will contain the VCS merge information describing the merge.
+
+            The location of the file can be controlled by the location of the logs directory, however the
+            naming of the file needs to be pre-defined so that we can always grab the file when we create
+            the archive file of the git directory.
         -->
-        <FileVcsMergeInfo Condition=" '$(FileVcsMergeInfo)' == '' ">$(DirBuildLogs)\vcs.mergeinfo.json</FileVcsMergeInfo>
+        <FileVcsMergeInfo>$(DirBuildLogs)\vcs.mergeinfo.json</FileVcsMergeInfo>
     </PropertyGroup>
     <PropertyGroup>
         <!--
@@ -575,7 +579,7 @@
         </TemplateTokens>
         <TemplateTokens Include="GitBranch"
                         Condition=" '$(BranchGitExpected)' != '' AND '$(BranchGitExpected)' != 'UNDEFINED' ">
-            <ReplacementValue>$(BranchGitExpected)</ReplacementValue>
+            <ReplacementValue>$(BranchGitExpected.Replace('/','_').Replace('\', '_'))</ReplacementValue>
         </TemplateTokens>
     </ItemGroup>
 
