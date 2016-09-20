@@ -71,16 +71,11 @@
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
-            <GitMergeItemsPrepare Include="{" />
-            <GitMergeItemsPrepare Include="    &quot;origin_branch&quot;: &quot;$(BranchGitExpected)&quot;," />
-            <GitMergeItemsPrepare Include="    &quot;origin_revision&quot;: &quot;$(GitRevNoExpected)&quot;," />
-            <GitMergeItemsPrepare Include="    &quot;targets&quot;: [" />
+            <GitMergeItemsPrepare Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
+            <GitMergeItemsPrepare Include="&lt;merge&gt;" />
+            <GitMergeItemsPrepare Include="    &lt;origin branch=&quot;$(BranchGitExpected)&quot; revision=&quot;$(GitRevNoExpected)&quot; /&gt;" />
+            <GitMergeItemsPrepare Include="    &lt;targets&gt;" />
         </ItemGroup>
-
-        <WriteLinesToFile File="$(FileVcsMergeInfo)"
-                          Lines="@(GitMergeItemsPrepare)"
-                          Overwrite="true"
-                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge"
@@ -105,28 +100,27 @@
               Condition=" '$(BranchGitExpected)' != '%(BranchMergeTarget.Identity)' " />
 
         <ItemGroup>
-            <GitMergeItems Include="        {" />
-            <GitMergeItems Include="            &quot;target_branch&quot;: &quot;%(BranchMergeTarget.Identity)&quot;," />
-            <GitMergeItems Include="            &quot;target_revision&quot;: &quot;$(GitRevNoCurrentBranch)&quot;" />
-            <GitMergeItems Include="        }," />
+            <GitMergeItems Include="        &lt;target branch=&quot;%(BranchMergeTarget.Identity)&quot; revision=&quot;$(GitRevNoCurrentBranch)&quot; /&gt;" />
         </ItemGroup>
-
-        <WriteLinesToFile File="$(FileVcsMergeInfo)"
-                          Lines="@(GitMergeItems)"
-                          Overwrite="false"
-                          Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Finalize"
             Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' " >
 
         <ItemGroup>
-            <GitMergeItemsFinalize Include="        {" />
-            <GitMergeItemsFinalize Include="            &quot;ignore&quot;: &quot;msbuild_itemgroup_issues&quot;" />
-            <GitMergeItemsFinalize Include="        }" />
-            <GitMergeItemsFinalize Include="    ]" />
-            <GitMergeItemsFinalize Include="}" />
+            <GitMergeItemsFinalize Include="    &lt;/targets&gt;" />
+            <GitMergeItemsFinalize Include="&lt;/merge&gt;" />
         </ItemGroup>
+
+        <WriteLinesToFile File="$(FileVcsMergeInfo)"
+                          Lines="@(GitMergeItemsPrepare)"
+                          Overwrite="true"
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
+
+        <WriteLinesToFile File="$(FileVcsMergeInfo)"
+                          Lines="@(GitMergeItems)"
+                          Overwrite="false"
+                          Condition=" '$(ShouldExecute)' == 'true' "/>
 
         <WriteLinesToFile File="$(FileVcsMergeInfo)"
                           Lines="@(GitMergeItemsFinalize)"
