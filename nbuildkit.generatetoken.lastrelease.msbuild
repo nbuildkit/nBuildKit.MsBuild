@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="11.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsNBuildKitGenerateTokenLastRelease>true</ExistsNBuildKitGenerateTokenLastRelease>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+
+    <PropertyGroup>
+        <FileNBuildKitLastRelease>$(DirBuildTemp)\nbuildkit.lastrelease.json</FileNBuildKitLastRelease>
+    </PropertyGroup>
+
+    <Target Name="_NBuildKit_GenerateToken_LastRelease_FromNuGet"
+            Condition="!Exists('$FileNBuildKitLastRelease')">
+        <GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
+            <Output TaskParameter="Major" PropertyName="NBuildKitLatestMajorVersion" />
+            <Output TaskParameter="Minor" PropertyName="NBuildKitLatestMinorVersion" />
+            <Output TaskParameter="Patch" PropertyName="NBuildKitLatestPatchVersion" />
+        </GetLatestNBuildKitVersionFromNuGet>
+
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileNBuildKitLastRelease)'))">
+            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        </CreateProperty>
+        <MakeDir Directories="$(DirToCreate)"
+                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+
+        <ItemGroup>
+            <Items_ReleaseVersion Include="{" />
+
+            <Items_ReleaseVersion Include="    &quot;Major&quot;: &quot;$(NBuildKitLatestMajorVersion)&quot;," />
+            <Items_ReleaseVersion Include="    &quot;Minor&quot;: &quot;$(NBuildKitLatestMinorVersion)&quot;," />
+            <Items_ReleaseVersion Include="    &quot;Patch&quot;: &quot;$(NBuildKitLatestPatchVersion)&quot;," />
+
+            <Items_ReleaseVersion Include="}" />
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(FileNBuildKitLastRelease)"
+                          Lines="@(Items_ReleaseVersion)"
+                          Overwrite="true"
+                          Condition="!Exists('$(FileNBuildKitLastRelease)') AND '$(ShouldExecute)' == 'true' "/>
+    </Target>
+
+    <Target Name="nbuildkit_generatetoken_lastrelease"
+            DependsOnTargets="_NBuildKit_GenerateToken_LastRelease_FromNuGet">
+        <GetLastReleaseVersionFromFile VersionFile="$(FileNBuildKitLastRelease)">
+            <Output TaskParameter="VersionMajor" PropertyName="NBuildKitLatestMajorVersion" />
+            <Output TaskParameter="VersionMinor" PropertyName="NBuildKitLatestMinorVersion" />
+            <Output TaskParameter="VersionPatch" PropertyName="NBuildKitLatestPatchVersion" />
+        </GetLastReleaseVersionFromFile>
+
+        <ItemGroup>
+            <TemplateTokens Include="NBuildKitLatestMajorVersion">
+                <ReplacementValue>$(NBuildKitLatestMajorVersion)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="NBuildKitLatestMinorVersion">
+                <ReplacementValue>$(NBuildKitLatestMinorVersion)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="NBuildKitLatestPatchVersion">
+                <ReplacementValue>$(NBuildKitLatestPatchVersion)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="VersionNBuildKitLastRelease">
+                <ReplacementValue>$(NBuildKitLatestMajorVersion).$(NBuildKitLatestMinorVersion).$(NBuildKitLatestPatchVersion)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+    </Target>
+
+    <UsingTask TaskName="GetLatestNBuildKitVersionFromNuGet"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MsBuildTasksAssembly)">
+        <ParameterGroup>
+            <NuGetPath ParameterType="System.String" Required="true" />
+            <Major ParameterType="System.Int32" Output="true" />
+            <Minor ParameterType="System.Int32" Output="true" />
+            <Patch ParameterType="System.Int32" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var info = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = NuGetPath,
+                                    Arguments = "list packageId:NBuildKit.MsBuild",
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+
+                        Log.LogMessage(MessageImportance.Low, string.Format("{0} {1}", info.FileName, info.Arguments));
+
+                        var text = new System.Text.StringBuilder();
+                        var process = new System.Diagnostics.Process();
+                        process.StartInfo = info;
+                        process.OutputDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    text.Append(e.Data);
+                                }
+                            };
+                        process.ErrorDataReceived +=
+                            (s, e) =>
+                            {
+                                if (!string.IsNullOrWhiteSpace(e.Data))
+                                {
+                                    Log.LogError(e.Data);
+                                }
+                            };
+                        process.Start();
+
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+
+                        if (process.ExitCode != 0)
+                        {
+                            Log.LogError(
+                                string.Format(
+                                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                    System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                    process.ExitCode));
+                            return false;
+                        }
+
+                        Log.LogMessage(MessageImportance.Normal, string.Format("Nuget response: {0}", text.ToString()));
+
+                        try
+                        {
+                            string listText = text.ToString();
+                            const string nbuildKitVersionStart = "nBuildKit.Msbuild ";
+                            var index = listText.IndexOf(nbuildKitVersionStart, StringComparison.OrdinalIgnoreCase);
+                            var startIndex = index + nbuildKitVersionStart.Length;
+
+                            // The index of the next entry for nBuildKit
+                            var nextIndex = listText.IndexOf("nBuildKit", index + nbuildKitVersionStart.Length, StringComparison.OrdinalIgnoreCase);
+                            var length =  (nextIndex - startIndex);
+
+                            var versionText = string.Empty;
+                            if (length > -1)
+                            {
+                                versionText = listText.Substring(startIndex, length).Trim();
+                            }
+                            else
+                            {
+                                versionText = listText.Substring(startIndex).Trim();
+                            }
+                            var version = new Version(versionText);
+                            Major = version.Major;
+                            Minor = version.Minor;
+                            Patch = version.Build;
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <UsingTask TaskName="GetLastReleaseVersionFromFile"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MsBuildTasksAssembly)">
+        <ParameterGroup>
+            <VersionFile ParameterType="System.String" Required="true" />
+            <VersionMajor ParameterType="System.String" Output="true" />
+            <VersionMinor ParameterType="System.String" Output="true" />
+            <VersionPatch ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        try
+                        {
+                            string text;
+                            using (var reader = new System.IO.StreamReader(VersionFile))
+                            {
+                                text = reader.ReadToEnd();
+                            }
+
+                            const string majorVersionStart = "\"Major\": \"";
+                            var index = text.IndexOf(majorVersionStart);
+                            VersionMajor = text.Substring(
+                                index + majorVersionStart.Length,
+                                text.IndexOf("\"", index + majorVersionStart.Length) - (index + majorVersionStart.Length));
+
+                            const string minorVersionStart = "\"Minor\": \"";
+                            index = text.IndexOf(minorVersionStart);
+                            VersionMinor = text.Substring(
+                                index + minorVersionStart.Length,
+                                text.IndexOf("\"", index + minorVersionStart.Length) - (index + minorVersionStart.Length));
+
+                            const string patchVersionStart = "\"Patch\": \"";
+                            index = text.IndexOf(patchVersionStart);
+                            VersionPatch = text.Substring(
+                                index + patchVersionStart.Length,
+                                text.IndexOf("\"", index + patchVersionStart.Length) - (index + patchVersionStart.Length));
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

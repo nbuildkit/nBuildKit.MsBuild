@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="11.0"
+         DefaultTargets="Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
+        determines in which order the test steps are executed.
+
+        The following default steps are always executed:
+        - Clearing the existing build artifacts from the workspace and creation of the required directories. Clearing the
+          existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
+        - Restoring the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally also restores the
+          NuGet packages as specified in the nBuildKit specific 'packages.config' files.
+
+        The following test steps are by default provided through the given properties:
+        $(TestStepsPrepareVcsBranch)     - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
+                                           name as the remote tracking branch.
+        $(TestStepsPrepareGetVersion)    - Gathers version information and stores it in a temporary file for use by the rest of the test process.
+                                           Currently supported methods of gathering version information are using (in order):
+                                           - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
+                                             in the 'ScriptGetVersion' property. The task should output:
+                                             - VersionMajor
+                                             - VersionMinor
+                                             - VersionPatch
+                                             - VersionBuild
+                                             - VersionPreRelease
+                                             - VersionSemantic
+                                             - VersionSemanticFull
+                                             - VersionSemanticNuget
+                                           - The version stored in an 'version.xml' file which contains an MsBuild property group with
+                                             the properties:
+                                             - BuildNumber
+                                             - VersionMajor
+                                             - VersionMinor
+                                             - VersionPatch
+                                             - VersionBuild
+                                             - VersionPreRelease
+                                             - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
+                                             - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
+        $(TestStepsPrepareGetIssueIds)   - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
+        $(TestStepsPrepareReleaseNotes)  - Gathers the release notes and stores them for later use during the test process. Release notes
+                                           are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
+                                           currently allows gathering release notes from GitHub, Jira and YouTrack
+        $(TestStepsPrepareVcsInfo)       - Stores the Version Control System (VCS) information in a file for later use.
+                                           Currently supported version control systems is GIT
+        $(TestStepsPrepareGenerateFiles) - Generates one or more files from a set of template files.
+
+        Additional test steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Each script has the following properties passed to it:
+        $(SharedPropertyFile)              - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog)          - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)               - The full version of the nBuildKit library that is executing the build.
+        $(DirNBuildKitMsBuild)            - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)      - The full path to the directory that contains the shared nBuildkit scripts.
+        $(DirNBuildKitMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
+    -->
+    <ItemGroup>
+        <TestStepsToExecute Include="$(TestStepsPrepareVcsBranch)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareGetIssueIds)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareReleaseNotes)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareVcsInfo)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Generate;
+                Prepare;
+            </Groups>
+        </TestStepsToExecute>
+    </ItemGroup>
+
+    <!--
+        Define the scripts that should be executed when any one of the test steps fails.
+
+        Steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Each script has the following properties passed to it:
+        $(SharedPropertyFile)             - The full path to the settings.props file (i.e. this file).
+        $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
+        $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
+        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
+        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
+        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
+        $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
+
+        Additionally any properties defined by the 'Properties' section are also pushed up.
+    -->
+    <ItemGroup>
+        <!--
+        <TestFailureStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </TestFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - WORKSPACE ****
+    -->
+        <!--
+        The list of all files that should be deleted prior to starting the test process.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <TestFilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the test process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <TestDirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all files that should be copied prior to starting the tests.
+    -->
+    <ItemGroup>
+        <!--<TestFilesToCopy Include="$(DirTest)\**\*.*">
+            <TargetDirectory>$(DirBuildTest)</TargetDirectory>
+        </TestFilesToCopy>-->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!--
+        The list of all files that should be generated and their template files.
+
+        The template file may contain zero or more template parameters as indicated at the top of this
+        file. Template parameters must be enclosed in '${}'.
+
+        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
+    -->
+    <ItemGroup>
+        <!--<TestFilesToGenerate Include="$(DirBuildTemp)\MyFile.txt">
+            <Template>$(DirTemplates)\MyTemplatefile.txt</Template>
+            <Encoding>UTF-8</Encoding>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTemp)\MyOtherFile.txt">
+            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
+            <Token>MyAdditionalTemplateParameter</Token>
+            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
+            <Encoding>UTF-8</Encoding>
+        </TestFilesToGenerate>-->
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
+        *     SHARED TOOLS                  *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the tools paths -->
+    <PropertyGroup>
+        <!-- Currently there are no test specific tools -->
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsTestSettings>true</ExistsTestSettings>
+    </PropertyGroup>
+</Project>

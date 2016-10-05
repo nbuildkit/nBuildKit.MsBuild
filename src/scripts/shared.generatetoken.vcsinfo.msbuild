@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="11.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedGenerateTokenVcsInfo>true</ExistsSharedGenerateTokenVcsInfo>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetVcsInfoFromFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetVcsInfoFromFile.msbuild') AND '$(ExistsExtensionsGetVcsInfoFromFile)' != 'true' " />
+
+    <Target Name="shared_generatetoken_vcsinfo">
+        <GetVcsInfoFromFile InfoFile="$(FileVcsInfo)"
+                            Condition="Exists('$(FileVcsInfo)')">
+            <Output TaskParameter="Revision" PropertyName="VcsRevision" />
+            <Output TaskParameter="Branch" PropertyName="VcsBranch" />
+        </GetVcsInfoFromFile>
+
+        <ItemGroup>
+            <TemplateTokens Include="VcsRevision">
+                <ReplacementValue>$(VcsRevision)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="VcsBranch">
+                <ReplacementValue>$(VcsBranch)</ReplacementValue>
+            </TemplateTokens>
+
+            <TemplateTokens Include="VcsGitRemoteRepository">
+                <ReplacementValue>$(GitRemoteRepository)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+    </Target>
+</Project>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="11.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedGenerateTokenConfiguration>true</ExistsSharedGenerateTokenConfiguration>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+
+    <Target Name="shared_generatetoken_configuration">
+        <ItemGroup>
+            <TemplateTokens Include="Configuration">
+                <ReplacementValue>$(Configuration)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="Platform">
+                <ReplacementValue>$(Platform)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="PlatformWithoutSpaces">
+                <ReplacementValue>$(PlatformWithoutSpaces)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+    </Target>
+</Project>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="11.0"
+         DefaultTargets="Build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Define the values for the version number -->
+    <PropertyGroup>
+        <!-- Get the build number from a CI server (e.g. Jenkins) -->
+        <BuildNumber>$(BUILD_NUMBER)</BuildNumber>
+        
+        <!-- If the build number doesn't exist then just set it to zero so that it has some kind of value -->
+        <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
+        
+        <!-- The version numbers -->
+        <VersionMajor>1</VersionMajor>
+        <VersionMinor>2</VersionMinor>
+        <VersionPatch>3</VersionPatch>
+        <VersionBuild>$(BuildNumber)</VersionBuild>
+        <VersionPreRelease></VersionPreRelease>
+    </PropertyGroup>
+</Project>

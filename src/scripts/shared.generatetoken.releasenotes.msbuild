@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="11.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedGenerateTokenReleaseNotes>true</ExistsSharedGenerateTokenReleaseNotes>
+    </PropertyGroup>
+
+    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
+            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\HtmlEncodeText.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\HtmlEncodeText.msbuild') AND '$(ExistsExtensionsHtmlEncodeText)' != 'true' "/>
+
+    <Target Name="shared_generatetoken_releasenotes">
+        <CreateProperty Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotes)'))"
+                        Condition="Exists('$(FileReleaseNotes)') AND '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="Value" PropertyName="ReleaseNotes" />
+        </CreateProperty>
+        <HtmlEncodeText Text="$(ReleaseNotes)"
+                        Condition=" '$(ReleaseNotes)' != '' ">
+            <Output TaskParameter="EncodedText" PropertyName="ReleaseNotesHtmlEncoded" />
+        </HtmlEncodeText>
+
+        <ItemGroup>
+            <!-- Release notes -->
+            <TemplateTokens Include="ReleaseNotes"
+                            Condition=" '$(ReleaseNotes)' != '' ">
+                <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ReleaseNotes"
+                            Condition=" '$(ReleaseNotes)' == '' ">
+                <ReplacementValue> </ReplacementValue>
+            </TemplateTokens>
+
+            <TemplateTokens Include="ReleaseNotesHtmlEncoded"
+                            Condition=" '$(ReleaseNotesHtmlEncoded)' != '' ">
+                <ReplacementValue>$(ReleaseNotesHtmlEncoded)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="ReleaseNotesHtmlEncoded"
+                            Condition=" '$(ReleaseNotesHtmlEncoded)' == '' ">
+                <ReplacementValue> </ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+    </Target>
+</Project>

@@ -1,0 +1,154 @@
+<!--
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
+         ToolsVersion="11.0">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsPublicKeySignatureFromKeyFile>true</ExistsExtensionsPublicKeySignatureFromKeyFile>
+
+        <!--
+            For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
+            However starting with version 14 that is no longer the case so have to differentiate between these cases.
+        -->
+        <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
+        <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
+    </PropertyGroup>
+
+    <UsingTask TaskName="PublicKeySignatureFromKeyFile"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MsBuildTasksAssembly)">
+        <ParameterGroup>
+            <SnExe ParameterType="System.String" Required="true" />
+            <DirTemp ParameterType="System.String" Required="true" />
+            <Input ParameterType="System.String" Required="true" />
+            <PublicKey ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var publicKeyFile = System.IO.Path.Combine(DirTemp, (System.IO.Path.GetRandomFileName()));
+                        try
+                        {
+                            {
+                                Log.LogMessage(MessageImportance.Normal, string.Format("Extracting public key file from {0} ...", Input));
+                                var publicKeyInfo = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = SnExe,
+                                    Arguments = string.Format("-p \"{0}\" \"{1}\"", Input, publicKeyFile.TrimEnd('\\')),
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+
+                                var process = new System.Diagnostics.Process();
+                                process.StartInfo = publicKeyInfo;
+                                process.OutputDataReceived +=
+                                    (s, e) =>
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(e.Data))
+                                        {
+                                            Log.LogMessage(MessageImportance.Low, e.Data);
+                                        }
+                                    };
+                                process.ErrorDataReceived +=
+                                    (s, e) =>
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(e.Data))
+                                        {
+                                            Log.LogError(e.Data);
+                                        }
+                                    };
+                                process.Start();
+
+                                process.BeginOutputReadLine();
+                                process.BeginErrorReadLine();
+                                process.WaitForExit();
+
+                                if (process.ExitCode != 0)
+                                {
+                                    Log.LogError(
+                                        string.Format(
+                                            "{0} exited with a non-zero exit code while trying to extract the public key file from the complete key file. Exit code was: {1}",
+                                            System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                            process.ExitCode));
+                                    return false;
+                                }
+                            }
+
+                            var text = new System.Text.StringBuilder();
+                            {
+                                Log.LogMessage(MessageImportance.Normal, "Extracting public key ...");
+                                var info = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = SnExe,
+                                    Arguments = string.Format("-tp \"{0}\"", publicKeyFile.TrimEnd('\\')),
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+                                };
+
+                                var process = new System.Diagnostics.Process();
+                                process.StartInfo = info;
+                                process.OutputDataReceived +=
+                                    (s, e) =>
+                                    {
+                                        text.Append(e.Data);
+                                        if (!string.IsNullOrWhiteSpace(e.Data))
+                                        {
+                                            Log.LogMessage(MessageImportance.Low, e.Data);
+                                        }
+                                    };
+                                process.ErrorDataReceived +=
+                                    (s, e) =>
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(e.Data))
+                                        {
+                                            Log.LogError(e.Data);
+                                        }
+                                    };
+                                process.Start();
+
+                                process.BeginOutputReadLine();
+                                process.BeginErrorReadLine();
+                                process.WaitForExit();
+
+                                if (process.ExitCode != 0)
+                                {
+                                    Log.LogError(
+                                        string.Format(
+                                            "{0} exited with a non-zero exit code while trying to extract the public key from the public key file. Exit code was: {1}",
+                                            System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                            process.ExitCode));
+                                    return false;
+                                }
+                            }
+
+                            const string startString = "Public key (hash algorithm: sha1):";
+                            const string endString = "Public key token is";
+                            var publicKeyText = text.ToString();
+                            var startIndex = publicKeyText.IndexOf(startString);
+                            var endIndex = publicKeyText.IndexOf(endString);
+                            PublicKey = publicKeyText.Substring(startIndex + startString.Length, endIndex - (startIndex + startString.Length));
+                        }
+                        finally
+                        {
+                            if (System.IO.File.Exists(publicKeyFile))
+                            {
+                                System.IO.File.Delete(publicKeyFile);
+                            }
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

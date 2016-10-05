@@ -1,0 +1,66 @@
+<!--
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
+         ToolsVersion="11.0">
+    <UsingTask TaskName="CalculateCustomVersion"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <VersionMajor ParameterType="System.String" Output="true" />
+            <VersionMinor ParameterType="System.String" Output="true" />
+            <VersionPatch ParameterType="System.String" Output="true" />
+            <VersionBuild ParameterType="System.String" Output="true" />
+            <VersionPreRelease ParameterType="System.String" Output="true" />
+            <VersionSemantic ParameterType="System.String" Output="true" />
+            <VersionSemanticFull ParameterType="System.String" Output="true" />
+            <VersionSemanticNuGet ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        try
+                        {
+                            VersionMajor = "4";
+                            VersionMinor = "3";
+                            VersionPatch = "2";
+                            VersionBuild = "1";
+                            VersionPreRelease = "MyPreRelease";
+                            VersionSemantic = string.Format(
+                                "{0}.{1}.{2}",
+                                VersionMajor,
+                                VersionMinor,
+                                VersionPatch);
+                            VersionSemanticFull = string.Format(
+                                "{0}.{1}.{2}-{3}+{4}",
+                                VersionMajor,
+                                VersionMinor,
+                                VersionPatch,
+                                VersionPreRelease,
+                                VersionBuild);
+                            VersionSemanticNuGet = string.Format(
+                                "{0}.{1}.{2}-{3}{4}",
+                                VersionMajor,
+                                VersionMinor,
+                                VersionPatch,
+                                VersionPreRelease,
+                                VersionBuild);
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogError(e.ToString());
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

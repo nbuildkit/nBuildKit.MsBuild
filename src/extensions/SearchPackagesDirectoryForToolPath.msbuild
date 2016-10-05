@@ -1,0 +1,45 @@
+<!--
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
+         ToolsVersion="11.0">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsSearchPackagesDirectoryForToolPath>true</ExistsExtensionsSearchPackagesDirectoryForToolPath>
+
+        <!--
+            For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
+            However starting with version 14 that is no longer the case so have to differentiate between these cases.
+        -->
+        <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
+        <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
+    </PropertyGroup>
+
+    <!--
+        Finds the full path for a tool that was installed by NuGet
+        Define:
+        - PackagesDir: Directory that contains the 'installed' packages.
+        - FileToLocate: Name of the executable file for which the path should be located.
+        - Path: Return variable containing the full path of the executable file.
+    -->
+    <UsingTask TaskName="SearchPackagesDirectoryForToolPath"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MsBuildTasksAssembly)">
+        <ParameterGroup>
+            <PackagesDir ParameterType="System.String" Required="true" />
+            <FileToLocate ParameterType="System.String" Required="true" />
+            <Path ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Linq" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
+                    Path = System.IO.Directory.EnumerateFiles(PackagesDir, FileToLocate, SearchOption.AllDirectories)
+                        .OrderBy(k => System.IO.Path.GetDirectoryName(k))
+                        .LastOrDefault();
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

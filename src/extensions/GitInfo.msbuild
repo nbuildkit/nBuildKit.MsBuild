@@ -1,0 +1,169 @@
+<!--
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
+         ToolsVersion="11.0">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsGitInfo>true</ExistsExtensionsGitInfo>
+
+        <!--
+            For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
+            However starting with version 14 that is no longer the case so have to differentiate between these cases.
+        -->
+        <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
+        <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
+    </PropertyGroup>
+
+    <UsingTask TaskName="GitInfo"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MsBuildTasksAssembly)">
+        <ParameterGroup>
+            <GitExecutablePath ParameterType="System.String" Required="true" />
+            <WorkingDirectory ParameterType="System.String" Required="true" />
+            <CurrentRevision ParameterType="System.String" Output="true" />
+            <CurrentBranch ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        // Get the current revision
+                        {
+                            var info = new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        FileName = GitExecutablePath,
+                                        Arguments = "rev-parse HEAD",
+                                        WorkingDirectory = WorkingDirectory,
+                                        UseShellExecute = false,
+                                        RedirectStandardOutput = true,
+                                        RedirectStandardError = true,
+                                    };
+
+                            var text = new System.Text.StringBuilder();
+                            var process = new System.Diagnostics.Process();
+                            process.StartInfo = info;
+                            process.OutputDataReceived +=
+                                (s, e) =>
+                                {
+                                    text.Append(e.Data);
+                                };
+                            process.ErrorDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogWarning(e.Data);
+                                    }
+                                };
+                            process.Start();
+
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
+                            process.WaitForExit();
+
+                            CurrentRevision = text.ToString().Trim();
+                        }
+
+                        // Get the current branch
+                        {
+                            var info = new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        FileName = GitExecutablePath,
+                                        Arguments = "rev-parse --abbrev-ref HEAD",
+                                        WorkingDirectory = WorkingDirectory,
+                                        UseShellExecute = false,
+                                        RedirectStandardOutput = true,
+                                        RedirectStandardError = true,
+                                    };
+
+                            var text = new System.Text.StringBuilder();
+                            var process = new System.Diagnostics.Process();
+                            process.StartInfo = info;
+                            process.OutputDataReceived +=
+                                (s, e) =>
+                                {
+                                    text.Append(e.Data);
+                                };
+                            process.ErrorDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogWarning(e.Data);
+                                    }
+                                };
+                            process.Start();
+
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
+                            process.WaitForExit();
+
+                            CurrentBranch = text.ToString().Trim();
+                        }
+
+                        if (string.IsNullOrEmpty(CurrentBranch) && !string.IsNullOrEmpty(CurrentRevision))
+                        {
+                            Log.LogMessage(MessageImportance.High, "Current branch not found. Possibly on a detached head. Searching for branches that contain current commit.");
+
+                            // The current HEAD is probably a detached one so we need to find the branch that holds the
+                            // current commit
+                            var info = new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        FileName = GitExecutablePath,
+                                        Arguments = string.Format("branch --contains {0}", CurrentRevision),
+                                        WorkingDirectory = WorkingDirectory,
+                                        UseShellExecute = false,
+                                        RedirectStandardOutput = true,
+                                        RedirectStandardError = true,
+                                    };
+
+                            var lines = new System.Collections.Generic.List<string>();
+                            var process = new System.Diagnostics.Process();
+                            process.StartInfo = info;
+                            process.OutputDataReceived +=
+                                (s, e) =>
+                                {
+                                    lines.Add(e.Data);
+                                };
+                            process.ErrorDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogWarning(e.Data);
+                                    }
+                                };
+                            process.Start();
+
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
+                            process.WaitForExit();
+
+                            // Explicitly ignoring the error codes because GIT is a little silly with error codes
+                            // It produces error codes even if there's not really an error.
+
+                            foreach(var line in lines)
+                            {
+                                if (line.Contains("detached"))
+                                {
+                                    continue;
+                                }
+
+                                CurrentBranch = line.Trim(' ', '*');
+                                break;
+                            }
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>

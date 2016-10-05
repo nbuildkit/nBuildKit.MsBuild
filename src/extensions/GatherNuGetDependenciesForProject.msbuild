@@ -1,0 +1,148 @@
+<!--
+     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
+         ToolsVersion="11.0">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsGatherNuGetDependenciesForProject>true</ExistsExtensionsGatherNuGetDependenciesForProject>
+
+        <!--
+            For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
+            However starting with version 14 that is no longer the case so have to differentiate between these cases.
+        -->
+        <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
+        <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
+    </PropertyGroup>
+
+    <UsingTask TaskName="GatherNuGetDependenciesForProject"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MsBuildTasksAssembly)">
+        <ParameterGroup>
+            <NuGetSpec ParameterType="System.String" Required="true" />
+            <Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <DesignTimePackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
+            <VersionRangeType ParameterType="System.String" Required="false" />
+            <Dependencies ParameterType="System.String" Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.Xml" />
+            <Reference Include="System.Xml.Linq" />
+            <Using Namespace="System.Linq" />
+            <Code Type="Method" Language="cs">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        var excludedDependencies = new System.Collections.Generic.List<string>();
+                        if (DesignTimePackages != null)
+                        {
+                            foreach(var token in DesignTimePackages)
+                            {
+                                var packagePartialName = token.ToString().ToLower();
+                                excludedDependencies.Add(packagePartialName);
+                            }
+                        }
+
+                        var knownPackageFiles = new System.Collections.Generic.List<string>();
+
+                        // See if there is a packages.config file in the same directory as the nuspec file. Grab that too
+                        var localPackagesPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(NuGetSpec), "packages.config");
+                        if (System.IO.File.Exists(localPackagesPath))
+                        {
+                            knownPackageFiles.Add(localPackagesPath);
+                        }
+
+                        if (Packages != null)
+                        {
+                            foreach(var token in Packages)
+                            {
+                                var filePath = token.ToString();
+                                if (!System.IO.File.Exists(filePath))
+                                {
+                                    Log.LogMessage(MessageImportance.High, "File does not exist: {0}", filePath);
+                                    continue;
+                                }
+
+                                if (!knownPackageFiles.Contains(filePath))
+                                {
+                                    knownPackageFiles.Add(filePath);
+                                }
+                            }
+                        }
+
+                        var knownDependencies = new System.Collections.Generic.List<string>();
+                        var builder = new System.Text.StringBuilder();
+                        foreach (var packageFile in knownPackageFiles)
+                        {
+                            System.Xml.Linq.XDocument xDoc = null;
+                            try
+                            {
+                                xDoc = System.Xml.Linq.XDocument.Load(packageFile);
+                            }
+                            catch(System.Exception)
+                            {
+                                Log.LogError("Failed to load document {0}.", packageFile);
+                            }
+
+                            var packages = from package in xDoc.Element("packages").Descendants("package")
+                                           select new
+                                                {
+                                                    Id = package.Attribute("id").Value,
+                                                    Version = package.Attribute("version").Value,
+                                                };
+
+                            foreach (var package in packages)
+                            {
+                                if (excludedDependencies.Any(p => package.Id.ToLower().Contains(p)))
+                                {
+                                    Log.LogMessage("Ignoring design time package: {0}", package.Id);
+                                    continue;
+                                }
+
+                                if (knownDependencies.Contains(package.Id))
+                                {
+                                    continue;
+                                }
+
+                                if (builder.Length > 0)
+                                {
+                                    builder.Append(System.Environment.NewLine);
+                                }
+
+                                var packageVersion = new Version(package.Version);
+                                var versionRange = package.Version;
+                                if (!string.IsNullOrEmpty(VersionRangeType) && !"none".Equals(VersionRangeType.ToLower()))
+                                {
+                                    switch (VersionRangeType.ToLower())
+                                    {
+                                        case "major":
+                                            versionRange = string.Format("[{0}, {1})", package.Version, packageVersion.Major + 1);
+                                            break;
+                                        case "minor":
+                                            versionRange = string.Format("[{0}, {1}.{2})", package.Version, packageVersion.Major, packageVersion.Minor + 1);
+                                            break;
+                                        case "patch":
+                                            versionRange = string.Format("[{0}, {1}.{2}.{3})", package.Version, packageVersion.Major, packageVersion.Minor, packageVersion.Build + 1);
+                                            break;
+                                    }
+                                }
+
+                                builder.Append(string.Format("<dependency id='{0}' version='{1}' />", package.Id, versionRange));
+                                knownDependencies.Add(package.Id);
+                            }
+                        }
+
+
+                        Dependencies = builder.ToString();
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>
