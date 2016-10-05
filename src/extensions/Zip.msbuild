@@ -2,7 +2,7 @@
      Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="Build"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
@@ -168,7 +168,7 @@
                                         var filePath = pair.Key;
                                         var list = pair.Value;
 
-                                        using (var fs = new FileStream(filePath, FileMode.Open))
+                                        using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                                         {
                                             foreach(var relativePath in list)
                                             {

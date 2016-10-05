@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="nBuildKit_Test_Execute_CSharp_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
@@ -20,6 +20,8 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\InvokePesterOnFile.msbuild"
@@ -93,14 +95,37 @@
                Condition="!Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
 
+    <Target Name="_nBuildKit_Test_Execute_CSharp_GetPrerequisites">
+        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)"
+                                    Condition="Exists('$(FileSemanticVersion)')">
+            <Output TaskParameter="VersionMajorNext" PropertyName="VersionMajorNext" />
+            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+        </GetSemanticVersionFromFile>
+    </Target>
+
     <Target Name="nBuildKit_Test_Execute_CSharp_Latest_Run"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
+            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths;_nBuildKit_Test_Execute_CSharp_GetPrerequisites">
+        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)"
+                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)')" />
+        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)\artifacts"
+                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)\artifacts')" />
+        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)\nuget"
+                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)\nuget')" />
+        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)\symbols"
+                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)\symbols')" />
+
         <TemplateText Template="$(FileReportVerificationLatestBuildCSharp)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
         </TemplateText>
 
         <ItemGroup>
+            <VerifyLatestCSharpBuildArguments Include="nbuildkitminimumversion">
+                <Value>$(VersionSemantic)</Value>
+            </VerifyLatestCSharpBuildArguments>
+            <VerifyLatestCSharpBuildArguments Include="nbuildkitmaximumversion">
+                <Value>$(VersionMajorNext).0.0</Value>
+            </VerifyLatestCSharpBuildArguments>
             <VerifyLatestCSharpBuildArguments Include="projectworkspaceLocation">
                 <Value>$(DirWorkspace)</Value>
             </VerifyLatestCSharpBuildArguments>
@@ -122,13 +147,28 @@
     </Target>
 
     <Target Name="nBuildKit_Test_Execute_CSharp_Oldest_Run"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
+            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths;_nBuildKit_Test_Execute_CSharp_GetPrerequisites">
+        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)"
+                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)')" />
+        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)\artifacts"
+                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)\artifacts')" />
+        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)\nuget"
+                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)\nuget')" />
+        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)\symbols"
+                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)\symbols')" />
+
         <TemplateText Template="$(FileReportVerificationOldestBuildCSharp)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
         </TemplateText>
 
         <ItemGroup>
+            <VerifyOldestCSharpBuildArguments Include="nbuildkitminimumversion">
+                <Value>$(VersionNBuildKitOldestSupported)</Value>
+            </VerifyOldestCSharpBuildArguments>
+            <VerifyOldestCSharpBuildArguments Include="nbuildkitmaximumversion">
+                <Value>$(VersionMajorNext).0.0</Value>
+            </VerifyOldestCSharpBuildArguments>
             <VerifyOldestCSharpBuildArguments Include="projectworkspaceLocation">
                 <Value>$(DirWorkspace)</Value>
             </VerifyOldestCSharpBuildArguments>

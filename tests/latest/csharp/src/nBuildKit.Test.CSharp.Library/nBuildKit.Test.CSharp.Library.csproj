@@ -12,6 +12,12 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
+  <PropertyGroup>
+    <ShouldSign Condition=" '$(ShouldSign)' == '' ">true</ShouldSign>
+    <SignAssembly Condition=" '$(ShouldSign)' == 'true' ">true</SignAssembly>
+    <DelaySign Condition=" '$(ShouldSign)' == 'true' ">false</DelaySign>
+    <AssemblyOriginatorKeyFile Condition=" '$(ShouldSign)' == 'true' ">$(MSBuildThisFileDirectory)\..\..\nbuildkit.msbuild.tests.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -25,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>RELEASE;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

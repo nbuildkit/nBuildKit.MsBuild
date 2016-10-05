@@ -3,7 +3,7 @@
 -->
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="4.0">
+         ToolsVersion="11.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsReportGenerator>true</ExistsExtensionsReportGenerator>
@@ -21,7 +21,7 @@
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
             <ReportGeneratorExe ParameterType="System.String" Required="true" />
-            <OpenCoverOutputFile ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <OpenCoverOutputFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <OutputDir ParameterType="System.String" Required="true" />
         </ParameterGroup>
         <Task>
@@ -29,7 +29,7 @@
                 <![CDATA[
                     public override bool Execute()
                     {
-                        if ((OpenCoverOutputFile == null) || (OpenCoverOutputFile.Length == 0))
+                        if ((OpenCoverOutputFiles == null) || (OpenCoverOutputFiles.Length == 0))
                         {
                             Log.LogError("At least one open cover output file has to be specified");
                             return false;
@@ -37,7 +37,8 @@
 
                         var builder = new System.Text.StringBuilder();
                         {
-                            foreach(var token in OpenCoverOutputFile)
+                            var reportFileBuilder = new System.Text.StringBuilder();
+                            foreach(var token in OpenCoverOutputFiles)
                             {
                                 var filePath = token.ToString();
                                 if (!System.IO.File.Exists(filePath))
@@ -46,10 +47,22 @@
                                     continue;
                                 }
 
-                                builder.Append(string.Format("-reports:\"{0}\" ", filePath.TrimEnd('\\')));
+                                if (reportFileBuilder.Length > 0)
+                                {
+                                    reportFileBuilder.Append(";");
+                                }
+
+                                reportFileBuilder.Append(string.Format("\"{0}\"", filePath.TrimEnd('\\')));
                             }
 
-                            builder.Append(string.Format("-reporttypes:Html;XmlSummary "));
+                            if (reportFileBuilder.Length == 0)
+                            {
+                                Log.LogError("At least one valid open cover output file has to be specified");
+                                return false;
+                            }
+
+                            builder.Append(string.Format("-reports:{0} ", reportFileBuilder.ToString()));
+                            builder.Append(string.Format("-reporttypes:Html;HtmlSummary;XmlSummary;TextSummary;Badges "));
 
                             // Make sure we remove the back-slash because if we don't then
                             // the closing quote will be eaten by the command line parser. Note that

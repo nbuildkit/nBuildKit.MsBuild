@@ -3,7 +3,7 @@
 -->
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="4.0">
+         ToolsVersion="11.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsUpdateAttributeInCode>true</ExistsExtensionsUpdateAttributeInCode>
@@ -23,6 +23,7 @@
             <InputFile ParameterType="System.String" Required="true" />
             <AttributeName ParameterType="System.String" Required="true" />
             <Value ParameterType="System.String" Required="true" />
+            <Encoding ParameterType="System.String" Required="false" />
         </ParameterGroup>
         <Task>
             <Code Type="Method" Language="cs">
@@ -78,7 +79,13 @@
 
                             if (found)
                             {
-                                using (var writer = new StreamWriter(InputFile, false))
+                                var encoding = System.Text.Encoding.ASCII;
+                                if (!string.IsNullOrWhiteSpace(Encoding))
+                                {
+                                    encoding = System.Text.Encoding.GetEncoding(Encoding);
+                                }
+
+                                using (var writer = new StreamWriter(InputFile, false, encoding))
                                 {
                                     for (int i = 0; i < lines.Count; i++)
                                     {

@@ -3,7 +3,7 @@
 -->
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="4.0">
+         ToolsVersion="11.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsOpenCover>true</ExistsExtensionsOpenCover>
@@ -39,7 +39,6 @@
                         var builder = new System.Text.StringBuilder();
                         {
                             builder.Append(string.Format("-register:user "));
-                            builder.Append(string.Format("-showunvisited "));
                             builder.Append(string.Format("-returntargetcode:3000 "));
                             builder.Append(string.Format("-target:\"{0}\" ", UnitTestExe));
 

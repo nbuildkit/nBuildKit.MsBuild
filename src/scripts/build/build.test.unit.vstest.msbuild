@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="nBuildKit_Build_Test_Unit_VsTest_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
@@ -30,6 +30,8 @@
 
     <Target Name="nBuildKit_Build_Test_Unit_VsTest_Run"
             DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_GetToolPaths" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_Execute" />
     </Target>
 
@@ -78,39 +80,11 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
-        <Message Text="Resolving build templates ..."
-                 Importance="low"/>
-
-        <TemplateText Template="$(DirReportVsTest)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="DirReportVsTestExpanded" />
-        </TemplateText>
-
-        <TemplateText Template="$(FileReportOpenCoverXml)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverXmlExpanded" />
-        </TemplateText>
-
-        <TemplateText Template="$(FileReportOpenCoverCsv)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverCsvExpanded" />
-        </TemplateText>
-    </Target>
-
-    <PropertyGroup>
-        <FileReportReportGeneratorXmlSummary>$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
-    </PropertyGroup>
-    <Target Name="_nBuildKit_Build_Test_Unit_VsTest_Execute"
-            DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates">
+    <Target Name="_nBuildKit_Build_Test_Unit_VsTest_GetToolPaths">
         <Error Text="The packages directory does not exist. Cannot search for the unit test executables."
                Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
         <Error Text="Could not locate the VsTest executable path. Cannot execute unit tests."
                Condition="!Exists('$(ToolsExternalVsTestPath)') AND '$(ShouldExecute)' == 'true' "/>
-
-        <MakeDir Directories="$(DirReportVsTestExpanded)"
-                 Condition="!Exists('$(DirReportVsTestExpanded)') AND '$(ShouldExecute)' == 'true' " />
 
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="nBuildKit.Tools.VsCoverageToReportGenerator"
@@ -136,7 +110,7 @@
                       Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
         <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
                                             FileToLocate="ReportGenerator.exe"
-                                            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
+                                            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
         </SearchPackagesDirectoryForToolPath>
         <Message Text="The ReportGenerator executable was found at: $(ToolsExternalReportGeneratorPath)"
@@ -144,6 +118,62 @@
                  Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
         <Warning Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports."
                  Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
+                      PackageName="OpenCoverToCoberturaConverter"
+                      PackageVersion="$(ToolsExternalOpenCoverToCoberturaConverterVersion)"
+                      PackageDirectory="$(DirPackages)"
+                      Sources="@(NuGetSources)"
+                      Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "/>
+        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
+                                            FileToLocate="OpenCoverToCoberturaConverter.exe"
+                                            Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
+          <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath" />
+        </SearchPackagesDirectoryForToolPath>
+        <Message Text="The OpenCoverToCoberturaConverter executable was found at: $(ToolsExternalOpenCoverToCoberturaConverterPath)"
+                 Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Warning Text="Could not locate the OpenCoverToCoberturaConverter executable path. Cannot convert code coverage reports."
+                 Condition="!Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') AND '$(ShouldExecute)' == 'true' "/>
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates"
+            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize">
+        <Message Text="Resolving build templates ..."
+                 Importance="low"/>
+
+        <TemplateText Template="$(DirReportVsTest)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="DirReportVsTestExpanded" />
+        </TemplateText>
+
+        <TemplateText Template="$(FileReportOpenCoverXml)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverXmlExpanded" />
+        </TemplateText>
+
+        <TemplateText Template="$(FileReportOpenCoverCsv)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="FileReportOpenCoverCsvExpanded" />
+        </TemplateText>
+
+        <TemplateText Template="$(DirReportOpenCoverCobertura)"
+                      Tokens="@(TemplateTokens)">
+            <Output TaskParameter="Result" PropertyName="DirReportOpenCoverCoberturaExpanded" />
+        </TemplateText>
+    </Target>
+
+    <PropertyGroup>
+        <FileReportReportGeneratorXmlSummary>$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Build_Test_Unit_VsTest_RunTests"
+            DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates">
+        <Error Text="The packages directory does not exist. Cannot search for the unit test executables."
+               Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "/>
+        <Error Text="Could not locate the VsTest executable path. Cannot execute unit tests."
+               Condition="!Exists('$(ToolsExternalVsTestPath)') AND '$(ShouldExecute)' == 'true' "/>
+
+        <MakeDir Directories="$(DirReportVsTestExpanded)"
+                 Condition="!Exists('$(DirReportVsTestExpanded)') AND '$(ShouldExecute)' == 'true' " />
 
         <!-- Create the run settings file for vstest -->
         <ItemGroup>
@@ -168,18 +198,27 @@
             <Output TaskParameter="Value" PropertyName="VsTestAdditionalParams" />
         </CreateProperty>
 
+        <Message Text="Executing unit tests for: " />
+        <Message Text="--- %(UnitTestAssemblies.FullPath)" />
         <Exec
             Command="&quot;$(ToolsExternalVsTestPath)&quot; @(UnitTestAssemblies->'%22%(FullPath)%22', ' ') /EnableCodeCoverage /InIsolation /Platform:x86 /settings:&quot;$(FileRunSettings)&quot; /logger:trx $(VsTestAdditionalParams)"
             IgnoreExitCode="False"
             IgnoreStandardErrorWarningFormat="False">
         </Exec>
+    </Target>
 
+    <PropertyGroup>
+        <FileReportReportGeneratorXmlSummary>$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
+    </PropertyGroup>
+    <Target Name="_nBuildKit_Build_Test_Unit_VsTest_Execute"
+            DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_VsTest_RunTests">
         <ItemGroup>
             <CoverageFilesToConvert Include="$(DirReportVsTestExpanded)\**\*.coverage" />
         </ItemGroup>
 
         <!--
-            Get the directory paths that contain the binaries used to run the unit tests with. Note that these paths cannot have a trailing backslash because on the command line the backslash escapes the quote and then we
+            Get the directory paths that contain the binaries used to run the unit tests with. Note that these paths cannot
+            have a trailing backslash because on the command line the backslash escapes the quote and then we
             get a path that ends in a quote.
 
             Because MsBuild does not allow combining property functions and metadata expansions this isn't going to be pretty ....
@@ -209,7 +248,7 @@
         </ItemGroup>
 
         <ReportGenerator ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)"
-                         OpenCoverOutputFile="@(ReportFilesToProcess)"
+                         OpenCoverOutputFiles="@(ReportFilesToProcess)"
                          OutputDir="$(DirReportGeneratorOutput)"
                          Condition=" Exists('$(ToolsExternalReportGeneratorPath)') AND '@(ReportFilesToProcess)' != '' AND '$(ShouldExecute)' == 'true' "/>
 

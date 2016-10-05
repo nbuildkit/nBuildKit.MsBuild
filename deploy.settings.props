@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
@@ -13,12 +13,38 @@
         The following deploy steps are by default provided through the given properties:
         $(DeployStepsPrepareVcsBranch)    - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
                                             name as the remote tracking branch.
+        $(DeployStepsPrepareGetVersion)   - Gathers version information and stores it in a temporary file for use by the rest of the deploy process.
+                                            Currently supported methods of gathering version information are using (in order):
+                                            - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
+                                                in the 'VersionScriptPath' property. The task should output:
+                                                - VersionMajor
+                                                - VersionMinor
+                                                - VersionPatch
+                                                - VersionBuild
+                                                - VersionPreRelease
+                                                - VersionSemantic
+                                                - VersionSemanticFull
+                                                - VersionSemanticNuget
+                                            - The version stored in an 'version.xml' file which contains an MsBuild property group with
+                                                the properties:
+                                                - BuildNumber
+                                                - VersionMajor
+                                                - VersionMinor
+                                                - VersionPatch
+                                                - VersionBuild
+                                                - VersionPreRelease
+                                            - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
+                                            - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
+        $(DeployStepsPrepareTagVcs)       - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
         $(DeployStepsPrepareGetIssueIds)  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
-        $(DeployStepsTagVcs)              - Tags the current commit with the version number. Currentlyl supported version control systems are TFS and GIT.
+        $(DeployStepsPushToTags)          - Pushes the tags to a remote git repository
         $(DeployStepsPushToNuget)         - Pushes one or more artifacts to a NuGet feed
         $(DeployStepsPushToDirectory)     - Pushes one or more artifacts to a directory
         $(DeployStepsPushToSymbolServer)  - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
         $(DeployStepsPushToGitHubRelease) - Pushes zero or more files to a GitHub release
+        $(DeployStepsPushToGitBranch)     - Pushes zero or more files to a Git branch. Any files that currently exist on that branch are removed
+                                            and replaced by the specified files.
+        $(DeployStepsPushToGitRepository) - Pushes an archived local workspace to a Git repository.
 
         Additional deploy steps can be defined by providing the path to the MsBuild script that should be executed
         for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
@@ -41,6 +67,25 @@
                 Prepare;
             </Groups>
         </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </DeployStepsToExecute>
+        <!--
+        <DeployStepsToExecute Include="$(DeployStepsPrepareTagVcs)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+            <Groups>
+                Prepare;
+                Tag;
+            </Groups>
+        </DeployStepsToExecute>
+        -->
         <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
             <Properties>
             </Properties>
@@ -49,13 +94,14 @@
             </Groups>
         </DeployStepsToExecute>
         <!--
-        <DeployStepsToExecute Include="$(DeployStepsTagVcs)">
+        <DeployStepsToExecute Include="$(DeployStepsPushToTags)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
             <Groups>
                 Tag;
+                Push;
             </Groups>
         </DeployStepsToExecute>
         -->
@@ -101,6 +147,30 @@
                 Push;
             </Groups>
         </DeployStepsToExecute>
+        <!--
+         <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+            <Groups>
+                Git;
+                Push;
+            </Groups>
+        </DeployStepsToExecute>
+        -->
+        <!--
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitRepository)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+            <Groups>
+                Git;
+                Push;
+            </Groups>
+        </DeployStepsToExecute>
+        -->
     </ItemGroup>
 
     <!--
@@ -217,6 +287,41 @@
             <ExcludedFiles>
             </ExcludedFiles>
         </PushToGitHubReleaseSpecs>
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - GIT BRANCH ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a GIT branch. All properties
+        allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+    -->
+    <ItemGroup>
+        <!--
+        <PushToGitBranchSpecs Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
+             <Repository>$(GitRemoteRepository)</Repository>
+             <Branch>master</Branch>
+             <ExtractZipFiles>true</ExtractZipFiles>
+             <CommitMessage>New changes</CommitMessage>
+        </PushToGitBranchSpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - GIT REPOSITORY ****
+    -->
+    <!--
+        The ItemGroup defining the zip files containing a git workspace that should be pushed to a GIT repository.
+        All properties allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+    -->
+    <ItemGroup Condition=" '@(PushToGitRepositorySpecs)' == '' ">
+        <!--
+        <PushToGitRepositorySpecs Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
+             <Repository>$(GitRemoteRepository)</Repository>
+        </PushToGitRepositorySpecs>
+        -->
     </ItemGroup>
 
 

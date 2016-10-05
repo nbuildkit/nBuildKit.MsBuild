@@ -3,7 +3,7 @@
 -->
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="4.0">
+         ToolsVersion="11.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGenerateInternalsVisibleToAttributes>true</ExistsExtensionsGenerateInternalsVisibleToAttributes>
@@ -64,7 +64,7 @@
                             if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                             {
                                 var projects = taskItem.GetMetadata("Projects");
-                                if (string.IsNullOrEmpty(projects) || !projects.Contains(Project))
+                                if (string.IsNullOrEmpty(projects) || (projects.IndexOf(Project, StringComparison.OrdinalIgnoreCase) < 0))
                                 {
                                     continue;
                                 }

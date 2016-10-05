@@ -5,6 +5,12 @@
 
 param(
     [Parameter(Mandatory)]
+    [string] $nbuildkitminimumversion,
+
+    [Parameter(Mandatory)]
+    [string] $nbuildkitmaximumversion,
+
+    [Parameter(Mandatory)]
     [string] $projectWorkspaceLocation,
 
     [Parameter(Mandatory)]
@@ -21,10 +27,16 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Describe 'For the C# test' {
 
     Context 'the build executes successfully' {
+        $msBuildProperties = @{
+            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
+            'NBuildKitMinimumVersion' = $nbuildkitminimumversion
+            'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+        }
+
         $exitCode = Invoke-MsBuildFromCommandLine `
             -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
-            -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
+            -properties $msBuildProperties `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.csharp.build.log') `
             -Verbose
 
@@ -61,10 +73,10 @@ Describe 'For the C# test' {
 
                 $dependencies = $xmlDoc.package.metadata.dependencies
                 $dependencies.ChildNodes.Count | Should Be 4
-                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Autofac' } | Select-Object -ExpandProperty version -First 1 | Should Be '[2.2.4.900, 2.3)'
-                $dependencies.ChildNodes | Where-Object { $_.id -eq 'log4net' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.2.10, 1.3)'
-                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Lokad.Shared' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.5.181.0, 1.6)'
-                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Mono.Cecil' } | Select-Object -ExpandProperty version -First 1 | Should Be '[0.9.6.0, 0.10)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Autofac' } | Select-Object -ExpandProperty version -First 1 | Should Be '[2.2.4.900, 2.3.0)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'log4net' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.2.10, 1.3.0)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Lokad.Shared' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.5.181, 1.6.0)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Mono.Cecil' } | Select-Object -ExpandProperty version -First 1 | Should Be '[0.9.6, 0.10.0)'
             }
 
             $assemblyFile = Join-Path $packageUnzipLocation 'lib\net45\NBuildKit.Test.CSharp.Library.dll'
@@ -73,7 +85,7 @@ Describe 'For the C# test' {
             }
 
             It 'has files with the right metadata' {
-                [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be '4.3.0.0'
+                [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be '4.0.0.0'
 
                 $file = [System.IO.FileInfo]$assemblyFile
                 $file.VersionInfo.FileVersion | Should Be '4.3.2.1'
@@ -112,10 +124,10 @@ Describe 'For the C# test' {
 
                 $dependencies = $xmlDoc.package.metadata.dependencies
                 $dependencies.ChildNodes.Count | Should Be 4
-                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Autofac' } | Select-Object -ExpandProperty version -First 1 | Should Be '[2.2.4.900, 2.3)'
-                $dependencies.ChildNodes | Where-Object { $_.id -eq 'log4net' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.2.10, 1.3)'
-                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Lokad.Shared' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.5.181.0, 1.6)'
-                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Mono.Cecil' } | Select-Object -ExpandProperty version -First 1 | Should Be '[0.9.6.0, 0.10)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Autofac' } | Select-Object -ExpandProperty version -First 1 | Should Be '[2.2.4.900, 2.3.0)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'log4net' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.2.10, 1.3.0)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Lokad.Shared' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.5.181, 1.6.0)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'Mono.Cecil' } | Select-Object -ExpandProperty version -First 1 | Should Be '[0.9.6, 0.10.0)'
             }
 
             $assemblyFile = Join-Path $packageUnzipLocation 'lib\net45\NBuildKit.Test.CSharp.Library.dll'
@@ -129,7 +141,7 @@ Describe 'For the C# test' {
             }
 
             It 'has files with the right metadata' {
-                [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be '4.3.0.0'
+                [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be '4.0.0.0'
 
                 $file = [System.IO.FileInfo]$assemblyFile
                 $file.VersionInfo.FileVersion | Should Be '4.3.2.1'
@@ -199,10 +211,16 @@ Describe 'For the C# test' {
     }
 
     Context 'the deploy executes successfully' {
+        $msBuildProperties = @{
+            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
+            'NBuildKitMinimumVersion' = $nbuildkitminimumversion
+            'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+        }
+
         $exitCode = Invoke-MsBuildFromCommandLine `
             -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'deploy' `
-            -properties @{ "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props') } `
+            -properties $msBuildProperties `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.oldest.csharp.deploy.log') `
             -Verbose
 

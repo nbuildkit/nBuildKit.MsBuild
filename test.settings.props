@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <VersionNBuildKitOldestSupported>0.8.0</VersionNBuildKitOldestSupported>
+    </PropertyGroup>
+
     <!--
         The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
         determines in which order the test steps are executed.
@@ -151,25 +155,51 @@
     <!--
         **** PREPARE - WORKSPACE ****
     -->
+        <!--
+        The list of all files that should be deleted prior to starting the test process.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
     <ItemGroup>
-        <TestFilesToCopy Include="$(DirTestLatestCSharp)\**\*.*"
-                         Exclude="$(DirTestLatestCSharp)\environment.props;$(DirTestLatestCSharp)\settings.props;$(DirTestLatestCSharp)\**\packages.config;$(DirTestLatestCSharp)\**\*.csproj"
+        <!--
+        <TestFilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the test process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <TestDirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all files that should be copied prior to starting the tests.
+    -->
+    <ItemGroup>
+        <TestFilesToCopy Include="$(DirTestLatestCSharp)\**\*.*;$(DirTest)\nbuildkit.msbuild.tests.snk"
+                         Exclude="$(DirTestLatestCSharp)\environment.props;$(DirTestLatestCSharp)\**\packages.config;$(DirTestLatestCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestLatestCSharp)')">
             <TargetDirectory>$(DirBuildTestLatestCSharp)</TargetDirectory>
         </TestFilesToCopy>
-        <TestFilesToCopy Include="$(DirTestOldestCSharp)\**\*.*"
-                         Exclude="$(DirTestOldestCSharp)\environment.props;$(DirTestOldestCSharp)\settings.props;$(DirTestOldestCSharp)\**\packages.config;$(DirTestOldestCSharp)\**\*.csproj"
+        <TestFilesToCopy Include="$(DirTestOldestCSharp)\**\*.*;$(DirTest)\nbuildkit.msbuild.tests.snk"
+                         Exclude="$(DirTestOldestCSharp)\environment.props;$(DirTestOldestCSharp)\**\packages.config;$(DirTestOldestCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestOldestCSharp)')">
             <TargetDirectory>$(DirBuildTestOldestCSharp)</TargetDirectory>
         </TestFilesToCopy>
 
         <TestFilesToCopy Include="$(DirTestLatestVbNet)\**\*.*"
-                         Exclude="$(DirTestLatestVbNet)\environment.props;$(DirTestLatestVbNet)\settings.props;$(DirTestLatestVbNet)\**\packages.config;$(DirTestLatestVbNet)\**\*.vbproj"
+                         Exclude="$(DirTestLatestVbNet)\environment.props;$(DirTestLatestVbNet)\**\packages.config;$(DirTestLatestVbNet)\**\*.vbproj"
                          Condition="Exists('$(DirTestLatestVbNet)')">
             <TargetDirectory>$(DirBuildTestLatestVbNet)</TargetDirectory>
         </TestFilesToCopy>
         <TestFilesToCopy Include="$(DirTestOldestVbNet)\**\*.*"
-                         Exclude="$(DirTestOldestVbNet)\environment.props;$(DirTestOldestVbNet)\settings.props;$(DirTestOldestVbNet)\**\packages.config;$(DirTestOldestVbNet)\**\*.vbproj"
+                         Exclude="$(DirTestOldestVbNet)\environment.props;$(DirTestOldestVbNet)\**\packages.config;$(DirTestOldestVbNet)\**\*.vbproj"
                          Condition="Exists('$(DirTestOldestVbNet)')">
             <TargetDirectory>$(DirBuildTestOldestVbNet)</TargetDirectory>
         </TestFilesToCopy>
@@ -192,144 +222,172 @@
             <Template>$(DirTestLatestCSharp)\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\packages.config">
             <Template>$(DirTestLatestCSharp)\packages.config</Template>
-        </TestFilesToGenerate>
-        <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\settings.props">
-            <Template>$(DirTestLatestCSharp)\settings.props</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Console\nBuildKit.Test.CSharp.Console.csproj">
             <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Console\nBuildKit.Test.CSharp.Console.csproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Console\packages.config">
             <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Console\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Library\nBuildKit.Test.CSharp.Library.csproj">
             <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Library\nBuildKit.Test.CSharp.Library.csproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Library\packages.config">
             <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Library\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Wpf\nBuildKit.Test.CSharp.Wpf.csproj">
             <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Wpf\nBuildKit.Test.CSharp.Wpf.csproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\nBuildKit.Test.CSharp.Wpf\packages.config">
             <Template>$(DirTestLatestCSharp)\src\nBuildKit.Test.CSharp.Wpf\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\Test.Unit.Library\Test.Unit.Library.csproj">
             <Template>$(DirTestLatestCSharp)\src\Test.Unit.Library\Test.Unit.Library.csproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\src\Test.Unit.Library\packages.config">
             <Template>$(DirTestLatestCSharp)\src\Test.Unit.Library\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
 
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\environment.props">
             <Template>$(DirTestOldestCSharp)\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\packages.config">
             <Template>$(DirTestOldestCSharp)\packages.config</Template>
-        </TestFilesToGenerate>
-        <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\settings.props">
-            <Template>$(DirTestOldestCSharp)\settings.props</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\src\nBuildKit.Test.CSharp.Console\nBuildKit.Test.CSharp.Console.csproj">
             <Template>$(DirTestOldestCSharp)\src\nBuildKit.Test.CSharp.Console\nBuildKit.Test.CSharp.Console.csproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\src\nBuildKit.Test.CSharp.Console\packages.config">
             <Template>$(DirTestOldestCSharp)\src\nBuildKit.Test.CSharp.Console\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\src\nBuildKit.Test.CSharp.Library\nBuildKit.Test.CSharp.Library.csproj">
             <Template>$(DirTestOldestCSharp)\src\nBuildKit.Test.CSharp.Library\nBuildKit.Test.CSharp.Library.csproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\src\nBuildKit.Test.CSharp.Library\packages.config">
             <Template>$(DirTestOldestCSharp)\src\nBuildKit.Test.CSharp.Library\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\src\nBuildKit.Test.CSharp.Wpf\nBuildKit.Test.CSharp.Wpf.csproj">
             <Template>$(DirTestOldestCSharp)\src\nBuildKit.Test.CSharp.Wpf\nBuildKit.Test.CSharp.Wpf.csproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\src\nBuildKit.Test.CSharp.Wpf\packages.config">
             <Template>$(DirTestOldestCSharp)\src\nBuildKit.Test.CSharp.Wpf\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\src\Test.Unit.Library\Test.Unit.Library.csproj">
             <Template>$(DirTestOldestCSharp)\src\Test.Unit.Library\Test.Unit.Library.csproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\src\Test.Unit.Library\packages.config">
             <Template>$(DirTestOldestCSharp)\src\Test.Unit.Library\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
 
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\environment.props">
             <Template>$(DirTestLatestVbNet)\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\packages.config">
             <Template>$(DirTestLatestVbNet)\packages.config</Template>
-        </TestFilesToGenerate>
-        <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\settings.props">
-            <Template>$(DirTestLatestVbNet)\settings.props</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj">
             <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Console\packages.config">
             <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Console\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Library\nBuildKit.Test.VbNet.Library.vbproj">
             <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Library\nBuildKit.Test.VbNet.Library.vbproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Library\packages.config">
             <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Library\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Wpf\nBuildKit.Test.VbNet.Wpf.vbproj">
             <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Wpf\nBuildKit.Test.VbNet.Wpf.vbproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\nBuildKit.Test.VbNet.Wpf\packages.config">
             <Template>$(DirTestLatestVbNet)\src\nBuildKit.Test.VbNet.Wpf\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\Test.Unit.Library\Test.Unit.Library.vbproj">
             <Template>$(DirTestLatestVbNet)\src\Test.Unit.Library\Test.Unit.Library.vbproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestLatestVbNet)\src\Test.Unit.Library\packages.config">
             <Template>$(DirTestLatestVbNet)\src\Test.Unit.Library\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
 
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\environment.props">
             <Template>$(DirTestOldestVbNet)\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\packages.config">
             <Template>$(DirTestOldestVbNet)\packages.config</Template>
-        </TestFilesToGenerate>
-        <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\settings.props">
-            <Template>$(DirTestOldestVbNet)\settings.props</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj">
             <Template>$(DirTestOldestVbNet)\src\nBuildKit.Test.VbNet.Console\nBuildKit.Test.VbNet.Console.vbproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\src\nBuildKit.Test.VbNet.Console\packages.config">
             <Template>$(DirTestOldestVbNet)\src\nBuildKit.Test.VbNet.Console\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\src\nBuildKit.Test.VbNet.Library\nBuildKit.Test.VbNet.Library.vbproj">
             <Template>$(DirTestOldestVbNet)\src\nBuildKit.Test.VbNet.Library\nBuildKit.Test.VbNet.Library.vbproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\src\nBuildKit.Test.VbNet.Library\packages.config">
             <Template>$(DirTestOldestVbNet)\src\nBuildKit.Test.VbNet.Library\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\src\nBuildKit.Test.VbNet.Wpf\nBuildKit.Test.VbNet.Wpf.vbproj">
             <Template>$(DirTestOldestVbNet)\src\nBuildKit.Test.VbNet.Wpf\nBuildKit.Test.VbNet.Wpf.vbproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\src\nBuildKit.Test.VbNet.Wpf\packages.config">
             <Template>$(DirTestOldestVbNet)\src\nBuildKit.Test.VbNet.Wpf\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\src\Test.Unit.Library\Test.Unit.Library.vbproj">
             <Template>$(DirTestOldestVbNet)\src\Test.Unit.Library\Test.Unit.Library.vbproj</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTestOldestVbNet)\src\Test.Unit.Library\packages.config">
             <Template>$(DirTestOldestVbNet)\src\Test.Unit.Library\packages.config</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
     </ItemGroup>
 

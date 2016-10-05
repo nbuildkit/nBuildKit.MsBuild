@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="nBuildKit_Deploy_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
@@ -8,14 +8,20 @@
         <ExistsDeploySteps>true</ExistsDeploySteps>
     </PropertyGroup>
     <PropertyGroup>
-        <DeployStepsPrepareGetIssueIds>$(DirNBuildKitMsBuild)\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
         <DeployStepsPrepareVcsBranch>$(DirNBuildKitMsBuild)\shared.prepare.vcssetbranch.msbuild</DeployStepsPrepareVcsBranch>
+        <DeployStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</DeployStepsPrepareGetVersion>
+        <DeployStepsPrepareTagVcs>$(DirNBuildKitMsBuild)\shared.prepare.tag.vcs.msbuild</DeployStepsPrepareTagVcs>
+
+        <DeployStepsPrepareGetIssueIds>$(DirNBuildKitMsBuild)\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
         <DeployStepsRestoreNuGet>$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
-        <DeployStepsTagVcs>$(DirNBuildKitMsBuild)\deploy\deploy.tag.vcs.msbuild</DeployStepsTagVcs>
+
+        <DeployStepsPushToTags>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.tags.msbuild</DeployStepsPushToTags>
         <DeployStepsPushToNuget>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
         <DeployStepsPushToDirectory>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.directory.msbuild</DeployStepsPushToDirectory>
         <DeployStepsPushToSymbolServer>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
         <DeployStepsPushToGitHubRelease>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
+        <DeployStepsPushToGitBranch>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
+        <DeployStepsPushToGitRepository>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.gitrepository.msbuild</DeployStepsPushToGitRepository>
     </PropertyGroup>
 
     <ItemGroup>

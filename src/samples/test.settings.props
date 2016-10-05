@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
@@ -135,6 +135,32 @@
     <!--
         **** PREPARE - WORKSPACE ****
     -->
+        <!--
+        The list of all files that should be deleted prior to starting the test process.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <TestFilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the test process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <TestDirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all files that should be copied prior to starting the tests.
+    -->
     <ItemGroup>
         <!--<TestFilesToCopy Include="$(DirTest)\**\*.*">
             <TargetDirectory>$(DirBuildTest)</TargetDirectory>
@@ -156,11 +182,13 @@
     <ItemGroup>
         <!--<TestFilesToGenerate Include="$(DirBuildTemp)\MyFile.txt">
             <Template>$(DirTemplates)\MyTemplatefile.txt</Template>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTemp)\MyOtherFile.txt">
             <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
             <Token>MyAdditionalTemplateParameter</Token>
             <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
+            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>-->
     </ItemGroup>
 

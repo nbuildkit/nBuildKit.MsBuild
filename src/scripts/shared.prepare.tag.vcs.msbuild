@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
-         DefaultTargets="nBuildKit_Deploy_Tag_Vcs_Run"
+<Project ToolsVersion="11.0"
+         DefaultTargets="nBuildKit_Shared_Prepare_Tag_Vcs_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
@@ -16,18 +16,18 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
-    <Target Name="nBuildKit_Deploy_Tag_Vcs_Run" DependsOnTargets="_nBuildKit_Deploy_Tag_Vcs_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Deploy_Tag_Vcs_Git" />
-        <CallTarget Targets="_nBuildKit_Deploy_Tag_Vcs_Tfs" />
+    <Target Name="nBuildKit_Shared_Prepare_Tag_Vcs_Run" DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_DisplayInfo">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Tag_Vcs_Git" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Tag_Vcs_Tfs" />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Deploy_Tag_Vcs_DisplayInfo" DependsOnTargets="_nBuildKit_Deploy_Tag_Vcs_DebugLog">
+    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_DisplayInfo" DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_DebugLog">
         <Message Text="Tagging release ..."
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_Tag_Vcs_DebugLog"
+    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Project directory structure:"
                  Importance="low"/>
@@ -72,7 +72,7 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_Tag_Vcs_GetVersion">
+    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
         <Warning Text="The semantic version file does not exist. Will not be able to get the version."
                  Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
         <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)"
@@ -84,28 +84,20 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_Tag_Vcs_Git"
+    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Git"
             Condition=" '$(IsGitWorkspace)' == 'true' "
-            DependsOnTargets="_nBuildKit_Deploy_Tag_Vcs_GetVersion">
+            DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
         <Error Text="The git executable does not exist. Cannot apply tags."
                Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "/>
 
         <Exec Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;Tagging $(VersionSemantic)&quot; &quot;$(VersionSemantic)&quot;"
               WorkingDirectory="$(DirWorkspace)"
               Condition=" '$(ShouldExecute)' == 'true' "/>
-
-        <!--
-            Push the tags to the remote repository. Note that we suppress all the output because otherwise GIT echo's the repository URL it
-            pushes too which may have the GitHub token in there
-        -->
-        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; push --tags --repo $(GitRemoteRepository) &gt;nul 2&gt;&amp;1"
-              WorkingDirectory="$(DirWorkspace)"
-              Condition=" '$(ShouldExecute)' == 'true' "/>
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_Tag_Vcs_Tfs"
+    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Tfs"
             Condition=" '$(IsTfsWorkspace)' == 'true' "
-            DependsOnTargets="_nBuildKit_Deploy_Tag_Vcs_GetVersion">
+            DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
         <Error Text="The TFS executable does not exist. Cannot apply tags."
                Condition=" '$(ToolsExternalTfsPath)' == '' AND '$(ShouldExecute)' == 'true' "/>
 

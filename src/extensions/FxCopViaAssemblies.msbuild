@@ -3,7 +3,7 @@
 -->
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="4.0">
+         ToolsVersion="11.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsFxCopViaAssemblies>true</ExistsExtensionsFxCopViaAssemblies>
@@ -32,7 +32,6 @@
         <ParameterGroup>
             <FxCopDir ParameterType="System.String" Required="true" />
             <OutputFile ParameterType="System.String" Required="true" />
-            <RuleSet ParameterType="System.String" Required="true" />
             <RuleSetDirectory ParameterType="System.String" Required="true" />
             <Assemblies ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <ReferenceFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
@@ -64,13 +63,6 @@
 
                         [Microsoft.Build.Framework.Required]
                         public string OutputFile
-                        {
-                            get;
-                            set;
-                        }
-
-                        [Microsoft.Build.Framework.Required]
-                        public string RuleSet
                         {
                             get;
                             set;
@@ -124,14 +116,15 @@
                         {
                             if (Assemblies != null)
                             {
-                                var assemblyPaths = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>();
+                                var assemblyPaths = new System.Collections.Generic.Dictionary<System.Tuple<string, string>, System.Collections.Generic.List<string>>();
 
                                 for (int i = 0; i < Assemblies.Length; i++)
                                 {
                                     var taskItem = Assemblies[i];
                                     // Expecting that the taskItems have:
-                                    // - taskItem.ItemSpec: Name of the assembly to include in the attribute
-                                    // - taskItem.TargetFramework:    Name of the group the assemblies belong to
+                                    // - taskItem.ItemSpec:        Name of the assembly to include in the attribute
+                                    // - taskItem.TargetFramework: Name of the group the assemblies belong to
+                                    // - taskItem.RuleSet:         File path of the rule set that should be used
                                     if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                                     {
                                         var path = Path.GetFullPath(taskItem.ItemSpec);
@@ -141,12 +134,19 @@
                                             continue;
                                         }
 
-                                        if (!assemblyPaths.ContainsKey(targetFramework))
+                                        var ruleSet = taskItem.GetMetadata("RuleSet");
+                                        if (string.IsNullOrEmpty(ruleSet))
                                         {
-                                            assemblyPaths.Add(targetFramework, new System.Collections.Generic.List<string>());
+                                            continue;
                                         }
 
-                                        var list = assemblyPaths[targetFramework];
+                                        var pair = new System.Tuple<string, string>(targetFramework, ruleSet);
+                                        if (!assemblyPaths.ContainsKey(pair))
+                                        {
+                                            assemblyPaths.Add(pair, new System.Collections.Generic.List<string>());
+                                        }
+
+                                        var list = assemblyPaths[pair];
                                         if (!list.Contains(path))
                                         {
                                             list.Add(path);
@@ -157,7 +157,7 @@
                                 foreach(var map in assemblyPaths)
                                 {
                                     Log.LogMessage(MessageImportance.Normal, string.Format("Analyzing assemblies with target framework [{0}] with FxCop", map.Key));
-                                    InvokeFxCop(map.Key, map.Value);
+                                    InvokeFxCop(map.Key.Item1, map.Key.Item2, map.Value);
                                 }
                             }
 
@@ -167,7 +167,7 @@
                             return !Log.HasLoggedErrors;
                         }
 
-                        private void InvokeFxCop(string targetFramework, System.Collections.Generic.IEnumerable<string> assemblyPaths)
+                        private void InvokeFxCop(string targetFramework, string ruleSetFilePath, System.Collections.Generic.IEnumerable<string> assemblyPaths)
                         {
                             var builder = new System.Text.StringBuilder();
                             {
@@ -179,7 +179,7 @@
                                         targetFramework.Replace(" ", "").Replace(".", ""),
                                         Path.GetExtension(OutputFile)));
 
-                                builder.Append(string.Format("/ruleset:=\"{0}\" ", RuleSet.TrimEnd('\\')));
+                                builder.Append(string.Format("/ruleset:=\"{0}\" ", ruleSetFilePath.TrimEnd('\\')));
                                 builder.Append(string.Format("/rulesetdirectory:\"{0}\" ", RuleSetDirectory.TrimEnd('\\')));
                                 builder.Append(string.Format("/out:\"{0}\" ", outputFilePath));
                                 builder.Append(string.Format("/ignoregeneratedcode "));

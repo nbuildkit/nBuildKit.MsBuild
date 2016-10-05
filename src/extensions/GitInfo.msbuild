@@ -3,7 +3,7 @@
 -->
 
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="4.0">
+         ToolsVersion="11.0">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGitInfo>true</ExistsExtensionsGitInfo>
@@ -21,7 +21,7 @@
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
             <GitExecutablePath ParameterType="System.String" Required="true" />
-            <LocalPath ParameterType="System.String" Required="true" />
+            <WorkingDirectory ParameterType="System.String" Required="true" />
             <CurrentRevision ParameterType="System.String" Output="true" />
             <CurrentBranch ParameterType="System.String" Output="true" />
         </ParameterGroup>
@@ -36,7 +36,7 @@
                                     {
                                         FileName = GitExecutablePath,
                                         Arguments = "rev-parse HEAD",
-                                        WorkingDirectory = LocalPath,
+                                        WorkingDirectory = WorkingDirectory,
                                         UseShellExecute = false,
                                         RedirectStandardOutput = true,
                                         RedirectStandardError = true,
@@ -71,9 +71,9 @@
                         {
                             var info = new System.Diagnostics.ProcessStartInfo
                                     {
-                                        FileName = "git",
+                                        FileName = GitExecutablePath,
                                         Arguments = "rev-parse --abbrev-ref HEAD",
-                                        WorkingDirectory = LocalPath,
+                                        WorkingDirectory = WorkingDirectory,
                                         UseShellExecute = false,
                                         RedirectStandardOutput = true,
                                         RedirectStandardError = true,
@@ -112,9 +112,9 @@
                             // current commit
                             var info = new System.Diagnostics.ProcessStartInfo
                                     {
-                                        FileName = "git",
+                                        FileName = GitExecutablePath,
                                         Arguments = string.Format("branch --contains {0}", CurrentRevision),
-                                        WorkingDirectory = LocalPath,
+                                        WorkingDirectory = WorkingDirectory,
                                         UseShellExecute = false,
                                         RedirectStandardOutput = true,
                                         RedirectStandardError = true,

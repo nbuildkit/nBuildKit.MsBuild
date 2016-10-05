@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="nBuildKit_Test_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
@@ -85,14 +85,16 @@
         <CreateItem Include="$(TestStepGroups.ToLower().Split(';'))">
            <Output TaskParameter="Include" ItemName="ExecutionGroupsForStep"/>
         </CreateItem>
-        <IsInCollection List="@(ExecutionGroupsForStep)" Items="@(ExecutionGroupsFromUser)">
+        <IsInCollection Collection="@(ExecutionGroupsFromUser)"
+                        Items="@(ExecutionGroupsForStep)">
             <Output TaskParameter="IsInList" PropertyName="ShouldExecuteStep" />
         </IsInCollection>
 
         <CreateItem Include="all">
            <Output TaskParameter="Include" ItemName="ExecutionGroupsForAllSteps"/>
         </CreateItem>
-        <IsInCollection List="@(ExecutionGroupsFromUser)" Items="@(ExecutionGroupsForAllSteps)">
+        <IsInCollection Collection="@(ExecutionGroupsForAllSteps)"
+                        Items="@(ExecutionGroupsFromUser)">
             <Output TaskParameter="IsInList" PropertyName="ShouldExecuteAllSteps" />
         </IsInCollection>
 
@@ -155,14 +157,16 @@
         <CreateItem Include="$(TestFailureStepGroups.ToLower().Split(';'))">
            <Output TaskParameter="Include" ItemName="ExecutionGroupsForStep"/>
         </CreateItem>
-        <IsInCollection List="@(ExecutionGroupsForStep)" Items="@(ExecutionGroupsFromUser)">
+        <IsInCollection Collection="@(ExecutionGroupsFromUser)"
+                        Items="@(ExecutionGroupsForStep)">
             <Output TaskParameter="IsInList" PropertyName="ShouldExecuteStep" />
         </IsInCollection>
 
         <CreateItem Include="all">
            <Output TaskParameter="Include" ItemName="ExecutionGroupsForAllSteps"/>
         </CreateItem>
-        <IsInCollection List="@(ExecutionGroupsFromUser)" Items="@(ExecutionGroupsForAllSteps)">
+        <IsInCollection Collection="@(ExecutionGroupsForAllSteps)"
+                        Items="@(ExecutionGroupsFromUser)">
             <Output TaskParameter="IsInList" PropertyName="ShouldExecuteAllSteps" />
         </IsInCollection>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="nBuildKit_Build_Analyze_Source_SourceMonitor_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
@@ -122,6 +122,7 @@
         <TemplateFile Template="$(FileTemplateSourceMonitor)"
                       OutputFileName="$(FileGeneratedSourceMonitor)"
                       Tokens="@(TemplateTokens)"
+                      Encoding="UTF-8"
                       Condition=" '$(ShouldExecute)' == 'true' "/>
 
         <SourceMonitor SourceMonitorExe="$(ToolsExternalSourceMonitorPath)"

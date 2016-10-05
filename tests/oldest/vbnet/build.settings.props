@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!-- Overrides for the build configuration -->
@@ -37,6 +37,8 @@
                                                            name as the remote tracking branch.
         $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
                                                            Currently supported version control systems is GIT
+        $(BuildStepsPrepareGetIssueIds)                  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
+        $(BuildStepsPrepareVcsMerge)                     - Merges the current changes to the designated target branch (specified by @(BranchMergeTarget)).
         $(BuildStepsPrepareGetVersion)                   - Gathers version information and stores it in a temporary file for use by the rest of the build process.
                                                            Currently supported methods of gathering version information are using (in order):
                                                            - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
@@ -59,8 +61,7 @@
                                                              - VersionPreRelease
                                                            - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
                                                            - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
-        $(BuildStepsPrepareGetIssueIds)                  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
-        $(BuildStepsPrepareVcsMerge)                     - Merges the current changes to the designated target branch (specified by $(BranchMergeTarget)).
+        $(BuildStepsPrepareTagVcs)                       - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
         $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process. Release notes
                                                            are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
                                                            currently allows gathering release notes from GitHub, Jira and YouTrack
@@ -76,7 +77,6 @@
         $(BuildStepsUnitTestNUnit)                       - Executes the unit tests with NUnit and measures code coverage with OpenCover.
         $(BuildStepsUnitTestMsTest)                      - Executes the unit tests with MsTest and measures code coverage with OpenCover.
         $(BuildStepsUnitTestVsTest)                      - Executes the unit tests with VsTest and measures code coverage.
-        $(BuildStepsAnalyzeBinariesMoma)                 - Analyzes the binary files with Moma (Mono Migration Analyzer).
         $(BuildStepsAnalyzeBinariesFxCop)                - Analyzes the binary files with FxCop.
         $(BuildStepsBuildApiDocumentationWithSandcastle) - Builds the API documentation with SandCastle from the inline XML documentation comments.
         $(BuildStepsPackNuGet)                           - Generates the NuGet packages.
@@ -99,6 +99,10 @@
     -->
     <ItemGroup>
         <!--
+            The following steps need to be executed on the original branch (i.e. the branch we are interested in
+            building.
+        -->
+        <!--
         <BuildStepsToExecute Include="$(BuildStepsPrepareVcsBranch)">
             <Properties>
             </Properties>
@@ -113,6 +117,33 @@
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGetIssueIds)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </BuildStepsToExecute>
+        -->
+
+        <!--
+            This step potentially changes the local branch we are building. If one or more merge targets have been
+            specified then this step will merge to all merge targets and leave the current branch as the last branch
+            we merged to.
+        -->
+        <!--
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsMerge)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </BuildStepsToExecute>
+        -->
+
+        <!--
+            All steps from here on may be executed on a different branch than the orginal branch we we started the
+            build on because we might have done some merging.
         -->
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
             <Properties>
@@ -122,21 +153,17 @@
             </Groups>
         </BuildStepsToExecute>
         <!--
-        <BuildStepsToExecute Include="$(BuildStepsPrepareGetIssueIds)">
+        <BuildStepsToExecute Include="$(BuildStepsPrepareTagVcs)"
+                             Condition=" '$(IsGitFlow)' == 'true' AND ('$(IsReleaseBranch)' == 'true' OR '$(IsHotfixBranch)' == 'true') ">
             <Properties>
             </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsMerge)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Prepare;
-            </Groups>
-        </BuildStepsToExecute>
+        -->
 
+        <!--
         <BuildStepsToExecute Include="$(BuildStepsPrepareReleaseNotes)">
             <Properties>
             </Properties>
@@ -245,17 +272,6 @@
             </Groups>
         </BuildStepsToExecute>
 
-        <!--
-        <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesMoma)">
-            <Properties>
-                Configuration=$(TestConfiguration);
-                Platform=$(Platform)
-            </Properties>
-            <Groups>
-                Analyze;
-            </Groups>
-        </BuildStepsToExecute>
-        -->
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
             <Properties>
                 Configuration=$(TestConfiguration);
@@ -329,9 +345,41 @@
 
 
     <!--
-        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
+        **** PREPARE - WORKSPACE ****
+    -->
+    <!--
+        The list of all files that should be deleted prior to starting the build process.
+
+        If the deletion process fails the build will continue and a warning will be printed.
     -->
     <ItemGroup>
+        <!--
+        <BuildFilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the build process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the build will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <BuildDirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
+    -->
+    <!--
+        The list of all assembly info files that should be updated with version and copyright information.
+
+        For additional information see the ShouldGenerateAssemblyXXXX properties below.
+    -->
+    <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
         <!--
         <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.cs" />
         <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.vb" />
@@ -354,11 +402,13 @@
         <!--
         <BuildFilesToGenerate Include="$(DirBuildTemp)\MyFile.txt">
             <Template>$(DirTemplates)\MyTemplatefile.txt</Template>
+            <Encoding>UTF-8</Encoding>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\MyOtherFile.txt">
             <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
             <Token>MyAdditionalTemplateParameter</Token>
             <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
+            <Encoding>UTF-8</Encoding>
         </BuildFilesToGenerate>
         -->
     </ItemGroup>
@@ -457,6 +507,59 @@
         <ShouldGenerateAssemblyBuildInfo>false</ShouldGenerateAssemblyBuildInfo>
     </PropertyGroup>
 
+    <!--
+        The ItemGroup defining the information for the generation of the InternalsVisibleAttribute.
+        Three different ways of referencing the test projects public key are available. Test assemblies
+        can be referenced by:
+        - Providing the snk key that was / is used to sign the test assembly. This is mainly of use
+          for test assemblies which are compiled at the same time as the target assemblies, i.e. test
+          assemblies that are part of the same Visual Studio solution.
+        - Providing the signed test assembly. This is mainly of use for test assemblies that have been
+          compiled prior to compiling the target assemblies, e.g. third party test assemblies.
+        - Providing the full public key for the assembly. This is mainly of use for assemblies that
+          do not exists on disk, e.g. assemblies that are dynamically generated.
+
+        Multiple projects can be referenced in the 'projects' section by separating them with a semi-colon (;). Whitespace
+        can be added if required but it has no influence on the project list.
+
+        If the assemblies are not signed it is possible to leave out the signing information, e.g. the 'KeyFile'
+        property, the 'AssemblyFromPackage' property and the 'PublicKey' property.
+    -->
+    <PropertyGroup>
+        <!--
+            Defines the compiler constants for which the InternalsVisibleTo attributes should
+            be generated.
+
+            Separate multiple compiler constants with semi-colons.
+        -->
+        <!-- <InternalsVisibletoCompilerConstants>INTERNALS_VISIBLE_TO</InternalsVisibletoCompilerConstants> -->
+    </PropertyGroup>
+    <ItemGroup>
+        <!--
+        <InternalsVisibleTo Include="MyTestProject">
+            <Projects>
+                MyProject1;
+                MyProject2;
+            </Projects>
+            <KeyFile>$(MyKeyFileReference)</KeyFile>
+        </InternalsVisibleTo>
+        <InternalsVisibleTo Include="SomeExternalAssembly">
+            <Projects>
+                MyProject1;
+                MyProject2;
+            </Projects>
+            <AssemblyFromPackage>SomeExternalAssembly.dll</AssemblyFromPackage>
+        </InternalsVisibleTo>
+        <InternalsVisibleTo Include="SomeOtherExternalAssemblyThatDoesNotExistOnDisk">
+            <Projects>
+                MyProject1;
+                MyProject2;
+            </Projects>
+            <PublicKey>$(TheFullPublicKeyForTheExternalAssemblyThatDoesNotExistOnDisk)</PublicKey>
+        </InternalsVisibleTo>
+        -->
+    </ItemGroup>
+
     <!-- Build configuration -->
     <PropertyGroup>
         <!--
@@ -501,6 +604,13 @@
             Allows build templates. , e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\coverage.csv.
         -->
         <!--<FileReportOpenCoverCsv Condition=" '$(FileReportOpenCoverCsv)' == '' ">$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv>-->
+
+        <!--
+            The full path to the Cobertura report directory which will contain the cobertura report files which are generated
+            by converting the OpenCover results to Cobertura.
+            Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}
+        -->
+        <DirReportOpenCoverCobertura Condition=" '$(DirReportOpenCoverCobertura)' == '' ">$(DirBuildLogs)</DirReportOpenCoverCobertura>
     </PropertyGroup>
     <ItemGroup>
         <!--
@@ -530,25 +640,6 @@
 
 
     <!--
-        **** BINARY ANALYSIS - MOMA ****
-    -->
-    <PropertyGroup>
-        <!--
-            The HTML report that is generated by MoMA. Allows build templates, e.g. $(DirReportMoma)\${ProductName}_moma.html.
-        -->
-        <!--<FileReportMoma Condition=" '$(FileReportMoma)' == '' ">$(DirReportMoma)\moma.html</FileReportMoma>-->
-    </PropertyGroup>
-    <ItemGroup>
-        <!--
-            The locations of the files that should be analyzed by MoMA (Mono Migration Analyzer).
-        -->
-        <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.dll"
-                        Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll" />
-        <MomaInputFiles Include="$(DirBuildBinPlatformConfig)\*.exe"/>
-    </ItemGroup>
-
-
-    <!--
         **** BINARY ANALYSIS - FXCOP ****
     -->
     <PropertyGroup>
@@ -561,11 +652,6 @@
             The full path to the FxCop output report. Allows build templates, e.g. $(DirBuildLogs)\${ProductName}_fxcop.xml.
         -->
         <!--<FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop>-->
-
-        <!--
-            The full path to the rules file that indicates which rules FxCop should use to analyse the binaries.
-        -->
-        <!--<FileFxCopRuleSet Condition=" '$(FileFxCopRuleSet)' == '' ">$(DirSrc)\codeanalysis.base.ruleset</FileFxCopRuleSet>-->
 
         <!--
             The full path to the XML file that contains the custom dictionary for FxCop.
@@ -590,12 +676,15 @@
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\nBuildKit.Test.*.dll"
                     Exclude="$(DirBuildBinPlatformConfig)\Test.*.dll;$(DirBuildBinPlatformConfig)\nBuildKit.Test.VbNet.Library.dll">
             <TargetFramework>4.5</TargetFramework>
+            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\nBuildKit.Test.*.exe">
             <TargetFramework>4.5</TargetFramework>
+            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>
         <FxCopFiles Include="$(DirBuildBinPlatformConfig)\nBuildKit.Test.VbNet.Library.dll">
             <TargetFramework>3.5</TargetFramework>
+            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>
 
     </ItemGroup>
@@ -675,6 +764,8 @@
         The item group defining the (partial) names of the NuGet packages that only contain design time element and should
         thus not be considered dependencies for the generated NuGet packages, even if they are included in the list
         of dependencies that should be included.
+
+        By default nBuildkit and nUnit are ignored.
     -->
     <ItemGroup>
         <!--<DesignTimeDependencies Include="nBuildKit" />-->
@@ -730,11 +821,6 @@
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir> -->
 
         <!--
-            The full path to the MoMA command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalMomaPath Condition=" '$(ToolsExternalMomaPath)' == '' ">UNDEFINED</ToolsExternalMomaPath> -->
-
-        <!--
             The full path to the MsTest command line executable.
         -->
         <!-- <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
@@ -754,6 +840,12 @@
         <ToolsExternalOpenCoverVersion Condition=" '$(ToolsExternalOpenCoverVersion)' == '' ">4.6.519</ToolsExternalOpenCoverVersion>-->
 
         <!--
+            The full path and version of the OpenCoverToCobertura converter command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalOpenCoverToCoberturaConverterPath Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverToCoberturaConverterPath>
+        <ToolsExternalOpenCoverToCoberturaConverterVersion Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterVersion)' == '' ">0.2.4</ToolsExternalOpenCoverToCoberturaConverterVersion>-->
+
+        <!--
             The full path and version to the ReportGenerator command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath>
@@ -762,7 +854,14 @@
         <!--
             The full path to the sn.exe command line executable.
         -->
-        <!-- <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' ">UNDEFINED</ToolsExternalSnPath>-->
+        <!--
+        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' ">UNDEFINED</ToolsExternalSnPath>
+        -->
 
         <!--
             The full path to the SourceMonitor command line executable. If not defined the packages directory is searched.

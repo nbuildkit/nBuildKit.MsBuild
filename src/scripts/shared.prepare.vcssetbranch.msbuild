@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          DefaultTargets="nBuildKit_Shared_Prepare_VcsSetBranch_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
@@ -8,6 +8,13 @@
 
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild') AND '$(ExistsExtensionsGitCheckout)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild') AND '$(ExistsExtensionsGitReset)' != 'true' " />
 
     <Target Name="nBuildKit_Shared_Prepare_VcsSetBranch_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
@@ -64,28 +71,32 @@
         <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
                Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
 
-        <Exec Command="git symbolic-ref --short HEAD"
-              IgnoreExitCode="true"
-              ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="CurrentGitBranch" />
-        </Exec>
+        <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
+                 WorkingDirectory="$(DirWorkspace)"
+                 Condition=" '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="CurrentBranch" PropertyName="CurrentGitBranch" />
+        </GitInfo>
         <Message Text="Current branch: $(CurrentGitBranch)" />
 
         <Message Text="Not on expected branch, resetting ..."
                  Condition=" '$(CurrentGitBranch)' != '$(BranchGitExpected)' " />
-        <Exec Command="git checkout $(BranchGitExpected)"
-              Condition=" '$(CurrentGitBranch)' != '$(BranchGitExpected)' " />
+        <GitCheckout GitExecutablePath="$(ToolsExternalGitPath)"
+                     WorkingDirectory="$(DirWorkspace)"
+                     Branch="$(BranchGitExpected)"
+                     Condition=" '$(CurrentGitBranch)' != '$(BranchGitExpected)' " />
 
-        <Exec Command="git rev-parse HEAD"
-              IgnoreExitCode="true"
-              ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="GitRevNoCurrentBranch" />
-        </Exec>
+        <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
+                 WorkingDirectory="$(DirWorkspace)"
+                 Condition=" '$(ShouldExecute)' == 'true' ">
+            <Output TaskParameter="CurrentRevision" PropertyName="GitRevNoCurrentBranch" />
+        </GitInfo>
         <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
 
         <Message Text="Not at expected revision, resetting ..."
                  Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' " />
-        <Exec Command="git reset --hard $(GitRevNoExpected)"
-              Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' " />
+        <GitReset GitExecutablePath="$(ToolsExternalGitPath)"
+                  WorkingDirectory="$(DirWorkspace)"
+                  Commit="$(GitRevNoExpected)"
+                  Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' " />
     </Target>
  </Project>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
+<Project ToolsVersion="11.0"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
@@ -14,8 +14,10 @@
         <BuildStepsPrepareVcsBranch>$(DirNBuildKitMsBuild)\shared.prepare.vcssetbranch.msbuild</BuildStepsPrepareVcsBranch>
         <BuildStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</BuildStepsPrepareGetVersion>
         <BuildStepsPrepareVcsMerge>$(DirNBuildKitMsBuild)\shared.prepare.vcsmergetotarget.msbuild</BuildStepsPrepareVcsMerge>
-        <BuildStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</BuildStepsPrepareReleaseNotes>
+        <BuildStepsPrepareTagVcs>$(DirNBuildKitMsBuild)\shared.prepare.tag.vcs.msbuild</BuildStepsPrepareTagVcs>
         <BuildStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</BuildStepsPrepareVcsInfo>
+
+        <BuildStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</BuildStepsPrepareReleaseNotes>
 
         <BuildStepsPrepareRestoreNpm>$(DirNBuildKitMsBuild)\shared.prepare.npm.restore.msbuild</BuildStepsPrepareRestoreNpm>
         <BuildStepsPrepareRestoreBower>$(DirNBuildKitMsBuild)\shared.prepare.bower.restore.msbuild</BuildStepsPrepareRestoreBower>
@@ -33,7 +35,6 @@
         <BuildStepsUnitTestMsTest>$(DirNBuildKitMsBuild)\build\build.test.unit.mstest.msbuild</BuildStepsUnitTestMsTest>
         <BuildStepsUnitTestVsTest>$(DirNBuildKitMsBuild)\build\build.test.unit.vstest.msbuild</BuildStepsUnitTestVsTest>
 
-        <BuildStepsAnalyzeBinariesMoma>$(DirNBuildKitMsBuild)\build\build.analyze.binaries.moma.msbuild</BuildStepsAnalyzeBinariesMoma>
         <BuildStepsAnalyzeBinariesFxCop>$(DirNBuildKitMsBuild)\build\build.analyze.binaries.fxcop.msbuild</BuildStepsAnalyzeBinariesFxCop>
 
         <BuildStepsBuildApiDocumentationWithSandcastle>$(DirNBuildKitMsBuild)\build\build.apidocumentation.sandcastle.msbuild</BuildStepsBuildApiDocumentationWithSandcastle>
