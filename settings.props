@@ -87,7 +87,7 @@
             * Copyrights
             * API documentation
         -->
-        <ProductName Condition=" '$(ProductName)' == '' ">nBuildKit</ProductName>
+        <ProductName Condition=" '$(ProductName)' == '' ">nBuildKit.MsBuild</ProductName>
 
         <!--
             The name of the product that can be used as part of a file path. This is for instance used for:
@@ -95,7 +95,7 @@
             * SourceMonitor
             * Deployment directory naming
         -->
-        <ProductNameInFilePath Condition=" '$(ProductNameInFilePath)' == '' ">nbuildkit</ProductNameInFilePath>
+        <ProductNameInFilePath Condition=" '$(ProductNameInFilePath)' == '' ">nbuildkit.msbuild</ProductNameInFilePath>
 
         <!--
             The description of the product. This is for instance used for:
@@ -110,7 +110,7 @@
             * Finding the correct assemblies and namespaces for unit testing and coverage reporting
             * Generated code files that contain namespaces
         -->
-        <ProductNamespace Condition=" '$(ProductNamespace)' == '' ">NBuildKit</ProductNamespace>
+        <ProductNamespace Condition=" '$(ProductNamespace)' == '' ">NBuildKit.MsBuild</ProductNamespace>
 
         <!--
             The first year the product was available / created. This is for instance used for:
@@ -123,19 +123,19 @@
             * Copyrights
             * API documentation
         -->
-        <CompanyName Condition=" '$(CompanyName)' == '' ">P. van der Velde</CompanyName>
+        <CompanyName Condition=" '$(CompanyName)' == '' ">nbuildkit</CompanyName>
 
         <!--
             The name of the company that can be used as a part of a file path. This is for instance used for:
             * Installer file paths
         -->
-        <CompanyNameInFilePath Condition=" '$(CompanyNameInFilePath)' == '' ">pvandervelde</CompanyNameInFilePath>
+        <CompanyNameInFilePath Condition=" '$(CompanyNameInFilePath)' == '' ">nbuildkit</CompanyNameInFilePath>
 
         <!--
             The URL of the company website. This is for instance used for:
             * nuspec files
         -->
-        <CompanyUrl Condition=" '$(CompanyUrl)' == '' ">https://github.com/pvandervelde/nBuildKit</CompanyUrl>
+        <CompanyUrl Condition=" '$(CompanyUrl)' == '' ">https://github.com/nbuildkit/nBuildKit.MsBuild</CompanyUrl>
 
         <!--
             The email address that is specified in the documentation. This is for instance used for:
@@ -162,19 +162,19 @@
     -->
     <PropertyGroup>
         <!-- The user name of the user who owns the repository on GitHub -->
-        <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">pvandervelde</GitHubUserName>
+        <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">nbuildkit</GitHubUserName>
 
         <!--
             The github repository that contains the source code for the current product. Used when getting the release notes
             from the github issues. The correct format is <USERNAME>/<REPOSITORYNAME>
         -->
-        <GitHubRepositoryName Condition=" '$(GitHubRepositoryName)' == '' ">nBuildKit</GitHubRepositoryName>
+        <GitHubRepositoryName Condition=" '$(GitHubRepositoryName)' == '' ">nBuildKit.MsBuild</GitHubRepositoryName>
 
         <!--
             The full URL to the GIT repository. Can include the '%GitHubToken%' environment variable for authenticated
             connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
         -->
-        <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">https://%GitHubToken%:@github.com/$(GitHubUserName)/nBuildKit.git</GitRemoteRepository>
+        <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">https://%GitHubToken%:@github.com/$(GitHubUserName)/$(GitHubRepositoryName).git</GitRemoteRepository>
     </PropertyGroup>
 
     <!--
