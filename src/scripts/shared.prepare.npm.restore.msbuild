@@ -10,6 +10,8 @@
     <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild') AND '$(ExistsExtensionsInvokeNodeTool)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
@@ -66,6 +68,11 @@
                                             Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalNodeJsPath" />
         </SearchPackagesDirectoryForToolPath>
+
+        <GetToolFullPath Tool="$(ToolsExternalNodeJsPath)"
+                         Condition=" '$(ToolsExternalNodeJsPath)' != 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalNodeJsPath" />
+        </GetToolFullPath>
         <Message Text="The node.js executable was found at: $(ToolsExternalNodeJsPath)"
                  Importance="low"
                  Condition="Exists('$(ToolsExternalNodeJsPath)') AND '$(ShouldExecute)' == 'true' " />
@@ -84,6 +91,10 @@
                                             Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalPythonPath" />
         </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath Tool="$(ToolsExternalPythonPath)"
+                         Condition=" '$(ToolsExternalPythonPath)' != 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalPythonPath" />
+        </GetToolFullPath>
         <Message Text="The python executable was found at: $(ToolsExternalPythonPath)"
                  Importance="low"
                  Condition="Exists('$(ToolsExternalPythonPath)') AND '$(ShouldExecute)' == 'true' " />
@@ -102,6 +113,10 @@
                                             Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalNpmPath" />
         </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath Tool="$(ToolsExternalNpmPath)"
+                         Condition=" '$(ToolsExternalNpmPath)' != 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalNpmPath" />
+        </GetToolFullPath>
         <Message Text="The npm executable was found at: $(ToolsExternalNpmPath)"
                  Importance="low"
                  Condition="Exists('$(ToolsExternalNpmPath)') AND '$(ShouldExecute)' == 'true' " />
