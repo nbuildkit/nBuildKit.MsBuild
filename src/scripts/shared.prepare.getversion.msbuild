@@ -14,6 +14,8 @@
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitVersion)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
@@ -137,6 +139,10 @@
                                             Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalGitVersionPath" />
         </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath Tool="$(ToolsExternalGitVersionPath)"
+                         Condition=" '$(ToolsExternalGitVersionPath)' != 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalGitVersionPath" />
+        </GetToolFullPath>
         <Message Text="The GitVersion executable was found at: $(ToolsExternalGitVersionPath)"
                  Importance="low"
                  Condition="Exists('$(ToolsExternalGitVersionPath)') AND '$(ShouldExecute)' == 'true' " />

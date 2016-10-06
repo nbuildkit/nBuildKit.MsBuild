@@ -13,6 +13,8 @@
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SourceMonitor.msbuild"
@@ -108,6 +110,10 @@
                                             Condition=" '$(ToolsExternalSourceMonitorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalSourceMonitorPath" />
         </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath Tool="$(ToolsExternalSourceMonitorPath)"
+                         Condition=" '$(ToolsExternalSourceMonitorPath)' != 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalSourceMonitorPath" />
+        </GetToolFullPath>
         <Message Text="The SourceMonitor executable was found at: $(ToolsExternalSourceMonitorPath)"
                  Importance="low"
                  Condition="Exists('$(ToolsExternalSourceMonitorPath)') AND '$(ShouldExecute)' == 'true' " />

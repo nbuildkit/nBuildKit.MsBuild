@@ -35,10 +35,26 @@
                     {
                         try
                         {
+                            // If the node tool is installed on the machine there will be a 'cmd' type script
+                            // that can be used to invoke it. In that case we are probably passed the path to this cmd script
+                            // or just the name of the tool, e.g. 'npm'. In that case we just execute the tool with cmd (running
+                            // it straight with System.Diagnostics.Process doesn't work, it complains about the node tool not being
+                            // a windows executable).
+                            //
+                            // If we got passed the path to a js file then we assume that the tools are a local install and
+                            // we invoke them through node.
+                            var isJsFile = System.IO.Path.GetExtension(ToolPath).Equals(".js");
+                            var toolFileName = (!isJsFile)
+                                ? "cmd.exe"
+                                : NodeExecutablePath;
+                            var toolArguments = (!isJsFile)
+                                ? string.Format("/c {0} {1}", ToolPath, Arguments)
+                                : string.Format("{0} {1}", ToolPath, Arguments);
+
                             var info = new System.Diagnostics.ProcessStartInfo
                                     {
-                                        FileName = NodeExecutablePath,
-                                        Arguments = string.Format("{0} {1}", ToolPath, Arguments),
+                                        FileName = toolFileName,
+                                        Arguments = toolArguments,
                                         WorkingDirectory = WorkingDirectory,
                                         UseShellExecute = false,
                                         RedirectStandardOutput = true,
@@ -59,6 +75,13 @@
                                     info.EnvironmentVariables["PATH"] += ";" + path.ItemSpec;
                                 }
                             }
+
+                            Log.LogMessage(
+                                MessageImportance.Low,
+                                string.Format(
+                                    "Invoking: {0} with arguments: {1}",
+                                    info.FileName,
+                                    info.Arguments));
 
                             var process = new System.Diagnostics.Process();
                             process.StartInfo = info;
