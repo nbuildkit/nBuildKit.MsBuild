@@ -55,8 +55,7 @@
                  Importance="normal"/>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths"
-            Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' OR '$(ToolsExternalNpmPath)' == 'UNDEFINED' ">
+    <Target Name="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths">
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="Node.js"
                       PackageVersion="$(ToolsExternalNodeJsVersion)"
@@ -138,16 +137,6 @@
         <Message Text="No NPM package configuration files found to restore packages from."
                  Importance="low"
                  Condition=" '@(NpmPackageFiles)' == '' " />
-
-        <CreateProperty Value="$(ToolsExternalNpmPath)"
-                        Condition="!$(ToolsExternalNpmPath.EndsWith('npm-cli.js'))">
-            <Output TaskParameter="Value" PropertyName="ToolsExternalNpmInvocation" />
-        </CreateProperty>
-        <CreateProperty Value="&quot;&quot; &quot;&quot;"
-                        Condition="$(ToolsExternalNpmPath.EndsWith('npm-cli.js'))">
-            <Output TaskParameter="Value" PropertyName="ToolsExternalNpmInvocation" />
-        </CreateProperty>
-
         <ItemGroup>
             <AdditionalEnvironmentPaths Include="$([System.IO.Path]::GetDirectoryName('$(ToolsExternalPythonPath)'))" />
         </ItemGroup>
@@ -159,5 +148,13 @@
                         IgnoreErrors="true"
                         IgnoreExitCode="false"
                         Condition=" '@(NpmPackageFiles)' != '' "/>
+
+        <!--
+        <Exec Command="$(ToolsExternalNpmPath) install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
+              WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)"
+              IgnoreStandardErrorWarningFormat="true"
+              IgnoreExitCode="false"
+              Condition=" '@(NpmPackageFiles)' != '' AND !$(ToolsExternalNpmPath.EndsWith('npm-cli.js')) "/>
+              -->
     </Target>
  </Project>
