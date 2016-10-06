@@ -17,6 +17,8 @@
     <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
 
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\ReportGenerator.msbuild"
@@ -96,6 +98,10 @@
                                             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalVSCoverageToReportGeneratorPath" />
         </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath Tool="$(ToolsExternalVSCoverageToReportGeneratorPath)"
+                         Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' != 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalVSCoverageToReportGeneratorPath" />
+        </GetToolFullPath>
         <Message Text="The VSCoverageToReportGenerator executable was found at: $(ToolsExternalVSCoverageToReportGeneratorPath)"
                  Importance="low"
                  Condition="Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
@@ -113,6 +119,10 @@
                                             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
         </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath Tool="$(ToolsExternalReportGeneratorPath)"
+                         Condition=" '$(ToolsExternalReportGeneratorPath)' != 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalReportGeneratorPath" />
+        </GetToolFullPath>
         <Message Text="The ReportGenerator executable was found at: $(ToolsExternalReportGeneratorPath)"
                  Importance="low"
                  Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' " />
@@ -130,6 +140,10 @@
                                             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' ">
           <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath" />
         </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath Tool="$(ToolsExternalOpenCoverToCoberturaConverterPath)"
+                         Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' != 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath" />
+        </GetToolFullPath>
         <Message Text="The OpenCoverToCoberturaConverter executable was found at: $(ToolsExternalOpenCoverToCoberturaConverterPath)"
                  Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') AND '$(ShouldExecute)' == 'true' " />
         <Warning Text="Could not locate the OpenCoverToCoberturaConverter executable path. Cannot convert code coverage reports."

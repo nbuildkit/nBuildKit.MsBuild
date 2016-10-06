@@ -15,6 +15,8 @@
 
     <Import Project="$(DirNBuildKitMsBuildExtensions)\Ccm.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Ccm.msbuild') AND '$(ExistsExtensionsCcm)' != 'true' "/>
+    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild"
+            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "/>
     <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
@@ -102,6 +104,10 @@
                                             Condition=" '$(ToolsExternalCcmPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="Path" PropertyName="ToolsExternalCcmPath" />
         </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath Tool="$(ToolsExternalCcmPath)"
+                         Condition=" '$(ToolsExternalCcmPath)' != 'UNDEFINED' ">
+            <Output TaskParameter="Path" PropertyName="ToolsExternalCcmPath" />
+        </GetToolFullPath>
         <Message Text="The CCM executable was found at: $(ToolsExternalCcmPath)"
                  Importance="low"
                  Condition="Exists('$(ToolsExternalCcmPath)') AND '$(ShouldExecute)' == 'true' " />
