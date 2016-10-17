@@ -19,7 +19,7 @@
     <Target Name="nBuildKit_Shared_Prepare_VcsSetBranch_Run"
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
             Condition="!Exists('$(FileVcsInfo)')">
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsSetBranch_Jenkins_EnsureCorrectGitBranch" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch" />
     </Target>
 
     <!-- Display info -->
@@ -66,8 +66,8 @@
                  Importance="low"/>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_VcsSetBranch_Jenkins_EnsureCorrectGitBranch"
-            Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnJenkinsBuildServer)' == 'True' ">
+    <Target Name="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch"
+            Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' ">
         <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
                Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
 
