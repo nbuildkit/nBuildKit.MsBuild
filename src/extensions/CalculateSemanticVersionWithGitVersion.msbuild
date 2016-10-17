@@ -56,9 +56,6 @@
                         }
 
                         var arguments = builder.ToString();
-                        Log.LogMessage(MessageImportance.Low, ExePath);
-                        Log.LogMessage(MessageImportance.Low, arguments);
-
                         var info = new System.Diagnostics.ProcessStartInfo
                         {
                             FileName = ExePath,
@@ -67,6 +64,53 @@
                             RedirectStandardOutput = true,
                             RedirectStandardError = true,
                         };
+
+                        // GitVersion does all kinds of magic when it detects that it is running on a build server.
+                        // That magic can stuff up any changes we make to the git workspace because if we change branches
+                        // (e.g. during a merge) then GitVersion may change back to the original branch. So we remove any
+                        // indication that GitVersion is running on a buildserver. Until GitVersion has a flag to do so
+                        // we do this the hard way by removing all the environment variables linked to build servers
+                        var knownBuildServerEnvironmentKeys = new System.Collections.Generic.List<string>
+                            {
+                                "APPVEYOR",
+                                "BUILD",
+                                "BuildRunner",
+                                "CI",
+                                "GIT",
+                                "GITLAB",
+                                "JENKINS",
+                                "TEAMCITY",
+                                "TF",
+                                "TRAVIS",
+                            };
+
+                        var collection = info.Environment;
+                        var variablesToRemove = new System.Collections.Generic.List<string>();
+                        foreach (var pair in collection)
+                        {
+                            if (knownBuildServerEnvironmentKeys.Any(s => pair.Key.StartsWith(s)))
+                            {
+                                variablesToRemove.Add(pair.Key);
+                            }
+                        }
+
+                        foreach (var keyToRemove in variablesToRemove)
+                        {
+                            collection.Remove(keyToRemove);
+                        }
+
+                        Log.LogMessage(MessageImportance.Low, ExePath);
+                        Log.LogMessage(MessageImportance.Low, arguments);
+                        Log.LogMessage(MessageImportance.Low, "Environment variables for the process are: ");
+                        foreach (var pair in info.Environment)
+                        {
+                            Log.LogMessage(
+                                MessageImportance.Low,
+                                string.Format(
+                                    "{0}: {1}",
+                                    pair.Key,
+                                    pair.Value));
+                        }
 
                         var text = new System.Text.StringBuilder();
                         var process = new System.Diagnostics.Process();
