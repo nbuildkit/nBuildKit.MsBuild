@@ -23,6 +23,7 @@
             <ExePath ParameterType="System.String" Required="true" />
             <RemoteRepositoryUrl ParameterType="System.String" Required="false" />
             <UserName ParameterType="System.String" Required="false" />
+            <LogPath ParameterType="System.String" Required="true" />
             <VersionMajor ParameterType="System.String" Output="true" />
             <VersionMinor ParameterType="System.String" Output="true" />
             <VersionPatch ParameterType="System.String" Output="true" />
@@ -39,7 +40,7 @@
                     {
                         var builder = new System.Text.StringBuilder();
                         {
-                            builder.Append("-nofetch");
+                            builder.Append("/nofetch ");
                             if (!string.IsNullOrEmpty(UserName))
                             {
                                 builder.Append(string.Format("/u \"{0}\" ", UserName));
@@ -50,6 +51,8 @@
                             {
                                 builder.Append(string.Format("/url \"{0}\" ", RemoteRepositoryUrl));
                             }
+
+                            builder.Append(string.Format("/l \"{0}\" ", LogPath));
                         }
 
                         var arguments = builder.ToString();
