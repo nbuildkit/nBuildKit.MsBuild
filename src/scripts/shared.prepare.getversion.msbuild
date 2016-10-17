@@ -159,6 +159,7 @@
         <CalculateSemanticVersionWithGitVersion ExePath="$(ToolsExternalGitVersionPath)"
                                                 RemoteRepositoryUrl="$(GitRemoteRepository)"
                                                 UserName="$(GitUserName)"
+                                                LogPath="$(DirBuildLogs)\gitversion.log"
                                                 Condition=" '$(ShouldExecute)' == 'true' ">
             <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
             <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
