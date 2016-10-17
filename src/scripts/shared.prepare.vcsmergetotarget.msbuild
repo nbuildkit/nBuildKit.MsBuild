@@ -96,7 +96,7 @@
         <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
 
         <Message Text="Merging changes from branch $(BranchGitExpected) to branch  %(BranchMergeTarget.Identity) ..." />
-        <Exec Command="$(ToolsExternalGitPath) merge $(BranchGitExpected) --no-ff"
+        <Exec Command="$(ToolsExternalGitPath) merge $(BranchGitExpected) --no-ff --commit --no-edit --no-progress"
               Condition=" '$(BranchGitExpected)' != '%(BranchMergeTarget.Identity)' " />
 
         <ItemGroup>
