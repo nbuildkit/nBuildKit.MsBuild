@@ -24,16 +24,49 @@
             <Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
             <DesignTimePackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
             <VersionRangeType ParameterType="System.String" Required="false" />
+            <NuGetVersionDllPath ParameterType="System.String" Required="true" />
             <Dependencies ParameterType="System.String" Output="true" />
         </ParameterGroup>
         <Task>
             <Reference Include="System.Xml" />
             <Reference Include="System.Xml.Linq" />
+            <Reference Include="Microsoft.CSharp" />
+            <Using Namespace="System" />
             <Using Namespace="System.Linq" />
+            <Using Namespace="System.IO" />
+            <Using Namespace="System.Reflection" />
             <Code Type="Method" Language="cs">
                 <![CDATA[
                     public override bool Execute()
                     {
+                        // TODO: Figure out a way to make the inline task reference this. Was trying to do this
+                        //       via the <Reference Include="$(MyProperty)" /> section but for some reason
+                        //       the value of MyProperty is empty even if it's not supposed to be
+                        if (!File.Exists(NuGetVersionDllPath))
+                        {
+                            throw new ArgumentException("Could not load the NuGet.Versioning assembly", "");
+                        }
+                        var assembly = Assembly.LoadFrom(NuGetVersionDllPath);
+
+                        Func<string, dynamic> versionBuilder = version =>
+                            {
+                                dynamic result = assembly.CreateInstance(
+                                    "NuGet.Versioning.NuGetVersion",
+                                    true,
+                                    BindingFlags.CreateInstance,
+                                    null,
+                                    new object[] { version },
+                                    null,
+                                    null);
+
+                                if (result == null)
+                                {
+                                    throw new Exception("Could not create instance of NuGetVersion");
+                                }
+
+                                return result;
+                            };
+
                         var excludedDependencies = new System.Collections.Generic.List<string>();
                         if (DesignTimePackages != null)
                         {
@@ -110,20 +143,20 @@
                                     builder.Append(System.Environment.NewLine);
                                 }
 
-                                var packageVersion = new Version(package.Version);
+                                var packageVersion = versionBuilder(package.Version);
                                 var versionRange = package.Version;
                                 if (!string.IsNullOrEmpty(VersionRangeType) && !"none".Equals(VersionRangeType.ToLower()))
                                 {
                                     switch (VersionRangeType.ToLower())
                                     {
                                         case "major":
-                                            versionRange = string.Format("[{0}, {1})", package.Version, packageVersion.Major + 1);
+                                            versionRange = string.Format("[{0}, {1})", package.Version, ((int)packageVersion.Major) + 1);
                                             break;
                                         case "minor":
-                                            versionRange = string.Format("[{0}, {1}.{2})", package.Version, packageVersion.Major, packageVersion.Minor + 1);
+                                            versionRange = string.Format("[{0}, {1}.{2})", package.Version, packageVersion.Major, ((int)packageVersion.Minor) + 1);
                                             break;
                                         case "patch":
-                                            versionRange = string.Format("[{0}, {1}.{2}.{3})", package.Version, packageVersion.Major, packageVersion.Minor, packageVersion.Build + 1);
+                                            versionRange = string.Format("[{0}, {1}.{2}.{3})", package.Version, packageVersion.Major, packageVersion.Minor, ((int)packageVersion.Patch) + 1);
                                             break;
                                     }
                                 }
