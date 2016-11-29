@@ -64,7 +64,16 @@
                             if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                             {
                                 var projects = taskItem.GetMetadata("Projects");
-                                if (string.IsNullOrEmpty(projects) || (projects.IndexOf(Project, StringComparison.OrdinalIgnoreCase) < 0))
+                                if (string.IsNullOrEmpty(projects))
+                                {
+                                    continue;
+                                }
+
+                                var projectsAsArray = projects.Split(new []{ ";" }, StringSplitOptions.RemoveEmptyEntries)
+                                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                                    .Select(s => s.Trim())
+                                    .ToArray();
+                                if (!projectsAsArray.Any(p => string.Equals(p, Project, StringComparison.OrdinalIgnoreCase)))
                                 {
                                     continue;
                                 }
