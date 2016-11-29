@@ -42,24 +42,4 @@
         <BuildStepsPackNuGet>$(DirNBuildKitMsBuild)\build\build.pack.nuget.msbuild</BuildStepsPackNuGet>
         <BuildStepsPackZip>$(DirNBuildKitMsBuild)\build\build.pack.zip.msbuild</BuildStepsPackZip>
     </PropertyGroup>
-
-    <ItemGroup>
-        <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Clean;
-            </Groups>
-        </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNuGet)">
-            <Properties>
-                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\build\packages.config
-            </Properties>
-            <Groups>
-                NuGet;
-                Prepare;
-                Restore;
-            </Groups>
-        </BuildStepsToExecute>
-    </ItemGroup>
 </Project>

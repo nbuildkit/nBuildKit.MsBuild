@@ -60,6 +60,21 @@
         $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
     -->
     <ItemGroup Condition=" '@(DeployStepsToExecute)' == '' ">
+        <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
+            <Properties>
+                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\deploy\packages.config
+            </Properties>
+            <Groups>
+                NuGet;
+                Prepare;
+                Restore;
+            </Groups>
+        </DeployStepsToExecute>
+
+        <!--
+            The following steps need to be executed on the original branch (i.e. the branch we are interested in
+            building.
+        -->
         <DeployStepsToExecute Include="$(DeployStepsPrepareVcsBranch)">
             <Properties>
             </Properties>
@@ -67,6 +82,18 @@
                 Prepare;
             </Groups>
         </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </DeployStepsToExecute>
+
+        <!--
+            All steps from here on may be executed on a different branch than the orginal branch we we started the
+            build on because we might have done some merging / restoring from a different repository.
+        -->
         <DeployStepsToExecute Include="$(DeployStepsPrepareGetVersion)">
             <Properties>
             </Properties>
@@ -82,13 +109,6 @@
             <Groups>
                 Prepare;
                 Tag;
-            </Groups>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Prepare;
             </Groups>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsPushToTags)">

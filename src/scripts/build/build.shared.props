@@ -98,6 +98,24 @@
         Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
     <ItemGroup Condition=" '@(BuildStepsToExecute)' == '' ">
+        <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Clean;
+            </Groups>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNuGet)">
+            <Properties>
+                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\build\packages.config
+            </Properties>
+            <Groups>
+                NuGet;
+                Prepare;
+                Restore;
+            </Groups>
+        </BuildStepsToExecute>
+
         <!--
             The following steps need to be executed on the original branch (i.e. the branch we are interested in
             building.
