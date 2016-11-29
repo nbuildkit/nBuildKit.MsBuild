@@ -88,7 +88,7 @@
                         var variablesToRemove = new System.Collections.Generic.List<string>();
                         foreach (var pair in collection)
                         {
-                            if (knownBuildServerEnvironmentKeys.Any(s => pair.Key.StartsWith(s)))
+                            if (knownBuildServerEnvironmentKeys.Any(s => pair.Key.StartsWith(s, StringComparison.OrdinalIgnoreCase)))
                             {
                                 variablesToRemove.Add(pair.Key);
                             }
