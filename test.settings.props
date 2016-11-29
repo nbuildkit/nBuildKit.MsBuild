@@ -63,6 +63,28 @@
         $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
     -->
     <ItemGroup>
+        <TestStepsToExecute Include="$(TestStepsPrepareWorkspace)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Clean;
+            </Groups>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareRestoreNuGet)">
+            <Properties>
+                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\test\packages.config
+            </Properties>
+            <Groups>
+                NuGet;
+                Prepare;
+                Restore;
+            </Groups>
+        </TestStepsToExecute>
+
+        <!--
+            The following steps need to be executed on the original branch (i.e. the branch we are interested in
+            building.
+        -->
         <TestStepsToExecute Include="$(TestStepsPrepareVcsBranch)">
             <Properties>
             </Properties>
@@ -70,7 +92,7 @@
                 Prepare;
             </Groups>
         </TestStepsToExecute>
-        <TestStepsToExecute Include="$(TestStepsPrepareGetVersion)">
+        <TestStepsToExecute Include="$(TestStepsPrepareVcsInfo)">
             <Properties>
             </Properties>
             <Groups>
@@ -84,6 +106,19 @@
                 Prepare;
             </Groups>
         </TestStepsToExecute>
+
+        <!--
+            All steps from here on may be executed on a different branch than the orginal branch we we started the
+            build on because we might have done some merging.
+        -->
+        <TestStepsToExecute Include="$(TestStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Prepare;
+            </Groups>
+        </TestStepsToExecute>
+
         <!--
         <TestStepsToExecute Include="$(TestStepsPrepareReleaseNotes)">
             <Properties>

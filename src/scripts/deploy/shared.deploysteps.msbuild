@@ -23,17 +23,4 @@
         <DeployStepsPushToGitBranch>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
         <DeployStepsPushToGitRepository>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.gitrepository.msbuild</DeployStepsPushToGitRepository>
     </PropertyGroup>
-
-    <ItemGroup>
-        <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
-            <Properties>
-                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\deploy\packages.config
-            </Properties>
-            <Groups>
-                NuGet;
-                Prepare;
-                Restore;
-            </Groups>
-        </DeployStepsToExecute>
-    </ItemGroup>
 </Project>
