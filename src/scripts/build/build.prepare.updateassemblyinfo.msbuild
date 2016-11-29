@@ -159,8 +159,10 @@
         </CreateProperty>
 
         <PropertyGroup>
-            <InternalsVisibleToForSignedAssembliesTemplate>[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)]</InternalsVisibleToForSignedAssembliesTemplate>
-            <InternalsVisibleToForUnsignedAssembliesTemplate>[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}&quot;)]</InternalsVisibleToForUnsignedAssembliesTemplate>
+            <InternalsVisibleToForSignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' ">[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)]</InternalsVisibleToForSignedAssembliesTemplate>
+            <InternalsVisibleToForUnsignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' ">[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}&quot;)]</InternalsVisibleToForUnsignedAssembliesTemplate>
+            <InternalsVisibleToForSignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' ">&lt;Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)&gt;</InternalsVisibleToForSignedAssembliesTemplate>
+            <InternalsVisibleToForUnsignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' ">&lt;Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}&quot;)&gt;</InternalsVisibleToForUnsignedAssembliesTemplate>
         </PropertyGroup>
         <GenerateInternalsVisibleToAttributes SnExe="$(ToolsExternalSnPath)"
                                               Project="$(AssemblyName)"
@@ -187,10 +189,16 @@
         </CreateProperty>
         <ItemGroup Condition=" '$(InternalsVisibleToAttributes)' != '' ">
             <InternalsVisibleToLines Include="#if $(CompilerConstantsCombined)"
-                                     Condition=" '$(CompilerConstantsCombined)' != '' " />
+                                     Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' " />
+            <InternalsVisibleToLines Include="#If $(CompilerConstantsCombined)"
+                                     Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' " />
+
             <InternalsVisibleToLines Include="$(InternalsVisibleToAttributes)" />
+
             <InternalsVisibleToLines Include="#endif"
-                                     Condition=" '$(CompilerConstantsCombined)' != '' " />
+                                     Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' " />
+            <InternalsVisibleToLines Include="#End If"
+                                     Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' " />
         </ItemGroup>
 
         <PropertyGroup>
