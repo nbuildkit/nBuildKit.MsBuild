@@ -9,7 +9,7 @@
             Given that the current file has to live in the same directory as the 'settings.props' file that
             means that the workspace directory is the 'MsBuildProjectDirectory' for the current file.
         -->
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildThisFileDirectory)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildProjectDirectory)</DirWorkspace>
         <!--
             The default directory that the NuGet packages are expanded into
         -->
