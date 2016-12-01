@@ -22,10 +22,10 @@
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
-        <DefaultPropertyFiles>
-            SharedPropertyFile=$(SharedPropertyFile);
-            DeployPropertyFile=$(DeployPropertyFile)
-        </DefaultPropertyFiles>
+        <DefaultPropertyDirectories>
+            DirWorkspace=$(DirWorkspace);
+            DirUserSettings=$(DirUserSettings);
+        </DefaultPropertyDirectories>
         <DefaultProperties>
             NBuildKitVersion=$(NBuildKitVersion)
         </DefaultProperties>
@@ -124,7 +124,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(DeployStepsToExecute.Identity)"
-            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(DeployStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties);%(DeployStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -196,7 +196,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="%(DeployFailureStepsToExecute.Identity)"
-            Properties="$(DefaultPropertyFiles);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
