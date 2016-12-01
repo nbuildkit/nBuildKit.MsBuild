@@ -36,7 +36,7 @@ Describe 'For the C# test' {
         $exitCode = Invoke-MsBuildFromCommandLine `
             -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
-            -properties $msbuildProperties `
+            -properties $msBuildProperties `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.latest.csharp.build.log') `
             -Verbose
 
