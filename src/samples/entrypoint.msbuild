@@ -65,8 +65,6 @@
         * Machine   - Load the environment information from file pointed to by the machine environment variable
                       NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists
         * Workspace - Load the environment information from the file in the workspace, if it exists
-
-        If no files are found then the default environment settings file provided by nBuildkit will be loaded.
     -->
     <Import Project="$(FileEnvironment)"
             Condition="Exists('$(FileEnvironment)') AND (('$(UseEnvironmentFrom)' == 'File')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
@@ -76,8 +74,6 @@
             Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'Machine')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
     <Import Project="$(DirWorkspace)\environment.props"
             Condition="Exists('$(DirWorkspace)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
-    <Import Project="$(DirNBuildKitMsBuild)\shared.environment.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' " />
 
     <!--
         Display the help text for the current script and then exit.
