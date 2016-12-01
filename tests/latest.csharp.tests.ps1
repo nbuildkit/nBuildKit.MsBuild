@@ -28,9 +28,9 @@ Describe 'For the C# test' {
 
     Context 'the build executes successfully' {
         $msBuildProperties = @{
-            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+            'DirUserSettings' = (Join-Path $testWorkspaceLocation 'tools')
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
@@ -214,9 +214,9 @@ Describe 'For the C# test' {
 
     Context 'the deploy executes successfully' {
         $msBuildProperties = @{
-            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+            'DirUserSettings' = (Join-Path $testWorkspaceLocation 'tools')
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
