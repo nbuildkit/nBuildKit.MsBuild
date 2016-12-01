@@ -189,7 +189,7 @@
     </Target>
 
     <Target Name="_nBuildKit_EntryPoint_Execute"
-            DependsOnTargets="_RestoreGlobalNugetPackages;_LocateNBuildKit">
+            DependsOnTargets="_nBuildKit_EntryPoint_RestoreGlobalNugetPackages;_nBuildKit_EntryPoint_LocateNBuildKit">
         <Error Text="Could not determine the correct version of the $(NuGetPackageNBuildKit) NuGet package. Without the correct version of this package it is not possible to start the build."
                Condition=" '$(NBuildKitVersion)' == '' " />
         <Error Text="Could not determine the location of the $(NuGetPackageNBuildKit) NuGet package. The file was expected to be in '$(DirPackages)\$(NuGetPackageNBuildKit).&lt;VERSION&gt;' directory, but that directory does not exist. Cannot start build."
@@ -216,27 +216,27 @@
         Restore all the packages that are used by the non-compilation part of the build and deploy process. This is required
         so that we can be sure that the nBuildKit main package is extacted to the package directory.
     -->
-    <Target Name="_RestoreGlobalNugetPackages"
-            DependsOnTargets="_LocatePackagesDir">
-        <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
-                      PackageFile="$(NuGetPackageFile)"
-                      PackageDirectory="$(DirPackages)"
-                      Sources="@(NuGetSources)"
-                      Condition="Exists('$(NuGetPackageFile)')"/>
+    <Target Name="_nBuildKit_EntryPoint_RestoreGlobalNugetPackages"
+            DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir">
+        <EntryPoint_LocalTask_NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
+                                           PackageFile="$(NuGetPackageFile)"
+                                           PackageDirectory="$(DirPackages)"
+                                           Sources="@(NuGetSources)"
+                                           Condition="Exists('$(NuGetPackageFile)')"/>
     </Target>
 
     <!--
         Get the full path to the nBuildkit package directory so that we can invoked the build scripts from there.
     -->
-    <Target Name="_LocateNBuildKit"
-            DependsOnTargets="_LocatePackagesDir;_LocateNBuildKitViaPackagesConfig;_LocateNBuildKitViaHighestAvailableVersion">
+    <Target Name="_nBuildKit_EntryPoint_LocateNBuildKit"
+            DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir;_nBuildKit_EntryPoint_LocateNBuildKitViaPackagesConfig;_nBuildKit_EntryPoint_LocateNBuildKitViaHighestAvailableVersion">
         <Message Text="DirNBuildKit after search: $(DirNBuildKit)" />
 
         <Error Text="Unable to find the nBuildKit directory."
                 Condition="!Exists('$(DirNBuildKit)')" />
     </Target>
 
-    <Target Name="_LocateNBuildKitViaPackagesConfig"
+    <Target Name="_nBuildKit_EntryPoint_LocateNBuildKitViaPackagesConfig"
             Condition="Exists('$(DirPackages)')">
         <!-- Get the version of nBuildKit that is expected from the global packages file -->
         <XmlPeek XmlInputPath="$(NuGetPackageFile)"
@@ -263,7 +263,7 @@
         <Message Text="DirNBuildKit after searching packages.config: $(DirNBuildKit)" />
     </Target>
 
-    <Target Name="_LocateNBuildKitViaHighestAvailableVersion"
+    <Target Name="_nBuildKit_EntryPoint_LocateNBuildKitViaHighestAvailableVersion"
             Condition="!Exists('$(DirNBuildKit)')">
         <CreateProperty Value="$(NBuildKitMinimumVersion)"
                         Condition=" '$(NBuildKitMinimumVersion)' != '' ">
@@ -296,15 +296,15 @@
             <Output TaskParameter="Value" PropertyName="VersionNBuildKitMaximum" />
         </CreateProperty>
 
-        <GetHighestSuitableNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)"
-                                                     MinimumVersion="$(VersionNBuildKitMinimum)"
-                                                     MaximumVersion="$(VersionNBuildKitMaximum)">
+        <EntryPoint_LocalTask_GetHighestSuitableNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)"
+                                                                          MinimumVersion="$(VersionNBuildKitMinimum)"
+                                                                          MaximumVersion="$(VersionNBuildKitMaximum)">
             <Output TaskParameter="Version" PropertyName="NBuildKitVersion" />
-        </GetHighestSuitableNBuildKitVersionFromNuGet>
-        <InstallNBuildKitFromNuGet NuGetPath="$(ToolsExternalNuGetPath)"
-                                   Version="$(NBuildKitVersion)"
-                                   PackageDirectory="$(DirPackages)"
-                                   Sources="@(NuGetSources)"/>
+        </EntryPoint_LocalTask_GetHighestSuitableNBuildKitVersionFromNuGet>
+        <EntryPoint_LocalTask_InstallNBuildKitFromNuGet NuGetPath="$(ToolsExternalNuGetPath)"
+                                                        Version="$(NBuildKitVersion)"
+                                                        PackageDirectory="$(DirPackages)"
+                                                        Sources="@(NuGetSources)"/>
 
         <CreateProperty Value="$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build"
                         Condition="Exists('$(DirPackages)')">
@@ -317,7 +317,7 @@
     <!--
         Get the full path to the packages directory.
     -->
-    <Target Name="_LocatePackagesDir">
+    <Target Name="_nBuildKit_EntryPoint_LocatePackagesDir">
         <!-- Determine if a packages folder exists at the same level as this script. If so use that  -->
         <CreateProperty Value="$(DirDefaultPackages)" Condition="Exists('$(DirDefaultPackages)')">
             <Output TaskParameter="Value" PropertyName="DirPackages" />
@@ -365,7 +365,14 @@
         </Task>
     </UsingTask>
 
-    <UsingTask TaskName="NuGetRestore"
+    <!--
+        Ideally we'd use the NuGetRestore task from nBuildKit, however this task is used to potentially restore the nBuildKit
+        NuGet package so that we can use the tasks and scripts from nBuildKit ...
+
+        In order to prevent it from ever colliding with any of the inline tasks defined elsewhere we'll give it
+        a name that is unlikely ever to be used elsewhere (yay poor-mans namespaces?).
+    -->
+    <UsingTask TaskName="EntryPoint_LocalTask_NuGetRestore"
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
@@ -461,7 +468,11 @@
         </Task>
     </UsingTask>
 
-    <UsingTask TaskName="GetHighestSuitableNBuildKitVersionFromNuGet"
+    <!--
+        In order to prevent this task from ever colliding with any of the inline tasks defined elsewhere we'll give it
+        a name that is unlikely ever to be used elsewhere (yay poor-mans namespaces?).
+    -->
+    <UsingTask TaskName="EntryPoint_LocalTask_GetHighestSuitableNBuildKitVersionFromNuGet"
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
@@ -515,7 +526,11 @@
         </Task>
     </UsingTask>
 
-    <UsingTask TaskName="InstallNBuildKitFromNuGet"
+    <!--
+        In order to prevent this task from ever colliding with any of the inline tasks defined elsewhere we'll give it
+        a name that is unlikely ever to be used elsewhere (yay poor-mans namespaces?).
+    -->
+    <UsingTask TaskName="EntryPoint_LocalTask_InstallNBuildKitFromNuGet"
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
