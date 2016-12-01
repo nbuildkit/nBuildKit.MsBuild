@@ -146,22 +146,14 @@
         be used to execute the build.
     -->
     <Target Name="Build"
-            DependsOnTargets="_RestoreGlobalNugetPackages;_LocateNBuildKit">
-        <MSBuild
-            BuildInParallel="False"
-            Projects="$(DirNBuildKit)\build.msbuild"
-            Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
-            RebaseOutputs="False"
-            RemoveProperties=""
-            RunEachTargetSeparately="True"
-            SkipNonexistentProjects="False"
-            StopOnFirstFailure="True"
-            TargetAndPropertyListSeparators=""
-            Targets=""
-            ToolsVersion="$(MSBuildToolsVersion)"
-            UnloadProjectsOnCompletion="True"
-            UseResultsCache="True">
-        </MSBuild>
+            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitEntryPointBuild">
+        <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitEntryPointBuild">
+        <PropertyGroup>
+            <FileNBuildKitEntryPoint>build.msbuild</FileNBuildKitEntryPoint>
+        </PropertyGroup>
     </Target>
 
     <!--
@@ -170,22 +162,14 @@
         be used to execute the tests.
     -->
     <Target Name="Test"
-            DependsOnTargets="_RestoreGlobalNugetPackages;_LocateNBuildKit">
-        <MSBuild
-            BuildInParallel="False"
-            Projects="$(DirNBuildKit)\test.msbuild"
-            Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
-            RebaseOutputs="False"
-            RemoveProperties=""
-            RunEachTargetSeparately="True"
-            SkipNonexistentProjects="False"
-            StopOnFirstFailure="True"
-            TargetAndPropertyListSeparators=""
-            Targets=""
-            ToolsVersion="$(MSBuildToolsVersion)"
-            UnloadProjectsOnCompletion="True"
-            UseResultsCache="True">
-        </MSBuild>
+            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitEntryPointTest">
+        <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitEntryPointTest">
+        <PropertyGroup>
+            <FileNBuildKitEntryPoint>test.msbuild</FileNBuildKitEntryPoint>
+        </PropertyGroup>
     </Target>
 
     <!--
@@ -194,10 +178,26 @@
         be used to execute the deploy.
     -->
     <Target Name="Deploy"
+            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitEntryPointDeploy">
+        <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitEntryPointDeploy">
+        <PropertyGroup>
+            <FileNBuildKitEntryPoint>deploy.msbuild</FileNBuildKitEntryPoint>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_Execute"
             DependsOnTargets="_RestoreGlobalNugetPackages;_LocateNBuildKit">
+        <Error Text="Could not determine the correct version of the $(NuGetPackageNBuildKit) NuGet package. Without the correct version of this package it is not possible to start the build."
+               Condition=" '$(NBuildKitVersion)' == '' " />
+        <Error Text="Could not determine the location of the $(NuGetPackageNBuildKit) NuGet package. The file was expected to be in '$(DirPackages)\$(NuGetPackageNBuildKit).&lt;VERSION&gt;' directory, but that directory does not exist. Cannot start build."
+               Condition=" '$(DirNBuildKit)' == '' OR !Exists('$(DirNBuildKit)')" />
+
         <MSBuild
             BuildInParallel="False"
-            Projects="$(DirNBuildKit)\deploy.msbuild"
+            Projects="$(DirNBuildKit)\$(FileNBuildKitEntryPoint)"
             Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
             RebaseOutputs="False"
             RemoveProperties=""
@@ -216,7 +216,8 @@
         Restore all the packages that are used by the non-compilation part of the build and deploy process. This is required
         so that we can be sure that the nBuildKit main package is extacted to the package directory.
     -->
-    <Target Name="_RestoreGlobalNugetPackages" DependsOnTargets="_LocatePackagesDir">
+    <Target Name="_RestoreGlobalNugetPackages"
+            DependsOnTargets="_LocatePackagesDir">
         <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageFile="$(NuGetPackageFile)"
                       PackageDirectory="$(DirPackages)"
