@@ -9,28 +9,34 @@
             Given that the current file has to live in the same directory as the 'settings.props' file that
             means that the workspace directory is the 'MsBuildProjectDirectory' for the current file.
         -->
-        <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">$(MSBuildThisFileDirectory)</DirWorkspace>
         <!--
             The default directory that the NuGet packages are expanded into
         -->
         <DirDefaultPackages>$(DirWorkspace)\packages</DirDefaultPackages>
+        <!--
+            The directory in which the configuration files, like settings.props, are located.
+        -->
+        <DirUserSettings Condition=" '$(DirUserSettings)' == '' ">$(DirWorkspace)</DirUserSettings>
 
         <!-- Files -->
         <!--
-            The file that contains all the properties for the build and deploy processes.
+            The location of the 'settings.props' file which describes the shared configuration settings for the
+            build/test/deploy phases. The other configurations files (e.g. build.settings.props etc.) are expected to
+            be located in the same directory.
         -->
-        <SharedPropertyFile>$(DirWorkspace)\settings.props</SharedPropertyFile>
+        <SharedPropertyFile>$(DirUserSettings)\settings.props</SharedPropertyFile>
         <!--
             The file that contains all the NuGet packages that are used by the non-compilation parts
             of the build and deploy process. NuGet package files that are used by the compilation parts
             of the build process are expected to be handled by the compilation process.
         -->
-        <NuGetPackageFile>$(DirWorkspace)\packages.config</NuGetPackageFile>
+        <NuGetPackageFile Condition=" '$(NuGetPackageFile)' == '' ">$(DirWorkspace)\packages.config</NuGetPackageFile>
         <!--
             The file that contains all the NuGet configuration settings for the current project. This file
             is used to determine where the package directory is located if no such directory is defined.
         -->
-        <FileNugetConfig>$(DirWorkspace)\nuget.config</FileNugetConfig>
+        <FileNugetConfig Condition=" '$(FileNugetConfig)' == '' ">$(DirWorkspace)\nuget.config</FileNugetConfig>
 
         <!-- External tools -->
         <!--
@@ -72,8 +78,8 @@
             Condition="Exists('$(NBUILDKIT_USER_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'User')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
     <Import Project="$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)"
             Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'Machine')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
-    <Import Project="$(DirWorkspace)\environment.props"
-            Condition="Exists('$(DirWorkspace)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
+    <Import Project="$(DirUserSettings)\environment.props"
+            Condition="Exists('$(DirUserSettings)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
 
     <!--
         Display the help text for the current script and then exit.
@@ -198,7 +204,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\$(FileNBuildKitEntryPoint)"
-            Properties="SharedPropertyFile=$(SharedPropertyFile);NBuildKitVersion=$(NBuildKitVersion)"
+            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserSettings);NBuildKitVersion=$(NBuildKitVersion)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
