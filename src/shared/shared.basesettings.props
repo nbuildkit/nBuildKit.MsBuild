@@ -7,47 +7,6 @@
         <ExistsSharedBaseSettings>true</ExistsSharedBaseSettings>
     </PropertyGroup>
 
-    <!--
-        Import the repository specific settings file. This file is expected to be found in the workspace directory
-    -->
-    <PropertyGroup Condition=" '$(SharedPropertyFile)' == '' ">
-        <DirLocalBase>UNDEFINED</DirLocalBase>
-        <DirLocalBase Condition=" '$(DirLocalBase)' == 'UNDEFINED' AND Exists('$(DirWorkspace)')">$(DirWorkspace)</DirLocalBase>
-        <DirLocalBase Condition=" '$(DirLocalBase)' == 'UNDEFINED' AND Exists('$(SolutionDir)')">$(SolutionDir)</DirLocalBase>
-
-        <!-- No idea towards the location is given so we'll just go from our location or the location of the file that is importing us -->
-        <DirLocalBase Condition=" '$(DirLocalBase)' == 'UNDEFINED'">$(MSBuildProjectDirectory)</DirLocalBase>
-
-        <!--
-            We can't search for the 'settings.props' file because MsBuild won't let us dynamically load files,
-            so we have to make some assumptions about the location of the file when working either from a
-            build script or from Visual Studio.
-
-            In some cases we can pass in the location of the workspace directory in which case we'll use that,
-            otherwise we'll play the guessing game.
-
-            Probe for the settings.props file up to 10 directories above our current one.
-        -->
-        <FileRepositorySettings>settings.props</FileRepositorySettings>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == '' ">UNDEFINED</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED'  AND Exists('$(DirLocalBase)\..\..\..\..\..\..\..\..\..\..\$(FileRepositorySettings)')">$([System.IO.Path]::GetFullPath('$(DirLocalBase)\..\..\..\..\..\..\..\..\..\..\$(FileRepositorySettings)'))</SharedPropertyFile>
-        <SharedPropertyFile Condition=" '$(SharedPropertyFile)' == 'UNDEFINED' ">FAILED_TO_LOCATE_SharedPropertyFile</SharedPropertyFile>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(DirWorkspace)' == '' ">
-        <DirWorkspace Condition=" '$(DirWorkspace)' == '' AND Exists('$(SharedPropertyFile)') ">$([System.IO.Path]::GetDirectoryName('$(SharedPropertyFile)'))</DirWorkspace>
-    </PropertyGroup>
-
     <PropertyGroup Condition=" '$(DirPackages)' == '' ">
         <!--
             Find the path to the PackagesDirectory manually so that we can load the shared build steps before loading the

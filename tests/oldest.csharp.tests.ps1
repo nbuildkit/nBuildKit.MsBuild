@@ -28,9 +28,9 @@ Describe 'For the C# test' {
 
     Context 'the build executes successfully' {
         $msBuildProperties = @{
-            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+            'DirUserSettings' = (Join-Path $testWorkspaceLocation 'tools')
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
@@ -47,7 +47,7 @@ Describe 'For the C# test' {
     }
 
     Context 'the build produces a NuGet package' {
-        $nugetPackage = Join-Path $testWorkspaceLocation 'build\deploy\nBuildKit.Test.CSharp.Library.4.3.2.nupkg'
+        $nugetPackage = Join-Path $testWorkspaceLocation 'build\deploy\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.nupkg'
 
         It 'in the expected location' {
             $nugetpackage | Should Exist
@@ -68,15 +68,16 @@ Describe 'For the C# test' {
                 $nuspec | Should Exist
 
                 $xmlDoc = [xml](Get-Content $nuspec)
-                $xmlDoc.package.metadata.version | Should Be '4.3.2'
+                $xmlDoc.package.metadata.version | Should Be '4.3.2-MyPreRelease1'
                 $xmlDoc.package.metadata.releaseNotes | Should Not BeNullOrEmpty
 
                 $dependencies = $xmlDoc.package.metadata.dependencies
-                $dependencies.ChildNodes.Count | Should Be 4
+                $dependencies.ChildNodes.Count | Should Be 5
                 $dependencies.ChildNodes | Where-Object { $_.id -eq 'Autofac' } | Select-Object -ExpandProperty version -First 1 | Should Be '[2.2.4.900, 2.3.0)'
                 $dependencies.ChildNodes | Where-Object { $_.id -eq 'log4net' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.2.10, 1.3.0)'
                 $dependencies.ChildNodes | Where-Object { $_.id -eq 'Lokad.Shared' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.5.181, 1.6.0)'
                 $dependencies.ChildNodes | Where-Object { $_.id -eq 'Mono.Cecil' } | Select-Object -ExpandProperty version -First 1 | Should Be '[0.9.6, 0.10.0)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'NuGet.Versioning' } | Select-Object -ExpandProperty version -First 1 | Should Be '[3.4.4-rtm-final, 3.5.0)'
             }
 
             $assemblyFile = Join-Path $packageUnzipLocation 'lib\net45\NBuildKit.Test.CSharp.Library.dll'
@@ -98,7 +99,7 @@ Describe 'For the C# test' {
     }
 
     Context 'the build produces a symbol package' {
-        $symbolPackage = Join-Path $testWorkspaceLocation 'build\deploy\nBuildKit.Test.CSharp.Library.4.3.2.symbols.nupkg'
+        $symbolPackage = Join-Path $testWorkspaceLocation 'build\deploy\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.symbols.nupkg'
 
         It 'in the expected location' {
             $symbolPackage | Should Exist
@@ -119,15 +120,16 @@ Describe 'For the C# test' {
                 $nuspec | Should Exist
 
                 $xmlDoc = [xml](Get-Content $nuspec)
-                $xmlDoc.package.metadata.version | Should Be '4.3.2'
+                $xmlDoc.package.metadata.version | Should Be '4.3.2-MyPreRelease1'
                 $xmlDoc.package.metadata.releaseNotes | Should Not BeNullOrEmpty
 
                 $dependencies = $xmlDoc.package.metadata.dependencies
-                $dependencies.ChildNodes.Count | Should Be 4
+                $dependencies.ChildNodes.Count | Should Be 5
                 $dependencies.ChildNodes | Where-Object { $_.id -eq 'Autofac' } | Select-Object -ExpandProperty version -First 1 | Should Be '[2.2.4.900, 2.3.0)'
                 $dependencies.ChildNodes | Where-Object { $_.id -eq 'log4net' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.2.10, 1.3.0)'
                 $dependencies.ChildNodes | Where-Object { $_.id -eq 'Lokad.Shared' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.5.181, 1.6.0)'
                 $dependencies.ChildNodes | Where-Object { $_.id -eq 'Mono.Cecil' } | Select-Object -ExpandProperty version -First 1 | Should Be '[0.9.6, 0.10.0)'
+                $dependencies.ChildNodes | Where-Object { $_.id -eq 'NuGet.Versioning' } | Select-Object -ExpandProperty version -First 1 | Should Be '[3.4.4-rtm-final, 3.5.0)'
             }
 
             $assemblyFile = Join-Path $packageUnzipLocation 'lib\net45\NBuildKit.Test.CSharp.Library.dll'
@@ -212,9 +214,9 @@ Describe 'For the C# test' {
 
     Context 'the deploy executes successfully' {
         $msBuildProperties = @{
-            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+            'DirUserSettings' = (Join-Path $testWorkspaceLocation 'tools')
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
@@ -232,13 +234,13 @@ Describe 'For the C# test' {
 
     Context 'the deploy pushed to the nuget feed' {
         It 'pushed the nuget package' {
-            (Join-Path $projectWorkspaceLocation 'build\temp\tests\oldest\csharp\nuget\nBuildKit.Test.CSharp.Library.4.3.2.nupkg') | Should Exist
+            (Join-Path $projectWorkspaceLocation 'build\temp\tests\oldest\csharp\nuget\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.nupkg') | Should Exist
         }
     }
 
     Context 'the deploy pushed to the symbol store' {
         It 'pushed the symbol package' {
-            (Join-Path $projectWorkspaceLocation 'build\temp\tests\oldest\csharp\symbols\nBuildKit.Test.CSharp.Library.4.3.2.symbols.nupkg') | Should Exist
+            (Join-Path $projectWorkspaceLocation 'build\temp\tests\oldest\csharp\symbols\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.symbols.nupkg') | Should Exist
         }
     }
 

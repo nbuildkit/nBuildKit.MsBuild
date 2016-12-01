@@ -28,15 +28,15 @@ Describe 'For the C# test' {
 
     Context 'the build executes successfully' {
         $msBuildProperties = @{
-            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+            'DirUserSettings' = (Join-Path $testWorkspaceLocation 'tools')
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
             -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
-            -properties $msbuildProperties `
+            -properties $msBuildProperties `
             -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.latest.csharp.build.log') `
             -Verbose
 
@@ -214,9 +214,9 @@ Describe 'For the C# test' {
 
     Context 'the deploy executes successfully' {
         $msBuildProperties = @{
-            "FileEnvironment" = (Join-Path $testWorkspaceLocation 'environment.props')
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
+            'DirUserSettings' = (Join-Path $testWorkspaceLocation 'tools')
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `

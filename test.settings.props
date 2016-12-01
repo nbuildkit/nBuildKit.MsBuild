@@ -3,7 +3,7 @@
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <VersionNBuildKitOldestSupported>0.8.0</VersionNBuildKitOldestSupported>
+        <VersionNBuildKitOldestSupported>0.9.0</VersionNBuildKitOldestSupported>
     </PropertyGroup>
 
     <!--
@@ -54,7 +54,6 @@
         that script.
 
         Each script has the following properties passed to it:
-        $(SharedPropertyFile)              - The full path to the settings.props file (i.e. this file).
         $(ShouldDisplayDebugLog)          - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
         $(NBuildKitVersion)               - The full version of the nBuildKit library that is executing the build.
         $(DirNBuildKitMsBuild)            - The full path to the directory that contains the nBuildKit scripts.
@@ -167,7 +166,6 @@
         that script.
 
         Each script has the following properties passed to it:
-        $(SharedPropertyFile)             - The full path to the settings.props file (i.e. this file).
         $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
         $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
         $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
@@ -218,12 +216,12 @@
     -->
     <ItemGroup>
         <TestFilesToCopy Include="$(DirTestLatestCSharp)\**\*.*;$(DirTest)\nbuildkit.msbuild.tests.snk"
-                         Exclude="$(DirTestLatestCSharp)\environment.props;$(DirTestLatestCSharp)\**\packages.config;$(DirTestLatestCSharp)\**\*.csproj"
+                         Exclude="$(DirTestLatestCSharp)\tools\environment.props;$(DirTestLatestCSharp)\**\packages.config;$(DirTestLatestCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestLatestCSharp)')">
             <TargetDirectory>$(DirBuildTestLatestCSharp)</TargetDirectory>
         </TestFilesToCopy>
         <TestFilesToCopy Include="$(DirTestOldestCSharp)\**\*.*;$(DirTest)\nbuildkit.msbuild.tests.snk"
-                         Exclude="$(DirTestOldestCSharp)\environment.props;$(DirTestOldestCSharp)\**\packages.config;$(DirTestOldestCSharp)\**\*.csproj"
+                         Exclude="$(DirTestOldestCSharp)\tools\environment.props;$(DirTestOldestCSharp)\**\packages.config;$(DirTestOldestCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestOldestCSharp)')">
             <TargetDirectory>$(DirBuildTestOldestCSharp)</TargetDirectory>
         </TestFilesToCopy>
@@ -253,8 +251,8 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\environment.props">
-            <Template>$(DirTestLatestCSharp)\environment.props</Template>
+        <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\tools\environment.props">
+            <Template>$(DirTestLatestCSharp)\tools\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
             <Encoding>UTF-8</Encoding>
@@ -296,8 +294,8 @@
             <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
 
-        <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\environment.props">
-            <Template>$(DirTestOldestCSharp)\environment.props</Template>
+        <TestFilesToGenerate Include="$(DirBuildTestOldestCSharp)\tools\environment.props">
+            <Template>$(DirTestOldestCSharp)\tools\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
             <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
             <Encoding>UTF-8</Encoding>

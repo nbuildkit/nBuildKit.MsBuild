@@ -11,7 +11,7 @@
             Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
      <PropertyGroup>
-        <BuildPropertyFile Condition=" '$(BuildPropertyFile)' == '' AND Exists('$(DirWorkspace)\build.settings.props')">$(DirWorkspace)\build.settings.props</BuildPropertyFile>
+        <BuildPropertyFile>$(DirUserSettings)\build.settings.props</BuildPropertyFile>
      </PropertyGroup>
 
     <!-- Import the settings files that has all the overriden settings -->

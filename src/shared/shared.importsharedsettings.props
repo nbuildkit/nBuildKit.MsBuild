@@ -38,8 +38,8 @@
             Condition="Exists('$(NBUILDKIT_USER_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'User')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
     <Import Project="$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)"
             Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'Machine')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
-    <Import Project="$(DirWorkspace)\environment.props"
-            Condition="Exists('$(DirWorkspace)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
+    <Import Project="$(DirUserSettings)\environment.props"
+            Condition="Exists('$(DirUserSettings)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.environment.props"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' " />
 
@@ -47,6 +47,9 @@
     <!--
         Note that we rely on loading the user settings file first so that the 'TemplateVersion' items created by the user are first in their list.
     -->
+    <PropertyGroup>
+        <SharedPropertyFile>$(DirUserSettings)\settings.props</SharedPropertyFile>
+    </PropertyGroup>
     <Import Project="$(SharedPropertyFile)"
             Condition="Exists('$(SharedPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.props"
