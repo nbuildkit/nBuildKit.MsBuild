@@ -216,12 +216,12 @@
     -->
     <ItemGroup>
         <TestFilesToCopy Include="$(DirTestLatestCSharp)\**\*.*;$(DirTest)\nbuildkit.msbuild.tests.snk"
-                         Exclude="$(DirTestLatestCSharp)\environment.props;$(DirTestLatestCSharp)\**\packages.config;$(DirTestLatestCSharp)\**\*.csproj"
+                         Exclude="$(DirTestLatestCSharp)\tools\environment.props;$(DirTestLatestCSharp)\**\packages.config;$(DirTestLatestCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestLatestCSharp)')">
             <TargetDirectory>$(DirBuildTestLatestCSharp)</TargetDirectory>
         </TestFilesToCopy>
         <TestFilesToCopy Include="$(DirTestOldestCSharp)\**\*.*;$(DirTest)\nbuildkit.msbuild.tests.snk"
-                         Exclude="$(DirTestOldestCSharp)\environment.props;$(DirTestOldestCSharp)\**\packages.config;$(DirTestOldestCSharp)\**\*.csproj"
+                         Exclude="$(DirTestOldestCSharp)\tools\environment.props;$(DirTestOldestCSharp)\**\packages.config;$(DirTestOldestCSharp)\**\*.csproj"
                          Condition="Exists('$(DirTestOldestCSharp)')">
             <TargetDirectory>$(DirBuildTestOldestCSharp)</TargetDirectory>
         </TestFilesToCopy>
