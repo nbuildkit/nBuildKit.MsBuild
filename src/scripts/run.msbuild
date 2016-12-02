@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="11.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Directories -->
+        <!--
+            The workspace directory is defined as the directory that is the top-level directory in which all the
+            files for the build, test, deploy stage can be found. During the process there should never be a need
+            to go any futher up the directory hierarchy to find files.
+
+            Note: Do NOT include a trailing backslash in this property
+        -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">UNDEFINED</DirWorkspace>
+
+        <!--
+            The directory in which the configuration files, like settings.props, are located.
+        -->
+        <DirUserSettings Condition=" '$(DirUserSettings)' == '' ">UNDEFINED</DirUserSettings>
+        <!--
+            The directory in which the transformed user configuration files will be stored while running nBuildKit.
+        -->
+        <DirUserConfiguration Condition=" '$(DirUserConfiguration)' == '' ">$(DirWorkspace)\build\configurations</DirUserConfiguration>
+
+        <!--
+            The full path to the script that performs the custom transformations of the settings files.
+        -->
+        <ScriptTransformConfigurations Condition=" '$(ScriptTransformConfigurations)' == '' ">UNDEFINED</ScriptTransformConfigurations>
+    </PropertyGroup>
+
+    <!--
+        Define the expected locations of the settings files so that we can copy / transform them later on.
+    -->
+    <ItemGroup>
+        <UserSettingsFiles Include="$(DirUserSettings)\environment.props"
+                           Condition="Exists('$(DirUserSettings)\environment.props')" />
+        <UserSettingsFiles Include="$(DirUserSettings)\settings.props"
+                           Condition="Exists('$(DirUserSettings)\settings.props')" />
+        <UserSettingsFiles Include="$(DirUserSettings)\*.settings.props" />
+    </ItemGroup>
+
+    <Import Project="$(ScriptTransformConfigurations)"
+            Condition=" '$(ScriptTransformConfigurations)' != 'UNDEFINED' AND Exists('$(ScriptTransformConfigurations)')" />
+
+    <!--
+        Invoke the build steps as defined by the 'pipeline.build.props' file by invoking the 'build' target
+        on the 'configureandrun.msbuild' script in the 'Vista.DevInfrastructure.Pipeline.EntryPoint' NuGet package
+        and passing the path to the workspace directory and the configuration files. Parameters provided by the
+        user are passed through by default.
+    -->
+    <Target Name="Build"
+            DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Build">
+        <CallTarget Targets="_Run_Execute" />
+    </Target>
+
+    <Target Name="_nBuildKit_Run_SetNBuildKitPhaseFileName_Build">
+        <PropertyGroup>
+            <FileNBuildKitPhase>build.msbuild</FileNBuildKitPhase>
+        </PropertyGroup>
+    </Target>
+
+    <!--
+        Invoke the test steps as defined by the 'pipeline.test.props' file by invoking the 'test' target
+        on the 'configureandrun.msbuild' script in the 'Vista.DevInfrastructure.Pipeline.EntryPoint' NuGet package
+        and passing the path to the workspace directory and the configuration files. Parameters provided by the
+        user are passed through by default.
+    -->
+    <Target Name="Test"
+            DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Test">
+        <CallTarget Targets="_Run_Execute" />
+    </Target>
+
+    <Target Name="_nBuildKit_Run_SetNBuildKitPhaseFileName_Test">
+        <PropertyGroup>
+            <FileNBuildKitPhase>test.msbuild</FileNBuildKitPhase>
+        </PropertyGroup>
+    </Target>
+
+    <!--
+        Invoke the deploy steps as defined by the 'pipeline.deploy.props' file by invoking the 'deploy' target
+        on the 'configureandrun.msbuild' script in the 'Vista.DevInfrastructure.Pipeline.EntryPoint' NuGet package
+        and passing the path to the workspace directory and the configuration files. Parameters provided by the
+        user are passed through by default.
+    -->
+    <Target Name="Deploy"
+            DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Deploy">
+        <CallTarget Targets="_Run_Execute" />
+    </Target>
+
+    <Target Name="_nBuildKit_Run_SetNBuildKitPhaseFileName_Deploy">
+        <PropertyGroup>
+            <FileNBuildKitPhase>deploy.msbuild</FileNBuildKitPhase>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="_Run_Execute"
+            DependsOnTargets="_nBuildKit_Run_ValidateDirectories;_nBuildKit_Run_InvokeCustomTransformation;_nBuildKit_Run_PrepareUserConfiguration">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(MSBuildThisFileDirectory)$(FileNBuildKitPhase)"
+            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserConfiguration);NBuildKitVersion=$(NBuildKitVersion)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+
+    <Target Name="_nBuildKit_Run_ValidateDirectories">
+        <Error Text="The provided workspace directory is not valid. Please provide a valid workspace directory."
+               Condition="!Exists('$(DirWorkspace)')" />
+        <Error Text="The provided user settings directory is not valid. Please provide a valid user settings directory."
+               Condition="!Exists('$(DirUserSettings)')" />
+    </Target>
+
+    <!--
+        The user may want to create the configuration files from their own configurations, either by copying
+        the settings files, transforming them or by getting the settings from a database etc.. This can be achieved
+        by providing a custom script to perform the transformation.
+
+        The script is expected be a custom implementation of the TransformConfigurations.msbuild script.
+        The script file can be called anything as long as it contains a target called:
+
+            '_Custom_TransformConfigurations'
+
+        The target can assume that the following properties exist
+
+            $(DirWorkspace)         - The workspace directory is defined as the directory that is the top-level
+                                      directory in which all the files for the build, test, deploy stage can be found.
+                                      During the process there should never be a need to go any futher up the directory
+                                      hierarchy to find files.
+            $(DirUserSettings)      - The directory in which the configuration files, like settings.props, are located.
+            $(DirUserConfiguration) - The directory into which the configuration files, like settings.props, should
+                                      be copied.
+
+        The target is expected to create the following files:
+
+            $(DirUserConfiguration)\settings.props
+            $(DirUserConfiguration)\build.settings.props
+            $(DirUserConfiguration)\deploy.settings.props
+            $(DirUserConfiguration)\test.settings.props
+
+        The created files should be valid settings files for the version of nBuildKit that is being executed.
+
+        If the script does not create the settings files then nBuildKit will attempt to copy the files from
+        the '$(DirUserSettings)' location to the '$(DirUserConfiguration)' directory.
+    -->
+    <Target Name="_nBuildKit_Run_InvokeCustomTransformation"
+            Condition="Exists('$(ScriptTransformConfigurations)')">
+        <Message Text="Transforming settings files via custom task ..."
+                 Importance="low"/>
+        <CallTarget Targets="_Custom_TransformConfigurations" />
+    </Target>
+
+    <Target Name="_nBuildKit_Run_PrepareUserConfiguration">
+        <!--
+            Only copy the settings files if the originals are newer than the ones in the 'DirUserConfiguration'
+            directory
+        -->
+        <Copy SourceFiles="%(UserSettingsFiles.FullPath)"
+              DestinationFiles="$(DirUserConfiguration)\%(UserSettingsFiles.Filename)%(UserSettingsFiles.Extension)"
+              Condition="!Exists('$(DirUserConfiguration)\%(UserSettingsFiles.Filename)%(UserSettingsFiles.Extension)') OR $([System.DateTime]::Parse('%(UserSettingsFiles.ModifiedTime)').Ticks) &gt; $([System.IO.File]::GetLastWriteTime('$(DirUserConfiguration)\%(UserSettingsFiles.Filename)%(UserSettingsFiles.Extension)').Ticks)" />
+    </Target>
+</Project>

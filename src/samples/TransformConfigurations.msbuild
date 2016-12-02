@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="11.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        Define the expected locations of the settings files so that we can copy / transform them later on.
+    -->
+    <ItemGroup>
+        <UserSettingsFilesToBeTransformed Include="$(DirUserSettings)\environment.props"
+                                          Condition="Exists('$(DirUserSettings)\environment.props')" />
+        <UserSettingsFilesToBeTransformed Include="$(DirUserSettings)\settings.props"
+                                          Condition="Exists('$(DirUserSettings)\settings.props')" />
+        <UserSettingsFilesToBeTransformed Include="$(DirUserSettings)\*.settings.props" />
+    </ItemGroup>
+
+    <!--
+        The user may want to create the configuration files from their own configurations, either by copying
+        the settings files, transforming them or by getting the settings from a database etc.. This can be achieved
+        by providing a custom script to perform the transformation.
+
+        The script is expected be a custom implementation of the TransformConfigurations.msbuild script.
+        The script file can be called anything as long as it contains a target called:
+
+            '_Custom_TransformConfigurations'
+
+        The target can assume that the following properties exist
+
+            $(DirWorkspace)         - The workspace directory is defined as the directory that is the top-level
+                                      directory in which all the files for the build, test, deploy stage can be found.
+                                      During the process there should never be a need to go any futher up the directory
+                                      hierarchy to find files.
+            $(DirUserSettings)      - The directory in which the configuration files, like settings.props, are located.
+            $(DirUserConfiguration) - The directory into which the configuration files, like settings.props, should
+                                      be copied.
+
+        The target is expected to create the following files:
+
+            $(DirUserConfiguration)\settings.props
+            $(DirUserConfiguration)\build.settings.props
+            $(DirUserConfiguration)\deploy.settings.props
+            $(DirUserConfiguration)\test.settings.props
+
+        The created files should be valid settings files for the version of nBuildKit that is being executed.
+
+        If the script does not create the settings files then nBuildKit will attempt to copy the files from
+        the '$(DirUserSettings)' location to the '$(DirUserConfiguration)' directory.
+    -->
+    <Target Name="_Custom_TransformConfigurations">
+        <Message Text="Transforming the user configuration files with a custom script" />
+
+        <!--
+            Only copy the settings files if the originals are newer than the ones in the 'DirUserConfiguration'
+            directory
+        -->
+        <Copy SourceFiles="%(UserSettingsFilesToBeTransformed.FullPath)"
+              DestinationFiles="$(DirUserConfiguration)\%(UserSettingsFilesToBeTransformed.Filename)%(UserSettingsFilesToBeTransformed.Extension)"
+              Condition="!Exists('$(DirUserConfiguration)\%(UserSettingsFilesToBeTransformed.Filename)%(UserSettingsFilesToBeTransformed.Extension)') OR $([System.DateTime]::Parse('%(ModifiedTime)').Ticks) &gt; $([System.IO.File]::GetLastWriteTime('$(DirUserConfiguration)\%(UserSettingsFilesToBeTransformed.Filename)%(UserSettingsFilesToBeTransformed.Extension)').Ticks)" />
+    </Target>
+</Project>

@@ -171,16 +171,25 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
+# Enable 'build/' folder in the source directory because that has source files we want
+!src/*/build/
+
+# Ignore sublime stuff
 *.sublime-workspace
+
+# Ignore vs-code stuff
+.vscode/
+
+# Ignore generated files
 AssemblyInfo.BuildInformation.cs
 AssemblyInfo.VersionNumber.cs
+AssemblyInfo.Company.cs
+
+# Ignore build outputs
 build/bin/
 build/deploy/
 build/logs/
 build/temp/
 build/tests/
-AssemblyInfo.Company.cs
-.vscode/
-
-# Enable 'build/' folder in the source directory because that has source files we want
-!src/*/build/
+build/configurations/

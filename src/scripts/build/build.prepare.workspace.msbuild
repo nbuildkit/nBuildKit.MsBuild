@@ -64,8 +64,13 @@
             the next task is run and then the delete command still executes (delayed
             by the OS).
         -->
+        <!--
+            Also make sure not to kill the 'DirUserConfiguration' folder because that contains the settings.props files
+            that we are currently using.
+        -->
         <ItemGroup>
-            <BuildFilesToDelete Include="$(DirBuild)\**\*.*"/>
+            <BuildFilesToDelete Include="$(DirBuild)\**\*.*"
+                                Exclude="$(DirUserConfiguration)\**\*.*" />
         </ItemGroup>
         <Delete Files="@(BuildFilesToDelete)"
                 Condition=" '$(ShouldExecute)' == 'true' "
@@ -106,10 +111,8 @@
                 ContinueOnError="True" />
 
         <ItemGroup>
-            <BuildDirectoriesToDelete Include="$(DirBuildDeploy)" />
-            <BuildDirectoriesToDelete Include="$(DirBuildLogs)" />
-            <BuildDirectoriesToDelete Include="$(DirBuildTemp)" />
-            <BuildDirectoriesToDelete Include="$(DirBuild)" />
+            <BuildDirectoriesToDelete Include="$([System.IO.Directory]::GetDirectories('$(DirBuild)', '*', System.IO.SearchOption.TopDirectoryOnly))"
+                                      Exclude="$(DirBuild);$(DirUserConfiguration)"/>
         </ItemGroup>
         <RemoveDir Directories="@(BuildDirectoriesToDelete)"
                    Condition=" '$(ShouldExecute)' == 'true' "
