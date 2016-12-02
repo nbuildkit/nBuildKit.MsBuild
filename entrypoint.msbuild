@@ -32,7 +32,7 @@
     -->
     <Target Name="Help">
         <Message Text="nBuildKit - Build system" />
-        <Message Text="Copyright 2013 nBuildKit. Apache License, Version 2.0" />
+        <Message Text="Copyright 2014 nBuildKit. Apache License, Version 2.0" />
         <Message Text="" />
         <Message Text="The following targets exist:" />
         <Message Text="" />
@@ -48,13 +48,13 @@
         be used to execute the build.
     -->
     <Target Name="Build"
-            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitEntryPointBuild">
+            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Build">
         <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
     </Target>
 
-    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitEntryPointBuild">
+    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitTarget_Build">
         <PropertyGroup>
-            <FileNBuildKitEntryPoint>build.msbuild</FileNBuildKitEntryPoint>
+            <TargetToExecute>Build</TargetToExecute>
         </PropertyGroup>
     </Target>
 
@@ -64,13 +64,13 @@
         be used to execute the tests.
     -->
     <Target Name="Test"
-            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitEntryPointTest">
+            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Test">
         <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
     </Target>
 
-    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitEntryPointTest">
+    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitTarget_Test">
         <PropertyGroup>
-            <FileNBuildKitEntryPoint>test.msbuild</FileNBuildKitEntryPoint>
+            <TargetToExecute>Test</TargetToExecute>
         </PropertyGroup>
     </Target>
 
@@ -80,20 +80,20 @@
         be used to execute the deploy.
     -->
     <Target Name="Deploy"
-            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitEntryPointDeploy">
+            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Deploy">
         <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
     </Target>
 
-    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitEntryPointDeploy">
+    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitTarget_Deploy">
         <PropertyGroup>
-            <FileNBuildKitEntryPoint>deploy.msbuild</FileNBuildKitEntryPoint>
+            <TargetToExecute>Deploy</TargetToExecute>
         </PropertyGroup>
     </Target>
 
     <Target Name="_nBuildKit_EntryPoint_Execute">
         <MSBuild
             BuildInParallel="False"
-            Projects="$(DirNBuildKit)\$(FileNBuildKitEntryPoint)"
+            Projects="$(DirNBuildKit)\run.msbuild"
             Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserSettings);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
             RebaseOutputs="False"
             RemoveProperties=""
@@ -101,7 +101,7 @@
             SkipNonexistentProjects="False"
             StopOnFirstFailure="True"
             TargetAndPropertyListSeparators=""
-            Targets=""
+            Targets="$(TargetToExecute)"
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True">
