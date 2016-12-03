@@ -327,17 +327,17 @@
         <!--
             The flag that indicates if the input branch is a GitFlow feature branch.
         -->
-        <!-- <IsFeatureBranch Condition=" '$(IsFeatureBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(BranchGitExpected)', '.*(feature\/).*'))</IsFeatureBranch> -->
+        <!-- <IsFeatureBranch Condition=" '$(IsFeatureBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(feature\/).*'))</IsFeatureBranch> -->
 
         <!--
             The flag that indicates if the input branch is a GitFlow release branch.
         -->
-        <!-- <IsReleaseBranch Condition=" '$(IsReleaseBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(BranchGitExpected)', '.*(release\/).*'))</IsReleaseBranch> -->
+        <!-- <IsReleaseBranch Condition=" '$(IsReleaseBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(release\/).*'))</IsReleaseBranch> -->
 
         <!--
             The flag that indicates if the input branch is a GitFlow hotfix branch.
         -->
-        <!-- <IsHotfixBranch Condition=" '$(IsHotfixBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(BranchGitExpected)', '.*(hotfix\/).*'))</IsHotfixBranch> -->
+        <!-- <IsHotfixBranch Condition=" '$(IsHotfixBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(hotfix\/).*'))</IsHotfixBranch> -->
     </PropertyGroup>
     <!--
         The collection of branches that the changes should be merged to. The build will be executed on the last
@@ -356,13 +356,13 @@
         Any failure during the branching process will stop the build process.
     -->
     <ItemGroup Condition=" '@(BranchMergeTarget)' == '' ">
-        <!-- GITFLOW: If the input branch (BranchGitExpected) is a feature branch then we merge to develop -->
+        <!-- GITFLOW: If the input branch (GitBranchExpected) is a feature branch then we merge to develop -->
         <!--
         <BranchMergeTarget Include="develop"
                            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsFeatureBranch)' == 'true' " />
         -->
 
-        <!-- GITFLOW: If the input branch (BranchGitExpected) is a release branch then we merge to develop and master -->
+        <!-- GITFLOW: If the input branch (GitBranchExpected) is a release branch then we merge to develop and master -->
         <!--
         <BranchMergeTarget Include="develop"
                            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
@@ -370,7 +370,7 @@
                            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
         -->
 
-        <!-- GITFLOW: If the input branch (BranchGitExpected) is a hotfix branch then we merge to develop and master -->
+        <!-- GITFLOW: If the input branch (GitBranchExpected) is a hotfix branch then we merge to develop and master -->
         <!--
         <BranchMergeTarget Include="develop"
                            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />

@@ -18,8 +18,7 @@
         * A user specified location as indicated by the variable: $(FileEnvironment)
         * An user environment variable named NBUILDKIT_USER_ENVIRONMENT_FILE
         * A machine environment variable named NBUILDKIT_MACHINE_ENVIRONMENT_FILE
-        * The the workspace
-        * The default environment settings file provided by nBuildkit
+        * The workspace
 
         The user can override the location where the file should be loaded from by specifying the 'UseEnvironmentFrom' property and setting it to
         one of the following values:
@@ -29,8 +28,6 @@
         * Machine   - Load the environment information from file pointed to by the machine environment variable
                       NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists
         * Workspace - Load the environment information from the file in the workspace, if it exists
-
-        If no files are found then the default environment settings file provided by nBuildkit will be loaded.
     -->
     <Import Project="$(FileEnvironment)"
             Condition="Exists('$(FileEnvironment)') AND (('$(UseEnvironmentFrom)' == 'File')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
@@ -40,6 +37,28 @@
             Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'Machine')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
     <Import Project="$(DirUserSettings)\environment.props"
             Condition="Exists('$(DirUserSettings)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
+
+    <!--
+        Import the environment specific settings for the build server. These settings contain information about the active build server
+        and should only be loaded when a build is running on a build server.
+
+        We check the following locations in order:
+        * A user specified directory as indicated by the $(DirBuildServerSettings)
+        * A user or machine environment variable named NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR
+
+        It is expected that both point to a directory containing the 'buildserver.environment.props' file.
+    -->
+    <PropertyGroup>
+        <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' AND '$(DirBuildServerSettings)' != '' AND Exists('$(DirBuildServerSettings)\buildserver.environment.props') ">$(DirBuildServerSettings)\buildserver.environment.props</FileBuildServerSettings>
+        <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' AND '$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)' != '' AND Exists('$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.props') ">$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.props</FileBuildServerSettings>
+        <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' ">UNDEFINED</FileBuildServerSettings>
+    </PropertyGroup>
+    <Import Project="$(FileBuildServerSettings)"
+            Condition="Exists('$(FileBuildServerSettings)') AND '$(ExistsBuildServerEnvironmentSettings)' != 'true' " />
+
+    <!--
+        Always load the default environment settings.
+    -->
     <Import Project="$(DirNBuildKitMsBuild)\shared.environment.props"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' " />
 

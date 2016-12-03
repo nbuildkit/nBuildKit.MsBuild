@@ -417,15 +417,15 @@
             <ReplacementValue>nBuildKit.MsBuild</ReplacementValue>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\scripts\build\packages.config">
-            <Template>$(DirSrc)\scripts\build\packages.config</Template>
+            <Template>$(DirSrc)\nbuildkit\scripts\build\packages.config</Template>
             <Encoding>UTF-8</Encoding>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\scripts\test\packages.config">
-            <Template>$(DirSrc)\scripts\test\packages.config</Template>
+            <Template>$(DirSrc)\nbuildkit\scripts\test\packages.config</Template>
             <Encoding>UTF-8</Encoding>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\scripts\deploy\packages.config">
-            <Template>$(DirSrc)\scripts\deploy\packages.config</Template>
+            <Template>$(DirSrc)\nbuildkit\scripts\deploy\packages.config</Template>
             <Encoding>UTF-8</Encoding>
         </BuildFilesToGenerate>
     </ItemGroup>
@@ -764,10 +764,16 @@
         All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
     -->
     <ItemGroup>
-        <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.msbuild.nuspec">
+        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\nbuildkit.msbuild.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirTemplates)\nbuildkit.tools.vscoveragetoreportgenerator.nuspec">
+        <NuGetPackageSpecs Include="$(DirSrc)\buildservers\jenkins\nbuildkit.msbuild.buildserver.jenkins.nuspec">
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirSrc)\buildservers\tfs2013\nbuildkit.msbuild.buildserver.tfs2013.nuspec">
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirSrc)\tools\VSCoverageToReportGenerator\nbuildkit.tools.vscoveragetoreportgenerator.nuspec">
             <ShouldBuildSymbols>true</ShouldBuildSymbols>
         </NuGetPackageSpecs>
     </ItemGroup>
@@ -795,7 +801,7 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirTemplates)\samples.zipspec" />
+        <ArchivePackageSpecs Include="$(DirSrc)\samples\samples.zipspec" />
     </ItemGroup>
 
 

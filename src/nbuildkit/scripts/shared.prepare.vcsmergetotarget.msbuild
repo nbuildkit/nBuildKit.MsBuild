@@ -75,7 +75,7 @@
         <ItemGroup>
             <GitMergeItemsPrepare Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
             <GitMergeItemsPrepare Include="&lt;merge&gt;" />
-            <GitMergeItemsPrepare Include="    &lt;origin branch=&quot;$(BranchGitExpected)&quot; revision=&quot;$(GitRevNoExpected)&quot; /&gt;" />
+            <GitMergeItemsPrepare Include="    &lt;origin branch=&quot;$(GitBranchExpected)&quot; revision=&quot;$(GitRevNoExpected)&quot; /&gt;" />
             <GitMergeItemsPrepare Include="    &lt;targets&gt;" />
         </ItemGroup>
     </Target>
@@ -99,9 +99,9 @@
         <Message Text="Target branch: $(TargetGitBranch)" />
         <Message Text="Target revision: $(GitRevNoCurrentBranch)" />
 
-        <Message Text="Merging changes from branch $(BranchGitExpected) to branch %(BranchMergeTarget.Identity) ..." />
-        <Exec Command="$(ToolsExternalGitPath) merge $(BranchGitExpected) --no-ff --commit --no-edit --no-progress --verbose"
-              Condition=" '$(BranchGitExpected)' != '%(BranchMergeTarget.Identity)' " />
+        <Message Text="Merging changes from branch $(GitBranchExpected) to branch %(BranchMergeTarget.Identity) ..." />
+        <Exec Command="$(ToolsExternalGitPath) merge $(GitBranchExpected) --no-ff --commit --no-edit --no-progress --verbose"
+              Condition=" '$(GitBranchExpected)' != '%(BranchMergeTarget.Identity)' " />
 
         <ItemGroup>
             <GitMergeItems Include="        &lt;target branch=&quot;%(BranchMergeTarget.Identity)&quot; revision=&quot;$(GitRevNoCurrentBranch)&quot; /&gt;" />
