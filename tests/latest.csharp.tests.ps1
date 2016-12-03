@@ -4,40 +4,94 @@
 #>
 
 param(
-    [Parameter(Mandatory)]
+    # The minimum version of nBuildKit that should be used for the test
     [string] $nbuildkitminimumversion,
 
-    [Parameter(Mandatory)]
+    # The maximum version of nBuildKit that should be used for the test
     [string] $nbuildkitmaximumversion,
 
-    [Parameter(Mandatory)]
-    [string] $projectWorkspaceLocation,
+    # The path to the directory that contains the nBuildKit NuGet packages that need to be tested
+    [string] $localNuGetFeed,
 
-    [Parameter(Mandatory)]
-    [string] $testOutputLocation,
+    # The URL of the remote repository that contains the test code. This repository will be mirror cloned into
+    # a local repository so that the tests can push to the repository without destroying the original
+    [string] $remoteRepositoryUrl,
 
-    [Parameter(Mandatory)]
-    [string] $testWorkspaceLocation
+    # The active branch from which the code should be taken. This branch will be merged into develop / master
+    # according to the gitversion rules in the cloned remote repository. From there the test can make changes
+    # to the repository
+    [string] $activeBranch,
+
+    # The local location where the cloned repository can be placed
+    [string] $repositoryLocation,
+
+    # The local location where the workspace for the current test can be placed
+    [string] $workspaceLocation,
+
+    # The path to where the nuget packages can be deployed at the end of the test
+    [string] $nugetPath,
+
+    # The path to where the nuget symbol packages can be deployed at the end of the test
+    [string] $symbolsPath,
+
+    # The path to where the artefacts can be deployed at the end of the test
+    [string] $artefactsPath,
+
+    # The location where the log files should be placed
+    [string] $logLocation,
+
+    # A temporary directory that can be used for the current test
+    [string] $tempLocation
 )
 
+. (Join-Path $PSScriptRoot 'TestFunctions.Git.ps1')
 . (Join-Path $PSScriptRoot 'TestFunctions.MsBuild.ps1')
+. (Join-Path $PSScriptRoot 'TestFunctions.PrepareWorkspace.ps1')
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 Describe 'For the C# test' {
 
+    Context 'the preparation of the workspace' {
+        New-Workspace `
+            -Verbose
+
+        It 'has created the local repository' {
+            $repositoryLocation | Should Exist
+            "$repositoryLocation\.git" | Should Exist
+        }
+
+        It 'has created the workspace' {
+            $workspaceLocation | Should Exist
+            "$workspaceLocation\.git" | Should Exist
+            "$workspaceLocation\entrypoint.msbuild" | Should Exist
+        }
+
+        It 'has set the workspace origin to the local repository' {
+            $origin = Get-Origin -workspace $workspaceLocation
+            $origin | Should Be $repositoryLocation
+        }
+
+        It 'has created a feature branch' {
+            $currentBranch = Get-CurrentBranch -workspace $workspaceLocation
+            $currentBranch | Should Not BeNullOrEmpty
+            $currentBranch.StartsWith('feature/') | Should Be $true
+        }
+    }
+
     Context 'the build executes successfully' {
         $msBuildProperties = @{
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
-            'DirUserSettings' = (Join-Path $testWorkspaceLocation 'tools')
+            'DirUserSettings' = (Join-Path $workspaceLocation 'tools')
+            'LocalNuGetRepository' = $localNuGetFeed
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
-            -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
+            -scriptToExecute (Join-Path $workspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
             -properties $msBuildProperties `
-            -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.latest.csharp.build.log') `
+            -logPath (Join-Path $logLocation 'test.latest.csharp.build.log') `
             -Verbose
 
         $hasBuild = ($exitCode -eq 0)
@@ -47,7 +101,7 @@ Describe 'For the C# test' {
     }
 
     Context 'the build produces a NuGet package' {
-        $nugetPackage = Join-Path $testWorkspaceLocation 'build\deploy\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.nupkg'
+        $nugetPackage = Join-Path $workspaceLocation 'build\deploy\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.nupkg'
 
         It 'in the expected location' {
             $nugetpackage | Should Exist
@@ -56,7 +110,7 @@ Describe 'For the C# test' {
         if (Test-Path $nugetPackage)
         {
             # extract the package
-            $packageUnzipLocation = Join-Path $testWorkspaceLocation 'build\temp\unzip\nuget'
+            $packageUnzipLocation = Join-Path $workspaceLocation 'build\temp\unzip\nuget'
             if (-not (Test-Path $packageUnziplocation))
             {
                 New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
@@ -99,7 +153,7 @@ Describe 'For the C# test' {
     }
 
     Context 'the build produces a symbol package' {
-        $symbolPackage = Join-Path $testWorkspaceLocation 'build\deploy\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.symbols.nupkg'
+        $symbolPackage = Join-Path $workspaceLocation 'build\deploy\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.symbols.nupkg'
 
         It 'in the expected location' {
             $symbolPackage | Should Exist
@@ -108,7 +162,7 @@ Describe 'For the C# test' {
         if (Test-Path $symbolPackage)
         {
             # extract the package
-            $packageUnzipLocation = Join-Path $testWorkspaceLocation 'build\temp\unzip\symbols'
+            $packageUnzipLocation = Join-Path $workspaceLocation 'build\temp\unzip\symbols'
             if (-not (Test-Path $packageUnziplocation))
             {
                 New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
@@ -156,7 +210,7 @@ Describe 'For the C# test' {
     }
 
     Context 'the build produces an archive package' {
-        $archive = Join-Path $testWorkspaceLocation 'build\deploy\nBuildKit.Test.CSharp-4.3.2.zip'
+        $archive = Join-Path $workspaceLocation 'build\deploy\nBuildKit.Test.CSharp-4.3.2.zip'
 
         It 'in the expected location' {
             $archive | Should Exist
@@ -165,7 +219,7 @@ Describe 'For the C# test' {
         if (Test-Path $archive)
         {
             # extract the package
-            $packageUnzipLocation = Join-Path $testWorkspaceLocation 'build\temp\unzip\archive'
+            $packageUnzipLocation = Join-Path $workspaceLocation 'build\temp\unzip\archive'
             if (-not (Test-Path $packageUnziplocation))
             {
                 New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
@@ -216,14 +270,18 @@ Describe 'For the C# test' {
         $msBuildProperties = @{
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
-            'DirUserSettings' = (Join-Path $testWorkspaceLocation 'tools')
+            'DirUserSettings' = (Join-Path $workspaceLocation 'tools')
+            'LocalNuGetRepository' = $localNuGetFeed
+            'ArtifactsServerPath' = $artefactsPath
+            'NugetFeedPath' = $nugetPath
+            'SymbolServerPath' = $symbolsPath
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
-            -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
+            -scriptToExecute (Join-Path $workspaceLocation 'entrypoint.msbuild') `
             -target 'deploy' `
             -properties $msBuildProperties `
-            -logPath (Join-Path $projectWorkspaceLocation 'build\logs\test.latest.csharp.deploy.log') `
+            -logPath (Join-Path $logLocation 'test.latest.csharp.deploy.log') `
             -Verbose
 
         $hasBuild = ($exitCode -eq 0)
@@ -234,19 +292,19 @@ Describe 'For the C# test' {
 
     Context 'the deploy pushed to the nuget feed' {
         It 'pushed the nuget package' {
-            (Join-Path $projectWorkspaceLocation 'build\temp\tests\latest\csharp\nuget\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.nupkg') | Should Exist
+            (Join-Path $nugetPath 'nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.nupkg') | Should Exist
         }
     }
 
     Context 'the deploy pushed to the symbol store' {
         It 'pushed the symbol package' {
-            (Join-Path $projectWorkspaceLocation 'build\temp\tests\latest\csharp\symbols\nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.symbols.nupkg') | Should Exist
+            (Join-Path $symbolsPath 'nBuildKit.Test.CSharp.Library.4.3.2-MyPreRelease1.symbols.nupkg') | Should Exist
         }
     }
 
     Context 'the deploy pushed to the file system' {
         It 'pushed the archive' {
-            (Join-Path $projectWorkspaceLocation 'build\temp\tests\latest\csharp\artifacts\nBuildKit.Test.CSharp\4.3.2\nBuildKit.Test.CSharp-4.3.2.zip') | Should Exist
+            (Join-Path $artefactsPath 'nBuildKit.Test.CSharp\4.3.2\nBuildKit.Test.CSharp-4.3.2.zip') | Should Exist
         }
     }
 }
