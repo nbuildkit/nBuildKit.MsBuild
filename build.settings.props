@@ -754,31 +754,6 @@
     </PropertyGroup>
 
     <!--
-        The item group defining the location and contents of the NuGet packages that are generated during the build.
-
-        The IncludedDependencies and the ExcludedDependencies are lists of packages.config files that
-        should be included (or excluded) in the list of dependencies. Each entry is separated by a semi-colon(;).
-        If there is a 'packages.config' file in the same directory as the nuspec file then it is assumed that
-        all references in the 'packages.config' file should be added as dependencies.
-
-        All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
-    -->
-    <ItemGroup>
-        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\nbuildkit.msbuild.nuspec">
-            <ShouldBuildSymbols>false</ShouldBuildSymbols>
-        </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirSrc)\buildservers\jenkins\nbuildkit.msbuild.buildserver.jenkins.nuspec">
-            <ShouldBuildSymbols>false</ShouldBuildSymbols>
-        </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirSrc)\buildservers\tfs2013\nbuildkit.msbuild.buildserver.tfs2013.nuspec">
-            <ShouldBuildSymbols>false</ShouldBuildSymbols>
-        </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirSrc)\tools\VSCoverageToReportGenerator\nbuildkit.tools.vscoveragetoreportgenerator.nuspec">
-            <ShouldBuildSymbols>true</ShouldBuildSymbols>
-        </NuGetPackageSpecs>
-    </ItemGroup>
-
-    <!--
         The item group defining the (partial) names of the NuGet packages that only contain design time element and should
         thus not be considered dependencies for the generated NuGet packages, even if they are included in the list
         of dependencies that should be included.
@@ -790,18 +765,6 @@
         <DesignTimeDependencies Include="nBuildKit" />
         <DesignTimeDependencies Include="nUnit" />
         -->
-    </ItemGroup>
-
-
-    <!--
-        **** PACK - ZIP ARCHIVE ****
-    -->
-    <!--
-        The item group defining the location and contents of the archive files that are generated during the build
-        All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
-    -->
-    <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirSrc)\samples\samples.zipspec" />
     </ItemGroup>
 
 
