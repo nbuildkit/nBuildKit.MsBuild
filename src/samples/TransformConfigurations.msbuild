@@ -5,11 +5,11 @@
         Define the expected locations of the settings files so that we can copy / transform them later on.
     -->
     <ItemGroup>
-        <UserSettingsFilesToBeTransformed Include="$(DirUserSettings)\environment.props"
-                                          Condition="Exists('$(DirUserSettings)\environment.props')" />
-        <UserSettingsFilesToBeTransformed Include="$(DirUserSettings)\settings.props"
-                                          Condition="Exists('$(DirUserSettings)\settings.props')" />
-        <UserSettingsFilesToBeTransformed Include="$(DirUserSettings)\*.settings.props" />
+        <UserSettingsFilesToBeTransformed Include="$(DirLocalUserSettings)\environment.props"
+                                          Condition="Exists('$(DirLocalUserSettings)\environment.props')" />
+        <UserSettingsFilesToBeTransformed Include="$(DirLocalUserSettings)\settings.props"
+                                          Condition="Exists('$(DirLocalUserSettings)\settings.props')" />
+        <UserSettingsFilesToBeTransformed Include="$(DirLocalUserSettings)\*.settings.props" />
     </ItemGroup>
 
     <!--
@@ -28,7 +28,7 @@
                                       directory in which all the files for the build, test, deploy stage can be found.
                                       During the process there should never be a need to go any futher up the directory
                                       hierarchy to find files.
-            $(DirUserSettings)      - The directory in which the configuration files, like settings.props, are located.
+            $(DirLocalUserSettings) - The directory in which the configuration files, like settings.props, are located.
             $(DirUserConfiguration) - The directory into which the configuration files, like settings.props, should
                                       be copied.
 
@@ -42,7 +42,7 @@
         The created files should be valid settings files for the version of nBuildKit that is being executed.
 
         If the script does not create the settings files then nBuildKit will attempt to copy the files from
-        the '$(DirUserSettings)' location to the '$(DirUserConfiguration)' directory.
+        the '$(DirLocalUserSettings)' location to the '$(DirUserConfiguration)' directory.
     -->
     <Target Name="_Custom_TransformConfigurations">
         <Message Text="Transforming the user configuration files with a custom script" />

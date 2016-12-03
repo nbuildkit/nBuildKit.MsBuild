@@ -15,7 +15,9 @@
         <!--
             The directory in which the configuration files, like settings.props, are located.
         -->
-        <DirUserSettings Condition=" '$(DirUserSettings)' == '' ">UNDEFINED</DirUserSettings>
+        <DirLocalUserSettings Condition=" '$(DirUserSettings)' != '' AND $([System.IO.Path]::IsPathRooted('$(DirUserSettings)'))">$([System.IO.Path]::GetFullPath('$(DirUserSettings)'))</DirLocalUserSettings>
+        <DirLocalUserSettings Condition=" '$(DirUserSettings)' != '' AND !$([System.IO.Path]::IsPathRooted('$(DirUserSettings)'))">$([System.IO.Path]::GetFullPath('$(DirWorkspace)\$(DirUserSettings)'))</DirLocalUserSettings>
+        <DirLocalUserSettings Condition=" '$(DirUserSettings)' == '' ">UNDEFINED</DirLocalUserSettings>
         <!--
             The directory in which the transformed user configuration files will be stored while running nBuildKit.
         -->
@@ -31,11 +33,11 @@
         Define the expected locations of the settings files so that we can copy / transform them later on.
     -->
     <ItemGroup>
-        <UserSettingsFiles Include="$(DirUserSettings)\environment.props"
-                           Condition="Exists('$(DirUserSettings)\environment.props')" />
-        <UserSettingsFiles Include="$(DirUserSettings)\settings.props"
-                           Condition="Exists('$(DirUserSettings)\settings.props')" />
-        <UserSettingsFiles Include="$(DirUserSettings)\*.settings.props" />
+        <UserSettingsFiles Include="$(DirLocalUserSettings)\environment.props"
+                           Condition="Exists('$(DirLocalUserSettings)\environment.props')" />
+        <UserSettingsFiles Include="$(DirLocalUserSettings)\settings.props"
+                           Condition="Exists('$(DirLocalUserSettings)\settings.props')" />
+        <UserSettingsFiles Include="$(DirLocalUserSettings)\*.settings.props" />
     </ItemGroup>
 
     <Import Project="$(ScriptTransformConfigurations)"
@@ -112,10 +114,10 @@
     </Target>
 
     <Target Name="_nBuildKit_Run_ValidateDirectories">
-        <Error Text="The provided workspace directory is not valid. Please provide a valid workspace directory."
+        <Error Text="The provided workspace directory is not valid. The provided value was: '$(DirWorkspace)'. Please provide a valid workspace directory."
                Condition="!Exists('$(DirWorkspace)')" />
-        <Error Text="The provided user settings directory is not valid. Please provide a valid user settings directory."
-               Condition="!Exists('$(DirUserSettings)')" />
+        <Error Text="The provided user settings directory is not valid. The provided value was: '$(DirLocalUserSettings)'. Please provide a valid user settings directory."
+               Condition="!Exists('$(DirLocalUserSettings)')" />
     </Target>
 
     <!--
@@ -134,7 +136,7 @@
                                       directory in which all the files for the build, test, deploy stage can be found.
                                       During the process there should never be a need to go any futher up the directory
                                       hierarchy to find files.
-            $(DirUserSettings)      - The directory in which the configuration files, like settings.props, are located.
+            $(DirLocalUserSettings) - The directory in which the configuration files, like settings.props, are located.
             $(DirUserConfiguration) - The directory into which the configuration files, like settings.props, should
                                       be copied.
 
@@ -148,7 +150,7 @@
         The created files should be valid settings files for the version of nBuildKit that is being executed.
 
         If the script does not create the settings files then nBuildKit will attempt to copy the files from
-        the '$(DirUserSettings)' location to the '$(DirUserConfiguration)' directory.
+        the '$(DirLocalUserSettings)' location to the '$(DirUserConfiguration)' directory.
     -->
     <Target Name="_nBuildKit_Run_InvokeCustomTransformation"
             Condition="Exists('$(ScriptTransformConfigurations)')">

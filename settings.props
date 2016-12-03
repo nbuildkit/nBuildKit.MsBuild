@@ -283,15 +283,6 @@
 
         <!-- The directory that will contain all the temporary files needed during the build process -->
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirBuildTempTest>$(DirBuildTemp)\tests</DirBuildTempTest>
-
-        <DirBuildTempTestLatest>$(DirBuildTempTest)\latest</DirBuildTempTestLatest>
-        <DirBuildTempTestLatestCSharp>$(DirBuildTempTestLatest)\csharp</DirBuildTempTestLatestCSharp>
-        <DirBuildTempTestLatestVbNet>$(DirBuildTempTestLatest)\vbnet</DirBuildTempTestLatestVbNet>
-
-        <DirBuildTempTestOldest>$(DirBuildTempTest)\oldest</DirBuildTempTestOldest>
-        <DirBuildTempTestOldestCSharp>$(DirBuildTempTestOldest)\csharp</DirBuildTempTestOldestCSharp>
-        <DirBuildTempTestOldestVbNet>$(DirBuildTempTestOldest)\vbnet</DirBuildTempTestOldestVbNet>
 
         <!-- The directory that will contain all the test files generated during the test process -->
         <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
@@ -314,14 +305,7 @@
         <!-- <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates> -->
 
         <!-- The directory that contains all the test files for the project -->
-        <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
-        <DirTestLatest Condition=" '$(DirTestLatest)' == '' ">$(DirTest)\latest</DirTestLatest>
-        <DirTestLatestCSharp>$(DirTestLatest)\csharp</DirTestLatestCSharp>
-        <DirTestLatestVbNet>$(DirTestLatest)\vbnet</DirTestLatestVbNet>
-
-        <DirTestOldest Condition=" '$(DirTestOldest)' == '' ">$(DirTest)\oldest</DirTestOldest>
-        <DirTestOldestCSharp>$(DirTestOldest)\csharp</DirTestOldestCSharp>
-        <DirTestOldestVbNet>$(DirTestOldest)\vbnet</DirTestOldestVbNet>
+        <!-- <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest> -->
     </PropertyGroup>
 
     <!--
@@ -589,18 +573,6 @@
     <ItemGroup>
         <TemplateTokens Include="DirVisualStudio">
             <ReplacementValue>$(ToolsExternalVisualStudioDir)</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="DirBuildTempTestLatestCSharp">
-            <ReplacementValue>$(DirBuildTempTestLatestCSharp)</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="DirBuildTempTestOldestCSharp">
-            <ReplacementValue>$(DirBuildTempTestOldestCSharp)</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="DirBuildTempTestLatestVbNet">
-            <ReplacementValue>$(DirBuildTempTestLatestVbNet)</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="DirBuildTempTestOldestVbNet">
-            <ReplacementValue>$(DirBuildTempTestOldestVbNet)</ReplacementValue>
         </TemplateTokens>
     </ItemGroup>
 

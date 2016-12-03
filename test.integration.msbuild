@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Test_Execute_CSharp_Run"
+         DefaultTargets="nBuildKit_Test_Integration_Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
@@ -21,13 +21,12 @@
     <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
             Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
 
-    <Target Name="nBuildKit_Test_Execute_CSharp_Run"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DisplayInfo">
-        <CallTarget Targets="nBuildKit_Test_Execute_CSharp_Latest_Run" />
-        <CallTarget Targets="nBuildKit_Test_Execute_CSharp_Oldest_Run" />
+    <Target Name="nBuildKit_Test_Integration_Run"
+            DependsOnTargets="_nBuildKit_Test_Integration_DisplayInfo">
+        <CallTarget Targets="nBuildKit_Test_Integration_Run" />
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_CSharp_DebugLog"
+    <Target Name="_nBuildKit_Test_Integration_DebugLog"
             Condition="$(ShouldDisplayDebugLog)">
         <Message Text="Configuration values:"
                  Importance="low"/>
@@ -48,7 +47,7 @@
                  Importance="low"/>
         <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
                  Importance="low"/>
-        <Message Text="The directory containing the C# test files is located at:          $(DirBuildTestLatestCSharp)"
+        <Message Text="The directory containing the C# test files is located at:          $(DirTestLocal)"
                  Importance="low"/>
         <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
                  Importance="low"/>
@@ -61,13 +60,13 @@
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Test_Execute_CSharp_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_DebugLog">
+    <Target Name="_nBuildKit_Test_Integration_DisplayInfo"
+            DependsOnTargets="_nBuildKit_Test_Integration_DebugLog">
         <Message Text="Testing C# packages ..."
                  Importance="normal"/>
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_CSharp_GetToolPaths">
+    <Target Name="_nBuildKit_Test_Integration_GetToolPaths">
         <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
                       PackageName="Pester"
                       PackageVersion="$(ToolsExternalPesterVersion)"
@@ -85,7 +84,7 @@
                Condition="!Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' "/>
     </Target>
 
-    <Target Name="_nBuildKit_Test_Execute_CSharp_GetPrerequisites">
+    <Target Name="_nBuildKit_Test_Integration_GetPrerequisites">
         <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)"
                                     Condition="Exists('$(FileSemanticVersion)')">
             <Output TaskParameter="VersionMajorNext" PropertyName="VersionMajorNext" />
@@ -93,86 +92,74 @@
         </GetSemanticVersionFromFile>
     </Target>
 
-    <Target Name="nBuildKit_Test_Execute_CSharp_Latest_Run"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths;_nBuildKit_Test_Execute_CSharp_GetPrerequisites">
-        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)"
-                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)')" />
-        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)\artifacts"
-                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)\artifacts')" />
-        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)\nuget"
-                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)\nuget')" />
-        <MakeDir Directories="$(DirBuildTempTestLatestCSharp)\symbols"
-                 Condition="!Exists('$(DirBuildTempTestLatestCSharp)\symbols')" />
+    <Target Name="nBuildKit_Test_Integration_Run"
+            DependsOnTargets="_nBuildKit_Test_Integration_GetToolPaths;_nBuildKit_Test_Integration_GetPrerequisites">
+        <PropertyGroup>
+            <BranchActiveTest Condition=" '$(BranchActiveTest)' == '' ">feature/nbuildkit_$(VersionSemantic)</BranchActiveTest>
 
-        <TemplateText Template="$(FileReportVerificationLatestBuildCSharp)"
+            <DirTestRepository>$(DirTestLocal)\repo</DirTestRepository>
+            <DirTestWorkspace>$(DirTestLocal)\workspace</DirTestWorkspace>
+            <DirTestTemp>$(DirTestLocal)\temp</DirTestTemp>
+
+            <DirTestDropArtefacts>$(DirTestLocal)\drop\artefacts</DirTestDropArtefacts>
+            <DirTestDropNuGet>$(DirTestLocal)\drop\nuget</DirTestDropNuGet>
+            <DirTestDropSymbols>$(DirTestLocal)\drop\symbols</DirTestDropSymbols>
+        </PropertyGroup>
+
+        <MakeDir Directories="$(DirTestDropArtefacts)"
+                 Condition="!Exists('$(DirTestDropArtefacts)')" />
+        <MakeDir Directories="$(DirTestDropNuGet)"
+                 Condition="!Exists('$(DirTestDropNuGet)')" />
+        <MakeDir Directories="$(DirTestDropSymbols)"
+                 Condition="!Exists('$(DirTestDropSymbols)')" />
+
+        <TemplateText Template="$(FileTestReport)"
                       Tokens="@(TemplateTokens)">
             <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
         </TemplateText>
 
         <ItemGroup>
-            <VerifyLatestCSharpBuildArguments Include="nbuildkitminimumversion">
+            <TestBuildArguments Include="nbuildkitminimumversion">
                 <Value>$(VersionSemantic)</Value>
-            </VerifyLatestCSharpBuildArguments>
-            <VerifyLatestCSharpBuildArguments Include="nbuildkitmaximumversion">
+            </TestBuildArguments>
+            <TestBuildArguments Include="nbuildkitmaximumversion">
                 <Value>$(VersionMajorNext).0.0</Value>
-            </VerifyLatestCSharpBuildArguments>
-            <VerifyLatestCSharpBuildArguments Include="projectworkspaceLocation">
-                <Value>$(DirWorkspace)</Value>
-            </VerifyLatestCSharpBuildArguments>
-            <VerifyLatestCSharpBuildArguments Include="testOutputLocation">
-                <Value>$(DirBuildTemp)</Value>
-            </VerifyLatestCSharpBuildArguments>
-            <VerifyLatestCSharpBuildArguments Include="testworkspaceLocation">
-                <Value>$(DirBuildTestLatestCSharp)</Value>
-            </VerifyLatestCSharpBuildArguments>
+            </TestBuildArguments>
+            <TestBuildArguments Include="localNuGetFeed">
+                <Value>$(DirBuildDeploy)</Value>
+            </TestBuildArguments>
+            <TestBuildArguments Include="remoteRepositoryUrl">
+                <Value>http://github.com/$(GitHubUserName)/$(NameTestRepository)</Value>
+            </TestBuildArguments>
+            <TestBuildArguments Include="activeBranch">
+                <Value>$(BranchActiveTest)</Value>
+            </TestBuildArguments>
+            <TestBuildArguments Include="repositoryLocation">
+                <Value>$(DirTestRepository)</Value>
+            </TestBuildArguments>
+            <TestBuildArguments Include="workspaceLocation">
+                <Value>$(DirTestWorkspace)</Value>
+            </TestBuildArguments>
+            <TestBuildArguments Include="nugetPath">
+                <Value>$(DirTestDropNuGet)</Value>
+            </TestBuildArguments>
+            <TestBuildArguments Include="symbolsPath">
+                <Value>$(DirTestDropSymbols)</Value>
+            </TestBuildArguments>
+            <TestBuildArguments Include="artefactsPath">
+                <Value>$(DirTestDropArtefacts)</Value>
+            </TestBuildArguments>
+            <TestBuildArguments Include="logLocation">
+                <Value>$(DirBuildLogs)</Value>
+            </TestBuildArguments>
+            <TestBuildArguments Include="tempLocation">
+                <Value>$(DirTestTemp)</Value>
+            </TestBuildArguments>
         </ItemGroup>
         <InvokePesterOnFile PowershellExePath="$(ToolsExternalPowershellPath)"
                             PesterModulePath="$(ToolsExternalPesterPath)"
-                            TestFile="$(DirTest)\latest.csharp.tests.ps1"
-                            TestArguments="@(VerifyLatestCSharpBuildArguments)"
-                            ReportFile="$(FileReportPesterXmlExpanded)"
-                            TempDirectory="$(DirBuildTemp)"
-                            IgnoreErrors="false"
-                            IgnoreExitCode="false" />
-    </Target>
-
-    <Target Name="nBuildKit_Test_Execute_CSharp_Oldest_Run"
-            DependsOnTargets="_nBuildKit_Test_Execute_CSharp_GetToolPaths;_nBuildKit_Test_Execute_CSharp_GetPrerequisites">
-        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)"
-                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)')" />
-        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)\artifacts"
-                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)\artifacts')" />
-        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)\nuget"
-                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)\nuget')" />
-        <MakeDir Directories="$(DirBuildTempTestOldestCSharp)\symbols"
-                 Condition="!Exists('$(DirBuildTempTestOldestCSharp)\symbols')" />
-
-        <TemplateText Template="$(FileReportVerificationOldestBuildCSharp)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FileReportPesterXmlExpanded" />
-        </TemplateText>
-
-        <ItemGroup>
-            <VerifyOldestCSharpBuildArguments Include="nbuildkitminimumversion">
-                <Value>$(VersionNBuildKitOldestSupported)</Value>
-            </VerifyOldestCSharpBuildArguments>
-            <VerifyOldestCSharpBuildArguments Include="nbuildkitmaximumversion">
-                <Value>$(VersionMajorNext).0.0</Value>
-            </VerifyOldestCSharpBuildArguments>
-            <VerifyOldestCSharpBuildArguments Include="projectworkspaceLocation">
-                <Value>$(DirWorkspace)</Value>
-            </VerifyOldestCSharpBuildArguments>
-            <VerifyOldestCSharpBuildArguments Include="testOutputLocation">
-                <Value>$(DirBuildTemp)</Value>
-            </VerifyOldestCSharpBuildArguments>
-            <VerifyOldestCSharpBuildArguments Include="testworkspaceLocation">
-                <Value>$(DirBuildTestOldestCSharp)</Value>
-            </VerifyOldestCSharpBuildArguments>
-        </ItemGroup>
-        <InvokePesterOnFile PowershellExePath="$(ToolsExternalPowershellPath)"
-                            PesterModulePath="$(ToolsExternalPesterPath)"
-                            TestFile="$(DirTest)\oldest.csharp.tests.ps1"
-                            TestArguments="@(VerifyOldestCSharpBuildArguments)"
+                            TestFile="$(ScriptTest)"
+                            TestArguments="@(TestBuildArguments)"
                             ReportFile="$(FileReportPesterXmlExpanded)"
                             TempDirectory="$(DirBuildTemp)"
                             IgnoreErrors="false"
