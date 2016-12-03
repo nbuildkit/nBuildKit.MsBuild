@@ -30,10 +30,10 @@ function New-Workspace
 
     # Create a bare clone of the repository
     Clone-Repository `
-        -Url $remoteRepositoryUrl `
-        -Destination $repositoryLocation `
-        -Bare `
-        -Verbose
+        -url $remoteRepositoryUrl `
+        -destination $repositoryLocation `
+        -bare `
+        @commonParameterSwitches
 
     if ($activeBranch.StartsWith('feature') -or $activeBranch.StartsWith('hotfix') -or $activeBranch.StartsWith('release'))
     {
@@ -42,7 +42,7 @@ function New-Workspace
         Clone-Repository `
             -url $repositoryLocation `
             -destination $tempWorkspace `
-            -Verbose
+            @commonParameterSwitches
 
         $originalWorkingDirectory = $pwd
         try
@@ -55,7 +55,7 @@ function New-Workspace
 
             Push-ToRemote `
                 -origin 'origin' `
-                -Verbose
+                @commonParameterSwitches
         }
         finally
         {
@@ -65,9 +65,9 @@ function New-Workspace
 
     # Clone to create test workspace
     Clone-Repository `
-        -Url $remoteRepositoryUrl `
+        -Url $repositoryLocation `
         -Destination $workspaceLocation `
-        -Verbose
+        @commonParameterSwitches
 
     # Create a branch from the correct parent branch
     $originalWorkingDirectory = $pwd

@@ -54,11 +54,16 @@ Describe 'For the C# test' {
 
     Context 'the preparation of the workspace' {
         New-Workspace `
+            -remoteRepositoryUrl $remoteRepositoryUrl `
+            -activeBranch $activeBranch `
+            -repositoryLocation $repositoryLocation `
+            -workspaceLocation $workspaceLocation `
+            -tempLocation $tempLocation `
             -Verbose
 
         It 'has created the local repository' {
             $repositoryLocation | Should Exist
-            "$repositoryLocation\.git" | Should Exist
+            "$repositoryLocation\HEAD" | Should Exist
         }
 
         It 'has created the workspace' {

@@ -13,7 +13,12 @@ function Checkout-Branch
         }
 
     $output = & git checkout --quiet $branch 2>&1
-    Write-Verbose ($output | Out-String)
+
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
 
     if ($LASTEXITCODE -ne 0)
     {
@@ -44,7 +49,11 @@ function Clone-Repository
     }
 
     $output = & git clone --quiet $bareText $url $destination 2>&1
-    Write-Verbose ($output | Out-String)
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
 
     if ($LASTEXITCODE -ne 0)
     {
@@ -67,16 +76,16 @@ function Finish-GitFlow
         }
 
     Checkout-Branch `
-        -Branch 'develop'
-        -Verbose
+        -Branch 'develop' `
+        @commonParameterSwitches
 
     Checkout-Branch `
-        -Branch 'master'
-        -Verbose
+        -Branch 'master' `
+        @commonParameterSwitches
 
     Checkout-Branch `
-        -Branch $branch
-        -Verbose
+        -Branch $branch `
+        @commonParameterSwitches
 
     switch($branch.Substring(0, $branch.IndexOf('/')))
     {
@@ -199,7 +208,11 @@ function MergeTo-Branch
     Checkout-Branch -branch $destination @commonParameterSwitches
 
     $output = & git merge --no-ff --commit --quiet $source 2>&1
-    Write-Verbose ($output | Out-String)
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
 
     if ($LASTEXITCODE -ne 0)
     {
@@ -225,7 +238,11 @@ function New-Branch
     Checkout-Branch -branch $source @commonParameterSwitches
 
     $output = & git checkout --quiet -b $name 2>&1
-    Write-Verbose ($output | Out-String)
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
 
     if ($LASTEXITCODE -ne 0)
     {
@@ -251,7 +268,11 @@ function New-Tag
     Checkout-Branch -branch $source @commonParameterSwitches
 
     $output = & git tag $name 2>&1
-    Write-Verbose ($output | Out-String)
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
 
     if ($LASTEXITCODE -ne 0)
     {
@@ -273,8 +294,12 @@ function Push-ToRemote
             ErrorAction = "Stop"
         }
 
-    $output = & git push --all --tags $origin 2>&1
-    Write-Verbose ($output | Out-String)
+    $output = & git push --all --porcelain $origin 2>&1
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
 
     if ($LASTEXITCODE -ne 0)
     {
@@ -297,7 +322,11 @@ function Remove-Branch
         }
 
     $output = & git branch -d $name 2>&1
-    Write-Verbose ($output | Out-String)
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
 
     if ($LASTEXITCODE -ne 0)
     {
