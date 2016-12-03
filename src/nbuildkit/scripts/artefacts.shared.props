@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="11.0"
+         DefaultTargets="Run"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** PREPARE - MERGE ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the file that will contain the VCS merge information describing the merge.
+
+            The location of the file can be controlled by the location of the logs directory, however the
+            naming of the file needs to be pre-defined so that we can always grab the file when we create
+            the archive file of the git directory.
+        -->
+        <FileVcsMergeInfo>$(DirBuildLogs)\vcs.mergeinfo.xml</FileVcsMergeInfo>
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - VERSIONING ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the file that is used to store the version information during the build.
+        -->
+        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - RELEASE NOTES ****
+    -->
+    <PropertyGroup>
+        <!-- The full path to the file that is used to store the issue IDs for the current branch -->
+        <FileIssueIds Condition=" '$(FileIssueIds)' == '' ">$(DirBuildTemp)\issue_ids.json</FileIssueIds>
+
+        <!-- The full path to the text file that is used to store the release notes for the current release during the build. -->
+        <FileReleaseNotes Condition=" '$(FileReleaseNotes)' == '' ">$(DirBuildTemp)\releasenotes.txt</FileReleaseNotes>
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - VCS INFO ****
+    -->
+    <PropertyGroup>
+        <!-- The full path to the file that contains the information about the current VCS workspace. -->
+        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!-- Additional generated files -->
+    <PropertyGroup>
+        <FileGeneratedLicenses Condition=" '$(FileGeneratedLicenses)' == '' ">$(DirBuildTemp)\licenses.xml</FileGeneratedLicenses>
+    </PropertyGroup>
+
+
+    <!--
+        **** PACK - NUGET ****
+    -->
+    <!--
+        The item group defining the location and contents of the NuGet packages that are generated during the build.
+
+        The IncludedDependencies and the ExcludedDependencies are lists of packages.config files that
+        should be included (or excluded) in the list of dependencies. Each entry is separated by a semi-colon(;).
+        If there is a 'packages.config' file in the same directory as the nuspec file then it is assumed that
+        all references in the 'packages.config' file should be added as dependencies.
+
+        All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
+    -->
+    <ItemGroup Condition=" '@(NuGetPackageSpecs)' == '' ">
+        <!--
+        <NuGetPackageSpecs Include="$(DirSrc)\myproject\myproject.nuspec">
+            <ShouldBuildSymbols>true</ShouldBuildSymbols>
+            <IncludedDependencies>
+                $(DirSrc)\MyOtherProject\packages.config
+            </IncludedDependencies>
+            <ExcludedDependencies>
+            </ExcludedDependencies>
+        </NuGetPackageSpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PACK - ZIP ARCHIVE ****
+    -->
+    <!--
+        The item group defining the location and contents of the archive files that are generated during the build
+        All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
+    -->
+    <ItemGroup>
+        <ArchivePackageSpecs Include="$(DirWorkspace)\**\*.zipspec"
+                             Exclude="$(DirBuild)\**\*.zipspec;$(DirPackages)\**\*.zipspec"
+                             Condition="Exists('$(DirWorkspace)') AND '@(ArchivePackageSpecs)' == '' " />
+        <ArchivePackageSpecs Include="$(DirNBuildKitMsBuild)\build\gitmerge.zipspec"
+                             Condition=" '$(IsGitWorkspace)' == 'true' AND '$(IsOnBuildServer)' == 'true' AND Exists('$(FileVcsMergeInfo)') " />
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedArtefactSettings>true</ExistsSharedArtefactSettings>
+    </PropertyGroup>
+</Project>
