@@ -83,7 +83,7 @@ Describe 'For the C# test' {
         $msBuildProperties = @{
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
-            'DirUserSettings' = (Join-Path $workspaceLocation 'tools')
+            'DirUserSettings' = 'tools'
             'LocalNuGetRepository' = $localNuGetFeed
         }
 
@@ -270,7 +270,7 @@ Describe 'For the C# test' {
         $msBuildProperties = @{
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
-            'DirUserSettings' = (Join-Path $workspaceLocation 'tools')
+            'DirUserSettings' = 'tools'
             'LocalNuGetRepository' = $localNuGetFeed
             'ArtifactsServerPath' = $artefactsPath
             'NugetFeedPath' = $nugetPath
