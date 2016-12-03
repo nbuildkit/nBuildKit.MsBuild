@@ -401,11 +401,6 @@
         <!-- <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild> -->
 
         <!--
-            The full path to the file that is used to store the version information during the build.
-        -->
-        <!-- <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion> -->
-
-        <!--
             When using GitVersion with a git repository that needs authentication the following properties
             have to be defined on via an environment variable (either local to the process that executes the build,
             or global to the user):
@@ -446,12 +441,6 @@
         **** PREPARE - RELEASE NOTES ****
     -->
     <PropertyGroup>
-        <!-- The full path to the file that is used to store the issue IDs for the current branch -->
-        <!-- <FileIssueIds Condition=" '$(FileIssueIds)' == '' ">$(DirBuildTemp)\issue_ids.json</FileIssueIds> -->
-
-        <!-- The full path to the text file that is used to store the release notes for the current release during the build. -->
-        <!-- <FileReleaseNotes Condition=" '$(FileReleaseNotes)' == '' ">$(DirBuildTemp)\releasenotes.txt</FileReleaseNotes> -->
-
         <!--
             The template for the Github milestone name that will be used to get the closed work items for the
             release note
@@ -537,15 +526,6 @@
 
 
     <!--
-        **** PREPARE - VCS INFO ****
-    -->
-    <PropertyGroup>
-        <!-- The full path to the file that contains the information about the current VCS workspace. -->
-        <!-- <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo> -->
-    </PropertyGroup>
-
-
-    <!--
         **** PREPARE - GENERATE FILES ****
     -->
     <PropertyGroup>
@@ -569,11 +549,6 @@
         </TemplateTokens>
         -->
     </ItemGroup>
-
-    <!-- Additional generated files -->
-    <PropertyGroup>
-         <!-- <FileGeneratedLicenses>$(DirBuildTemp)\licenses.xml</FileGeneratedLicenses> -->
-    </PropertyGroup>
 
 
     <!--
