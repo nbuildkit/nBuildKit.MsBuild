@@ -27,7 +27,7 @@
             DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog">
         <Message Text="Ensuring that the build is executed on the correct branch ..."
                  Importance="normal"/>
-        <Message Text="Expected branch: $(BranchGitExpected)"
+        <Message Text="Expected branch: $(GitBranchExpected)"
                  Importance="normal" />
         <Message Text="Expected revision: $(GitRevNoExpected)"
                  Importance="normal" />
@@ -79,11 +79,11 @@
         <Message Text="Current branch: $(CurrentGitBranch)" />
 
         <Message Text="Not on expected branch, resetting ..."
-                 Condition=" '$(CurrentGitBranch)' != '$(BranchGitExpected)' " />
+                 Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' " />
         <GitCheckout GitExecutablePath="$(ToolsExternalGitPath)"
                      WorkingDirectory="$(DirWorkspace)"
-                     Branch="$(BranchGitExpected)"
-                     Condition=" '$(CurrentGitBranch)' != '$(BranchGitExpected)' " />
+                     Branch="$(GitBranchExpected)"
+                     Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' " />
 
         <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
                  WorkingDirectory="$(DirWorkspace)"
