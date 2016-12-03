@@ -68,9 +68,14 @@
     -->
     <PropertyGroup>
         <SharedPropertyFile>$(DirUserSettings)\settings.props</SharedPropertyFile>
-    </PropertyGroup>
+        <ArtefactPropertyFile>$(DirUserSettings)\artefacts.settings.props</ArtefactPropertyFile>
+     </PropertyGroup>
     <Import Project="$(SharedPropertyFile)"
             Condition="Exists('$(SharedPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
     <Import Project="$(DirNBuildKitMsBuild)\shared.props"
             Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsSharedSettings)' != 'true' " />
+    <Import Project="$(ArtefactPropertyFile)"
+            Condition="Exists('$(ArtefactPropertyFile)') AND '$(ExistsArtefactSettings)' != 'true' " />
+    <Import Project="$(DirNBuildKitMsBuild)\artefacts.shared.props"
+            Condition="Exists('$(DirNBuildKitMsBuild)\artefacts.shared.props') AND '$(ExistsSharedArtefactSettings)' != 'true' " />
 </Project>
