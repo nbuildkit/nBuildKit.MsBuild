@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!-- Overrides for the build configuration -->
     <PropertyGroup>
         <!-- A flag that indicates whether or not the build output of the VS projects is redirected to the $(DirBuildBinPlatformConfig) directory. -->
         <!-- <RedirectBuildOutputToSingleFolder Condition=" '$(RedirectBuildOutputToSingleFolder)' == '' ">false</RedirectBuildOutputToSingleFolder> -->
-
         <!-- The build configuration (debug / release / ...) that will be used to run all the unit tests and the static verification on -->
         <!-- <TestConfiguration Condition=" '$(TestConfiguration)' == '' ">release</TestConfiguration> -->
-
         <!-- The build configuration (debug / release / ..) that will be used to create the binaries that should be deployed -->
         <!-- <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">release</ProductionConfiguration> -->
-
         <!-- The platform for which the binaries will be build -->
         <!-- <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform> -->
         <!-- <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces> -->
@@ -71,14 +69,11 @@
                                                            copyright information and optionally build time and build information.
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
         $(BuildStepsPrepareGenerateLicenses)             - Generates an XML file containing the licenses for all the NuGet packages in use for the current build.
-        $(BuildStepsAnalyzeSourceCcm)                    - Analyzes the source code files with CCM.
-        $(BuildStepsAnalyzeSourceSouceMonitor)           - Analyzes the source code files with SourceMonitor.
         $(BuildStepsBuildVisualStudioSolution)           - Builds the binaries from a given Visual Studio solution.
         $(BuildStepsUnitTestNUnit)                       - Executes the unit tests with NUnit and measures code coverage with OpenCover.
         $(BuildStepsUnitTestMsTest)                      - Executes the unit tests with MsTest and measures code coverage with OpenCover.
         $(BuildStepsUnitTestVsTest)                      - Executes the unit tests with VsTest and measures code coverage.
         $(BuildStepsAnalyzeBinariesFxCop)                - Analyzes the binary files with FxCop.
-        $(BuildStepsBuildApiDocumentationWithSandcastle) - Builds the API documentation with SandCastle from the inline XML documentation comments.
         $(BuildStepsPackNuGet)                           - Generates the NuGet packages.
         $(BuildStepsPackZip)                             - Generates one or more ZIP archives.
 
@@ -165,8 +160,9 @@
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildStepsPrepareTagVcs)"
-                             Condition=" '$(IsGitFlow)' == 'true' AND ('$(IsReleaseBranch)' == 'true' OR '$(IsHotfixBranch)' == 'true') ">
+        <BuildStepsToExecute
+            Condition=" '$(IsGitFlow)' == 'true' AND ('$(IsReleaseBranch)' == 'true' OR '$(IsHotfixBranch)' == 'true') "
+            Include="$(BuildStepsPrepareTagVcs)">
             <Properties>
             </Properties>
             <Groups>
@@ -224,21 +220,6 @@
             </Groups>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceCcm)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Analyze;
-            </Groups>
-        </BuildStepsToExecute>
-        <BuildStepsToExecute Include="$(BuildStepsAnalyzeSourceSouceMonitor)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Analyze;
-            </Groups>
-        </BuildStepsToExecute>
-
         <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
             <Properties>
             </Properties>
@@ -282,16 +263,6 @@
             </Properties>
             <Groups>
                 Analyze;
-            </Groups>
-        </BuildStepsToExecute>
-
-        <BuildStepsToExecute Include="$(BuildStepsBuildApiDocumentationWithSandcastle)">
-            <Properties>
-                Configuration=$(ProductionConfiguration);
-                Platform=$(Platform)
-            </Properties>
-            <Groups>
-                Compile;
             </Groups>
         </BuildStepsToExecute>
 
@@ -415,42 +386,6 @@
 
 
     <!--
-        **** SOURCE ANALYSIS - CCM ****
-    -->
-    <PropertyGroup>
-        <!--
-            The full path to the template file that is used to provide the project information for CCM. Defaults
-            to the template file included with nBuildKit.
-        -->
-        <!-- <FileTemplateCcm Condition=" '$(FileTemplateCcm)' == '' ">$(DirNBuildKitMsBuildTemplates)\ccm.xml</FileTemplateCcm> -->
-
-        <!--
-            The full path to the report file generated by CCM. Allows build templates. Allows build templates,
-            e.g. $(DirBuildLogs)\${ProductName}_ccm.xml.
-        -->
-        <!-- <FileReportCcm Condition=" '$(FileReportCcm)' == '' ">$(DirBuildLogs)\ccm.xml</FileReportCcm> -->
-    </PropertyGroup>
-
-
-    <!--
-        **** SOURCE ANALYSIS - SOURCEMONITOR ****
-    -->
-    <PropertyGroup>
-        <!--
-            The full path to the template file that is used to provide the project information for SourceMonitor. Defaults
-            to the template file included with nBuildKit.
-        -->
-        <!-- <FileTemplateSourceMonitor Condition=" '$(FileTemplateSourceMonitor)' == '' ">$(DirNBuildKitMsBuildTemplates)\sourcemonitor.xml</FileTemplateSourceMonitor> -->
-
-        <!--
-            The full path to the report file generated by SourceMonitor. Allows build templates. Allows build templates,
-            e.g. $(DirBuildLogs)\${ProductName}_sourcemonitor.xml
-        -->
-        <!-- <FileReportSourceMonitor Condition=" '$(FileReportSourceMonitor)' == '' ">$(DirBuildLogs)\sourcemonitor.xml</FileReportSourceMonitor> -->
-    </PropertyGroup>
-
-
-    <!--
         **** VISUAL STUDIO BUILD ****
     -->
     <!--
@@ -484,7 +419,6 @@
             - The AssemblyCopyrightAttribute with the text provided by the ${CopyrightLong} template parameter.
         -->
         <!--<ShouldGenerateAssemblyCompanyInfo>false</ShouldGenerateAssemblyCompanyInfo>-->
-
         <!--
             A flag that indicates whether an AssemblyInfo file with the version numbers should be generated. The file
             will be placed in the Properties directory of the Visual Studio project and will be named
@@ -500,7 +434,6 @@
             - The ProductVersionFolder property with the version as provided by the ${VersionInstallFilePath} template parameter.
         -->
         <!--<ShouldGenerateAssemblyVersionInfo>false</ShouldGenerateAssemblyVersionInfo>-->
-
         <!--
             A flag that indicates whether an AssemblyInfo file with the build information should be generated. The file
             will be placed in the Properties directory of the Visual Studio project and will be named
@@ -655,22 +588,18 @@
             The full path to the FxCop project file.
         -->
         <!--<FileProjectFxCop Condition=" '$(FileProjectFxCop)' == '' ">UNDEFINED</FileProjectFxCop>-->
-
         <!--
             The full path to the FxCop output report. Allows build templates, e.g. $(DirBuildLogs)\${ProductName}_fxcop.xml.
         -->
         <!--<FileReportFxCop Condition=" '$(FileReportFxCop)' == '' ">$(DirBuildLogs)\fxcop.xml</FileReportFxCop>-->
-
         <!--
             The full path to the XML file that contains the custom dictionary for FxCop.
         -->
         <!--<FxCopCustomDictionary Condition=" '$(FxCopCustomDictionary)' == '' ">$(DirWorkspace)\customdictionary.xml</FxCopCustomDictionary>-->
-
         <!--
             The culture that FxCop should use for the spelling rules.
         -->
         <!--<FxCopCulture Condition=" '$(FxCopCulture)' == '' ">$(CodeAnalysisCulture)</FxCopCulture>-->
-
         <!--
             A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
             errors are marked as errors then any analysis error will stop the build.
@@ -713,18 +642,6 @@
                                    Exclude="" />
         -->
     </ItemGroup>
-
-
-    <!--
-        **** BUILD API DOCUMENATION - SANDCASTLE ****
-    -->
-    <PropertyGroup>
-        <!--
-            The full path to the template file that is used to provide the project information for sandcastle. Defaults to
-            the template file included with nBuildKit.
-        -->
-        <!--<FileTemplateSandcastle Condition=" '$(FileTemplateSandcastle)' == '' ">$(DirNBuildKitMsBuildTemplates)\sandcastle.shfbproj</FileTemplateSandcastle>-->
-    </PropertyGroup>
 
 
     <!--
@@ -777,50 +694,38 @@
         <!-- <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 14.0')">C:\Program Files (x86)\Microsoft Visual Studio 14.0</ToolsExternalVisualStudioDir>
         <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0')">C:\Program Files (x86)\Microsoft Visual Studio 12.0</ToolsExternalVisualStudioDir>
         <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0')">C:\Program Files (x86)\Microsoft Visual Studio 11.0</ToolsExternalVisualStudioDir> -->
-
-        <!--
-            The full path to the CCM command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalCcmPath Condition=" '$(ToolsExternalCcmPath)' == '' ">UNDEFINED</ToolsExternalCcmPath> -->
-
         <!--
             The full path to the directory that contains the FxCop command line executable
         -->
         <!-- <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop')">$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir> -->
-
         <!--
             The full path to the MsTest command line executable.
         -->
         <!-- <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">UNDEFINED</ToolsExternalMsTestPath> -->
-
         <!--
             The full path and version to the nUnit command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalNUnitConsolePath Condition=" '$(ToolsExternalNUnitConsolePath)' == '' ">UNDEFINED</ToolsExternalNUnitConsolePath>
         <ToolsExternalNUnitConsoleVersion Condition=" '$(ToolsExternalNUnitConsoleVersion)' == '' ">2.6.4</ToolsExternalNUnitConsoleVersion> -->
-
         <!--
             The full path and version to the OpenCover command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath>
         <ToolsExternalOpenCoverVersion Condition=" '$(ToolsExternalOpenCoverVersion)' == '' ">4.6.519</ToolsExternalOpenCoverVersion>-->
-
         <!--
             The full path and version of the OpenCoverToCobertura converter command line executable. If not defined the packages directory is searched.
         -->
         <!--<ToolsExternalOpenCoverToCoberturaConverterPath Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverToCoberturaConverterPath>
         <ToolsExternalOpenCoverToCoberturaConverterVersion Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterVersion)' == '' ">0.2.4</ToolsExternalOpenCoverToCoberturaConverterVersion>-->
-
         <!--
             The full path and version to the ReportGenerator command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath>
         <ToolsExternalReportGeneratorVersion Condition=" '$(ToolsExternalReportGeneratorVersion)' == '' ">2.4.4</ToolsExternalReportGeneratorVersion>-->
-
         <!--
             The full path to the sn.exe command line executable.
         -->
@@ -832,17 +737,10 @@
         <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\x64\sn.exe</ToolsExternalSnPath>
         <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' ">UNDEFINED</ToolsExternalSnPath>
         -->
-
-        <!--
-            The full path to the SourceMonitor command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalSourceMonitorPath Condition=" '$(ToolsExternalSourceMonitorPath)' == '' ">UNDEFINED</ToolsExternalSourceMonitorPath> -->
-
         <!--
             The full path to the VSCoverageToReportGenerator command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalVSCoverageToReportGeneratorPath Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalVSCoverageToReportGeneratorPath> -->
-
         <!--
             The full path to the VsTest command line executable.
         -->
@@ -865,5 +763,8 @@
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildSettings>true</ExistsBuildSettings>
+
+        <!-- Defines the version number of the configuration file -->
+        <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
     </PropertyGroup>
 </Project>

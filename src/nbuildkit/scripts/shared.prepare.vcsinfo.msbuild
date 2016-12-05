@@ -1,80 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_VcsInfo_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_VcsInfo_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedPrepareVcsInfo>true</ExistsSharedPrepareVcsInfo>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild" />
 
-    <Target Name="nBuildKit_Shared_Prepare_VcsInfo_Run"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_VcsInfo_DisplayInfo"
-            Condition="!Exists('$(FileVcsInfo)')">
+    <Target
+        Condition="!Exists('$(FileVcsInfo)')"
+        DependsOnTargets="_nBuildKit_Shared_Prepare_VcsInfo_DisplayInfo"
+        Name="nBuildKit_Shared_Prepare_VcsInfo_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo" />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Shared_Prepare_VcsInfo_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_VcsInfo_DebugLog">
-        <Message Text="Writing GIT workspace information to file ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_VcsInfo_DebugLog"
+        Name="_nBuildKit_Shared_Prepare_VcsInfo_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Writing GIT workspace information to file ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_VcsInfo_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Shared_Prepare_VcsInfo_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The VCS info file is located at:                                   $(FileVcsInfo)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="The VCS info file is located at:                                   $(FileVcsInfo)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="GIT command line executable is located at:                         $(ToolsExternalGitPath)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="GIT command line executable is located at:                         $(ToolsExternalGitPath)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The current workspace is a GIT workspace"
-                 Importance="low"
-                 Condition=" '$(IsGitWorkspace)' == 'true' " />
-        <Warning Text="The current workspace does not have any identifying VCS information. No VCS info file will be created"
-                 Condition=" '$(IsGitWorkspace)' != 'true' " />
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Condition=" '$(IsGitWorkspace)' == 'true' "
+            Importance="low"
+            Text="The current workspace is a GIT workspace" />
+        <Warning
+            Condition=" '$(IsGitWorkspace)' != 'true' "
+            Text="The current workspace does not have any identifying VCS information. No VCS info file will be created" />
+        <Message
+            Importance="low"
+            Text=" " />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo"
-            Condition="$(IsGitWorkspace)">
-        <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
-               Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+    <Target
+        Condition="$(IsGitWorkspace)"
+        Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo">
+        <Error
+            Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsInfo)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
         </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Directories="$(DirToCreate)" />
 
-        <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
-                 WorkingDirectory="$(DirWorkspace)"
-                 Condition=" '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="CurrentRevision" PropertyName="GitCurrentRevision" />
-            <Output TaskParameter="CurrentBranch" PropertyName="GitCurrentBranch" />
+        <GitInfo
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            WorkingDirectory="$(DirWorkspace)">
+            <Output
+                PropertyName="GitCurrentRevision"
+                TaskParameter="CurrentRevision" />
+            <Output
+                PropertyName="GitCurrentBranch"
+                TaskParameter="CurrentBranch" />
         </GitInfo>
 
         <ItemGroup>
@@ -84,9 +115,10 @@
             <GitInfoItems Include="}" />
         </ItemGroup>
 
-        <WriteLinesToFile File="$(FileVcsInfo)"
-                          Lines="@(GitInfoItems)"
-                          Overwrite="true"
-                          Condition=" '$(ShouldExecute)' == 'true' "/>
+        <WriteLinesToFile
+            Condition=" '$(ShouldExecute)' == 'true' "
+            File="$(FileVcsInfo)"
+            Lines="@(GitInfoItems)"
+            Overwrite="true" />
     </Target>
  </Project>

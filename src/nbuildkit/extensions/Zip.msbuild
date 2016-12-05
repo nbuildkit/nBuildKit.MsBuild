@@ -1,11 +1,12 @@
 <!--
-     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+     Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project ToolsVersion="11.0"
-         DefaultTargets="Build"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
+<Project
+    DefaultTargets="Build"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsZip>true</ExistsExtensionsZip>
 
@@ -20,20 +21,29 @@
         <MsBuildUtilitiesAssembly Condition="!Exists('$(MsBuildUtilitiesAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</MsBuildUtilitiesAssembly>
     </PropertyGroup>
 
-    <UsingTask TaskName="Zip"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="Zip">
         <ParameterGroup>
-            <File ParameterType="System.String" Required="true" />
-            <OutputDirectory ParameterType="System.String" Required="true" />
-            <OverwriteExistingFiles ParameterType="System.Boolean" Required="false" />
+            <File
+                ParameterType="System.String"
+                Required="true" />
+            <OutputDirectory
+                ParameterType="System.String"
+                Required="true" />
+            <OverwriteExistingFiles
+                ParameterType="System.Boolean"
+                Required="false" />
         </ParameterGroup>
         <Task>
             <Reference Include="System.IO.Compression" />
             <Reference Include="System.Xml" />
-            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
-            <Reference Include="$(MsBuildUtilitiesAssembly)"/>
-            <Code Type="Class" Language="cs">
+            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll" />
+            <Reference Include="$(MsBuildUtilitiesAssembly)" />
+            <Code
+                Language="cs"
+                Type="Class">
                 <![CDATA[
                     using System;
                     using System.Collections.Generic;

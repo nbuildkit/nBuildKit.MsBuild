@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedImportSharedSettings>true</ExistsSharedImportSharedSettings>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props" />
 
     <!--
         Import the environment specific settings. These settings may be different for different environments, e.g. there might be a difference
@@ -24,43 +26,49 @@
         one of the following values:
         * File      - Load the environment information from the user specified file, if it exists.
         * User      - Load the environment information from file pointed to by the user environment variable
-                      NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists
+                        NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists
         * Machine   - Load the environment information from file pointed to by the machine environment variable
-                      NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists
+                        NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists
         * Workspace - Load the environment information from the file in the workspace, if it exists
     -->
-    <Import Project="$(FileEnvironment)"
-            Condition="Exists('$(FileEnvironment)') AND (('$(UseEnvironmentFrom)' == 'File')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
-    <Import Project="$(NBUILDKIT_USER_ENVIRONMENT_FILE)"
-            Condition="Exists('$(NBUILDKIT_USER_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'User')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
-    <Import Project="$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)"
-            Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'Machine')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
-    <Import Project="$(DirUserSettings)\environment.props"
-            Condition="Exists('$(DirUserSettings)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) " />
+    <Import
+        Condition="Exists('$(FileEnvironment)') AND (('$(UseEnvironmentFrom)' == 'File')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) "
+        Project="$(FileEnvironment)" />
+    <Import
+        Condition="Exists('$(NBUILDKIT_USER_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'User')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) "
+        Project="$(NBUILDKIT_USER_ENVIRONMENT_FILE)" />
+    <Import
+        Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'Machine')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) "
+        Project="$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)" />
+    <Import
+        Condition="Exists('$(DirUserSettings)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) "
+        Project="$(DirUserSettings)\environment.props" />
 
     <!--
-        Import the environment specific settings for the build server. These settings contain information about the active build server
-        and should only be loaded when a build is running on a build server.
+    Import the environment specific settings for the build server. These settings contain information about the active build server
+    and should only be loaded when a build is running on a build server.
 
-        We check the following locations in order:
-        * A user specified directory as indicated by the $(DirBuildServerSettings)
-        * A user or machine environment variable named NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR
+    We check the following locations in order:
+    * A user specified directory as indicated by the $(DirBuildServerSettings)
+    * A user or machine environment variable named NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR
 
-        It is expected that both point to a directory containing the 'buildserver.environment.props' file.
-    -->
+    It is expected that both point to a directory containing the 'buildserver.environment.props' file.
+-->
     <PropertyGroup>
         <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' AND '$(DirBuildServerSettings)' != '' AND Exists('$(DirBuildServerSettings)\buildserver.environment.props') ">$(DirBuildServerSettings)\buildserver.environment.props</FileBuildServerSettings>
         <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' AND '$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)' != '' AND Exists('$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.props') ">$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.props</FileBuildServerSettings>
         <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' ">UNDEFINED</FileBuildServerSettings>
     </PropertyGroup>
-    <Import Project="$(FileBuildServerSettings)"
-            Condition="Exists('$(FileBuildServerSettings)') AND '$(ExistsBuildServerEnvironmentSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(FileBuildServerSettings)') AND '$(ExistsBuildServerEnvironmentSettings)' != 'true' "
+        Project="$(FileBuildServerSettings)" />
 
     <!--
         Always load the default environment settings.
     -->
-    <Import Project="$(DirNBuildKitMsBuild)\shared.environment.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.environment.props" />
 
     <!-- Import the settings files that has all the overriden settings -->
     <!--
@@ -69,13 +77,17 @@
     <PropertyGroup>
         <SharedPropertyFile>$(DirUserSettings)\settings.props</SharedPropertyFile>
         <ArtefactPropertyFile>$(DirUserSettings)\artefacts.settings.props</ArtefactPropertyFile>
-     </PropertyGroup>
-    <Import Project="$(SharedPropertyFile)"
-            Condition="Exists('$(SharedPropertyFile)') AND '$(ExistsSettings)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\shared.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsSharedSettings)' != 'true' " />
-    <Import Project="$(ArtefactPropertyFile)"
-            Condition="Exists('$(ArtefactPropertyFile)') AND '$(ExistsArtefactSettings)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuild)\artefacts.shared.props"
-            Condition="Exists('$(DirNBuildKitMsBuild)\artefacts.shared.props') AND '$(ExistsSharedArtefactSettings)' != 'true' " />
+    </PropertyGroup>
+    <Import
+        Condition="Exists('$(SharedPropertyFile)') AND '$(ExistsSettings)' != 'true' "
+        Project="$(SharedPropertyFile)" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.props" />
+    <Import
+        Condition="Exists('$(ArtefactPropertyFile)') AND '$(ExistsArtefactSettings)' != 'true' "
+        Project="$(ArtefactPropertyFile)" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\artefacts.shared.props') AND '$(ExistsSharedArtefactSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\artefacts.shared.props" />
 </Project>

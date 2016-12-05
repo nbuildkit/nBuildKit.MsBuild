@@ -1,81 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Build_Prepare_GenerateLicenses_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Build_Prepare_GenerateLicenses_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildPrepareGenerateLicenses>true</ExistsBuildPrepareGenerateLicenses>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
 
-    <Target Name="nBuildKit_Build_Prepare_GenerateLicenses_Run"
-            DependsOnTargets="_nBuildKit_Build_Prepare_GenerateLicenses_DisplayInfo">
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Prepare_GenerateLicenses_DisplayInfo"
+        Name="nBuildKit_Build_Prepare_GenerateLicenses_Run">
         <CallTarget Targets="_nBuildKit_Build_Prepare_GenerateLicenses_Generate" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Prepare_GenerateLicenses_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Configuration values:"
-                 Importance="low"/>
-        <Message Text="ShouldClean:             $(ShouldClean)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Build_Prepare_GenerateLicenses_DebugLog">
+        <Message
+            Importance="low"
+            Text="Configuration values:" />
+        <Message
+            Importance="low"
+            Text="ShouldClean:             $(ShouldClean)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the build output is located at:           $(DirBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)"
-                 Importance="low"/>
-        <Message Text="The directory containing the build logs is located at:             $(DirBuildLogs)"
-                 Importance="low"/>
-        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
-                 Importance="low"/>
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
-                 Importance="low"/>
-        <Message Text="The directory containing the source code is located at:            $(DirSrc)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build output is located at:           $(DirBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build logs is located at:             $(DirBuildLogs)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the source code is located at:            $(DirSrc)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Prepare_GenerateLicenses_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Build_Prepare_GenerateLicenses_DebugLog">
-        <Message Text="Generating license files ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Prepare_GenerateLicenses_DebugLog"
+        Name="_nBuildKit_Build_Prepare_GenerateLicenses_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Generating license files ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Prepare_GenerateLicenses_Generate"
-            DependsOnTargets="_nBuildKit_Build_Prepare_GenerateLicenses_DisplayInfo"
-            Condition="!Exists('$(FileGeneratedLicenses)')">
-        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
-                      PackageName="NTreva"
-                      PackageVersion="$(ToolsExternalNTrevaVersion)"
-                      PackageDirectory="$(DirPackages)"
-                      Sources="@(NuGetSources)"
-                      Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "/>
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
-                                            FileToLocate="NTreva.exe"
-                                            Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED'  AND '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalNTrevaPath" />
+    <Target
+        Condition="!Exists('$(FileGeneratedLicenses)')"
+        DependsOnTargets="_nBuildKit_Build_Prepare_GenerateLicenses_DisplayInfo"
+        Name="_nBuildKit_Build_Prepare_GenerateLicenses_Generate">
+        <NuGetInstall
+            Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
+            NuGetPath="$(ToolsExternalNuGetPath)"
+            PackageDirectory="$(DirPackages)"
+            PackageName="NTreva"
+            PackageVersion="$(ToolsExternalNTrevaVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED'  AND '$(ShouldExecute)' == 'true' "
+            FileToLocate="NTreva.exe"
+            PackagesDir="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalNTrevaPath"
+                TaskParameter="Path" />
         </SearchPackagesDirectoryForToolPath>
         <ItemGroup>
-            <SolutionPackages Include="$(DirSrc)\**\packages.config"
-                              Exclude="$(DirSrc)\test*\packages.config"/>
+            <SolutionPackages
+                Exclude="$(DirSrc)\test*\packages.config"
+                Include="$(DirSrc)\**\packages.config" />
         </ItemGroup>
         <Exec Command="&quot;$(ToolsExternalNTrevaPath)&quot; -p &quot;$(DirPackages)&quot; -o &quot;$(FileGeneratedLicenses)&quot; @(SolutionPackages-> '-c &quot;%(RootDir)%(Directory)\&quot;', ' ')" />
     </Target>

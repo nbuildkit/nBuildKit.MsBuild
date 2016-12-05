@@ -1,24 +1,44 @@
 <!--
-     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+     Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="11.0">
-    <UsingTask TaskName="CalculateCustomVersion"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <UsingTask
+        AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll"
+        TaskFactory="CodeTaskFactory"
+        TaskName="CalculateCustomVersion">
         <ParameterGroup>
-            <VersionMajor ParameterType="System.String" Output="true" />
-            <VersionMinor ParameterType="System.String" Output="true" />
-            <VersionPatch ParameterType="System.String" Output="true" />
-            <VersionBuild ParameterType="System.String" Output="true" />
-            <VersionPreRelease ParameterType="System.String" Output="true" />
-            <VersionSemantic ParameterType="System.String" Output="true" />
-            <VersionSemanticFull ParameterType="System.String" Output="true" />
-            <VersionSemanticNuGet ParameterType="System.String" Output="true" />
+            <VersionMajor
+                Output="true"
+                ParameterType="System.String" />
+            <VersionMinor
+                Output="true"
+                ParameterType="System.String" />
+            <VersionPatch
+                Output="true"
+                ParameterType="System.String" />
+            <VersionBuild
+                Output="true"
+                ParameterType="System.String" />
+            <VersionPreRelease
+                Output="true"
+                ParameterType="System.String" />
+            <VersionSemantic
+                Output="true"
+                ParameterType="System.String" />
+            <VersionSemanticFull
+                Output="true"
+                ParameterType="System.String" />
+            <VersionSemanticNuGet
+                Output="true"
+                ParameterType="System.String" />
         </ParameterGroup>
         <Task>
-            <Code Type="Method" Language="cs">
+            <Code
+                Language="cs"
+                Type="Method">
                 <![CDATA[
                     public override bool Execute()
                     {

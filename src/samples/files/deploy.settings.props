@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
         The following ItemGroup defines which steps are taken during the deploy process. The order of the items in the item group
         determines in which order the deploy steps are executed.
@@ -267,7 +268,6 @@
             NuGetApiKey - The NuGet API key for the NuGet feed
         -->
         <!--<NuGetSymbolSourceUrl Condition=" '$(NuGetSymbolSourceUrl)' == '' ">UNDEFINED</NuGetSymbolSourceUrl>-->
-
         <!--
             The URL / UNC path to which all the symbol packages should be pushed.
         -->
@@ -370,5 +370,8 @@
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsDeploySettings>true</ExistsDeploySettings>
+
+        <!-- Defines the version number of the configuration file -->
+        <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
     </PropertyGroup>
 </Project>

@@ -1,107 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_Tag_Vcs_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_Tag_Vcs_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsDeployTagVcs>true</ExistsDeployTagVcs>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
 
-    <Target Name="nBuildKit_Shared_Prepare_Tag_Vcs_Run" DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_DisplayInfo">
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_DisplayInfo"
+        Name="nBuildKit_Shared_Prepare_Tag_Vcs_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_Tag_Vcs_Git" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_Tag_Vcs_Tfs" />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_DisplayInfo" DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_DebugLog">
-        <Message Text="Tagging release ..."
-                 Importance="low"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_DebugLog"
+        Name="_nBuildKit_Shared_Prepare_Tag_Vcs_DisplayInfo">
+        <Message
+            Importance="low"
+            Text="Tagging release ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Shared_Prepare_Tag_Vcs_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="Git command line executable is located at:                         $(ToolsExternalGitPath)"
-                 Importance="low"/>
-        <Message Text="TFS command line executable is located at:                         $(ToolsExternalTfsPath)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
+        <Message
+            Importance="low"
+            Text="Git command line executable is located at:                         $(ToolsExternalGitPath)" />
+        <Message
+            Importance="low"
+            Text="TFS command line executable is located at:                         $(ToolsExternalTfsPath)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The current workspace is a GIT workspace"
-                 Importance="low"
-                 Condition=" '$(IsGitWorkspace)' == 'true' " />
-        <Message Text="The current workspace is a TFS workspace"
-                 Importance="low"
-                 Condition=" '$(IsTfsWorkspace)' == 'true' " />
-        <Warning Text="The current workspace does not have any identifying VCS information. No tags will be applied"
-                 Condition=" '$(IsGitWorkspace)' != 'true' AND '$(IsTfsWorkspace)' != 'true' " />
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Condition=" '$(IsGitWorkspace)' == 'true' "
+            Importance="low"
+            Text="The current workspace is a GIT workspace" />
+        <Message
+            Condition=" '$(IsTfsWorkspace)' == 'true' "
+            Importance="low"
+            Text="The current workspace is a TFS workspace" />
+        <Warning
+            Condition=" '$(IsGitWorkspace)' != 'true' AND '$(IsTfsWorkspace)' != 'true' "
+            Text="The current workspace does not have any identifying VCS information. No tags will be applied" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="Pushing GIT tags to:                                               $(GitRemoteRepository)"
-                 Importance="low"
-                 Condition="Exists('$(DirWorkspace)\.git')" />
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Condition="Exists('$(DirWorkspace)\.git')"
+            Importance="low"
+            Text="Pushing GIT tags to:                                               $(GitRemoteRepository)" />
+        <Message
+            Importance="low"
+            Text=" " />
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
-        <Warning Text="The semantic version file does not exist. Will not be able to get the version."
-                 Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
-        <GetSemanticVersionFromFile VersionFile="$(FileSemanticVersion)"
-                                    Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
+        <Error
+            Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            Text="The semantic version file does not exist. Will not be able to get the version." />
+        <GetSemanticVersionFromFile
+            Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            VersionFile="$(FileSemanticVersion)">
+            <Output
+                PropertyName="VersionSemantic"
+                TaskParameter="VersionSemantic" />
         </GetSemanticVersionFromFile>
 
-        <Message Text="The semantic version is: $(VersionSemantic)"
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="The semantic version is: $(VersionSemantic)" />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Git"
-            Condition=" '$(IsGitWorkspace)' == 'true' "
-            DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
-        <Error Text="The git executable does not exist. Cannot apply tags."
-               Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "/>
+    <Target
+        Condition=" '$(IsGitWorkspace)' == 'true' "
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion"
+        Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Git">
+        <Error
+            Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Text="The git executable does not exist. Cannot apply tags." />
 
-        <Exec Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;Tagging $(VersionSemantic)&quot; &quot;$(VersionSemantic)&quot;"
-              WorkingDirectory="$(DirWorkspace)"
-              Condition=" '$(ShouldExecute)' == 'true' "/>
+        <Exec
+            Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;Tagging $(VersionSemantic)&quot; &quot;$(VersionSemantic)&quot;"
+            Condition=" '$(ShouldExecute)' == 'true' "
+            WorkingDirectory="$(DirWorkspace)" />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Tfs"
-            Condition=" '$(IsTfsWorkspace)' == 'true' "
-            DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
-        <Error Text="The TFS executable does not exist. Cannot apply tags."
-               Condition=" '$(ToolsExternalTfsPath)' == '' AND '$(ShouldExecute)' == 'true' "/>
+    <Target
+        Condition=" '$(IsTfsWorkspace)' == 'true' "
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion"
+        Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Tfs">
+        <Error
+            Condition=" '$(ToolsExternalTfsPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Text="The TFS executable does not exist. Cannot apply tags." />
 
-        <Exec Command="&quot;$(ToolsExternalTfsPath)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive"
-              Condition=" '$(ShouldExecute)' == 'true' "/>
+        <Exec
+            Command="&quot;$(ToolsExternalTfsPath)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive"
+            Condition=" '$(ShouldExecute)' == 'true' " />
     </Target>
  </Project>

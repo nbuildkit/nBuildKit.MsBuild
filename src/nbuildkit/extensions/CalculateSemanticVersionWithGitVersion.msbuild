@@ -1,9 +1,10 @@
 <!--
-     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+     Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="11.0">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsCalculateSemanticVersionWithGitVersion>true</ExistsExtensionsCalculateSemanticVersionWithGitVersion>
@@ -16,25 +17,52 @@
         <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
 
-    <UsingTask TaskName="CalculateSemanticVersionWithGitVersion"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="CalculateSemanticVersionWithGitVersion">
         <ParameterGroup>
-            <ExePath ParameterType="System.String" Required="true" />
-            <RemoteRepositoryUrl ParameterType="System.String" Required="false" />
-            <UserName ParameterType="System.String" Required="false" />
-            <LogPath ParameterType="System.String" Required="true" />
-            <VersionMajor ParameterType="System.String" Output="true" />
-            <VersionMinor ParameterType="System.String" Output="true" />
-            <VersionPatch ParameterType="System.String" Output="true" />
-            <VersionBuild ParameterType="System.String" Output="true" />
-            <VersionPreRelease ParameterType="System.String" Output="true" />
-            <VersionSemantic ParameterType="System.String" Output="true" />
-            <VersionSemanticFull ParameterType="System.String" Output="true" />
-            <VersionSemanticNuGet ParameterType="System.String" Output="true" />
+            <ExePath
+                ParameterType="System.String"
+                Required="true" />
+            <RemoteRepositoryUrl
+                ParameterType="System.String"
+                Required="false" />
+            <UserName
+                ParameterType="System.String"
+                Required="false" />
+            <LogPath
+                ParameterType="System.String"
+                Required="true" />
+            <VersionMajor
+                Output="true"
+                ParameterType="System.String" />
+            <VersionMinor
+                Output="true"
+                ParameterType="System.String" />
+            <VersionPatch
+                Output="true"
+                ParameterType="System.String" />
+            <VersionBuild
+                Output="true"
+                ParameterType="System.String" />
+            <VersionPreRelease
+                Output="true"
+                ParameterType="System.String" />
+            <VersionSemantic
+                Output="true"
+                ParameterType="System.String" />
+            <VersionSemanticFull
+                Output="true"
+                ParameterType="System.String" />
+            <VersionSemanticNuGet
+                Output="true"
+                ParameterType="System.String" />
         </ParameterGroup>
         <Task>
-            <Code Type="Method" Language="cs">
+            <Code
+                Language="cs"
+                Type="Method">
                 <![CDATA[
                     public override bool Execute()
                     {

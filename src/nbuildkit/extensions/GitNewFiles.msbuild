@@ -1,9 +1,10 @@
 <!--
-     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+     Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="11.0">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGitNewFiles>true</ExistsExtensionsGitNewFiles>
@@ -19,19 +20,28 @@
         <MsBuildUtilitiesAssembly Condition="!Exists('$(MsBuildUtilitiesAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</MsBuildUtilitiesAssembly>
     </PropertyGroup>
 
-    <UsingTask TaskName="GitNewFiles"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="GitNewFiles">
         <ParameterGroup>
-            <GitExecutablePath ParameterType="System.String" Required="true" />
-            <WorkingDirectory ParameterType="System.String" Required="true" />
-            <NewFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+            <GitExecutablePath
+                ParameterType="System.String"
+                Required="true" />
+            <WorkingDirectory
+                ParameterType="System.String"
+                Required="true" />
+            <NewFiles
+                Output="true"
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]" />
         </ParameterGroup>
         <Task>
             <Reference Include="System.Core" />
-            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
-            <Reference Include="$(MsBuildUtilitiesAssembly)"/>
-            <Code Type="Method" Language="cs">
+            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll" />
+            <Reference Include="$(MsBuildUtilitiesAssembly)" />
+            <Code
+                Language="cs"
+                Type="Method">
                 <![CDATA[
                     public override bool Execute()
                     {

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright company="nBuildKit">
-//     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+//     Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 // </copyright>
 //-----------------------------------------------------------------------
 

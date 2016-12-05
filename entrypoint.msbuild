@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="Help"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="Help"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Directories -->
         <!--
@@ -15,16 +16,19 @@
         -->
         <DirUserSettings>$(DirWorkspace)</DirUserSettings>
 
+        <!-- nBuildKit -->
+        <!--
+            Defines the version number of the entrypoint file
+        -->
+        <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
         <!--
             Hard-code the paths to the different directories because we're dog-fooding here because we know exactly
             where all the files are.
         -->
+        <DirNBuildKit>$(MSBuildProjectDirectory)\src\nbuildkit\scripts</DirNBuildKit>
         <DirNBuildKitMsBuildExtensions>$(DirWorkspace)\src\nbuildkit\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildShared>$(DirWorkspace)\src\nbuildkit\shared</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildTemplates>$(DirWorkspace)\src\nbuildkit\templates</DirNBuildKitMsBuildTemplates>
-
-        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
-        <DirNBuildKit>$(DirMsBuildScripts)\src\nbuildkit\scripts</DirNBuildKit>
     </PropertyGroup>
 
     <!--
@@ -117,8 +121,9 @@
         script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
         be used to execute the build.
     -->
-    <Target Name="Build"
-            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Build">
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Build"
+        Name="Build">
         <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
     </Target>
 
@@ -133,8 +138,9 @@
         script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
         be used to execute the tests.
     -->
-    <Target Name="Test"
-            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Test">
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Test"
+        Name="Test">
         <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
     </Target>
 
@@ -149,8 +155,9 @@
         script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
         be used to execute the deploy.
     -->
-    <Target Name="Deploy"
-            DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Deploy">
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Deploy"
+        Name="Deploy">
         <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
     </Target>
 

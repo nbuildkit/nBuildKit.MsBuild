@@ -1,9 +1,10 @@
 <!--
-     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+     Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="11.0">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGetFileVersion>true</ExistsExtensionsGetFileVersion>
@@ -22,15 +23,22 @@
         - FilePath: Full path to the file from which the version must be obtained.
         - Path: Return variable containing the version of the file
     -->
-    <UsingTask TaskName="GetFileVersion"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="GetFileVersion">
         <ParameterGroup>
-            <FilePath ParameterType="System.String" Required="true" />
-            <FileVersion ParameterType="System.String" Output="true" />
+            <FilePath
+                ParameterType="System.String"
+                Required="true" />
+            <FileVersion
+                Output="true"
+                ParameterType="System.String" />
         </ParameterGroup>
         <Task>
-            <Code Type="Fragment" Language="cs">
+            <Code
+                Language="cs"
+                Type="Fragment">
                 <![CDATA[
                     FileVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(FilePath).FileVersion.ToString();
                 ]]>

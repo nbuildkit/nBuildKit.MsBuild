@@ -1,65 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Build_Prepare_GenerateFiles_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Build_Prepare_GenerateFiles_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildPrepareGenerateFiles>true</ExistsBuildPrepareGenerateFiles>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild" />
 
-    <Target Name="nBuildKit_Build_Prepare_GenerateFiles_Run"
-            DependsOnTargets="_nBuildKit_Build_Prepare_GenerateFiles_DisplayInfo"
-            Outputs="%(BuildFilesToGenerate.Identity)"
-            Condition=" '@(BuildFilesToGenerate)' != '' ">
+    <Target
+        Condition=" '@(BuildFilesToGenerate)' != '' "
+        DependsOnTargets="_nBuildKit_Build_Prepare_GenerateFiles_DisplayInfo"
+        Name="nBuildKit_Build_Prepare_GenerateFiles_Run"
+        Outputs="%(BuildFilesToGenerate.Identity)">
         <CallTarget Targets="_nBuildKit_Build_Prepare_GenerateFiles_GenerateFiles" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Prepare_GenerateFiles_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Build_Prepare_GenerateFiles_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)"
-                 Importance="low"/>
-        <Message Text="The VCS info file is located at:                                   $(FileVcsInfo)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
+        <Message
+            Importance="low"
+            Text="The VCS info file is located at:                                   $(FileVcsInfo)" />
+        <Message
+            Importance="low"
+            Text=" " />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Build_Prepare_GenerateFiles_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Build_Prepare_GenerateFiles_DebugLog">
-        <Message Text="Generating files ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Prepare_GenerateFiles_DebugLog"
+        Name="_nBuildKit_Build_Prepare_GenerateFiles_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Generating files ..." />
     </Target>
 
     <!-- Generate the required files -->
-    <Target Name="_nBuildKit_Build_Prepare_GenerateFiles_GenerateFiles"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
-            Outputs="%(BuildFilesToGenerate.Identity)"
-            Condition=" '@(BuildFilesToGenerate)' != '' ">
-        <Message Text="Generating file %(BuildFilesToGenerate.Identity)"
-                 Importance="normal"/>
+    <Target
+        Condition=" '@(BuildFilesToGenerate)' != '' "
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+        Name="_nBuildKit_Build_Prepare_GenerateFiles_GenerateFiles"
+        Outputs="%(BuildFilesToGenerate.Identity)">
+        <Message
+            Importance="normal"
+            Text="Generating file %(BuildFilesToGenerate.Identity)" />
 
         <!--
             MsBuild can't seem to handle using item metadata (BuildFilesToGenerate.FullPath) inside a property function
@@ -69,14 +88,17 @@
             <DirBuildFilesToGenerateTemp Include="$([System.IO.Path]::GetDirectoryName('%(BuildFilesToGenerate.FullPath)'))" />
         </ItemGroup>
 
-        <MakeDir Directories="%(DirBuildFilesToGenerateTemp.Identity)"
-                 Condition="!Exists('%(DirBuildFilesToGenerateTemp.Identity)')" />
+        <MakeDir
+            Condition="!Exists('%(DirBuildFilesToGenerateTemp.Identity)')"
+            Directories="%(DirBuildFilesToGenerateTemp.Identity)" />
 
         <!--
             It seems MsBuild can't handle batched metadata in conditions either, so make a property and then use that.
         -->
         <CreateProperty Value="%(BuildFilesToGenerate.Token)">
-            <Output TaskParameter="Value" PropertyName="AdditionalToken" />
+            <Output
+                PropertyName="AdditionalToken"
+                TaskParameter="Value" />
         </CreateProperty>
         <ItemGroup Condition=" '$(AdditionalToken)' != '' ">
             <TemplateTokens Include="%(BuildFilesToGenerate.Token)">
@@ -84,10 +106,11 @@
             </TemplateTokens>
         </ItemGroup>
 
-        <TemplateFile Template="%(BuildFilesToGenerate.Template)"
-                      OutputFileName="%(BuildFilesToGenerate.Identity)"
-                      Tokens="@(TemplateTokens)"
-                      Encoding="%(BuildFilesToGenerate.Encoding)"
-                      Condition="!Exists('%(BuildFilesToGenerate.FullPath)')"/>
+        <TemplateFile
+            Condition="!Exists('%(BuildFilesToGenerate.FullPath)')"
+            Encoding="%(BuildFilesToGenerate.Encoding)"
+            OutputFileName="%(BuildFilesToGenerate.Identity)"
+            Template="%(BuildFilesToGenerate.Template)"
+            Tokens="@(TemplateTokens)" />
     </Target>
  </Project>

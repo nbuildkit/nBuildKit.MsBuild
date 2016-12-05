@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
         Define the expected locations of the settings files so that we can copy / transform them later on.
     -->
     <ItemGroup>
-        <UserSettingsFilesToBeTransformed Include="$(DirLocalUserSettings)\environment.props"
-                                          Condition="Exists('$(DirLocalUserSettings)\environment.props')" />
-        <UserSettingsFilesToBeTransformed Include="$(DirLocalUserSettings)\settings.props"
-                                          Condition="Exists('$(DirLocalUserSettings)\settings.props')" />
         <UserSettingsFilesToBeTransformed Include="$(DirLocalUserSettings)\*.settings.props" />
+        <UserSettingsFilesToBeTransformed
+            Condition="Exists('$(DirLocalUserSettings)\environment.props')"
+            Include="$(DirLocalUserSettings)\environment.props" />
+        <UserSettingsFilesToBeTransformed
+            Condition="Exists('$(DirLocalUserSettings)\settings.props')"
+            Include="$(DirLocalUserSettings)\settings.props" />
     </ItemGroup>
 
     <!--
@@ -51,8 +54,9 @@
             Only copy the settings files if the originals are newer than the ones in the 'DirUserConfiguration'
             directory
         -->
-        <Copy SourceFiles="%(UserSettingsFilesToBeTransformed.FullPath)"
-              DestinationFiles="$(DirUserConfiguration)\%(UserSettingsFilesToBeTransformed.Filename)%(UserSettingsFilesToBeTransformed.Extension)"
-              Condition="!Exists('$(DirUserConfiguration)\%(UserSettingsFilesToBeTransformed.Filename)%(UserSettingsFilesToBeTransformed.Extension)') OR $([System.DateTime]::Parse('%(ModifiedTime)').Ticks) &gt; $([System.IO.File]::GetLastWriteTime('$(DirUserConfiguration)\%(UserSettingsFilesToBeTransformed.Filename)%(UserSettingsFilesToBeTransformed.Extension)').Ticks)" />
+        <Copy
+            Condition="!Exists('$(DirUserConfiguration)\%(UserSettingsFilesToBeTransformed.Filename)%(UserSettingsFilesToBeTransformed.Extension)') OR $([System.DateTime]::Parse('%(ModifiedTime)').Ticks) &gt; $([System.IO.File]::GetLastWriteTime('$(DirUserConfiguration)\%(UserSettingsFilesToBeTransformed.Filename)%(UserSettingsFilesToBeTransformed.Extension)').Ticks)"
+            DestinationFiles="$(DirUserConfiguration)\%(UserSettingsFilesToBeTransformed.Filename)%(UserSettingsFilesToBeTransformed.Extension)"
+            SourceFiles="%(UserSettingsFilesToBeTransformed.FullPath)" />
     </Target>
 </Project>

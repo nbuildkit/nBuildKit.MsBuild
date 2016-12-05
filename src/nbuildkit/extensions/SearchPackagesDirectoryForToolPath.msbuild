@@ -1,9 +1,10 @@
 <!--
-     Copyright 2013 nBuildKit. Licensed under the Apache License, Version 2.0.
+     Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="11.0">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsSearchPackagesDirectoryForToolPath>true</ExistsExtensionsSearchPackagesDirectoryForToolPath>
@@ -23,17 +24,26 @@
         - FileToLocate: Name of the executable file for which the path should be located.
         - Path: Return variable containing the full path of the executable file.
     -->
-    <UsingTask TaskName="SearchPackagesDirectoryForToolPath"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="SearchPackagesDirectoryForToolPath">
         <ParameterGroup>
-            <PackagesDir ParameterType="System.String" Required="true" />
-            <FileToLocate ParameterType="System.String" Required="true" />
-            <Path ParameterType="System.String" Output="true" />
+            <PackagesDir
+                ParameterType="System.String"
+                Required="true" />
+            <FileToLocate
+                ParameterType="System.String"
+                Required="true" />
+            <Path
+                Output="true"
+                ParameterType="System.String" />
         </ParameterGroup>
         <Task>
             <Using Namespace="System.Linq" />
-            <Code Type="Fragment" Language="cs">
+            <Code
+                Language="cs"
+                Type="Fragment">
                 <![CDATA[
                     Path = System.IO.Directory.EnumerateFiles(PackagesDir, FileToLocate, SearchOption.AllDirectories)
                         .OrderBy(k => System.IO.Path.GetDirectoryName(k))
