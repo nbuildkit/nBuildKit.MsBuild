@@ -3,8 +3,9 @@
      Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="11.0">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGetToolFullPath>true</ExistsExtensionsGetToolFullPath>
@@ -17,15 +18,22 @@
         <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
 
-    <UsingTask TaskName="GetToolFullPath"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="GetToolFullPath">
         <ParameterGroup>
-            <Tool ParameterType="System.String" Required="true" />
-            <Path ParameterType="System.String" Output="true" />
+            <Tool
+                ParameterType="System.String"
+                Required="true" />
+            <Path
+                Output="true"
+                ParameterType="System.String" />
         </ParameterGroup>
         <Task>
-            <Code Type="Method" Language="cs">
+            <Code
+                Language="cs"
+                Type="Method">
                 <![CDATA[
                     public override bool Execute()
                     {

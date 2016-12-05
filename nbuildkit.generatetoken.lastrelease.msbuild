@@ -1,31 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsNBuildKitGenerateTokenLastRelease>true</ExistsNBuildKitGenerateTokenLastRelease>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <PropertyGroup>
         <FileNBuildKitLastRelease>$(DirBuildTemp)\nbuildkit.lastrelease.json</FileNBuildKitLastRelease>
     </PropertyGroup>
 
-    <Target Name="_NBuildKit_GenerateToken_LastRelease_FromNuGet"
-            Condition="!Exists('$FileNBuildKitLastRelease')">
         <GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
-            <Output TaskParameter="Major" PropertyName="NBuildKitLatestMajorVersion" />
-            <Output TaskParameter="Minor" PropertyName="NBuildKitLatestMinorVersion" />
-            <Output TaskParameter="Patch" PropertyName="NBuildKitLatestPatchVersion" />
+    <Target
+        Condition="!Exists('$FileNBuildKitLastRelease')"
+        Name="_NBuildKit_GenerateToken_LastRelease_FromNuGet">
+            <Output
+                PropertyName="NBuildKitLatestMajorVersion"
+                TaskParameter="Major" />
+            <Output
+                PropertyName="NBuildKitLatestMinorVersion"
+                TaskParameter="Minor" />
+            <Output
+                PropertyName="NBuildKitLatestPatchVersion"
+                TaskParameter="Patch" />
         </GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet>
 
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileNBuildKitLastRelease)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+        <CreateProperty
+            Value="$([System.IO.Path]::GetDirectoryName('$(FileNBuildKitLastRelease)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
         </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Directories="$(DirToCreate)" />
 
         <ItemGroup>
             <Items_ReleaseVersion Include="{" />
@@ -37,18 +50,26 @@
             <Items_ReleaseVersion Include="}" />
         </ItemGroup>
 
-        <WriteLinesToFile File="$(FileNBuildKitLastRelease)"
-                          Lines="@(Items_ReleaseVersion)"
-                          Overwrite="true"
-                          Condition="!Exists('$(FileNBuildKitLastRelease)') AND '$(ShouldExecute)' == 'true' "/>
+        <WriteLinesToFile
+            Condition="!Exists('$(FileNBuildKitLastRelease)') AND '$(ShouldExecute)' == 'true' "
+            File="$(FileNBuildKitLastRelease)"
+            Lines="@(Items_ReleaseVersion)"
+            Overwrite="true" />
     </Target>
 
-    <Target Name="nbuildkit_generatetoken_lastrelease"
-            DependsOnTargets="_NBuildKit_GenerateToken_LastRelease_FromNuGet">
         <GetLastRelease_LocalTask_GetLastReleaseVersionFromFile VersionFile="$(FileNBuildKitLastRelease)">
-            <Output TaskParameter="VersionMajor" PropertyName="NBuildKitLatestMajorVersion" />
-            <Output TaskParameter="VersionMinor" PropertyName="NBuildKitLatestMinorVersion" />
-            <Output TaskParameter="VersionPatch" PropertyName="NBuildKitLatestPatchVersion" />
+    <Target
+        DependsOnTargets="_NBuildKit_GenerateToken_LastRelease_FromNuGet"
+        Name="nbuildkit_generatetoken_lastrelease">
+            <Output
+                PropertyName="NBuildKitLatestMajorVersion"
+                TaskParameter="VersionMajor" />
+            <Output
+                PropertyName="NBuildKitLatestMinorVersion"
+                TaskParameter="VersionMinor" />
+            <Output
+                PropertyName="NBuildKitLatestPatchVersion"
+                TaskParameter="VersionPatch" />
         </GetLastRelease_LocalTask_GetLastReleaseVersionFromFile>
 
         <ItemGroup>
@@ -67,17 +88,28 @@
         </ItemGroup>
     </Target>
 
-    <UsingTask TaskName="GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet">
         <ParameterGroup>
-            <NuGetPath ParameterType="System.String" Required="true" />
-            <Major ParameterType="System.Int32" Output="true" />
-            <Minor ParameterType="System.Int32" Output="true" />
-            <Patch ParameterType="System.Int32" Output="true" />
+            <NuGetPath
+                ParameterType="System.String"
+                Required="true" />
+            <Major
+                Output="true"
+                ParameterType="System.Int32" />
+            <Minor
+                Output="true"
+                ParameterType="System.Int32" />
+            <Patch
+                Output="true"
+                ParameterType="System.Int32" />
         </ParameterGroup>
         <Task>
-            <Code Type="Method" Language="cs">
+            <Code
+                Language="cs"
+                Type="Method">
                 <![CDATA[
                     public override bool Execute()
                     {
@@ -169,17 +201,28 @@
         </Task>
     </UsingTask>
 
-    <UsingTask TaskName="GetLastRelease_LocalTask_GetLastReleaseVersionFromFile"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="GetLastRelease_LocalTask_GetLastReleaseVersionFromFile">
         <ParameterGroup>
-            <VersionFile ParameterType="System.String" Required="true" />
-            <VersionMajor ParameterType="System.String" Output="true" />
-            <VersionMinor ParameterType="System.String" Output="true" />
-            <VersionPatch ParameterType="System.String" Output="true" />
+            <VersionFile
+                ParameterType="System.String"
+                Required="true" />
+            <VersionMajor
+                Output="true"
+                ParameterType="System.String" />
+            <VersionMinor
+                Output="true"
+                ParameterType="System.String" />
+            <VersionPatch
+                Output="true"
+                ParameterType="System.String" />
         </ParameterGroup>
         <Task>
-            <Code Type="Method" Language="cs">
+            <Code
+                Language="cs"
+                Type="Method">
                 <![CDATA[
                     public override bool Execute()
                     {

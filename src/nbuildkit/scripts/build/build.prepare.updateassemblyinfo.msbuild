@@ -1,161 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Build_Prepare_UpdateAssemblyInfo_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Build_Prepare_UpdateAssemblyInfo_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildPrepareGenerateLicenses>true</ExistsBuildPrepareGenerateLicenses>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
-
-    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
-
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\AddOrUpdateAttributeInCode.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\AddOrUpdateAttributeInCode.msbuild') AND '$(ExistsExtensionsAddOrUpdateAttributeInCode)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild') AND '$(ExistsExtensionsGenerateInternalsVisibleToAttributes)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\UpdateAttributeInCode.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\UpdateAttributeInCode.msbuild') AND '$(ExistsExtensionsUpdateAttributeInCode)' != 'true' " />
-
-    <Target Name="nBuildKit_Build_Prepare_UpdateAssemblyInfo_Run"
-            DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update" />
         <CallTarget Targets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_InternalsVisibleTo" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\AddOrUpdateAttributeInCode.msbuild') AND '$(ExistsExtensionsAddOrUpdateAttributeInCode)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\AddOrUpdateAttributeInCode.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild') AND '$(ExistsExtensionsGenerateInternalsVisibleToAttributes)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\UpdateAttributeInCode.msbuild') AND '$(ExistsExtensionsUpdateAttributeInCode)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\UpdateAttributeInCode.msbuild" />
+
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
+        Name="nBuildKit_Build_Prepare_UpdateAssemblyInfo_Run">
     </Target>
 
-    <Target Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Configuration values:"
-                 Importance="low"/>
-        <Message Text="ShouldClean:             $(ShouldClean)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DebugLog">
+        <Message
+            Importance="low"
+            Text="Configuration values:" />
+        <Message
+            Importance="low"
+            Text="ShouldClean:             $(ShouldClean)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
-                 Importance="low"/>
-        <Message Text="The directory containing the source code is located at:            $(DirSrc)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the source code is located at:            $(DirSrc)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DebugLog">
-        <Message Text="Updating AssemblyInfo files ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DebugLog"
+        Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Updating AssemblyInfo files ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
-            Outputs="%(AssemblyInfoFilesToUpdate.Identity)"
-            Condition=" '@(AssemblyInfoFilesToUpdate)' != '' ">
-        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-                                    AttributeName="AssemblyVersion"
-                                    Value="&quot;${VersionAssembly}&quot;"
-                                    Encoding="UTF-8"
-                                    Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
+    <Target
+        Condition=" '@(AssemblyInfoFilesToUpdate)' != '' "
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
+        Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update"
+        Outputs="%(AssemblyInfoFilesToUpdate.Identity)">
+        <AddOrUpdateAttributeInCode
+            AttributeName="AssemblyVersion"
+            Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "
+            Encoding="UTF-8"
+            InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+            Value="&quot;${VersionAssembly}&quot;" />
 
-        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-                                    AttributeName="AssemblyFileVersion"
-                                    Value="&quot;${VersionAssemblyFile}&quot;"
-                                    Encoding="UTF-8"
-                                    Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
+        <AddOrUpdateAttributeInCode
+            AttributeName="AssemblyFileVersion"
+            Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "
+            Encoding="UTF-8"
+            InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+            Value="&quot;${VersionAssemblyFile}&quot;" />
 
-        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-                                    AttributeName="AssemblyInformationalVersion"
-                                    Value="&quot;${VersionProduct}&quot;"
-                                    Encoding="UTF-8"
-                                    Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
+        <AddOrUpdateAttributeInCode
+            AttributeName="AssemblyInformationalVersion"
+            Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "
+            Encoding="UTF-8"
+            InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+            Value="&quot;${VersionProduct}&quot;" />
 
-        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-                                    AttributeName="AssemblyCompany"
-                                    Value="&quot;$(CompanyName)&quot;"
-                                    Encoding="UTF-8"
-                                    Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>
+        <AddOrUpdateAttributeInCode
+            AttributeName="AssemblyCompany"
+            Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "
+            Encoding="UTF-8"
+            InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+            Value="&quot;$(CompanyName)&quot;" />
 
-        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-                                    AttributeName="AssemblyCopyright"
-                                    Value="&quot;$(CopyrightLong)&quot;"
-                                    Encoding="UTF-8"
-                                    Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "/>
+        <AddOrUpdateAttributeInCode
+            AttributeName="AssemblyCopyright"
+            Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "
+            Encoding="UTF-8"
+            InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+            Value="&quot;$(CopyrightLong)&quot;" />
 
-        <AddOrUpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-                                    AttributeName="AssemblyConfiguration"
-                                    Value="&quot;$(Configuration)&quot;"
-                                    Encoding="UTF-8"
-                                    Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "/>
+        <AddOrUpdateAttributeInCode
+            AttributeName="AssemblyConfiguration"
+            Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "
+            Encoding="UTF-8"
+            InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+            Value="&quot;$(Configuration)&quot;" />
 
-        <UpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-                               AttributeName="AssemblyBuildTime"
-                               Value="buildTime: &quot;${Now}&quot;"
-                               Encoding="UTF-8"
-                               Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "/>
+        <UpdateAttributeInCode
+            AttributeName="AssemblyBuildTime"
+            Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "
+            Encoding="UTF-8"
+            InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+            Value="buildTime: &quot;${Now}&quot;" />
 
-        <UpdateAttributeInCode InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-                               AttributeName="AssemblyBuildInformation"
-                               Value="buildNumber: $(VersionBuild), versionControlInformation: &quot;${VcsRevision}&quot;"
-                               Encoding="UTF-8"
-                               Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "/>
+        <UpdateAttributeInCode
+            AttributeName="AssemblyBuildInformation"
+            Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "
+            Encoding="UTF-8"
+            InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
+            Value="buildNumber: $(VersionBuild), versionControlInformation: &quot;${VcsRevision}&quot;" />
 
-        <TemplateFile Template="%(AssemblyInfoFilesToUpdate.Identity)"
-                      OutputFileName="%(AssemblyInfoFilesToUpdate.Identity)"
-                      Tokens="@(TemplateTokens)"
-                      Encoding="UTF-8"
-                      Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)') AND '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "/>
+        <TemplateFile
+            Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)') AND '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "
+            Encoding="UTF-8"
+            OutputFileName="%(AssemblyInfoFilesToUpdate.Identity)"
+            Template="%(AssemblyInfoFilesToUpdate.Identity)"
+            Tokens="@(TemplateTokens)" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_InternalsVisibleTo"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
-            Outputs="%(AssemblyInfoFilesToUpdate.Identity)"
-            Condition="  '@(AssemblyInfoFilesToUpdate)' != '' AND '@(InternalsVisibleTo)' != '' ">
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('%(AssemblyInfoFilesToUpdate.Identity)'))">
-            <Output TaskParameter="Value" PropertyName="AssemblyInfoDirectory" />
+    <Target
+        Condition="  '@(AssemblyInfoFilesToUpdate)' != '' AND '@(InternalsVisibleTo)' != '' "
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
+        Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_InternalsVisibleTo"
+        Outputs="%(AssemblyInfoFilesToUpdate.Identity)">
+        <CreateProperty
+            Value="$([System.IO.Path]::GetDirectoryName('%(AssemblyInfoFilesToUpdate.Identity)'))">
+            <Output
+                PropertyName="AssemblyInfoDirectory"
+                TaskParameter="Value" />
         </CreateProperty>
         <ItemGroup>
-            <PossibleProjectFiles Include="$(AssemblyInfoDirectory)\**\*.csproj"
-                                  Condition="!$(AssemblyInfoDirectory.EndsWith('Properties'))" />
-            <PossibleProjectFiles Include="$(AssemblyInfoDirectory)\..\**\*.csproj"
-                                  Condition="$(AssemblyInfoDirectory.EndsWith('Properties'))" />
-            <PossibleProjectFiles Include="$(AssemblyInfoDirectory)\**\*.vbproj"
-                                  Condition="!$(AssemblyInfoDirectory.EndsWith('My Project'))" />
-            <PossibleProjectFiles Include="$(AssemblyInfoDirectory)\..\**\*.vbproj"
-                                  Condition="$(AssemblyInfoDirectory.EndsWith('My Project'))" />
+            <PossibleProjectFiles
+                Condition="!$(AssemblyInfoDirectory.EndsWith('Properties'))"
+                Include="$(AssemblyInfoDirectory)\**\*.csproj" />
+            <PossibleProjectFiles
+                Condition="$(AssemblyInfoDirectory.EndsWith('Properties'))"
+                Include="$(AssemblyInfoDirectory)\..\**\*.csproj" />
+            <PossibleProjectFiles
+                Condition="!$(AssemblyInfoDirectory.EndsWith('My Project'))"
+                Include="$(AssemblyInfoDirectory)\**\*.vbproj" />
+            <PossibleProjectFiles
+                Condition="$(AssemblyInfoDirectory.EndsWith('My Project'))"
+                Include="$(AssemblyInfoDirectory)\..\**\*.vbproj" />
         </ItemGroup>
-        <Error Text="Found multiple project files that may be referencing the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity). The project files are: @(PossibleProjectFiles)"
-               Condition="$([System.String]::new('@(PossibleProjectFiles)').Contains(';'))" />
+        <Error
+            Condition="$([System.String]::new('@(PossibleProjectFiles)').Contains(';'))"
+            Text="Found multiple project files that may be referencing the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity). The project files are: @(PossibleProjectFiles)" />
 
-        <CreateProperty Value="%(PossibleProjectFiles.FullPath)"
-                        Condition=" '@(PossibleProjectFiles)' != '' AND !$([System.String]::new('@(PossibleProjectFiles)').Contains(';')) ">
-            <Output TaskParameter="Value" PropertyName="ProjectFile" />
+        <CreateProperty
+            Condition=" '@(PossibleProjectFiles)' != '' AND !$([System.String]::new('@(PossibleProjectFiles)').Contains(';')) "
+            Value="%(PossibleProjectFiles.FullPath)">
+            <Output
+                PropertyName="ProjectFile"
+                TaskParameter="Value" />
         </CreateProperty>
-        <Error Text="Did not find a project file that references the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity)"
-               Condition="!Exists('$(ProjectFile)')" />
-        <Message Text="The project file at $(ProjectFile) is referencing the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity). Using the project file to determine the assembly name."
-                 Condition="Exists('$(ProjectFile)')" />
+        <Error
+            Condition="!Exists('$(ProjectFile)')"
+            Text="Did not find a project file that references the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity)" />
+        <Message
+            Condition="Exists('$(ProjectFile)')"
+            Text="The project file at $(ProjectFile) is referencing the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity). Using the project file to determine the assembly name." />
 
-        <XmlPeek XmlInputPath="$(ProjectFile)"
-                 Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-                 Query="/x:Project/x:PropertyGroup/x:AssemblyName/text()"
-                 Condition="Exists('$(ProjectFile)')">
-            <Output TaskParameter="Result" ItemName="AssemblyNames" />
+        <XmlPeek
+            Condition="Exists('$(ProjectFile)')"
+            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
+            Query="/x:Project/x:PropertyGroup/x:AssemblyName/text()"
+            XmlInputPath="$(ProjectFile)">
+            <Output
+                ItemName="AssemblyNames"
+                TaskParameter="Result" />
         </XmlPeek>
-        <CreateProperty Value="%(AssemblyNames.Identity)"
-                        Condition=" '@(AssemblyNames)' != '' ">
-            <Output TaskParameter="Value" PropertyName="AssemblyName" />
+        <CreateProperty
+            Condition=" '@(AssemblyNames)' != '' "
+            Value="%(AssemblyNames.Identity)">
+            <Output
+                PropertyName="AssemblyName"
+                TaskParameter="Value" />
         </CreateProperty>
 
         <PropertyGroup>
@@ -164,41 +215,51 @@
             <InternalsVisibleToForSignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' ">&lt;Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)&gt;</InternalsVisibleToForSignedAssembliesTemplate>
             <InternalsVisibleToForUnsignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' ">&lt;Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}&quot;)&gt;</InternalsVisibleToForUnsignedAssembliesTemplate>
         </PropertyGroup>
-        <GenerateInternalsVisibleToAttributes SnExe="$(ToolsExternalSnPath)"
-                                              Project="$(AssemblyName)"
-                                              AttributeTemplateForSignedAssemblies="$(InternalsVisibleToForSignedAssembliesTemplate)"
-                                              AttributeTemplateForUnsignedAssemblies="$(InternalsVisibleToForUnsignedAssembliesTemplate)"
-                                              DirPackages="$(DirPackages)"
-                                              DirTemp="$(DirBuildTemp)"
-                                              Items="@(InternalsVisibleTo)"
-                                              Condition=" '@(InternalsVisibleTo)' != '' AND '$(AssemblyName)' != '' ">
-            <Output TaskParameter="Result" PropertyName="InternalsVisibleToAttributes" />
+        <GenerateInternalsVisibleToAttributes
+            AttributeTemplateForSignedAssemblies="$(InternalsVisibleToForSignedAssembliesTemplate)"
+            AttributeTemplateForUnsignedAssemblies="$(InternalsVisibleToForUnsignedAssembliesTemplate)"
+            Condition=" '@(InternalsVisibleTo)' != '' AND '$(AssemblyName)' != '' "
+            DirPackages="$(DirPackages)"
+            DirTemp="$(DirBuildTemp)"
+            Items="@(InternalsVisibleTo)"
+            Project="$(AssemblyName)"
+            SnExe="$(ToolsExternalSnPath)">
+            <Output
+                PropertyName="InternalsVisibleToAttributes"
+                TaskParameter="Result" />
         </GenerateInternalsVisibleToAttributes>
 
         <CreateItem
-            Include="$(InternalsVisibletoCompilerConstants.Split(';'))"
-            Condition=" '$(InternalsVisibletoCompilerConstants)' != '' AND '$(InternalsVisibleToAttributes)' != '' ">
-           <Output
-               TaskParameter="Include"
-               ItemName="CompilerConstants"/>
+            Condition=" '$(InternalsVisibletoCompilerConstants)' != '' AND '$(InternalsVisibleToAttributes)' != '' "
+            Include="$(InternalsVisibletoCompilerConstants.Split(';'))">
+            <Output
+                ItemName="CompilerConstants"
+                TaskParameter="Include" />
         </CreateItem>
 
-        <CreateProperty Value="@(CompilerConstants->'%(Identity)', ' || ')"
-                        Condition=" '@(CompilerConstants)' != '' ">
-            <Output TaskParameter="Value" PropertyName="CompilerConstantsCombined" />
+        <CreateProperty
+            Condition=" '@(CompilerConstants)' != '' "
+            Value="@(CompilerConstants->'%(Identity)', ' || ')">
+            <Output
+                PropertyName="CompilerConstantsCombined"
+                TaskParameter="Value" />
         </CreateProperty>
         <ItemGroup Condition=" '$(InternalsVisibleToAttributes)' != '' ">
-            <InternalsVisibleToLines Include="#if $(CompilerConstantsCombined)"
-                                     Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' " />
-            <InternalsVisibleToLines Include="#If $(CompilerConstantsCombined)"
-                                     Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' " />
+            <InternalsVisibleToLines
+                Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' "
+                Include="#if $(CompilerConstantsCombined)" />
+            <InternalsVisibleToLines
+                Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' "
+                Include="#If $(CompilerConstantsCombined)" />
 
             <InternalsVisibleToLines Include="$(InternalsVisibleToAttributes)" />
 
-            <InternalsVisibleToLines Include="#endif"
-                                     Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' " />
-            <InternalsVisibleToLines Include="#End If"
-                                     Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' " />
+            <InternalsVisibleToLines
+                Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' "
+                Include="#endif" />
+            <InternalsVisibleToLines
+                Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' "
+                Include="#End If" />
         </ItemGroup>
 
         <PropertyGroup>

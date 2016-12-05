@@ -1,84 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Build_Binaries_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Build_Binaries_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildBinaries>true</ExistsBuildBinaries>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
-    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild') AND '$(ExistsExtensionsNuGetRestore)' != 'true' "/>
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild') AND '$(ExistsExtensionsNuGetRestore)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
 
-    <Target Name="nBuildKit_Build_Binaries_Run" DependsOnTargets="_nBuildKit_Build_Binaries_DisplayInfo">
-        <CallTarget Targets="_nBuildKit_Build_Binaries_Execute" />
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Binaries_DisplayInfo"
+        Name="nBuildKit_Build_Binaries_Run">
+        <CallTarget
+            Targets="_nBuildKit_Build_Binaries_Execute" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Binaries_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the build output is located at:           $(DirBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the build logs is located at:             $(DirBuildLogs)"
-                 Importance="low"/>
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Build_Binaries_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build output is located at:           $(DirBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build logs is located at:             $(DirBuildLogs)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)" />
+        <Message
+            Importance="low"
+            Text=" " />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Binaries_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Build_Binaries_DebugLog">
-        <Message Text="Building the Visual Studio solutions ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Binaries_DebugLog"
+        Name="_nBuildKit_Build_Binaries_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Building the Visual Studio solutions ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Binaries_Execute"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
-            Condition=" '@(SolutionsToBuild)' != '' "
-            Outputs="%(SolutionsToBuild.Identity)">
-        <TemplateText Template="%(SolutionsToBuild.FullPath)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FileSln" />
+    <Target
+        Condition=" '@(SolutionsToBuild)' != '' "
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+        Name="_nBuildKit_Build_Binaries_Execute"
+        Outputs="%(SolutionsToBuild.Identity)">
+        <TemplateText
+            Template="%(SolutionsToBuild.FullPath)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileSln"
+                TaskParameter="Result" />
         </TemplateText>
 
-        <Error Text="No NuGet executable defined. Will not be able to restore the packages."
-               Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
-        <Error Text="Expected $(FileSln) to point to a valid path but it does not."
-               Condition="!Exists('$(FileSln)') AND  '$(ShouldExecute)' == 'true' " />
+        <Error
+            Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Text="No NuGet executable defined. Will not be able to restore the packages." />
+        <Error
+            Condition="!Exists('$(FileSln)') AND  '$(ShouldExecute)' == 'true' "
+            Text="Expected $(FileSln) to point to a valid path but it does not." />
 
-        <Message Text="Building $(FileSln) for targets = %(SolutionsToBuild.Targets) with: Configuration = %(SolutionsToBuild.Configuration) and Platform = %(SolutionsToBuild.Platform) ..."
-                 Importance="normal"/>
+        <Message
+            Importance="normal"
+            Text="Building $(FileSln) for targets = %(SolutionsToBuild.Targets) with: Configuration = %(SolutionsToBuild.Configuration) and Platform = %(SolutionsToBuild.Platform) ..." />
 
         <CreateProperty Value="$([System.IO.Path]::GetExtension('$(FileSln)'))">
-            <Output TaskParameter="Value" PropertyName="FileExtension" />
+            <Output
+                PropertyName="FileExtension"
+                TaskParameter="Value" />
         </CreateProperty>
-        <NuGetRestore NuGetPath="$(ToolsExternalNuGetPath)"
-                      PackageFile="$(FileSln)"
-                      PackageDirectory="$(DirPackages)"
-                      Sources="@(NuGetSources)"
-                      Condition=" '$(FileExtension)' == '.sln' AND '$(ShouldExecute)' == 'true' "/>
+        <NuGetRestore
+            Condition=" '$(FileExtension)' == '.sln' AND '$(ShouldExecute)' == 'true' "
+            NuGetPath="$(ToolsExternalNuGetPath)"
+            PackageDirectory="$(DirPackages)"
+            PackageFile="$(FileSln)"
+            Sources="@(NuGetSources)" />
 
         <MSBuild
             BuildInParallel="False"
@@ -95,21 +128,26 @@
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True"
             Condition=" '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="TargetOutputs" ItemName="GeneratedAssemblies" />
+            <Output
+                ItemName="GeneratedAssemblies"
+                TaskParameter="TargetOutputs" />
         </MSBuild>
 
-        <MakeDir Directories="$(DirBuildLogs)"
-                 Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir
+            Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' "
+            Directories="$(DirBuildLogs)" />
 
         <ItemGroup>
-            <LogFiles Include="$([System.IO.Path]::GetDirectoryName('%(GeneratedAssemblies.Identity)'))\*.CodeAnalysisLog.xml"
-                      Condition="Exists('%(GeneratedAssemblies.Identity)')" />
+            <LogFiles
+                Condition="Exists('%(GeneratedAssemblies.Identity)')"
+                Include="$([System.IO.Path]::GetDirectoryName('%(GeneratedAssemblies.Identity)'))\*.CodeAnalysisLog.xml" />
         </ItemGroup>
 
-        <Move SourceFiles="@(LogFiles)"
-              DestinationFolder="$(DirBuildLogs)"
-              OverwriteReadOnlyFiles="true"
-              ContinueOnError="true"
-              Condition=" '$(ShouldExecute)' == 'true' "/>
+        <Move
+            Condition=" '$(ShouldExecute)' == 'true' "
+            ContinueOnError="true"
+            DestinationFolder="$(DirBuildLogs)"
+            OverwriteReadOnlyFiles="true"
+            SourceFiles="@(LogFiles)" />
     </Target>
  </Project>

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="_Custom_GetIssueInformationForCurrentRelease"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="_Custom_GetIssueInformationForCurrentRelease"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
         The full file path to the script that handles custom collection of the issue information for the current
         release.
@@ -33,34 +34,35 @@
             ISSUE_USERURL  - The URL for the user, if it exists.
             ISSUE_LABELS   - The labels / type for the issue.
     -->
-    <Target Name="_Custom_GetIssueInformationForCurrentRelease">
+    <Target
+        Name="_Custom_GetIssueInformationForCurrentRelease">
         <CreateItem
-            Include="1"
-            AdditionalMetadata="Title=A;Url=B;State=open;Body=C;UserName=D;UserUrl=E;Labels=F">
-           <Output
-               TaskParameter="Include"
-               ItemName="ReleaseNoteIssues"/>
+            AdditionalMetadata="Title=A;Url=B;State=open;Body=C;UserName=D;UserUrl=E;Labels=F"
+            Include="1">
+            <Output
+                ItemName="ReleaseNoteIssues"
+                TaskParameter="Include" />
         </CreateItem>
         <CreateItem
-            Include="2"
-            AdditionalMetadata="Title=G;Url=H;State=open;Body=I;UserName=J;UserUrl=K;Labels=L">
-           <Output
-               TaskParameter="Include"
-               ItemName="ReleaseNoteIssues"/>
+            AdditionalMetadata="Title=G;Url=H;State=open;Body=I;UserName=J;UserUrl=K;Labels=L"
+            Include="2">
+            <Output
+                ItemName="ReleaseNoteIssues"
+                TaskParameter="Include" />
         </CreateItem>
         <CreateItem
-            Include="3"
-            AdditionalMetadata="Title=M;Url=N;State=open;Body=O;UserName=P;UserUrl=Q;Labels=R">
-           <Output
-               TaskParameter="Include"
-               ItemName="ReleaseNoteIssues"/>
+            AdditionalMetadata="Title=M;Url=N;State=open;Body=O;UserName=P;UserUrl=Q;Labels=R"
+            Include="3">
+            <Output
+                ItemName="ReleaseNoteIssues"
+                TaskParameter="Include" />
         </CreateItem>
         <CreateItem
-            Include="4"
-            AdditionalMetadata="Title=S;Url=T;State=open;Body=U;UserName=V;UserUrl=W;Labels=X">
-           <Output
-               TaskParameter="Include"
-               ItemName="ReleaseNoteIssues"/>
+            AdditionalMetadata="Title=S;Url=T;State=open;Body=U;UserName=V;UserUrl=W;Labels=X"
+            Include="4">
+            <Output
+                ItemName="ReleaseNoteIssues"
+                TaskParameter="Include" />
         </CreateItem>
     </Target>
  </Project>

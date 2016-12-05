@@ -2,8 +2,9 @@
      Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="11.0">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsFxCopViaAssemblies>true</ExistsExtensionsFxCopViaAssemblies>
@@ -26,25 +27,49 @@
         - FxCopOutputFile [Property]: The file that should contain the FxCop results
         - FxCopProjectFile [Property]: The FxCop project file
     -->
-    <UsingTask TaskName="FxCopViaAssemblies"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="FxCopViaAssemblies">
         <ParameterGroup>
-            <FxCopDir ParameterType="System.String" Required="true" />
-            <OutputFile ParameterType="System.String" Required="true" />
-            <RuleSetDirectory ParameterType="System.String" Required="true" />
-            <Assemblies ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-            <ReferenceFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
-            <ReferenceDirectories ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
-            <Dictionary ParameterType="System.String" Required="false" />
-            <Culture ParameterType="System.String" Required="false" />
-            <WarningsAsErrors ParameterType="System.Boolean" Required="false" />
+            <FxCopDir
+                ParameterType="System.String"
+                Required="true" />
+            <OutputFile
+                ParameterType="System.String"
+                Required="true" />
+            <RuleSetDirectory
+                ParameterType="System.String"
+                Required="true" />
+            <Assemblies
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]"
+                Required="true" />
+            <ReferenceFiles
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]"
+                Required="false" />
+            <ReferenceDirectories
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]"
+                Required="false" />
+            <Dictionary
+                ParameterType="System.String"
+                Required="false" />
+            <Culture
+                ParameterType="System.String"
+                Required="false" />
+            <WarningsAsErrors
+                ParameterType="System.Boolean"
+                Required="false" />
         </ParameterGroup>
         <Task>
-            <Reference Include="System.Core" />
-            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
-            <Reference Include="$(MsBuildUtilitiesAssembly)"/>
-            <Code Type="Class" Language="cs">
+            <Reference
+                Include="System.Core" />
+            <Reference
+                Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll" />
+            <Reference
+                Include="$(MsBuildUtilitiesAssembly)" />
+            <Code
+                Language="cs"
+                Type="Class">
                 <![CDATA[
                     using System;
                     using System.IO;

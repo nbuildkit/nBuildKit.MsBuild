@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="_Custom_WriteReleaseNotesForCurrentRelease"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="_Custom_WriteReleaseNotesForCurrentRelease"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
         The full file path to the script that handles the custom formatting of the release notes for
         the current release.
@@ -33,12 +34,17 @@
             ISSUE_USERURL  - The URL for the user, if it exists.
             ISSUE_LABELS   - The labels / type for the issue.
     -->
-    <Target Name="_Custom_WriteReleaseNotesForCurrentRelease">
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesHtml)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+    <Target
+        Name="_Custom_WriteReleaseNotesForCurrentRelease">
+        <CreateProperty
+            Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesHtml)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
         </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Directories="$(DirToCreate)" />
 
         <ItemGroup>
             <ReleaseNoteHtmlLines Include="&lt;html&gt;" />
@@ -50,9 +56,10 @@
             <ReleaseNoteHtmlLines Include="&lt;/html&gt;" />
         </ItemGroup>
 
-        <WriteLinesToFile File="$(FileReleaseNotesHtml)"
-                          Lines="@(ReleaseNoteHtmlLines)"
-                          Overwrite="true"
-                          Condition=" '$(ShouldExecute)' == 'true' "/>
+        <WriteLinesToFile
+            Condition=" '$(ShouldExecute)' == 'true' "
+            File="$(FileReleaseNotesHtml)"
+            Lines="@(ReleaseNoteHtmlLines)"
+            Overwrite="true" />
     </Target>
  </Project>

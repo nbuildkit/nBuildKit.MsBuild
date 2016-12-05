@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Build_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Build_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <!-- Note the current script is not meant to be imported! -->
@@ -14,11 +15,13 @@
         <DirNBuildKitMsBuildTemplates Condition=" '$(DirNBuildKitMsBuildTemplates)' == '' ">$(MSBuildProjectDirectory)\templates</DirNBuildKitMsBuildTemplates>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\IsInCollection.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\IsInCollection.msbuild') AND '$(ExistsExtensionsIsInCollection)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\IsInCollection.msbuild') AND '$(ExistsExtensionsIsInCollection)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\IsInCollection.msbuild" />
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
@@ -31,97 +34,137 @@
         </DefaultProperties>
     </PropertyGroup>
 
-    <Target Name="nBuildKit_Build_Run"
-            DependsOnTargets="_nBuildKit_Build_DisplayInfo">
+    <Target
+        DependsOnTargets="_nBuildKit_Build_DisplayInfo"
+        Name="nBuildKit_Build_Run">
         <!-- Execute all the build tasks in the given order -->
         <CallTarget Targets="_nBuildKit_Build_Execute" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Build_DebugLog">
-        <Message Text="Building ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Build_DebugLog"
+        Name="_nBuildKit_Build_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Building ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Build_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Build_DebugLog">
         <!-- Display the targets that will be executed -->
-        <Message Text="Executing targets: @(BuildStepsToExecute->'%(identity)', '; ')"
-                 Importance="low"
-                 Condition=" '@(BuildStepsToExecute)' != ''" />
-        <Message Text="Executing targets: NONE"
-                 Importance="low"
-                 Condition=" '@(BuildStepsToExecute)' == ''" />
+        <Message
+            Condition=" '@(BuildStepsToExecute)' != ''"
+            Importance="low"
+            Text="Executing targets: @(BuildStepsToExecute->'%(identity)', '; ')" />
+        <Message
+            Condition=" '@(BuildStepsToExecute)' == ''"
+            Importance="low"
+            Text="Executing targets: NONE" />
 
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text=" " />
 
         <!-- Display the known directories -->
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Execute"
-            Condition=" '@(BuildStepsToExecute)' != ''"
-            Outputs="%(BuildStepsToExecute.Identity)">
+    <Target
+        Condition=" '@(BuildStepsToExecute)' != ''"
+        Name="_nBuildKit_Build_Execute"
+        Outputs="%(BuildStepsToExecute.Identity)">
 
-        <CreateItem Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
-            <Output TaskParameter="Include" ItemName="ExecutionGroupsFromUser"/>
+        <CreateItem
+            Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
+            <Output
+                ItemName="ExecutionGroupsFromUser"
+                TaskParameter="Include" />
         </CreateItem>
 
         <CreateProperty Value="%(BuildStepsToExecute.Groups)">
-            <Output TaskParameter="Value" PropertyName="BuildStepGroups" />
+            <Output
+                PropertyName="BuildStepGroups"
+                TaskParameter="Value" />
         </CreateProperty>
         <CreateItem Include="$(BuildStepGroups.ToLower().Split(';'))">
-           <Output TaskParameter="Include" ItemName="ExecutionGroupsForStep"/>
+            <Output
+                ItemName="ExecutionGroupsForStep"
+                TaskParameter="Include" />
         </CreateItem>
-        <IsInCollection Collection="@(ExecutionGroupsFromUser)"
-                        Items="@(ExecutionGroupsForStep)">
-            <Output TaskParameter="IsInList" PropertyName="ShouldExecuteStep" />
+        <IsInCollection
+            Collection="@(ExecutionGroupsFromUser)"
+            Items="@(ExecutionGroupsForStep)">
+            <Output
+                PropertyName="ShouldExecuteStep"
+                TaskParameter="IsInList" />
         </IsInCollection>
 
-        <CreateItem Include="all">
-           <Output TaskParameter="Include" ItemName="ExecutionGroupsForAllSteps"/>
+        <CreateItem
+            Include="all">
+            <Output
+                ItemName="ExecutionGroupsForAllSteps"
+                TaskParameter="Include" />
         </CreateItem>
-        <IsInCollection Collection="@(ExecutionGroupsForAllSteps)"
-                        Items="@(ExecutionGroupsFromUser)">
-            <Output TaskParameter="IsInList" PropertyName="ShouldExecuteAllSteps" />
+        <IsInCollection
+            Collection="@(ExecutionGroupsForAllSteps)"
+            Items="@(ExecutionGroupsFromUser)">
+            <Output
+                PropertyName="ShouldExecuteAllSteps"
+                TaskParameter="IsInList" />
         </IsInCollection>
 
         <CreateProperty Value="false">
-            <Output TaskParameter="Value" PropertyName="ShouldExecute" />
+            <Output
+                PropertyName="ShouldExecute"
+                TaskParameter="Value" />
         </CreateProperty>
-        <CreateProperty Value="true"
-                        Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '$(BuildStepGroups)' == '' AND '$(GroupsToExecute.ToLower())' == 'all')">
-            <Output TaskParameter="Value" PropertyName="ShouldExecute" />
+        <CreateProperty
+            Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '$(BuildStepGroups)' == '' AND '$(GroupsToExecute.ToLower())' == 'all')"
+            Value="true">
+            <Output
+                PropertyName="ShouldExecute"
+                TaskParameter="Value" />
         </CreateProperty>
 
-        <Message Text="Skipping %(BuildStepsToExecute.Identity)."
-                 Importance="normal"
-                 Condition=" '$(ShouldExecute)' != 'true' " />
-        <Message Text="Step not included in execution group list."
-                 Importance="low"
-                 Condition=" $(ShouldExecuteStep.ToLower()) != 'true' " />
-        <Message Text="'All' execution group not included in group list."
-                 Importance="low"
-                 Condition=" $(ShouldExecuteAllSteps.ToLower()) != 'true' " />
-        <Message Text="Execution group list is empty and 'All' execution group is not included in group list."
-                 Importance="low"
-                 Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(GroupsToExecute.ToLower())' != 'all' " />
+        <Message
+            Condition=" '$(ShouldExecute)' != 'true' "
+            Importance="normal"
+            Text="Skipping %(BuildStepsToExecute.Identity)." />
+        <Message
+            Condition=" $(ShouldExecuteStep.ToLower()) != 'true' "
+            Importance="low"
+            Text="Step not included in execution group list." />
+        <Message
+            Condition=" $(ShouldExecuteAllSteps.ToLower()) != 'true' "
+            Importance="low"
+            Text="'All' execution group not included in group list." />
+        <Message
+            Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(GroupsToExecute.ToLower())' != 'all' "
+            Importance="low"
+            Text="Execution group list is empty and 'All' execution group is not included in group list." />
 
-        <Message Text="Executing %(BuildStepsToExecute.Identity)"
-                 Importance="normal"
-                 Condition=" '$(ShouldExecute)' == 'true' " />
+        <Message
+            Condition=" '$(ShouldExecute)' == 'true' "
+            Importance="normal"
+            Text="Executing %(BuildStepsToExecute.Identity)" />
         <MSBuild
             BuildInParallel="False"
             Projects="%(BuildStepsToExecute.Identity)"
@@ -142,60 +185,87 @@
         <OnError ExecuteTargets="_nBuildKit_Build_OnError" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_OnError"
+    <Target
         Condition=" '@(BuildFailureStepsToExecute)' != '' "
+        Name="_nBuildKit_Build_OnError"
         Outputs="%(BuildFailureStepsToExecute.Identity)">
 
         <CreateItem Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
-            <Output TaskParameter="Include" ItemName="ExecutionGroupsFromUser"/>
+            <Output
+                ItemName="ExecutionGroupsFromUser"
+                TaskParameter="Include" />
         </CreateItem>
 
         <CreateProperty Value="%(BuildFailureStepsToExecute.Groups)">
-            <Output TaskParameter="Value" PropertyName="BuildFailureStepGroups" />
+            Value="%(BuildFailureStepsToExecute.Groups)">
+            <Output
+                PropertyName="BuildFailureStepGroups"
+                TaskParameter="Value" />
         </CreateProperty>
         <CreateItem Include="$(BuildFailureStepGroups.ToLower().Split(';'))">
-           <Output TaskParameter="Include" ItemName="ExecutionGroupsForStep"/>
+            <Output
+                ItemName="ExecutionGroupsForStep"
+                TaskParameter="Include" />
         </CreateItem>
-        <IsInCollection Collection="@(ExecutionGroupsFromUser)"
-                        Items="@(ExecutionGroupsForStep)">
-            <Output TaskParameter="IsInList" PropertyName="ShouldExecuteStep" />
+        <IsInCollection
+            Collection="@(ExecutionGroupsFromUser)"
+            Items="@(ExecutionGroupsForStep)">
+            <Output
+                PropertyName="ShouldExecuteStep"
+                TaskParameter="IsInList" />
         </IsInCollection>
 
         <CreateItem Include="all">
-           <Output TaskParameter="Include" ItemName="ExecutionGroupsForAllSteps"/>
+            <Output
+                ItemName="ExecutionGroupsForAllSteps"
+                TaskParameter="Include" />
         </CreateItem>
-        <IsInCollection Collection="@(ExecutionGroupsForAllSteps)"
-                        Items="@(ExecutionGroupsFromUser)">
-            <Output TaskParameter="IsInList" PropertyName="ShouldExecuteAllSteps" />
+        <IsInCollection
+            Collection="@(ExecutionGroupsForAllSteps)"
+            Items="@(ExecutionGroupsFromUser)">
+            <Output
+                PropertyName="ShouldExecuteAllSteps"
+                TaskParameter="IsInList" />
         </IsInCollection>
 
         <CreateProperty Value="false">
-            <Output TaskParameter="Value" PropertyName="ShouldExecute" />
+            <Output
+                PropertyName="ShouldExecute"
+                TaskParameter="Value" />
         </CreateProperty>
-        <CreateProperty Value="true"
-                        Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '%(BuildFailureStepsToExecute.Groups)' == '' AND '$(GroupsToExecute.ToLower())' == 'all')">
-            <Output TaskParameter="Value" PropertyName="ShouldExecute" />
+        <CreateProperty
+            Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '%(BuildFailureStepsToExecute.Groups)' == '' AND '$(GroupsToExecute.ToLower())' == 'all')"
+            Value="true">
+            <Output
+                PropertyName="ShouldExecute"
+                TaskParameter="Value" />
         </CreateProperty>
 
-        <Message Text="Skipping %(BuildFailureStepsToExecute.Identity)."
-                 Importance="normal"
-                 Condition=" '$(ShouldExecute)' != 'true' " />
-        <Message Text="Step not included in execution group list."
-                 Importance="low"
-                 Condition=" $(ShouldExecuteStep.ToLower()) != 'true' " />
-        <Message Text="'All' execution group not included in group list."
-                 Importance="low"
-                 Condition=" $(ShouldExecuteAllSteps.ToLower()) != 'true' " />
-        <Message Text="Execution group list is empty and 'All' execution group is not included in group list."
-                 Importance="low"
-                 Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(GroupsToExecute.ToLower())' != 'all' " />
+        <Message
+            Condition=" '$(ShouldExecute)' != 'true' "
+            Importance="normal"
+            Text="Skipping %(BuildFailureStepsToExecute.Identity)." />
+        <Message
+            Condition=" $(ShouldExecuteStep.ToLower()) != 'true' "
+            Importance="low"
+            Text="Step not included in execution group list." />
+        <Message
+            Condition=" $(ShouldExecuteAllSteps.ToLower()) != 'true' "
+            Importance="low"
+            Text="'All' execution group not included in group list." />
+        <Message
+            Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(GroupsToExecute.ToLower())' != 'all' "
+            Importance="low"
+            Text="Execution group list is empty and 'All' execution group is not included in group list." />
 
-        <Message Text="Executing %(BuildFailureStepsToExecute.Identity)"
-                 Importance="normal"
-                 Condition=" '$(ShouldExecute)' == 'true' " />
+        <Message
+            Condition=" '$(ShouldExecute)' == 'true' "
+            Importance="normal"
+            Text="Executing %(BuildFailureStepsToExecute.Identity)" />
 
         <MSBuild
             BuildInParallel="False"
+            Condition=" $(ShouldExecute) == 'true' "
             Projects="%(BuildFailureStepsToExecute.Identity)"
             Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties);%(BuildFailureStepsToExecute.Properties)"
             RebaseOutputs="False"
@@ -207,8 +277,6 @@
             Targets=""
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
-            UseResultsCache="True"
-            Condition=" $(ShouldExecute) == 'true' ">
-        </MSBuild>
+            UseResultsCache="True"> </MSBuild>
     </Target>
 </Project>

@@ -2,9 +2,10 @@
      Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project ToolsVersion="11.0"
-         DefaultTargets="Build"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="Build"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsUnzip>true</ExistsExtensionsUnzip>
@@ -17,18 +18,28 @@
         <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
 
-    <UsingTask TaskName="Unzip"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="Unzip">
         <ParameterGroup>
-            <InputFileName ParameterType="System.String" Required="true" />
-            <DestinationDirectory ParameterType="System.String" Required="true" />
+            <InputFileName
+                ParameterType="System.String"
+                Required="true" />
+            <DestinationDirectory
+                ParameterType="System.String"
+                Required="true" />
         </ParameterGroup>
         <Task>
-            <Reference Include="System.IO.Compression" />
-            <Reference Include="System.IO.Compression.FileSystem" />
-            <Using Namespace="System.IO.Compression" />
-            <Code Type="Fragment" Language="cs">
+            <Reference
+                Include="System.IO.Compression" />
+            <Reference
+                Include="System.IO.Compression.FileSystem" />
+            <Using
+                Namespace="System.IO.Compression" />
+            <Code
+                Language="cs"
+                Type="Fragment">
                 <![CDATA[
                     Log.LogMessage(MessageImportance.Low, "Uncompressing archive in: " + DestinationDirectory);
                     ZipFile.ExtractToDirectory(InputFileName, DestinationDirectory);

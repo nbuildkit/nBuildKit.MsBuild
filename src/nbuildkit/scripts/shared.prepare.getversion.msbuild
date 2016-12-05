@@ -1,210 +1,336 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_GetVersion_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_GetVersion_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedPrepareGetVersion>true</ExistsSharedPrepareGetVersion>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitVersion)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "/>
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitVersion)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
 
-    <Import Project="$(ScriptGetVersion)"
-            Condition=" '$(ScriptGetVersion)' != '' AND '$(ScriptGetVersion)' != 'UNDEFINED' AND Exists('$(ScriptGetVersion)')" />
-    <Import Project="$(FileVersionMsBuild)"
-            Condition="Exists('$(FileVersionMsBuild)') AND ( '$(ScriptGetVersion)' == '' OR '$(ScriptGetVersion)' == 'UNDEFINED' OR !Exists('$(ScriptGetVersion)'))" />
+    <Import
+        Condition=" '$(ScriptGetVersion)' != '' AND '$(ScriptGetVersion)' != 'UNDEFINED' AND Exists('$(ScriptGetVersion)')"
+        Project="$(ScriptGetVersion)" />
+    <Import
+        Condition="Exists('$(FileVersionMsBuild)') AND ( '$(ScriptGetVersion)' == '' OR '$(ScriptGetVersion)' == 'UNDEFINED' OR !Exists('$(ScriptGetVersion)'))"
+        Project="$(FileVersionMsBuild)" />
 
-    <Target Name="nBuildKit_Shared_Prepare_GetVersion_Run"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GetVersion_DisplayInfo"
-            Condition="!Exists('$(FileSemanticVersion)')">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionViaGitVersion" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_WriteVersionsToFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals" />
+    <Target
+        Condition="!Exists('$(FileSemanticVersion)')"
+        DependsOnTargets="_nBuildKit_Shared_Prepare_GetVersion_DisplayInfo"
+        Name="nBuildKit_Shared_Prepare_GetVersion_Run">
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GetVersion_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
-                 Importance="low"/>
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Shared_Prepare_GetVersion_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The semantic version file is located at:                           $(FileSemanticVersion)"
-                 Importance="low"/>
-        <Message Text="The MsBuild XML version file is located at:                        $(FileVersionMsBuild)"
-                 Importance="low"
-                 Condition="Exists('$(FileVersionMsBuild)')" />
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
+        <Message
+            Condition="Exists('$(FileVersionMsBuild)')"
+            Importance="low"
+            Text="The MsBuild XML version file is located at:                        $(FileVersionMsBuild)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="GitHubFlowVersion command line executable is located at:           $(ToolsExternalGitHubFlowVersionPath)"
-                 Importance="low"/>
-        <Message Text="GitVersion command line executable is located at:                  $(ToolsExternalGitVersionPath)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="GitHubFlowVersion command line executable is located at:           $(ToolsExternalGitHubFlowVersionPath)" />
+        <Message
+            Importance="low"
+            Text="GitVersion command line executable is located at:                  $(ToolsExternalGitVersionPath)" />
+        <Message
+            Importance="low"
+            Text=" " />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Shared_Prepare_GetVersion_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GetVersion_DebugLog">
-        <Message Text="Getting version ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_GetVersion_DebugLog"
+        Name="_nBuildKit_Shared_Prepare_GetVersion_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Getting version ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm"
-            Condition="Exists('$(ScriptGetVersion)')">
-        <Message Text="Getting version from the custom version algorithm ..."
-                 Importance="low"/>
+    <Target
+        Condition="Exists('$(ScriptGetVersion)')"
+        Name="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm">
+        <Message
+            Importance="low"
+            Text="Getting version from the custom version algorithm ..." />
 
         <CalculateCustomVersion Condition=" '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
-            <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
-            <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
-            <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
-            <Output TaskParameter="VersionPreRelease" PropertyName="VersionPreRelease" />
-            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
-            <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
-            <Output TaskParameter="VersionSemanticNuGet" PropertyName="VersionSemanticNuGet" />
+            <Output
+                PropertyName="VersionMajor"
+                TaskParameter="VersionMajor" />
+            <Output
+                PropertyName="VersionMinor"
+                TaskParameter="VersionMinor" />
+            <Output
+                PropertyName="VersionPatch"
+                TaskParameter="VersionPatch" />
+            <Output
+                PropertyName="VersionBuild"
+                TaskParameter="VersionBuild" />
+            <Output
+                PropertyName="VersionPreRelease"
+                TaskParameter="VersionPreRelease" />
+            <Output
+                PropertyName="VersionSemantic"
+                TaskParameter="VersionSemantic" />
+            <Output
+                PropertyName="VersionSemanticFull"
+                TaskParameter="VersionSemanticFull" />
+            <Output
+                PropertyName="VersionSemanticNuGet"
+                TaskParameter="VersionSemanticNuGet" />
         </CalculateCustomVersion>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile"
-            Condition="Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')">
-        <Message Text="Getting version from the MsBuild version file ..."
-                 Importance="low"/>
+    <Target
+        Condition="Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')"
+        Name="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile">
+        <Message
+            Importance="low"
+            Text="Getting version from the MsBuild version file ..." />
 
         <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)">
-            <Output TaskParameter="Value" PropertyName="VersionSemantic" />
+            <Output
+                PropertyName="VersionSemantic"
+                TaskParameter="Value" />
         </CreateProperty>
 
-        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)-$(VersionPreRelease)+$(VersionBuild)"
-                        Condition=" '$(VersionPreRelease)' != '' ">
-            <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
+        <CreateProperty
+            Condition=" '$(VersionPreRelease)' != '' "
+            Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)-$(VersionPreRelease)+$(VersionBuild)">
+            <Output
+                PropertyName="VersionSemanticFull"
+                TaskParameter="Value" />
         </CreateProperty>
 
-        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)+$(VersionBuild)"
-                        Condition=" '$(VersionPreRelease)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
+        <CreateProperty
+            Condition=" '$(VersionPreRelease)' == '' "
+            Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)+$(VersionBuild)">
+            <Output
+                PropertyName="VersionSemanticFull"
+                TaskParameter="Value" />
         </CreateProperty>
 
-        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)-$(VersionPreRelease)$(VersionBuild)"
-                        Condition=" '$(VersionPreRelease)' != '' ">
-            <Output TaskParameter="Value" PropertyName="VersionSemanticNuGet" />
+        <CreateProperty
+            Condition=" '$(VersionPreRelease)' != '' "
+            Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)-$(VersionPreRelease)$(VersionBuild)">
+            <Output
+                PropertyName="VersionSemanticNuGet"
+                TaskParameter="Value" />
         </CreateProperty>
 
-        <CreateProperty Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)"
-                        Condition=" '$(VersionPreRelease)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionSemanticNuGet" />
+        <CreateProperty
+            Condition=" '$(VersionPreRelease)' == '' "
+            Value="$(VersionMajor).$(VersionMinor).$(VersionPatch)">
+            <Output
+                PropertyName="VersionSemanticNuGet"
+                TaskParameter="Value" />
         </CreateProperty>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GetVersion_GetToolPaths"
-            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')">
-        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
-                      PackageName="GitVersion.CommandLine"
-                      PackageVersion="$(ToolsExternalGitVersionVersion)"
-                      PackageDirectory="$(DirPackages)"
-                      Sources="@(NuGetSources)"
-                      Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "/>
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
-                                            FileToLocate="GitVersion.exe"
-                                            Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalGitVersionPath" />
+    <Target
+        Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')"
+        Name="_nBuildKit_Shared_Prepare_GetVersion_GetToolPaths">
+        <NuGetInstall
+            Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "
+            NuGetPath="$(ToolsExternalNuGetPath)"
+            PackageDirectory="$(DirPackages)"
+            PackageName="GitVersion.CommandLine"
+            PackageVersion="$(ToolsExternalGitVersionVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "
+            FileToLocate="GitVersion.exe"
+            PackagesDir="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalGitVersionPath"
+                TaskParameter="Path" />
         </SearchPackagesDirectoryForToolPath>
-        <GetToolFullPath Tool="$(ToolsExternalGitVersionPath)"
-                         Condition=" '$(ToolsExternalGitVersionPath)' != 'UNDEFINED' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalGitVersionPath" />
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalGitVersionPath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalGitVersionPath)">
+            <Output
+                PropertyName="ToolsExternalGitVersionPath"
+                TaskParameter="Path" />
         </GetToolFullPath>
-        <Message Text="The GitVersion executable was found at: $(ToolsExternalGitVersionPath)"
-                 Importance="low"
-                 Condition="Exists('$(ToolsExternalGitVersionPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Message
+            Condition="Exists('$(ToolsExternalGitVersionPath)') AND '$(ShouldExecute)' == 'true' "
+            Importance="low"
+            Text="The GitVersion executable was found at: $(ToolsExternalGitVersionPath)" />
 
-        <Error Text="Could not locate the GitVersion executable path. Cannot get semantic version."
-               Condition="!Exists('$(ToolsExternalGitVersionPath)') AND '$(ShouldExecute)' == 'true' "/>
+        <Error
+            Condition="!Exists('$(ToolsExternalGitVersionPath)') AND '$(ShouldExecute)' == 'true' "
+            Text="Could not locate the GitVersion executable path. Cannot get semantic version." />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionViaGitVersion"
-            Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)') AND Exists('$(ToolsExternalGitVersionPath)') AND ('$(IsGitWorkspace)' == 'true')">
-        <Message Text="Getting version from the GitVersion ..."
-                 Importance="low"/>
+    <Target
+        Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)') AND Exists('$(ToolsExternalGitVersionPath)') AND ('$(IsGitWorkspace)' == 'true')"
+        Name="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionViaGitVersion">
+        <Message
+            Importance="low"
+            Text="Getting version from the GitVersion ..." />
 
-        <CalculateSemanticVersionWithGitVersion ExePath="$(ToolsExternalGitVersionPath)"
-                                                RemoteRepositoryUrl="$(GitRemoteRepository)"
-                                                UserName="$(GitUserName)"
-                                                LogPath="$(DirBuildLogs)\gitversion.log"
-                                                Condition=" '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="VersionMajor" PropertyName="VersionMajor" />
-            <Output TaskParameter="VersionMinor" PropertyName="VersionMinor" />
-            <Output TaskParameter="VersionPatch" PropertyName="VersionPatch" />
-            <Output TaskParameter="VersionBuild" PropertyName="VersionBuild" />
-            <Output TaskParameter="VersionPreRelease" PropertyName="VersionPreRelease" />
-            <Output TaskParameter="VersionSemantic" PropertyName="VersionSemantic" />
-            <Output TaskParameter="VersionSemanticFull" PropertyName="VersionSemanticFull" />
-            <Output TaskParameter="VersionSemanticNuGet" PropertyName="VersionSemanticNuGet" />
+        <CalculateSemanticVersionWithGitVersion
+            Condition=" '$(ShouldExecute)' == 'true' "
+            ExePath="$(ToolsExternalGitVersionPath)"
+            LogPath="$(DirBuildLogs)\gitversion.log"
+            RemoteRepositoryUrl="$(GitRemoteRepository)"
+            UserName="$(GitUserName)">
+            <Output
+                PropertyName="VersionMajor"
+                TaskParameter="VersionMajor" />
+            <Output
+                PropertyName="VersionMinor"
+                TaskParameter="VersionMinor" />
+            <Output
+                PropertyName="VersionPatch"
+                TaskParameter="VersionPatch" />
+            <Output
+                PropertyName="VersionBuild"
+                TaskParameter="VersionBuild" />
+            <Output
+                PropertyName="VersionPreRelease"
+                TaskParameter="VersionPreRelease" />
+            <Output
+                PropertyName="VersionSemantic"
+                TaskParameter="VersionSemantic" />
+            <Output
+                PropertyName="VersionSemanticFull"
+                TaskParameter="VersionSemanticFull" />
+            <Output
+                PropertyName="VersionSemanticNuGet"
+                TaskParameter="VersionSemanticNuGet" />
         </CalculateSemanticVersionWithGitVersion>
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GetVersion_WriteVersionsToFile">
-        <Message Text="Writing the versions to file ..."
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="Writing the versions to file ..." />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileSemanticVersion)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
         </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Directories="$(DirToCreate)" />
 
-        <CreateProperty Value="0" Condition=" '$(VersionMajor)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionMajor" />
+        <CreateProperty
+            Condition=" '$(VersionMajor)' == '' "
+            Value="0">
+            <Output
+                PropertyName="VersionMajor"
+                TaskParameter="Value" />
         </CreateProperty>
-        <CreateProperty Value="0" Condition=" '$(VersionMinor)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionMinor" />
+        <CreateProperty
+            Condition=" '$(VersionMinor)' == '' "
+            Value="0">
+            <Output
+                PropertyName="VersionMinor"
+                TaskParameter="Value" />
         </CreateProperty>
-        <CreateProperty Value="0" Condition=" '$(VersionPatch)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionPatch" />
+        <CreateProperty
+            Condition=" '$(VersionPatch)' == '' "
+            Value="0">
+            <Output
+                PropertyName="VersionPatch"
+                TaskParameter="Value" />
         </CreateProperty>
-        <CreateProperty Value="0" Condition=" '$(VersionBuild)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionBuild" />
+        <CreateProperty
+            Condition=" '$(VersionBuild)' == '' "
+            Value="0">
+            <Output
+                PropertyName="VersionBuild"
+                TaskParameter="Value" />
         </CreateProperty>
-        <CreateProperty Value="" Condition=" '$(VersionPreRelease)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionPreRelease" />
+        <CreateProperty
+            Condition=" '$(VersionPreRelease)' == '' "
+            Value="">
+            <Output
+                PropertyName="VersionPreRelease"
+                TaskParameter="Value" />
         </CreateProperty>
-        <CreateProperty Value="0.0.0" Condition=" '$(VersionSemantic)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionSemantic" />
+        <CreateProperty
+            Condition=" '$(VersionSemantic)' == '' "
+            Value="0.0.0">
+            <Output
+                PropertyName="VersionSemantic"
+                TaskParameter="Value" />
         </CreateProperty>
-        <CreateProperty Value="0.0.0+0" Condition=" '$(VersionSemanticFull)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionSemanticFull" />
+        <CreateProperty
+            Condition=" '$(VersionSemanticFull)' == '' "
+            Value="0.0.0+0">
+            <Output
+                PropertyName="VersionSemanticFull"
+                TaskParameter="Value" />
         </CreateProperty>
-        <CreateProperty Value="0.0.0" Condition=" '$(VersionSemanticNuGet)' == '' ">
-            <Output TaskParameter="Value" PropertyName="VersionSemanticNuGet" />
+        <CreateProperty
+            Condition=" '$(VersionSemanticNuGet)' == '' "
+            Value="0.0.0">
+            <Output
+                PropertyName="VersionSemanticNuGet"
+                TaskParameter="Value" />
         </CreateProperty>
 
         <ItemGroup>
@@ -222,48 +348,63 @@
             <Items_SemanticVersion Include="}" />
         </ItemGroup>
 
-        <WriteLinesToFile File="$(FileSemanticVersion)"
-                          Lines="@(Items_SemanticVersion)"
-                          Overwrite="true"
-                          Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "/>
+        <WriteLinesToFile
+            Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            File="$(FileSemanticVersion)"
+            Lines="@(Items_SemanticVersion)"
+            Overwrite="true" />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals">
-        <Message Text="Versions are:"
-                 Importance="normal"/>
-        <Message Text="Major:          $(VersionMajor)"
-                 Importance="normal"/>
-        <Message Text="Minor:          $(VersionMinor)"
-                 Importance="normal"/>
-        <Message Text="Patch:          $(VersionPatch)"
-                 Importance="normal"/>
-        <Message Text="Build:          $(VersionBuild)"
-                 Importance="normal"/>
-        <Message Text="PreRelease:     $(VersionPreRelease)"
-                 Importance="normal"/>
-        <Message Text="Short semantic: $(VersionSemantic)"
-                 Importance="normal"/>
-        <Message Text="Full semantic:  $(VersionSemanticFull)"
-                 Importance="normal"/>
-        <Message Text="NuGet semantic: $(VersionSemanticNuGet)"
-                 Importance="normal"/>
+    <Target
+        Name="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals">
+        <Message
+            Importance="normal"
+            Text="Versions are:" />
+        <Message
+            Importance="normal"
+            Text="Major:          $(VersionMajor)" />
+        <Message
+            Importance="normal"
+            Text="Minor:          $(VersionMinor)" />
+        <Message
+            Importance="normal"
+            Text="Patch:          $(VersionPatch)" />
+        <Message
+            Importance="normal"
+            Text="Build:          $(VersionBuild)" />
+        <Message
+            Importance="normal"
+            Text="PreRelease:     $(VersionPreRelease)" />
+        <Message
+            Importance="normal"
+            Text="Short semantic: $(VersionSemantic)" />
+        <Message
+            Importance="normal"
+            Text="Full semantic:  $(VersionSemanticFull)" />
+        <Message
+            Importance="normal"
+            Text="NuGet semantic: $(VersionSemanticNuGet)" />
 
         <!-- Push to TeamCity -->
         <!-- Note that we only need to push to TeamCity if we're not using GitHubFlowVersion or GitVersion because they already makes it happen -->
-        <Message Text="Pushing version number to TeamCity's build number ..."
-                 Importance="normal"
-                 Condition=" '$(TEAMCITY_VERSION)' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
+        <Message
+            Condition=" '$(TEAMCITY_VERSION)' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')"
+            Importance="normal"
+            Text="Pushing version number to TeamCity's build number ..." />
         <!-- NOTE: This must always be displayed otherwise TeamCity won't get the message -->
-        <Message Text="##teamcity[buildNumber '$(VersionSemanticFull)']"
-                 Importance="high"
-                 Condition=" '$(TEAMCITY_VERSION)' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')" />
+        <Message
+            Condition=" '$(TEAMCITY_VERSION)' != '' AND Exists('$(FileSemanticVersion)') AND Exists('$(FileVersionMsBuild)')"
+            Importance="high"
+            Text="##teamcity[buildNumber '$(VersionSemanticFull)']" />
 
         <!-- Push to AppVeyor -->
         <!-- Note to make sure that the version that AppVeyor gets is unique we append the build number at the end. -->
-        <Message Text="Pushing version number to AppVeyor's build number ..."
-                 Importance="normal"
-                 Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
-        <Exec Command="appveyor UpdateBuild -Version &quot;$(VersionSemanticFull)-$(APPVEYOR_BUILD_NUMBER)&quot;"
-              Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
+        <Message
+            Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            Importance="normal"
+            Text="Pushing version number to AppVeyor's build number ..." />
+        <Exec
+            Command="appveyor UpdateBuild -Version &quot;$(VersionSemanticFull)-$(APPVEYOR_BUILD_NUMBER)&quot;"
+            Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
     </Target>
  </Project>

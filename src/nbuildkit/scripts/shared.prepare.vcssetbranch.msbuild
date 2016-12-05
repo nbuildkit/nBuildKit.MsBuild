@@ -1,102 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_VcsSetBranch_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_VcsSetBranch_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ExistsSharedPrepareVcsSetBranch>true</ExistsSharedPrepareVcsSetBranch>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild') AND '$(ExistsExtensionsGitCheckout)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild') AND '$(ExistsExtensionsGitReset)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild') AND '$(ExistsExtensionsGitCheckout)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild') AND '$(ExistsExtensionsGitReset)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild" />
 
-    <Target Name="nBuildKit_Shared_Prepare_VcsSetBranch_Run"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
-            Condition="!Exists('$(FileVcsInfo)')">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch" />
+    <Target
+        Condition="!Exists('$(FileVcsInfo)')"
+        DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
+        Name="nBuildKit_Shared_Prepare_VcsSetBranch_Run">
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog">
-        <Message Text="Ensuring that the build is executed on the correct branch ..."
-                 Importance="normal"/>
-        <Message Text="Expected branch: $(GitBranchExpected)"
-                 Importance="normal" />
-        <Message Text="Expected revision: $(GitRevNoExpected)"
-                 Importance="normal" />
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog"
+        Name="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Ensuring that the build is executed on the correct branch ..." />
+        <Message
+            Importance="normal"
+            Text="Expected branch: $(GitBranchExpected)" />
+        <Message
+            Importance="normal"
+            Text="Expected revision: $(GitRevNoExpected)" />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog" Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The VCS info file is located at:                                   $(FileVcsInfo)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="The VCS info file is located at:                                   $(FileVcsInfo)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="GIT command line executable is located at:                         $(ToolsExternalGitPath)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="GIT command line executable is located at:                         $(ToolsExternalGitPath)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The current workspace is a GIT workspace"
-                 Importance="low"
-                 Condition=" '$(IsGitWorkspace)' == 'true' " />
-        <Warning Text="The current workspace does not have any identifying VCS information. No VCS info file will be created"
-                 Condition=" '$(IsGitWorkspace)' != 'true' " />
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Condition=" '$(IsGitWorkspace)' == 'true' "
+            Importance="low"
+            Text="The current workspace is a GIT workspace" />
+        <Warning
+            Condition=" '$(IsGitWorkspace)' != 'true' "
+            Text="The current workspace does not have any identifying VCS information. No VCS info file will be created" />
+        <Message
+            Importance="low"
+            Text=" " />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch"
-            Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' ">
-        <Error Text="No GIT executable defined. Will not be able to gather the VCS information."
-               Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+    <Target
+        Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' "
+        Name="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch">
+        <Error
+            Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
-        <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
-                 WorkingDirectory="$(DirWorkspace)"
-                 Condition=" '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="CurrentBranch" PropertyName="CurrentGitBranch" />
+        <GitInfo
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            WorkingDirectory="$(DirWorkspace)">
+            <Output
+                PropertyName="CurrentGitBranch"
+                TaskParameter="CurrentBranch" />
         </GitInfo>
         <Message Text="Current branch: $(CurrentGitBranch)" />
 
-        <Message Text="Not on expected branch, resetting ..."
-                 Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' " />
-        <GitCheckout GitExecutablePath="$(ToolsExternalGitPath)"
-                     WorkingDirectory="$(DirWorkspace)"
-                     Branch="$(GitBranchExpected)"
-                     Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' " />
+        <Message
+            Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' "
+            Text="Not on expected branch, resetting ..." />
+        <GitCheckout
+            Branch="$(GitBranchExpected)"
+            Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            WorkingDirectory="$(DirWorkspace)" />
 
-        <GitInfo GitExecutablePath="$(ToolsExternalGitPath)"
-                 WorkingDirectory="$(DirWorkspace)"
-                 Condition=" '$(ShouldExecute)' == 'true' ">
-            <Output TaskParameter="CurrentRevision" PropertyName="GitRevNoCurrentBranch" />
+        <GitInfo
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            WorkingDirectory="$(DirWorkspace)">
+            <Output
+                PropertyName="GitRevNoCurrentBranch"
+                TaskParameter="CurrentRevision" />
         </GitInfo>
         <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
 
-        <Message Text="Not at expected revision, resetting ..."
-                 Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' " />
-        <GitReset GitExecutablePath="$(ToolsExternalGitPath)"
-                  WorkingDirectory="$(DirWorkspace)"
-                  Commit="$(GitRevNoExpected)"
-                  Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' " />
+        <Message
+            Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' "
+            Text="Not at expected revision, resetting ..." />
+        <GitReset
+            Commit="$(GitRevNoExpected)"
+            Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            WorkingDirectory="$(DirWorkspace)" />
     </Target>
  </Project>

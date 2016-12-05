@@ -1,232 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Deploy_PushTo_GitRepository_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Deploy_PushTo_GitRepository_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsDeployPushToGitRepository>true</ExistsDeployPushToGitRepository>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' " />
-
-    <Import Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' " />
-
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild') AND '$(ExistsExtensionsGitCheckout)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild') AND '$(ExistsExtensionsGitPush)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild') AND '$(ExistsExtensionsUnzip)' != 'true' " />
-
-    <Target Name="nBuildKit_Deploy_PushTo_GitRepository_Run"
-            DependsOnTargets="_nBuildKit_Deploy_PushTo_GitRepository_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_Push" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild') AND '$(ExistsExtensionsGitCheckout)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild') AND '$(ExistsExtensionsGitPush)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild') AND '$(ExistsExtensionsUnzip)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild" />
+
+    <Target
+        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitRepository_DisplayInfo"
+        Name="nBuildKit_Deploy_PushTo_GitRepository_Run">
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Deploy_PushTo_GitRepository_DebugLog">
-        <Message Text="Pushing to a GIT repository ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitRepository_DebugLog"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Pushing to a GIT repository ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="Deploying: %(PushToGitRepositorySpecs.Identity)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="Deploying: %(PushToGitRepositorySpecs.Identity)" />
+        <Message
+            Importance="low"
+            Text=" " />
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_Push"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
-            Outputs="%(PushToGitRepositorySpecs.Identity)">
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_GatherData" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Origin" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Targets" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_PushToRepository" />
+    <Target
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_Push"
+        Outputs="%(PushToGitRepositorySpecs.Identity)">
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
-            Outputs="%(PushToGitRepositorySpecs.Identity)">
-        <Message Text="Resolving build templates for: %(PushToGitRepositorySpecs.Identity)"
-                 Importance="low"/>
+    <Target
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates"
+        Outputs="%(PushToGitRepositorySpecs.Identity)">
+        <Message
+            Importance="low"
+            Text="Resolving build templates for: %(PushToGitRepositorySpecs.Identity)" />
 
         <CreateProperty Value="%(PushToGitRepositorySpecs.Identity)">
-            <Output TaskParameter="Value" PropertyName="FilesToPush" />
+            <Output
+                PropertyName="FilesToPush"
+                TaskParameter="Value" />
         </CreateProperty>
-        <TemplateText Template="$(FilesToPush)"
-                      Tokens="@(TemplateTokens)">
-            <Output TaskParameter="Result" PropertyName="FilesToPushIncluded" />
+        <TemplateText
+            Template="$(FilesToPush)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilesToPushIncluded"
+                TaskParameter="Result" />
         </TemplateText>
 
         <CreateProperty Value="%(PushToGitRepositorySpecs.Repository)">
-            <Output TaskParameter="Value" PropertyName="RepositoryToPushTo" />
+            <Output
+                PropertyName="RepositoryToPushTo"
+                TaskParameter="Value" />
         </CreateProperty>
-        <TemplateText Template="$(RepositoryToPushTo)"
-                      Tokens="@(TemplateTokens)"
-                      Condition=" '$(RepositoryToPushTo)' != '' ">
-            <Output TaskParameter="Result" PropertyName="RepositoryToPushTo" />
+        <TemplateText
+            Condition=" '$(RepositoryToPushTo)' != '' "
+            Template="$(RepositoryToPushTo)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="RepositoryToPushTo"
+                TaskParameter="Result" />
         </TemplateText>
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates"
-            Outputs="%(PushToGitRepositorySpecs.Identity)">
+    <Target
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
+        Outputs="%(PushToGitRepositorySpecs.Identity)">
         <!--
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
         <CreateItem
             Include="$(FilesToPushIncluded.Split(';'))">
-           <Output
-               TaskParameter="Include"
-               ItemName="FilesToPush"/>
+            <Output
+                ItemName="FilesToPush"
+                TaskParameter="Include" />
         </CreateItem>
-        <Error Text="There are no files to be pushed"
-               Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "/>
+        <Error
+            Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "
+            Text="There are no files to be pushed" />
 
         <PropertyGroup>
             <DirBuildTempCopy>$(DirBuildTemp)\copy</DirBuildTempCopy>
         </PropertyGroup>
-        <MakeDir Directories="$(DirBuildTempCopy)"
-                 Condition="!Exists('$(DirBuildTempCopy)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir
+            Condition="!Exists('$(DirBuildTempCopy)') AND '$(ShouldExecute)' == 'true' "
+            Directories="$(DirBuildTempCopy)" />
 
-        <Copy SourceFiles="@(FilesToPush)"
-              DestinationFolder="$(DirBuildTempCopy)"
-              Condition=" '@(FilesToPush)' != '' " />
+        <Copy
+            Condition=" '@(FilesToPush)' != '' "
+            DestinationFolder="$(DirBuildTempCopy)"
+            SourceFiles="@(FilesToPush)" />
 
         <!-- Unzip files -->
         <ItemGroup>
             <FilesToUnzip Include="$(DirBuildTempCopy)\**\*.zip" />
         </ItemGroup>
-        <Unzip InputFileName="%(FilesToUnzip.FullPath)"
-               DestinationDirectory="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)"
-               Condition=" '@(FilesToUnzip)' != '' " />
+        <Unzip
+            Condition=" '@(FilesToUnzip)' != '' "
+            DestinationDirectory="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)"
+            InputFileName="%(FilesToUnzip.FullPath)" />
         <ItemGroup>
-            <FilesToCopy Include="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)\.git\**\*.*"
-                         Condition=" '@(FilesToUnzip)' != '' " />
+            <FilesToCopy
+                Condition=" '@(FilesToUnzip)' != '' "
+                Include="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)\.git\**\*.*" />
         </ItemGroup>
 
         <!-- Copy files -->
         <CreateProperty Value="$(RepositoryToPushTo.Substring($(RepositoryToPushTo.LastIndexOf('/'))).TrimStart('/'))">
-            <Output TaskParameter="Value" PropertyName="RepositoryName" />
+            <Output
+                PropertyName="RepositoryName"
+                TaskParameter="Value" />
         </CreateProperty>
         <CreateProperty Value="$(DirBuildTemp)\git\$(RepositoryName)">
-            <Output TaskParameter="Value" PropertyName="DirRepositoryWorkspace" />
+            <Output
+                PropertyName="DirRepositoryWorkspace"
+                TaskParameter="Value" />
         </CreateProperty>
-        <Copy SourceFiles="@(FilesToCopy)"
-              DestinationFiles="@(FilesToCopy->'$(DirRepositoryWorkspace)\.git\%(RecursiveDir)%(Filename)%(Extension)')"
-              Condition=" '@(FilesToCopy)' != '' " />
+        <Copy
+            Condition=" '@(FilesToCopy)' != '' "
+            DestinationFiles="@(FilesToCopy->'$(DirRepositoryWorkspace)\.git\%(RecursiveDir)%(Filename)%(Extension)')"
+            SourceFiles="@(FilesToCopy)" />
 
-        <Copy SourceFiles="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)\vcs.mergeinfo.xml"
-              DestinationFiles="$(FileVcsMergeInfo)"
-              Condition="Exists('$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)\vcs.mergeinfo.xml')" />
+        <Copy
+            Condition="Exists('$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)\vcs.mergeinfo.xml')"
+            DestinationFiles="$(FileVcsMergeInfo)"
+            SourceFiles="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)\vcs.mergeinfo.xml" />
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_GatherData"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
-            Outputs="%(PushToGitRepositorySpecs.Identity)">
-        <XmlPeek XmlInputPath="$(FileVcsMergeInfo)"
-                 Query="//merge/origin/@branch"
-                 Condition="Exists('$(FileVcsMergeInfo)')">
-            <Output TaskParameter="Result" ItemName="OriginBranch" />
+    <Target
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_GatherData"
+        Outputs="%(PushToGitRepositorySpecs.Identity)">
+        <XmlPeek
+            Condition="Exists('$(FileVcsMergeInfo)')"
+            Query="//merge/origin/@branch"
+            XmlInputPath="$(FileVcsMergeInfo)">
+            <Output
+                ItemName="OriginBranch"
+                TaskParameter="Result" />
         </XmlPeek>
         <Message Text="OriginBranch: @(OriginBranch)" />
 
-        <XmlPeek XmlInputPath="$(FileVcsMergeInfo)"
-                 Query="//merge/targets/target/@branch"
-                 Condition="Exists('$(FileVcsMergeInfo)')">
-            <Output TaskParameter="Result" ItemName="TargetBranches" />
+        <XmlPeek
+            Condition="Exists('$(FileVcsMergeInfo)')"
+            Query="//merge/targets/target/@branch"
+            XmlInputPath="$(FileVcsMergeInfo)">
+            <Output
+                ItemName="TargetBranches"
+                TaskParameter="Result" />
         </XmlPeek>
         <Message Text="TargetBranches: @(TargetBranches)" />
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Origin"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
-            Outputs="%(PushToGitRepositorySpecs.Identity)">
         <Message Text="Verifying that there were no changes to the origin branch since the merge ..." />
+    <Target
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Origin"
+        Outputs="%(PushToGitRepositorySpecs.Identity)">
 
         <Message Text="Checking out merge target branch: @(OriginBranch) ..." />
-        <GitCheckout GitExecutablePath="$(ToolsExternalGitPath)"
-                     WorkingDirectory="$(DirRepositoryWorkspace)"
-                     Branch="@(OriginBranch)" />
+        <GitCheckout
+            Branch="@(OriginBranch)"
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            WorkingDirectory="$(DirRepositoryWorkspace)" />
 
-        <Exec Command="$(ToolsExternalGitPath) rev-parse HEAD"
-              WorkingDirectory="$(DirRepositoryWorkspace)"
-              IgnoreExitCode="true"
-              ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="GitRevNoLocalBranch" />
+        <Exec
+            Command="$(ToolsExternalGitPath) rev-parse HEAD"
+            ConsoleToMSBuild="true"
+            IgnoreExitCode="true"
+            WorkingDirectory="$(DirRepositoryWorkspace)">
+            <Output
+                PropertyName="GitRevNoLocalBranch"
+                TaskParameter="ConsoleOutput" />
         </Exec>
-        <Exec Command="$(ToolsExternalGitPath) rev-parse origin/@(OriginBranch)"
-              WorkingDirectory="$(DirRepositoryWorkspace)"
-              IgnoreExitCode="true"
-              ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="GitRevNoServerBranch" />
+        <Exec
+            Command="$(ToolsExternalGitPath) rev-parse origin/@(OriginBranch)"
+            ConsoleToMSBuild="true"
+            IgnoreExitCode="true"
+            WorkingDirectory="$(DirRepositoryWorkspace)">
+            <Output
+                PropertyName="GitRevNoServerBranch"
+                TaskParameter="ConsoleOutput" />
         </Exec>
         <Message Text="For @(OriginBranch): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
-        <Error Text="For @(OriginBranch) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]"
-               Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' AND '$(ShouldExecute)' == 'true' "/>
+        <Error
+            Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' AND '$(ShouldExecute)' == 'true' "
+            Text="For @(OriginBranch) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Targets"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
-            Outputs="%(TargetBranches.Identity)">
         <Message Text="Verifying that there were no changes to the target branches since the merge ..." />
+    <Target
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Targets"
+        Outputs="%(TargetBranches.Identity)">
 
         <Message Text="Checking out merge target branch: %(TargetBranches.Identity) ..." />
-        <GitCheckout GitExecutablePath="$(ToolsExternalGitPath)"
-                     WorkingDirectory="$(DirRepositoryWorkspace)"
-                     Branch="%(TargetBranches.Identity)" />
+        <GitCheckout
+            Branch="%(TargetBranches.Identity)"
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            WorkingDirectory="$(DirRepositoryWorkspace)" />
 
         <!--
             Get the previous revision for the current local branch.
             Note that the extra ^ is required because CMD uses ^ as an escape character
         -->
-        <Exec Command="$(ToolsExternalGitPath) rev-parse HEAD^^"
-              WorkingDirectory="$(DirRepositoryWorkspace)"
-              IgnoreExitCode="true"
-              ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="GitRevNoLocalBranch" />
+        <Exec
+            Command="$(ToolsExternalGitPath) rev-parse HEAD^^"
+            ConsoleToMSBuild="true"
+            IgnoreExitCode="true"
+            WorkingDirectory="$(DirRepositoryWorkspace)">
+            <Output
+                PropertyName="GitRevNoLocalBranch"
+                TaskParameter="ConsoleOutput" />
         </Exec>
-        <Exec Command="$(ToolsExternalGitPath) rev-parse origin/%(TargetBranches.Identity)"
-              WorkingDirectory="$(DirRepositoryWorkspace)"
-              IgnoreExitCode="true"
-              ConsoleToMSBuild="true">
-            <Output TaskParameter="ConsoleOutput" PropertyName="GitRevNoServerBranch" />
+        <Exec
+            Command="$(ToolsExternalGitPath) rev-parse origin/%(TargetBranches.Identity)"
+            ConsoleToMSBuild="true"
+            IgnoreExitCode="true"
+            WorkingDirectory="$(DirRepositoryWorkspace)">
+            <Output
+                PropertyName="GitRevNoServerBranch"
+                TaskParameter="ConsoleOutput" />
         </Exec>
         <Message Text="For %(TargetBranches.Identity): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
-        <Error Text="For %(TargetBranches.Identity) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]"
-               Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' AND '$(ShouldExecute)' == 'true' "/>
+        <Error
+            Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' AND '$(ShouldExecute)' == 'true' "
+            Text="For %(TargetBranches.Identity) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 
-    <Target Name="_nBuildKit_Deploy_PushTo_GitRepository_PushToRepository"
-            DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
-            Outputs="%(PushToGitRepositorySpecs.Identity)">
         <Message Text="Pushing changes from $(FilesToPushIncluded) back to the origin ..." />
-        <GitPush GitExecutablePath="$(ToolsExternalGitPath)"
-                 WorkingDirectory="$(DirRepositoryWorkspace)"
-                 Tags="true"
-                 Condition=" '$(RepositoryToPushTo)' != '' " />
+    <Target
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_PushToRepository"
+        Outputs="%(PushToGitRepositorySpecs.Identity)">
+        <GitPush
+            Condition=" '$(RepositoryToPushTo)' != '' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Tags="true"
+            WorkingDirectory="$(DirRepositoryWorkspace)" />
     </Target>
 </Project>

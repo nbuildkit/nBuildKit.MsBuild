@@ -2,8 +2,9 @@
      Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="11.0">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGetIssuesForGitHubMilestone>true</ExistsExtensionsGetIssuesForGitHubMilestone>
@@ -19,23 +20,41 @@
         <MsBuildUtilitiesAssembly Condition="!Exists('$(MsBuildUtilitiesAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</MsBuildUtilitiesAssembly>
     </PropertyGroup>
 
-    <UsingTask TaskName="GetIssuesForGitHubMilestone"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="GetIssuesForGitHubMilestone">
         <ParameterGroup>
-            <GitHubUserName ParameterType="System.String" Required="true" />
-            <GitHubProjectName ParameterType="System.String" Required="true" />
-            <MilestoneName ParameterType="System.String" Required="true" />
-            <IssueState ParameterType="System.String" Required="true" />
-            <Issues ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+            <GitHubUserName
+                ParameterType="System.String"
+                Required="true" />
+            <GitHubProjectName
+                ParameterType="System.String"
+                Required="true" />
+            <MilestoneName
+                ParameterType="System.String"
+                Required="true" />
+            <IssueState
+                ParameterType="System.String"
+                Required="true" />
+            <Issues
+                Output="true"
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]" />
         </ParameterGroup>
         <Task>
-            <Reference Include="System.Core" />
-            <Reference Include="System.Runtime.Serialization" />
-            <Reference Include="System.Xml" />
-            <Reference Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll"/>
-            <Reference Include="$(MsBuildUtilitiesAssembly)"/>
-            <Code Type="Class" Language="cs">
+            <Reference
+                Include="System.Core" />
+            <Reference
+                Include="System.Runtime.Serialization" />
+            <Reference
+                Include="System.Xml" />
+            <Reference
+                Include="$(MSBuildToolsPath)\Microsoft.Build.Framework.dll" />
+            <Reference
+                Include="$(MsBuildUtilitiesAssembly)" />
+            <Code
+                Language="cs"
+                Type="Class">
                 <![CDATA[
                     using System;
                     using System.Collections.Generic;

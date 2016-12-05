@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
         Certain properties and items in this settings file allow replacement of the following templates:
         ${VersionMajor}            - The major version number
@@ -319,11 +320,11 @@
     -->
     <ItemGroup Condition=" '@(NuGetPackageFiles)' == '' ">
         <NuGetPackageFiles
-            Include="$(DirWorkspace)\packages.config"
-            Condition="Exists('$(DirWorkspace)\packages.config')" />
+            Condition="Exists('$(DirWorkspace)\packages.config')"
+            Include="$(DirWorkspace)\packages.config" />
         <NuGetPackageFiles
-            Include="$(DirSrc)\**\packages.config"
-            Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config" />
+            Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config"
+            Include="$(DirSrc)\**\packages.config" />
     </ItemGroup>
 
 
@@ -332,8 +333,8 @@
     -->
     <ItemGroup Condition=" '@(NpmPackageFiles)' == '' ">
         <NpmPackageFiles
-            Include="$(DirWorkspace)\**\package.json"
-            Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json" />
+            Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json"
+            Include="$(DirWorkspace)\**\package.json" />
     </ItemGroup>
 
 
@@ -374,20 +375,25 @@
     -->
     <ItemGroup Condition=" '@(BranchMergeTarget)' == '' ">
         <!-- GITFLOW: If the input branch (GitBranchExpected) is a feature branch then we merge to develop -->
-        <BranchMergeTarget Include="develop"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsFeatureBranch)' == 'true' " />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsFeatureBranch)' == 'true' "
+            Include="develop" />
 
         <!-- GITFLOW: If the input branch (GitBranchExpected) is a release branch then we merge to develop and master -->
-        <BranchMergeTarget Include="develop"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
-        <BranchMergeTarget Include="master"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' "
+            Include="develop" />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' "
+            Include="master" />
 
         <!-- GITFLOW: If the input branch (GitBranchExpected) is a hotfix branch then we merge to develop and master -->
-        <BranchMergeTarget Include="develop"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />
-        <BranchMergeTarget Include="master"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' "
+            Include="develop" />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' "
+            Include="master" />
     </ItemGroup>
 
 
@@ -566,12 +572,14 @@
         The default template parameters, as indicated at the top of this file, are always available.
     -->
     <ItemGroup>
-        <TemplateTokens Include="GitRevNo"
-                        Condition=" '$(GitRevNoExpected)' != '' AND '$(GitRevNoExpected)' != 'UNDEFINED' ">
+        <TemplateTokens
+            Condition=" '$(GitRevNoExpected)' != '' AND '$(GitRevNoExpected)' != 'UNDEFINED' "
+            Include="GitRevNo">
             <ReplacementValue>$(GitRevNoExpected)</ReplacementValue>
         </TemplateTokens>
-        <TemplateTokens Include="GitBranch"
-                        Condition=" '$(GitBranchExpected)' != '' AND '$(GitBranchExpected)' != 'UNDEFINED' ">
+        <TemplateTokens
+            Condition=" '$(GitBranchExpected)' != '' AND '$(GitBranchExpected)' != 'UNDEFINED' "
+            Include="GitBranch">
             <ReplacementValue>$(GitBranchExpected.Replace('/','_').Replace('\', '_'))</ReplacementValue>
         </TemplateTokens>
     </ItemGroup>

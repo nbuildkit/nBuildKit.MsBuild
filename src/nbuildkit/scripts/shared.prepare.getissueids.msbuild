@@ -1,101 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_GetIssueIds_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_GetIssueIds_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ExistsSharedPrepareGetIssueIds>true</ExistsSharedPrepareGetIssueIds>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\ExtractIssueIdsFromGitCommitMessages.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ExtractIssueIdsFromGitCommitMessages.msbuild') AND '$(ExistsExtensionsExtractIssueIdsFromGitCommitMessages)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild') AND '$(ExistsExtensionsLastItemInGroup)' != 'true' " />
-
-    <Target Name="nBuildKit_Shared_Prepare_GetIssueIds_Run"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GetIssueIds_DisplayInfo"
-            Condition="!Exists('$(FileWorkItems)') AND '@(BranchMergeTarget)' != '' ">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetIssueIds_ForCurrentBranch_GetWorkItemsFromCommits_FromGit" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetIssueIds_WriteWorkItemsToFile" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ExtractIssueIdsFromGitCommitMessages.msbuild') AND '$(ExistsExtensionsExtractIssueIdsFromGitCommitMessages)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\ExtractIssueIdsFromGitCommitMessages.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild') AND '$(ExistsExtensionsLastItemInGroup)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild" />
+    <Target
+        Condition="!Exists('$(FileWorkItems)') AND '@(BranchMergeTarget)' != '' "
+        DependsOnTargets="_nBuildKit_Shared_Prepare_GetIssueIds_DisplayInfo"
+        Name="nBuildKit_Shared_Prepare_GetIssueIds_Run">
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GetIssueIds_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
-                 Importance="low"/>
-        <Message Text="The directory containing the NuGet packages is located at:         $(DirPackages)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Shared_Prepare_GetIssueIds_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The issue file is located at:                                      $(FileIssueIds)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="The issue file is located at:                                      $(FileIssueIds)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="GIT command line executable is located at:                         $(ToolsExternalGitPath)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="GIT command line executable is located at:                         $(ToolsExternalGitPath)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="The current workspace is a GIT workspace"
-                 Importance="low"
-                 Condition=" '$(IsGitWorkspace)' == 'true' " />
-        <Warning Text="The current workspace does not have any identifying VCS information. No VCS info file will be created"
-                 Condition=" '$(IsGitWorkspace)' != 'true' " />
-        <Message Text=" "
-                 Importance="low"/>
+        <Message
+            Condition=" '$(IsGitWorkspace)' == 'true' "
+            Importance="low"
+            Text="The current workspace is a GIT workspace" />
+        <Warning
+            Condition=" '$(IsGitWorkspace)' != 'true' "
+            Text="The current workspace does not have any identifying VCS information. No VCS info file will be created" />
+        <Message
+            Importance="low"
+            Text=" " />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Shared_Prepare_GetIssueIds_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_GetIssueIds_DebugLog">
-        <Message Text="Getting issue IDs ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_GetIssueIds_DebugLog"
+        Name="_nBuildKit_Shared_Prepare_GetIssueIds_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Getting issue IDs ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GetIssueIds_ForCurrentBranch_GetWorkItemsFromCommits_FromGit"
-            Condition=" '$(IsGitWorkspace)' == 'true' ">
+    <Target
+        Condition=" '$(IsGitWorkspace)' == 'true' "
+        Name="_nBuildKit_Shared_Prepare_GetIssueIds_ForCurrentBranch_GetWorkItemsFromCommits_FromGit">
 
-        <LastItemInGroup Items="@(BranchMergeTarget)">
-            <Output TaskParameter="Item" PropertyName="WorkItemTargetBranch" />
+        <LastItemInGroup
+            Items="@(BranchMergeTarget)">
+            <Output
+                PropertyName="WorkItemTargetBranch"
+                TaskParameter="Item" />
         </LastItemInGroup>
-        <Message Text="Getting issue IDs from the GIT commit messages relative to $(WorkItemTargetBranch)"
-                 Condition=" '$(WorkItemTargetBranch)' != '' "/>
-        <Error Text="Could not determine what relative to which branch the commit messages should be examined."
-               Condition=" '$(WorkItemTargetBranch)' == '' "/>
+        <Message
+            Condition=" '$(WorkItemTargetBranch)' != '' "
+            Text="Getting issue IDs from the GIT commit messages relative to $(WorkItemTargetBranch)" />
+        <Error
+            Condition=" '$(WorkItemTargetBranch)' == '' "
+            Text="Could not determine what relative to which branch the commit messages should be examined." />
 
-        <ExtractIssueIdsFromGitCommitMessages GitExecutablePath="$(ToolsExternalGitPath)"
-                                              LocalPath="$(DirWorkspace)"
-                                              MergeTargetBranch="$(WorkItemTargetBranch)">
-            <Output TaskParameter="IssueIds" ItemName="IssueIds" />
+        <ExtractIssueIdsFromGitCommitMessages
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            LocalPath="$(DirWorkspace)"
+            MergeTargetBranch="$(WorkItemTargetBranch)">
+            <Output
+                ItemName="IssueIds"
+                TaskParameter="IssueIds" />
         </ExtractIssueIdsFromGitCommitMessages>
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GetIssueIds_WriteWorkItemsToFile">
-        <Message Text="Writing the issue IDs to file ..."
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="Writing the issue IDs to file ..." />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileIssueIds)'))">
-            <Output TaskParameter="Value" PropertyName="DirToCreate" />
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
         </CreateProperty>
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Directories="$(DirToCreate)" />
 
         <CreateProperty Value="@(IssueIds->'&quot;%(Identity)&quot;', ',')">
-            <Output TaskParameter="Value" PropertyName="IssueIdsAsJsonArray" />
+            <Output
+                PropertyName="IssueIdsAsJsonArray"
+                TaskParameter="Value" />
         </CreateProperty>
         <ItemGroup>
             <Items_IssueIds Include="{" />
@@ -105,9 +143,10 @@
             <Items_IssueIds Include="}" />
         </ItemGroup>
 
-        <WriteLinesToFile File="$(FileIssueIds)"
-                          Lines="@(Items_IssueIds)"
-                          Overwrite="true"
-                          Condition=" '$(ShouldExecute)' == 'true' "/>
+        <WriteLinesToFile
+            Condition=" '$(ShouldExecute)' == 'true' "
+            File="$(FileIssueIds)"
+            Lines="@(Items_IssueIds)"
+            Overwrite="true" />
     </Target>
  </Project>

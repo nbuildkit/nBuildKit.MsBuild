@@ -2,8 +2,9 @@
      Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
 -->
 
-<Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
-         ToolsVersion="11.0">
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsExtensionsGatherNuGetDependenciesForProject>true</ExistsExtensionsGatherNuGetDependenciesForProject>
@@ -16,26 +17,48 @@
         <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
 
-    <UsingTask TaskName="GatherNuGetDependenciesForProject"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="GatherNuGetDependenciesForProject">
         <ParameterGroup>
-            <NuGetSpec ParameterType="System.String" Required="true" />
-            <Packages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-            <DesignTimePackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="false" />
-            <VersionRangeType ParameterType="System.String" Required="false" />
-            <NuGetVersionDllPath ParameterType="System.String" Required="true" />
-            <Dependencies ParameterType="System.String" Output="true" />
+            <NuGetSpec
+                ParameterType="System.String"
+                Required="true" />
+            <Packages
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]"
+                Required="true" />
+            <DesignTimePackages
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]"
+                Required="false" />
+            <VersionRangeType
+                ParameterType="System.String"
+                Required="false" />
+            <NuGetVersionDllPath
+                ParameterType="System.String"
+                Required="true" />
+            <Dependencies
+                Output="true"
+                ParameterType="System.String" />
         </ParameterGroup>
         <Task>
-            <Reference Include="System.Xml" />
-            <Reference Include="System.Xml.Linq" />
-            <Reference Include="Microsoft.CSharp" />
-            <Using Namespace="System" />
-            <Using Namespace="System.Linq" />
-            <Using Namespace="System.IO" />
-            <Using Namespace="System.Reflection" />
-            <Code Type="Method" Language="cs">
+            <Reference
+                Include="System.Xml" />
+            <Reference
+                Include="System.Xml.Linq" />
+            <Reference
+                Include="Microsoft.CSharp" />
+            <Using
+                Namespace="System" />
+            <Using
+                Namespace="System.Linq" />
+            <Using
+                Namespace="System.IO" />
+            <Using
+                Namespace="System.Reflection" />
+            <Code
+                Language="cs"
+                Type="Method">
                 <![CDATA[
                     public override bool Execute()
                     {

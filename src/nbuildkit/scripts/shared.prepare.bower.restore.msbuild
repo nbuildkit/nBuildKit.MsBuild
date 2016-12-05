@@ -1,67 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_Bower_Restore_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_Bower_Restore_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedPrepareNpmRestore>true</ExistsSharedPrepareNpmRestore>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
-    <Target Name="nBuildKit_Shared_Prepare_Bower_Restore_Run"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_Bower_Restore_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_Bower_Restore_Packages" />
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Bower_Restore_DisplayInfo"
+        Name="nBuildKit_Shared_Prepare_Bower_Restore_Run">
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_Bower_Restore_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the build output is located at:           $(DirBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Shared_Prepare_Bower_Restore_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build output is located at:           $(DirBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="Bower command line executable is located at:                         $(ToolsExternalBowerPath)"
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="Bower command line executable is located at:                         $(ToolsExternalBowerPath)" />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Shared_Prepare_Bower_Restore_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_Bower_Restore_DebugLog">
-        <Message Text="Restoring Bower packages ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Bower_Restore_DebugLog"
+        Name="_nBuildKit_Shared_Prepare_Bower_Restore_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Restoring Bower packages ..." />
     </Target>
 
     <!-- NuGet restore -->
-    <Target Name="_nBuildKit_Shared_Prepare_Bower_Restore_Packages"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_Bower_Restore_DisplayInfo">
-        <Error Text="No Bower executable defined. Will not be able to restore the packages."
-               Condition=" '$(ToolsExternalBowerPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Bower_Restore_DisplayInfo"
+        Name="_nBuildKit_Shared_Prepare_Bower_Restore_Packages">
+        <Error
+            Condition=" '$(ToolsExternalBowerPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Text="No Bower executable defined. Will not be able to restore the packages." />
 
         <ItemGroup>
-            <BowerPackageFiles Include="$(DirSrc)\**\bower.json"
-                               Exclude="$(DirBuild)\**\bower.json;$(DirWorkspace)\**\bin\**\bower.json;$(DirWorkspace)\**\obj\**\bower.json;$(DirWorkspace)\**\bower_components\**\bower.json;$(DirWorkspace)\**\node_modules\**\bower.json" />
+            <BowerPackageFiles
+                Exclude="$(DirBuild)\**\bower.json;$(DirWorkspace)\**\bin\**\bower.json;$(DirWorkspace)\**\obj\**\bower.json;$(DirWorkspace)\**\bower_components\**\bower.json;$(DirWorkspace)\**\node_modules\**\bower.json"
+                Include="$(DirSrc)\**\bower.json" />
         </ItemGroup>
 
-        <Message Text="No Bower package configuration files found to restore packages from."
-                 Importance="low"
-                 Condition=" '@(BowerPackageFiles)' == '' " />
-        <Exec Command="$(ToolsExternalBowerPath) install"
-              WorkingDirectory="%(BowerPackageFiles.RootDir)%(BowerPackageFiles.Directory)"
-              IgnoreStandardErrorWarningFormat="True"
-              Condition=" '@(BowerPackageFiles)' != '' "/>
+        <Message
+            Condition=" '@(BowerPackageFiles)' == '' "
+            Importance="low"
+            Text="No Bower package configuration files found to restore packages from." />
+        <Exec
+            Command="$(ToolsExternalBowerPath) install"
+            Condition=" '@(BowerPackageFiles)' != '' "
+            IgnoreStandardErrorWarningFormat="True"
+            WorkingDirectory="%(BowerPackageFiles.RootDir)%(BowerPackageFiles.Directory)" />
     </Target>
  </Project>

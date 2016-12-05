@@ -1,148 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="nBuildKit_Shared_Prepare_Npm_Restore_Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_Npm_Restore_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedPrepareNpmRestore>true</ExistsSharedPrepareNpmRestore>
     </PropertyGroup>
 
-    <Import Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props"
-            Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' " />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "/>
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild') AND '$(ExistsExtensionsInvokeNodeTool)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' " />
-    <Import Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild"
-            Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' " />
-
-    <Target Name="nBuildKit_Shared_Prepare_Npm_Restore_Run"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_Npm_Restore_Packages" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild') AND '$(ExistsExtensionsInvokeNodeTool)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
+        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo"
+        Name="nBuildKit_Shared_Prepare_Npm_Restore_Run">
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_Npm_Restore_DebugLog"
-            Condition="$(ShouldDisplayDebugLog)">
-        <Message Text="Project directory structure:"
-                 Importance="low"/>
-        <Message Text="The workspace is located at:                                       $(DirWorkspace)"
-                 Importance="low"/>
-        <Message Text="The directory containing the build output is located at:           $(DirBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)"
-                 Importance="low"/>
-        <Message Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)"
-                 Importance="low"/>
-        <Message Text=" "
-                 Importance="low"/>
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Shared_Prepare_Npm_Restore_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build output is located at:           $(DirBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
 
-        <Message Text="Npm command line executable is located at:                         $(ToolsExternalNpmPath)"
-                 Importance="low"/>
+        <Message
+            Importance="low"
+            Text="Npm command line executable is located at:                         $(ToolsExternalNpmPath)" />
     </Target>
 
     <!-- Display info -->
-    <Target Name="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DebugLog">
-        <Message Text="Restoring NPM packages ..."
-                 Importance="normal"/>
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DebugLog"
+        Name="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Restoring NPM packages ..." />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths">
-        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
-                      PackageName="Node.js"
-                      PackageVersion="$(ToolsExternalNodeJsVersion)"
-                      PackageDirectory="$(DirPackages)"
-                      Sources="@(NuGetSources)"
-                      Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "/>
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
-                                            FileToLocate="node.exe"
-                                            Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalNodeJsPath" />
+    <Target
+        Name="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths">
+        <NuGetInstall
+            Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "
+            NuGetPath="$(ToolsExternalNuGetPath)"
+            PackageDirectory="$(DirPackages)"
+            PackageName="Node.js"
+            PackageVersion="$(ToolsExternalNodeJsVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "
+            FileToLocate="node.exe"
+            PackagesDir="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalNodeJsPath"
+                TaskParameter="Path" />
         </SearchPackagesDirectoryForToolPath>
 
-        <GetToolFullPath Tool="$(ToolsExternalNodeJsPath)"
-                         Condition=" '$(ToolsExternalNodeJsPath)' != 'UNDEFINED' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalNodeJsPath" />
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalNodeJsPath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalNodeJsPath)">
+            <Output
+                PropertyName="ToolsExternalNodeJsPath"
+                TaskParameter="Path" />
         </GetToolFullPath>
-        <Message Text="The node.js executable was found at: $(ToolsExternalNodeJsPath)"
-                 Importance="low"
-                 Condition="Exists('$(ToolsExternalNodeJsPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Message
+            Condition="Exists('$(ToolsExternalNodeJsPath)') AND '$(ShouldExecute)' == 'true' "
+            Importance="low"
+            Text="The node.js executable was found at: $(ToolsExternalNodeJsPath)" />
 
-        <Error Text="Could not locate the Node.js executable path. Cannot execute any of the node.js tools."
-               Condition="!Exists('$(ToolsExternalNodeJsPath)') AND '$(ShouldExecute)' == 'true' "/>
+        <Error
+            Condition="!Exists('$(ToolsExternalNodeJsPath)') AND '$(ShouldExecute)' == 'true' "
+            Text="Could not locate the Node.js executable path. Cannot execute any of the node.js tools." />
 
-        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
-                      PackageName="Python.Runtime"
-                      PackageVersion="$(ToolsExternalPythonVersion)"
-                      PackageDirectory="$(DirPackages)"
-                      Sources="@(NuGetSources)"
-                      Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "/>
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
-                                            FileToLocate="python.exe"
-                                            Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalPythonPath" />
+        <NuGetInstall
+            Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "
+            NuGetPath="$(ToolsExternalNuGetPath)"
+            PackageDirectory="$(DirPackages)"
+            PackageName="Python.Runtime"
+            PackageVersion="$(ToolsExternalPythonVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "
+            FileToLocate="python.exe"
+            PackagesDir="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalPythonPath"
+                TaskParameter="Path" />
         </SearchPackagesDirectoryForToolPath>
-        <GetToolFullPath Tool="$(ToolsExternalPythonPath)"
-                         Condition=" '$(ToolsExternalPythonPath)' != 'UNDEFINED' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalPythonPath" />
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalPythonPath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalPythonPath)">
+            <Output
+                PropertyName="ToolsExternalPythonPath"
+                TaskParameter="Path" />
         </GetToolFullPath>
-        <Message Text="The python executable was found at: $(ToolsExternalPythonPath)"
-                 Importance="low"
-                 Condition="Exists('$(ToolsExternalPythonPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Message
+            Condition="Exists('$(ToolsExternalPythonPath)') AND '$(ShouldExecute)' == 'true' "
+            Importance="low"
+            Text="The python executable was found at: $(ToolsExternalPythonPath)" />
 
-        <Warning Text="Could not locate the python executable path. It is not possible to invoke python scripts. This may fail the NPM restore process."
-                 Condition="!Exists('$(ToolsExternalPythonPath)') AND '$(ShouldExecute)' == 'true' "/>
+        <Warning
+            Condition="!Exists('$(ToolsExternalPythonPath)') AND '$(ShouldExecute)' == 'true' "
+            Text="Could not locate the python executable path. It is not possible to invoke python scripts. This may fail the NPM restore process." />
 
-        <NuGetInstall NuGetPath="$(ToolsExternalNuGetPath)"
-                      PackageName="Npm"
-                      PackageVersion="$(ToolsExternalNpmVersion)"
-                      PackageDirectory="$(DirPackages)"
-                      Sources="@(NuGetSources)"
-                      Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "/>
-        <SearchPackagesDirectoryForToolPath PackagesDir="$(DirPackages)"
-                                            FileToLocate="npm-cli.js"
-                                            Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalNpmPath" />
+        <NuGetInstall
+            Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "
+            NuGetPath="$(ToolsExternalNuGetPath)"
+            PackageDirectory="$(DirPackages)"
+            PackageName="Npm"
+            PackageVersion="$(ToolsExternalNpmVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "
+            FileToLocate="npm-cli.js"
+            PackagesDir="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalNpmPath"
+                TaskParameter="Path" />
         </SearchPackagesDirectoryForToolPath>
-        <GetToolFullPath Tool="$(ToolsExternalNpmPath)"
-                         Condition=" '$(ToolsExternalNpmPath)' != 'UNDEFINED' ">
-            <Output TaskParameter="Path" PropertyName="ToolsExternalNpmPath" />
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalNpmPath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalNpmPath)">
+            <Output
+                PropertyName="ToolsExternalNpmPath"
+                TaskParameter="Path" />
         </GetToolFullPath>
-        <Message Text="The npm executable was found at: $(ToolsExternalNpmPath)"
-                 Importance="low"
-                 Condition="Exists('$(ToolsExternalNpmPath)') AND '$(ShouldExecute)' == 'true' " />
+        <Message
+            Condition="Exists('$(ToolsExternalNpmPath)') AND '$(ShouldExecute)' == 'true' "
+            Importance="low"
+            Text="The npm executable was found at: $(ToolsExternalNpmPath)" />
 
-        <Error Text="Could not locate the Npm executable path. Cannot restore the Node.js packages."
-               Condition="!Exists('$(ToolsExternalNpmPath)') AND '$(ShouldExecute)' == 'true' "/>
+        <Error
+            Condition="!Exists('$(ToolsExternalNpmPath)') AND '$(ShouldExecute)' == 'true' "
+            Text="Could not locate the Npm executable path. Cannot restore the Node.js packages." />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_Npm_Restore_Packages"
-            DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo;_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths">
-        <Error Text="No NPM executable defined. Will not be able to restore the packages."
-               Condition=" '$(ToolsExternalNpmPath)' == '' AND '$(ShouldExecute)' == 'true' " />
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo;_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths"
+        Name="_nBuildKit_Shared_Prepare_Npm_Restore_Packages">
+        <Error
+            Condition=" '$(ToolsExternalNpmPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Text="No NPM executable defined. Will not be able to restore the packages." />
 
-        <Message Text="No NPM package configuration files found to restore packages from."
-                 Importance="low"
-                 Condition=" '@(NpmPackageFiles)' == '' " />
+        <Message
+            Condition=" '@(NpmPackageFiles)' == '' "
+            Importance="low"
+            Text="No NPM package configuration files found to restore packages from." />
         <ItemGroup>
             <AdditionalEnvironmentPaths Include="$([System.IO.Path]::GetDirectoryName('$(ToolsExternalPythonPath)'))" />
         </ItemGroup>
-        <InvokeNodeTool NodeExecutablePath="$(ToolsExternalNodeJsPath)"
-                        AdditionalEnvironmentPaths="@(AdditionalEnvironmentPaths)"
-                        ToolPath="$(ToolsExternalNpmPath)"
-                        Arguments="install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
-                        WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)"
-                        IgnoreErrors="true"
-                        IgnoreExitCode="false"
-                        Condition=" '@(NpmPackageFiles)' != '' "/>
+        <InvokeNodeTool
+            AdditionalEnvironmentPaths="@(AdditionalEnvironmentPaths)"
+            Arguments="install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
+            Condition=" '@(NpmPackageFiles)' != '' "
+            IgnoreErrors="true"
+            IgnoreExitCode="false"
+            NodeExecutablePath="$(ToolsExternalNodeJsPath)"
+            ToolPath="$(ToolsExternalNpmPath)"
+            WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)" />
 
         <!--
         <Exec Command="$(ToolsExternalNpmPath) install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
