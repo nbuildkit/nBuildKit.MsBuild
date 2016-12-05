@@ -15,10 +15,10 @@
         <FileNBuildKitLastRelease>$(DirBuildTemp)\nbuildkit.lastrelease.json</FileNBuildKitLastRelease>
     </PropertyGroup>
 
-        <GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
     <Target
         Condition="!Exists('$FileNBuildKitLastRelease')"
         Name="_NBuildKit_GenerateToken_LastRelease_FromNuGet">
+        <GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
             <Output
                 PropertyName="NBuildKitLatestMajorVersion"
                 TaskParameter="Major" />
@@ -30,8 +30,7 @@
                 TaskParameter="Patch" />
         </GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet>
 
-        <CreateProperty
-            Value="$([System.IO.Path]::GetDirectoryName('$(FileNBuildKitLastRelease)'))">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileNBuildKitLastRelease)'))">
             <Output
                 PropertyName="DirToCreate"
                 TaskParameter="Value" />
@@ -57,10 +56,10 @@
             Overwrite="true" />
     </Target>
 
-        <GetLastRelease_LocalTask_GetLastReleaseVersionFromFile VersionFile="$(FileNBuildKitLastRelease)">
     <Target
         DependsOnTargets="_NBuildKit_GenerateToken_LastRelease_FromNuGet"
         Name="nbuildkit_generatetoken_lastrelease">
+        <GetLastRelease_LocalTask_GetLastReleaseVersionFromFile VersionFile="$(FileNBuildKitLastRelease)">
             <Output
                 PropertyName="NBuildKitLatestMajorVersion"
                 TaskParameter="VersionMajor" />
