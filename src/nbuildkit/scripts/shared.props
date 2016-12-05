@@ -317,6 +317,29 @@
 
 
     <!--
+        **** PREPARE - NUGET RESTORE ****
+    -->
+    <ItemGroup Condition=" '@(NuGetPackageFiles)' == '' ">
+        <NuGetPackageFiles
+            Include="$(DirWorkspace)\packages.config"
+            Condition="Exists('$(DirWorkspace)\packages.config')" />
+        <NuGetPackageFiles
+            Include="$(DirSrc)\**\packages.config"
+            Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config" />
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - NPM RESTORE ****
+    -->
+    <ItemGroup Condition=" '@(NpmPackageFiles)' == '' ">
+        <NpmPackageFiles
+            Include="$(DirWorkspace)\**\package.json"
+            Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json" />
+    </ItemGroup>
+
+
+    <!--
         **** PREPARE - MERGE ****
     -->
     <PropertyGroup>
@@ -368,8 +391,6 @@
         <BranchMergeTarget Include="master"
                            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />
     </ItemGroup>
-
-
 
 
     <!--
