@@ -330,6 +330,16 @@
 
 
     <!--
+        **** PREPARE - NPM RESTORE ****
+    -->
+    <ItemGroup Condition=" '@(NpmPackageFiles)' == '' ">
+        <NpmPackageFiles
+            Include="$(DirWorkspace)\**\package.json"
+            Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json" />
+    </ItemGroup>
+
+
+    <!--
         **** PREPARE - MERGE ****
     -->
     <PropertyGroup>
