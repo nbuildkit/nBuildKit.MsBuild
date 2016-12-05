@@ -63,14 +63,10 @@
                Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' " />
 
         <ItemGroup>
-            <NuGetPackageFiles Include="$(DirWorkspace)\packages.config"
-                               Condition="Exists('$(DirWorkspace)\packages.config')" />
             <NuGetPackageFiles Include="$(DirNBuildKitMsBuild)\packages.config"
                                Condition="Exists('$(DirNBuildKitMsBuild)\packages.config')" />
             <NuGetPackageFiles Include="$(StageSpecificNuGetPackageFilesToRestore)"
                                Condition=" '$(StageSpecificNuGetPackageFilesToRestore)' != '' " />
-            <NuGetPackageFiles Include="$(DirSrc)\**\packages.config"
-                               Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config" />
         </ItemGroup>
 
         <Message Text="No NuGet package configuration files found to restore packages from."
