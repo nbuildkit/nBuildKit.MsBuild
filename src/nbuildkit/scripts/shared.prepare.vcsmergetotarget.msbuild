@@ -7,10 +7,6 @@
         <ExistsSharedPrepareVcsMergeToTarget>true</ExistsSharedPrepareVcsMergeToTarget>
     </PropertyGroup>
 
-
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Prepare" />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge" />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Finalize" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
@@ -24,10 +20,14 @@
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild" />
+
     <Target
         Condition=" '@(BranchMergeTarget)' != '' "
         DependsOnTargets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_VcsMergeToTarget_Run">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Prepare" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Finalize" />
     </Target>
 
     <!-- Display info -->
@@ -90,8 +90,7 @@
     <Target
         Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' "
         Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Prepare">
-        <CreateProperty
-            Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsMergeInfo)'))">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsMergeInfo)'))">
             <Output
                 PropertyName="DirToCreate"
                 TaskParameter="Value" />

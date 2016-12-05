@@ -185,9 +185,8 @@
         script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
         be used to execute the build.
     -->
-        <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
     <Target
-        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Build"
+        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Build;_nBuildKit_EntryPoint_Execute"
         Name="Build">
     </Target>
 
@@ -202,9 +201,8 @@
         script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
         be used to execute the tests.
     -->
-        <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
     <Target
-        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Test"
+        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Test;_nBuildKit_EntryPoint_Execute"
         Name="Test">
     </Target>
 
@@ -219,9 +217,8 @@
         script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
         be used to execute the deploy.
     -->
-        <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
     <Target
-        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Deploy"
+        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Deploy;_nBuildKit_EntryPoint_Execute"
         Name="Deploy">
     </Target>
 
@@ -276,10 +273,10 @@
     <!--
         Get the full path to the nBuildkit package directory so that we can invoked the build scripts from there.
     -->
-        <Message Text="DirNBuildKit after search: $(DirNBuildKit)" />
     <Target
         DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir;_nBuildKit_EntryPoint_LocateNBuildKitViaPackagesConfig;_nBuildKit_EntryPoint_LocateNBuildKitViaHighestAvailableVersion"
         Name="_nBuildKit_EntryPoint_LocateNBuildKit">
+        <Message Text="DirNBuildKit after search: $(DirNBuildKit)" />
 
         <Error
             Condition="!Exists('$(DirNBuildKit)')"

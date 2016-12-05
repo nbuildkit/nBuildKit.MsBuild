@@ -8,8 +8,6 @@
         <ExistsBuildPackNuGet>true</ExistsBuildPackNuGet>
     </PropertyGroup>
 
-        <CallTarget Targets="_nBuildKit_Build_Pack_NuGet_GetToolPaths" />
-        <CallTarget Targets="_nBuildKit_Build_Pack_NuGet_Pack" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
@@ -46,6 +44,8 @@
     <Target
         DependsOnTargets="_nBuildKit_Build_Pack_NuGet_DisplayInfo"
         Name="nBuildKit_Build_Pack_NuGet_Run">
+        <CallTarget Targets="_nBuildKit_Build_Pack_NuGet_GetToolPaths" />
+        <CallTarget Targets="_nBuildKit_Build_Pack_NuGet_Pack" />
     </Target>
 
     <!-- Display info -->

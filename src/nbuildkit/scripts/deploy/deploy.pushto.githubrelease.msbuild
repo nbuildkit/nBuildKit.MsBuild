@@ -8,9 +8,6 @@
         <ExistsDeployPushToGitHubRelease>true</ExistsDeployPushToGitHubRelease>
     </PropertyGroup>
 
-        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion" />
-        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Initialize" />
-        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_Push" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
@@ -32,6 +29,9 @@
     <Target
         DependsOnTargets="_nBuildKit_Deploy_PushTo_GitHubRelease_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_GitHubRelease_Run">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Initialize" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_Push" />
     </Target>
 
     <!-- Display info -->

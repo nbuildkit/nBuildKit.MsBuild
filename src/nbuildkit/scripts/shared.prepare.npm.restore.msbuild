@@ -12,8 +12,6 @@
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths" />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_Npm_Restore_Packages" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild" />
@@ -26,9 +24,12 @@
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
+
     <Target
         DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_Npm_Restore_Run">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Npm_Restore_Packages" />
     </Target>
 
     <Target
@@ -195,11 +196,12 @@
             WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)" />
 
         <!--
-        <Exec Command="$(ToolsExternalNpmPath) install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
-              WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)"
-              IgnoreStandardErrorWarningFormat="true"
-              IgnoreExitCode="false"
-              Condition=" '@(NpmPackageFiles)' != '' AND !$(ToolsExternalNpmPath.EndsWith('npm-cli.js')) "/>
-              -->
+        <Exec
+            Command="$(ToolsExternalNpmPath) install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
+            Condition=" '@(NpmPackageFiles)' != '' AND !$(ToolsExternalNpmPath.EndsWith('npm-cli.js')) "
+            IgnoreExitCode="false"
+            IgnoreStandardErrorWarningFormat="true"
+            WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)" />
+        -->
     </Target>
  </Project>

@@ -12,9 +12,8 @@
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_Bower_Restore_Packages" />
     <Target
-        DependsOnTargets="_nBuildKit_Shared_Prepare_Bower_Restore_DisplayInfo"
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Bower_Restore_DisplayInfo;_nBuildKit_Shared_Prepare_Bower_Restore_Packages"
         Name="nBuildKit_Shared_Prepare_Bower_Restore_Run">
     </Target>
 

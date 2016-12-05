@@ -20,12 +20,12 @@
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild" />
 
-        <CallTarget Targets="_nBuildKit_Test_Prepare_GenerateFiles_GenerateFiles" />
     <Target
         Condition=" '@(TestFilesToGenerate)' != '' "
         DependsOnTargets="_nBuildKit_Test_Prepare_GenerateFiles_DisplayInfo"
         Name="nBuildKit_Test_Prepare_GenerateFiles_Run"
         Outputs="%(TestFilesToGenerate.Identity)">
+        <CallTarget Targets="_nBuildKit_Test_Prepare_GenerateFiles_GenerateFiles" />
     </Target>
 
     <Target

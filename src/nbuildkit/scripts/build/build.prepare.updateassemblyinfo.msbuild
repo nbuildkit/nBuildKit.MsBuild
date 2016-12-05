@@ -8,8 +8,6 @@
         <ExistsBuildPrepareGenerateLicenses>true</ExistsBuildPrepareGenerateLicenses>
     </PropertyGroup>
 
-        <CallTarget Targets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update" />
-        <CallTarget Targets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_InternalsVisibleTo" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
@@ -34,6 +32,8 @@
     <Target
         DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
         Name="nBuildKit_Build_Prepare_UpdateAssemblyInfo_Run">
+        <CallTarget Targets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update" />
+        <CallTarget Targets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_InternalsVisibleTo" />
     </Target>
 
     <Target
@@ -154,8 +154,7 @@
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
         Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_InternalsVisibleTo"
         Outputs="%(AssemblyInfoFilesToUpdate.Identity)">
-        <CreateProperty
-            Value="$([System.IO.Path]::GetDirectoryName('%(AssemblyInfoFilesToUpdate.Identity)'))">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('%(AssemblyInfoFilesToUpdate.Identity)'))">
             <Output
                 PropertyName="AssemblyInfoDirectory"
                 TaskParameter="Value" />

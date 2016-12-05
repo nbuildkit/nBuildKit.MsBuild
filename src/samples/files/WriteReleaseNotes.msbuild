@@ -34,10 +34,8 @@
             ISSUE_USERURL  - The URL for the user, if it exists.
             ISSUE_LABELS   - The labels / type for the issue.
     -->
-    <Target
-        Name="_Custom_WriteReleaseNotesForCurrentRelease">
-        <CreateProperty
-            Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesHtml)'))">
+    <Target Name="_Custom_WriteReleaseNotesForCurrentRelease">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReleaseNotesHtml)'))">
             <Output
                 PropertyName="DirToCreate"
                 TaskParameter="Value" />

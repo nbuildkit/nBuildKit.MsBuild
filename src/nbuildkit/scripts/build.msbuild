@@ -92,8 +92,7 @@
         Name="_nBuildKit_Build_Execute"
         Outputs="%(BuildStepsToExecute.Identity)">
 
-        <CreateItem
-            Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
+        <CreateItem Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
             <Output
                 ItemName="ExecutionGroupsFromUser"
                 TaskParameter="Include" />
@@ -117,8 +116,7 @@
                 TaskParameter="IsInList" />
         </IsInCollection>
 
-        <CreateItem
-            Include="all">
+        <CreateItem Include="all">
             <Output
                 ItemName="ExecutionGroupsForAllSteps"
                 TaskParameter="Include" />
@@ -197,7 +195,6 @@
         </CreateItem>
 
         <CreateProperty Value="%(BuildFailureStepsToExecute.Groups)">
-            Value="%(BuildFailureStepsToExecute.Groups)">
             <Output
                 PropertyName="BuildFailureStepGroups"
                 TaskParameter="Value" />
@@ -277,6 +274,7 @@
             Targets=""
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
-            UseResultsCache="True"> </MSBuild>
+            UseResultsCache="True">
+        </MSBuild>
     </Target>
 </Project>

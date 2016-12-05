@@ -12,8 +12,6 @@
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
 
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_Tag_Vcs_Git" />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_Tag_Vcs_Tfs" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
@@ -25,6 +23,8 @@
     <Target
         DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_Tag_Vcs_Run">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Tag_Vcs_Git" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Tag_Vcs_Tfs" />
     </Target>
 
     <!-- Display info -->
@@ -99,7 +99,9 @@
             Importance="low"
             Text=" " />
     </Target>
-        <Warning
+
+    <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
+        <Error
             Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
             Text="The semantic version file does not exist. Will not be able to get the version." />
         <GetSemanticVersionFromFile

@@ -99,8 +99,7 @@
     <Target
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Build_Analyze_Binaries_FxCop_ReplaceBuildTemplates">
-        <Message
-            Text="Resolving build templates for: $(FileReportFxCop)" />
+        <Message Text="Resolving build templates for: $(FileReportFxCop)" />
 
         <TemplateText
             Template="$(FileReportFxCop)"
@@ -123,12 +122,11 @@
         <Error
             Condition="!Exists('$(FileProjectFxCop)') AND '$(ShouldExecute)' == 'true' "
             Text="The FxCop project file does not exist. Cannot execute analysis of binaries." />
-        </CreateProperty>
+
         <MakeDir Directories="$(DirToCreate)"
                  Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
 
-        <CreateProperty
-            Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
             <Output
                 PropertyName="DirToCreate"
                 TaskParameter="Value" />
@@ -170,8 +168,7 @@
             Condition=" '@(FxCopFiles)' == '' AND '$(ShouldExecute)' == 'true' "
             Text="There are no assemblies defined. Cannot execute analysis of binaries." />
 
-        <CreateProperty
-            Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
             <Output
                 PropertyName="DirToCreate"
                 TaskParameter="Value" />

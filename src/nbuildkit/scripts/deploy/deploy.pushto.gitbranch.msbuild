@@ -8,7 +8,6 @@
         <ExistsDeployPushToGitBranch>true</ExistsDeployPushToGitBranch>
     </PropertyGroup>
 
-        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_Push" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
@@ -45,6 +44,7 @@
     <Target
         DependsOnTargets="_nBuildKit_Deploy_PushTo_GitBranch_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_GitBranch_Run">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_Push" />
     </Target>
 
     <!-- Display info -->
@@ -90,16 +90,11 @@
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Deploy_PushTo_GitBranch_Push"
         Outputs="%(PushToGitBranchSpecs.Identity)">
-        <CallTarget
-            Targets="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates" />
-        <CallTarget
-            Targets="_nBuildKit_Deploy_PushTo_GitBranch_Clone" />
-        <CallTarget
-            Targets="_nBuildKit_Deploy_PushTo_GitBranch_CopyFiles" />
-        <CallTarget
-            Targets="_nBuildKit_Deploy_PushTo_GitBranch_Commit" />
-        <CallTarget
-            Targets="_nBuildKit_Deploy_PushTo_GitBranch_PushToRepository" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_Clone" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_CopyFiles" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_Commit" />
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_PushToRepository" />
     </Target>
 
     <Target
@@ -229,8 +224,7 @@
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
-        <CreateItem
-            Include="$(FilesToPushIncluded.Split(';'))">
+        <CreateItem Include="$(FilesToPushIncluded.Split(';'))">
             <Output
                 ItemName="FilesToPush"
                 TaskParameter="Include" />
@@ -278,11 +272,11 @@
             SourceFiles="@(FilesToCopy)" />
     </Target>
 
-        <Message Text="Adding new files to list of changes to commit on branch $(BranchToPushTo) ..." />
     <Target
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
         Name="_nBuildKit_Deploy_PushTo_GitBranch_Commit"
         Outputs="%(PushToGitBranchSpecs.Identity)">
+        <Message Text="Adding new files to list of changes to commit on branch $(BranchToPushTo) ..." />
         <GitNewFiles
             GitExecutablePath="$(ToolsExternalGitPath)"
             WorkingDirectory="$(DirRepositoryWorkspace)">
@@ -305,11 +299,11 @@
             WorkingDirectory="$(DirRepositoryWorkspace)" />
     </Target>
 
-        <Message Text="Pushing changes on branch $(BranchToPushTo) back to repository $(RepositoryToPushTo) ..." />
     <Target
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
         Name="_nBuildKit_Deploy_PushTo_GitBranch_PushToRepository"
         Outputs="%(PushToGitBranchSpecs.Identity)">
+        <Message Text="Pushing changes on branch $(BranchToPushTo) back to repository $(RepositoryToPushTo) ..." />
         <GitPush
             Branch="$(BranchToPushTo)"
             Condition=" '$(RepositoryToPushTo)' != '' "

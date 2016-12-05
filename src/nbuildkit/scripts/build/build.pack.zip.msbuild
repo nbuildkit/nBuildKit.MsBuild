@@ -26,10 +26,10 @@
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Zip.msbuild') AND '$(ExistsExtensionsZip)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\Zip.msbuild" />
 
-        <CallTarget Targets="_nBuildKit_Build_Pack_Zip_Pack" />
     <Target
         DependsOnTargets="_nBuildKit_Build_Pack_Zip_DisplayInfo"
         Name="nBuildKit_Build_Pack_Zip_Run">
+        <CallTarget Targets="_nBuildKit_Build_Pack_Zip_Pack" />
     </Target>
 
     <!-- Display info -->

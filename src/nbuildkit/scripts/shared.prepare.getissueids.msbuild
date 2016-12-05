@@ -7,9 +7,6 @@
         <ExistsSharedPrepareGetIssueIds>true</ExistsSharedPrepareGetIssueIds>
     </PropertyGroup>
 
-
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_GetIssueIds_ForCurrentBranch_GetWorkItemsFromCommits_FromGit" />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_GetIssueIds_WriteWorkItemsToFile" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
@@ -20,10 +17,13 @@
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild') AND '$(ExistsExtensionsLastItemInGroup)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild" />
+
     <Target
         Condition="!Exists('$(FileWorkItems)') AND '@(BranchMergeTarget)' != '' "
         DependsOnTargets="_nBuildKit_Shared_Prepare_GetIssueIds_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_GetIssueIds_Run">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GetIssueIds_ForCurrentBranch_GetWorkItemsFromCommits_FromGit" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_GetIssueIds_WriteWorkItemsToFile" />
     </Target>
 
     <Target
@@ -93,8 +93,7 @@
         Condition=" '$(IsGitWorkspace)' == 'true' "
         Name="_nBuildKit_Shared_Prepare_GetIssueIds_ForCurrentBranch_GetWorkItemsFromCommits_FromGit">
 
-        <LastItemInGroup
-            Items="@(BranchMergeTarget)">
+        <LastItemInGroup Items="@(BranchMergeTarget)">
             <Output
                 PropertyName="WorkItemTargetBranch"
                 TaskParameter="Item" />
@@ -137,9 +136,7 @@
         </CreateProperty>
         <ItemGroup>
             <Items_IssueIds Include="{" />
-
             <Items_IssueIds Include="    &quot;issue_ids&quot;: [$(IssueIdsAsJsonArray)]," />
-
             <Items_IssueIds Include="}" />
         </ItemGroup>
 

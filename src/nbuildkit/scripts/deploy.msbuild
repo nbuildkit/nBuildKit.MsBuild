@@ -35,10 +35,8 @@
     </PropertyGroup>
 
     <Target
-        DependsOnTargets="_nBuildKit_Deploy_DisplayInfo"
+        DependsOnTargets="_nBuildKit_Deploy_DisplayInfo;_nBuildKit_Deploy_Execute"
         Name="nBuildKit_Deploy_Run">
-        <!-- Execute all the build tasks in the given order -->
-        <CallTarget Targets="_nBuildKit_Deploy_Execute" />
     </Target>
 
     <Target

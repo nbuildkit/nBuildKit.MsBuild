@@ -32,7 +32,10 @@
         </HtmlEncodeText>
 
         <ItemGroup>
-            <!-- Release notes -->
+            <!--
+                Define empty entries for the release notes in case there are none so that we can
+                still reference the template variable.
+            -->
             <TemplateTokens
                 Condition=" '$(ReleaseNotes)' != '' "
                 Include="ReleaseNotes">
@@ -41,7 +44,7 @@
             <TemplateTokens
                 Condition=" '$(ReleaseNotes)' == '' "
                 Include="ReleaseNotes">
-                <ReplacementValue> </ReplacementValue>
+                <ReplacementValue></ReplacementValue>
             </TemplateTokens>
 
             <TemplateTokens
@@ -52,7 +55,7 @@
             <TemplateTokens
                 Condition=" '$(ReleaseNotesHtmlEncoded)' == '' "
                 Include="ReleaseNotesHtmlEncoded">
-                <ReplacementValue> </ReplacementValue>
+                <ReplacementValue></ReplacementValue>
             </TemplateTokens>
         </ItemGroup>
     </Target>

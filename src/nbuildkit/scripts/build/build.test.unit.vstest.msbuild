@@ -16,9 +16,6 @@
         <FileRunSettings>$(DirBuildTemp)\vstest.runsettings</FileRunSettings>
     </PropertyGroup>
 
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_GetToolPaths" />
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates" />
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_Execute" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
@@ -45,13 +42,16 @@
     <Target
         DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_DisplayInfo"
         Name="nBuildKit_Build_Test_Unit_VsTest_Run">
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_GetToolPaths" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_Execute" />
     </Target>
 
     <!-- Display info -->
-        <Message Text="Running unit tests with VsTest ..." />
     <Target
         DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_DebugLog"
         Name="_nBuildKit_Build_Test_Unit_VsTest_DisplayInfo">
+        <Message Text="Running unit tests with VsTest ..." />
     </Target>
 
     <Target

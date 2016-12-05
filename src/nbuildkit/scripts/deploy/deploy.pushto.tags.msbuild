@@ -12,10 +12,10 @@
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
 
-        <CallTarget Targets="_nBuildKit_Deploy_PushTo_Tag_Vcs_Git" />
     <Target
         DependsOnTargets="_nBuildKit_Deploy_PushTo_Tag_Vcs_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_Tag_Vcs_Run">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_Tag_Vcs_Git" />
     </Target>
 
     <!-- Display info -->

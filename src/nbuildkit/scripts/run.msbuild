@@ -53,9 +53,8 @@
         and passing the path to the workspace directory and the configuration files. Parameters provided by the
         user are passed through by default.
     -->
-        <CallTarget Targets="_Run_Execute" />
     <Target
-        DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Build"
+        DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Build;_Run_Execute"
         Name="Build">
     </Target>
 
@@ -71,9 +70,8 @@
         and passing the path to the workspace directory and the configuration files. Parameters provided by the
         user are passed through by default.
     -->
-        <CallTarget Targets="_Run_Execute" />
     <Target
-        DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Test"
+        DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Test;_Run_Execute"
         Name="Test">
     </Target>
 
@@ -89,9 +87,8 @@
         and passing the path to the workspace directory and the configuration files. Parameters provided by the
         user are passed through by default.
     -->
-        <CallTarget Targets="_Run_Execute" />
     <Target
-        DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Deploy"
+        DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Deploy;_Run_Execute"
         Name="Deploy">
     </Target>
 
@@ -162,13 +159,13 @@
         If the script does not create the settings files then nBuildKit will attempt to copy the files from
         the '$(DirLocalUserSettings)' location to the '$(DirUserConfiguration)' directory.
     -->
-        <CallTarget Targets="_Custom_TransformConfigurations" />
     <Target
         Condition="Exists('$(ScriptTransformConfigurations)')"
         Name="_nBuildKit_Run_InvokeCustomTransformation">
         <Message
             Importance="low"
             Text="Transforming settings files via custom task ..." />
+        <CallTarget Targets="_Custom_TransformConfigurations" />
     </Target>
 
     <Target Name="_nBuildKit_Run_PrepareUserConfiguration">

@@ -41,14 +41,14 @@
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
 
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_DisplayInfo"
+        Name="nBuildKit_Build_Test_Unit_NUnit_Run">
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_Execute" />
-    <Target
-        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_DisplayInfo"
-        Name="nBuildKit_Build_Test_Unit_NUnit_Run">
     </Target>
 
     <!-- Display info -->
@@ -317,8 +317,7 @@
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
-        <CreateItem
-            Include="%(UnitTestDirectories.Files)">
+        <CreateItem Include="%(UnitTestDirectories.Files)">
             <Output
                 ItemName="UnitTestAssembliesForDirectory"
                 TaskParameter="Include" />

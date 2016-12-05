@@ -35,16 +35,16 @@
         Condition="Exists('$(FileVersionMsBuild)') AND ( '$(ScriptGetVersion)' == '' OR '$(ScriptGetVersion)' == 'UNDEFINED' OR !Exists('$(ScriptGetVersion)'))"
         Project="$(FileVersionMsBuild)" />
 
+    <Target
+        Condition="!Exists('$(FileSemanticVersion)')"
+        DependsOnTargets="_nBuildKit_Shared_Prepare_GetVersion_DisplayInfo"
+        Name="nBuildKit_Shared_Prepare_GetVersion_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionViaGitVersion" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_WriteVersionsToFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals" />
-    <Target
-        Condition="!Exists('$(FileSemanticVersion)')"
-        DependsOnTargets="_nBuildKit_Shared_Prepare_GetVersion_DisplayInfo"
-        Name="nBuildKit_Shared_Prepare_GetVersion_Run">
     </Target>
 
     <Target
@@ -355,8 +355,7 @@
             Overwrite="true" />
     </Target>
 
-    <Target
-        Name="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals">
+    <Target Name="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals">
         <Message
             Importance="normal"
             Text="Versions are:" />

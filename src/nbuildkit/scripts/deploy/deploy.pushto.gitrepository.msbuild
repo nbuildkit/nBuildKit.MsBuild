@@ -8,7 +8,6 @@
         <ExistsDeployPushToGitRepository>true</ExistsDeployPushToGitRepository>
     </PropertyGroup>
 
-        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_Push" />
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
@@ -33,6 +32,7 @@
     <Target
         DependsOnTargets="_nBuildKit_Deploy_PushTo_GitRepository_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_GitRepository_Run">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_Push" />
     </Target>
 
     <!-- Display info -->
@@ -74,16 +74,16 @@
             Text=" " />
     </Target>
 
+    <Target
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+        Name="_nBuildKit_Deploy_PushTo_GitRepository_Push"
+        Outputs="%(PushToGitRepositorySpecs.Identity)">
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_GatherData" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Origin" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Targets" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitRepository_PushToRepository" />
-    <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
-        Name="_nBuildKit_Deploy_PushTo_GitRepository_Push"
-        Outputs="%(PushToGitRepositorySpecs.Identity)">
     </Target>
 
     <Target
@@ -130,8 +130,7 @@
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
-        <CreateItem
-            Include="$(FilesToPushIncluded.Split(';'))">
+        <CreateItem Include="$(FilesToPushIncluded.Split(';'))">
             <Output
                 ItemName="FilesToPush"
                 TaskParameter="Include" />
@@ -213,11 +212,11 @@
         <Message Text="TargetBranches: @(TargetBranches)" />
     </Target>
 
-        <Message Text="Verifying that there were no changes to the origin branch since the merge ..." />
     <Target
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
         Name="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Origin"
         Outputs="%(PushToGitRepositorySpecs.Identity)">
+        <Message Text="Verifying that there were no changes to the origin branch since the merge ..." />
 
         <Message Text="Checking out merge target branch: @(OriginBranch) ..." />
         <GitCheckout
@@ -249,11 +248,11 @@
             Text="For @(OriginBranch) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 
-        <Message Text="Verifying that there were no changes to the target branches since the merge ..." />
     <Target
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
         Name="_nBuildKit_Deploy_PushTo_GitRepository_VerifyRepositoryState_Targets"
         Outputs="%(TargetBranches.Identity)">
+        <Message Text="Verifying that there were no changes to the target branches since the merge ..." />
 
         <Message Text="Checking out merge target branch: %(TargetBranches.Identity) ..." />
         <GitCheckout
@@ -289,11 +288,11 @@
             Text="For %(TargetBranches.Identity) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 
-        <Message Text="Pushing changes from $(FilesToPushIncluded) back to the origin ..." />
     <Target
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitRepository_ReplaceBuildTemplates;_nBuildKit_Deploy_PushTo_GitRepository_CopyFiles"
         Name="_nBuildKit_Deploy_PushTo_GitRepository_PushToRepository"
         Outputs="%(PushToGitRepositorySpecs.Identity)">
+        <Message Text="Pushing changes from $(FilesToPushIncluded) back to the origin ..." />
         <GitPush
             Condition=" '$(RepositoryToPushTo)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"

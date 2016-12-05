@@ -21,11 +21,11 @@
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild') AND '$(ExistsExtensionsGitReset)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild" />
 
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch" />
     <Target
         Condition="!Exists('$(FileVcsInfo)')"
         DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_VcsSetBranch_Run">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch" />
     </Target>
 
     <!-- Display info -->

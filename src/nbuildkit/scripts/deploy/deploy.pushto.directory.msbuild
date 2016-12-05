@@ -20,10 +20,10 @@
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
 
-        <CallTarget Targets="_nBuildKit_Deploy_PushTo_Directory_Push" />
     <Target
         DependsOnTargets="_nBuildKit_Deploy_PushTo_Directory_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_Directory_Run">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_Directory_Push" />
     </Target>
 
     <!-- Display info -->

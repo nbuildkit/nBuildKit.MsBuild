@@ -45,14 +45,14 @@
         Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
 
     <Import Project="$(SystemTemplateTokenGenerators)" />
+    <Import
+        Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "
+        Project="$(TemplateTokenGenerators)" />
 
     <Target Name="nBuildKit_Shared_TemplateTokens_Initialize">
         <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators" />
         <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Initialize_SpecialVersionParameters_UserDefined" />
         <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Initialize_SpecialVersionParameters_SystemDefined" />
-    <Import
-        Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "
-        Project="$(TemplateTokenGenerators)" />
     </Target>
 
     <Target Name="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators_Prepare">
@@ -68,8 +68,7 @@
         DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators_Prepare"
         Name="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators"
         Outputs="%(GeneratorTargetsToInvoke.Identity)">
-        <CreateProperty
-            Value="%(GeneratorTargetsToInvoke.Filename)">
+        <CreateProperty Value="%(GeneratorTargetsToInvoke.Filename)">
             <Output
                 PropertyName="TargetsToInvoke"
                 TaskParameter="Value" />

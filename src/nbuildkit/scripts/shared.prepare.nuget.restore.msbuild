@@ -20,12 +20,12 @@
         <FileNuGetRestoreComplete>$(DirBuildTemp)\nuget_restore.json</FileNuGetRestoreComplete>
     </PropertyGroup>
 
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_NuGet_Restore_Packages" />
-        <CallTarget Targets="_nBuildKit_Shared_Prepare_Nuget_Restore_IndicateComplete" />
     <Target
         Condition="!Exists('$(FileNuGetRestoreComplete)')"
         DependsOnTargets="_nBuildKit_Shared_Prepare_NuGet_Restore_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_NuGet_Restore_Run">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_NuGet_Restore_Packages" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Nuget_Restore_IndicateComplete" />
     </Target>
 
     <Target
@@ -108,8 +108,7 @@
     <Target
         DependsOnTargets="_nBuildKit_Shared_Prepare_NuGet_Restore_Packages"
         Name="_nBuildKit_Shared_Prepare_Nuget_Restore_IndicateComplete">
-        <CreateProperty
-            Value="$([System.IO.Path]::GetDirectoryName('$(FileNuGetRestoreComplete)'))">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileNuGetRestoreComplete)'))">
             <Output
                 PropertyName="DirToCreate"
                 TaskParameter="Value" />

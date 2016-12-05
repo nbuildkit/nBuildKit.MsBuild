@@ -41,21 +41,21 @@
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
 
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Test_Unit_MsTest_DisplayInfo"
+        Name="nBuildKit_Build_Test_Unit_MsTest_Run">
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_MsTest_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_MsTest_ReplaceBuildTemplates" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_MsTest_PrepareWorkspace" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_MsTest_SortFilesByDirectory" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_MsTest_Execute" />
-    <Target
-        DependsOnTargets="_nBuildKit_Build_Test_Unit_MsTest_DisplayInfo"
-        Name="nBuildKit_Build_Test_Unit_MsTest_Run">
     </Target>
 
     <!-- Display info -->
-        <Message Text="Running unit tests with MsTest ..." />
     <Target
         DependsOnTargets="_nBuildKit_Build_Test_Unit_MsTest_DebugLog"
         Name="_nBuildKit_Build_Test_Unit_MsTest_DisplayInfo">
+        <Message Text="Running unit tests with MsTest ..." />
     </Target>
 
     <Target
@@ -258,8 +258,7 @@
     <Target
         DependsOnTargets="_nBuildKit_Build_Test_Unit_MsTest_ReplaceBuildTemplates"
         Name="_nBuildKit_Build_Test_Unit_MsTest_PrepareWorkspace">
-        <CreateProperty
-            Value="$([System.IO.Path]::GetDirectoryName('$(FileReportMsTestExpanded)'))">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportMsTestExpanded)'))">
             <Output
                 PropertyName="DirToCreate"
                 TaskParameter="Value" />
@@ -308,8 +307,7 @@
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
-        <CreateItem
-            Include="%(UnitTestDirectories.Files)">
+        <CreateItem Include="%(UnitTestDirectories.Files)">
             <Output
                 ItemName="UnitTestAssembliesForDirectory"
                 TaskParameter="Include" />

@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project
-        DefaultTargets="Run"
-        ToolsVersion="11.0"
-        xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-        <PropertyGroup>
-                <!-- Defines whether the current script file has been loaded / imported or not -->
-                <ExistsSharedImportTestSharedSettings>true</ExistsSharedImportTestSharedSettings>
-        </PropertyGroup>
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedImportTestSharedSettings>true</ExistsSharedImportTestSharedSettings>
+    </PropertyGroup>
 
-        <Import
-                Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
-                Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
-        <PropertyGroup>
-                <TestPropertyFile>$(DirUserSettings)\test.settings.props</TestPropertyFile>
-        </PropertyGroup>
+    <PropertyGroup>
+        <TestPropertyFile>$(DirUserSettings)\test.settings.props</TestPropertyFile>
+    </PropertyGroup>
 
-        <!-- Import the settings files that has all the overriden settings -->
-        <!--
+    <!-- Import the settings files that has all the overriden settings -->
+    <!--
         Note that we rely on loading the user settings file first so that the 'TemplateVersion' items created by the user are first in their list.
     -->
-        <Import
-                Condition="Exists('$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' "
-                Project="$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild" />
-        <Import
-                Condition="Exists('$(TestPropertyFile)') AND '$(ExistsTestSettings)' != 'true' "
-                Project="$(TestPropertyFile)" />
-        <Import
-                Condition="Exists('$(DirNBuildKitMsBuild)\test\test.shared.props') AND '$(ExistsTestSharedSettings)' != 'true' "
-                Project="$(DirNBuildKitMsBuild)\test\test.shared.props" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\test\shared.teststeps.msbuild" />
+    <Import
+        Condition="Exists('$(TestPropertyFile)') AND '$(ExistsTestSettings)' != 'true' "
+        Project="$(TestPropertyFile)" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\test\test.shared.props') AND '$(ExistsTestSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\test\test.shared.props" />
 </Project>

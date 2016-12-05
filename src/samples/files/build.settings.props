@@ -92,15 +92,14 @@
         Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
     <ItemGroup>
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareWorkspace)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
+            <Properties>
+            </Properties>
             <Groups>
                 Clean;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareRestoreNuGet)">
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNuGet)">
             <Properties>
                 StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\build\packages.config
             </Properties>
@@ -115,23 +114,23 @@
             The following steps need to be executed on the original branch (i.e. the branch we are interested in
             building.
         -->
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareVcsBranch)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsBranch)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareVcsInfo)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsInfo)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareGetIssueIds)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGetIssueIds)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
@@ -142,9 +141,9 @@
             specified then this step will merge to all merge targets and leave the current branch as the last branch
             we merged to.
         -->
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareVcsMerge)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsMerge)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
@@ -154,9 +153,9 @@
             All steps from here on may be executed on a different branch than the orginal branch we we started the
             build on because we might have done some merging.
         -->
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareGetVersion)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
@@ -164,32 +163,33 @@
         <BuildStepsToExecute
             Condition=" '$(IsGitFlow)' == 'true' AND ('$(IsReleaseBranch)' == 'true' OR '$(IsHotfixBranch)' == 'true') "
             Include="$(BuildStepsPrepareTagVcs)">
-            <Properties> </Properties>
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareReleaseNotes)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareReleaseNotes)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareRestoreNpm)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNpm)">
+            <Properties>
+            </Properties>
             <Groups>
                 Npm;
                 Prepare;
                 Restore;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareRestoreBower)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreBower)">
+            <Properties>
+            </Properties>
             <Groups>
                 Bower;
                 Prepare;
@@ -197,39 +197,38 @@
             </Groups>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareAssemblyInfo)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareAssemblyInfo)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareGenerateLicenses)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateLicenses)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute
-            Include="$(BuildStepsPrepareGenerateFiles)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateFiles)">
+            <Properties>
+            </Properties>
             <Groups>
                 Generate;
                 Prepare;
             </Groups>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute
-            Include="$(BuildStepsBuildVisualStudioSolution)">
-            <Properties> </Properties>
+        <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
+            <Properties>
+            </Properties>
             <Groups>
                 Compile;
             </Groups>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute
-            Include="$(BuildStepsUnitTestNUnit)">
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
@@ -238,8 +237,7 @@
                 UnitTest;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute
-            Include="$(BuildStepsUnitTestMsTest)">
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestMsTest)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
@@ -248,8 +246,7 @@
                 UnitTest;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute
-            Include="$(BuildStepsUnitTestVsTest)">
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestVsTest)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
@@ -259,8 +256,7 @@
             </Groups>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute
-            Include="$(BuildStepsAnalyzeBinariesFxCop)">
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
@@ -270,8 +266,7 @@
             </Groups>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute
-            Include="$(BuildStepsPackNuGet)">
+        <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform)
@@ -280,8 +275,7 @@
                 Package;
             </Groups>
         </BuildStepsToExecute>
-        <BuildStepsToExecute
-            Include="$(BuildStepsPackZip)">
+        <BuildStepsToExecute Include="$(BuildStepsPackZip)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform)
@@ -356,8 +350,7 @@
 
         For additional information see the ShouldGenerateAssemblyXXXX properties below.
     -->
-    <ItemGroup
-        Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
+    <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
         <!--
         <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.cs" />
         <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.vb" />
@@ -558,8 +551,7 @@
             by converting the OpenCover results to Cobertura.
             Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}
         -->
-        <DirReportOpenCoverCobertura
-            Condition=" '$(DirReportOpenCoverCobertura)' == '' ">$(DirBuildLogs)</DirReportOpenCoverCobertura>
+        <DirReportOpenCoverCobertura Condition=" '$(DirReportOpenCoverCobertura)' == '' ">$(DirBuildLogs)</DirReportOpenCoverCobertura>
     </PropertyGroup>
     <ItemGroup>
         <!--

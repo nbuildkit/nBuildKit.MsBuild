@@ -60,8 +60,7 @@
         $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
     -->
     <ItemGroup>
-        <DeployStepsToExecute
-            Include="$(DeployStepsRestoreNuGet)">
+        <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
             <Properties>
                 StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\deploy\packages.config
             </Properties>
@@ -76,16 +75,16 @@
             The following steps need to be executed on the original branch (i.e. the branch we are interested in
             building.
         -->
-        <DeployStepsToExecute
-            Include="$(DeployStepsPrepareVcsBranch)">
-            <Properties> </Properties>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareVcsBranch)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Include="$(DeployStepsPrepareGetIssueIds)">
-            <Properties> </Properties>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
@@ -95,15 +94,14 @@
             All steps from here on may be executed on a different branch than the orginal branch we we started the
             build on because we might have done some merging / restoring from a different repository.
         -->
-        <DeployStepsToExecute
-            Include="$(DeployStepsPrepareGetVersion)">
-            <Properties> </Properties>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareGetVersion)">
+            <Properties>
+            </Properties>
             <Groups>
                 Prepare;
             </Groups>
         </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Include="$(DeployStepsPrepareTagVcs)">
+        <DeployStepsToExecute Include="$(DeployStepsPrepareTagVcs)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -113,8 +111,7 @@
                 Tag;
             </Groups>
         </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Include="$(DeployStepsPushToTags)">
+        <DeployStepsToExecute Include="$(DeployStepsPushToTags)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -124,8 +121,7 @@
                 Push;
             </Groups>
         </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Include="$(DeployStepsPushToNuget)">
+        <DeployStepsToExecute Include="$(DeployStepsPushToNuget)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -135,8 +131,7 @@
                 Push;
             </Groups>
         </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Include="$(DeployStepsPushToDirectory)">
+        <DeployStepsToExecute Include="$(DeployStepsPushToDirectory)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -146,8 +141,7 @@
                 Push;
             </Groups>
         </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Include="$(DeployStepsPushToSymbolServer)">
+        <DeployStepsToExecute Include="$(DeployStepsPushToSymbolServer)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -157,8 +151,7 @@
                 SymbolServer;
             </Groups>
         </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Include="$(DeployStepsPushToGitHubRelease)">
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitHubRelease)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -168,8 +161,7 @@
                 Push;
             </Groups>
         </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Include="$(DeployStepsPushToGitBranch)">
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -179,8 +171,7 @@
                 Push;
             </Groups>
         </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Include="$(DeployStepsPushToGitRepository)">
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitRepository)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -335,8 +326,7 @@
         The ItemGroup defining the zip files containing a git workspace that should be pushed to a GIT repository.
         All properties allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
-    <ItemGroup
-        Condition=" '@(PushToGitRepositorySpecs)' == '' ">
+    <ItemGroup Condition=" '@(PushToGitRepositorySpecs)' == '' ">
         <!--
         <PushToGitRepositorySpecs Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
              <Repository>$(GitRemoteRepository)</Repository>

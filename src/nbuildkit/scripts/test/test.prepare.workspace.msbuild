@@ -12,11 +12,11 @@
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props" />
 
-        <CallTarget Targets="_nBuildKit_Test_Prepare_Workspace_Clean" />
-        <CallTarget Targets="_nBuildKit_Test_Prepare_Workspace_CopyFiles" />
     <Target
         DependsOnTargets="_nBuildKit_Test_Prepare_Workspace_DisplayInfo"
         Name="nBuildKit_Test_Prepare_Workspace_Run">
+        <CallTarget Targets="_nBuildKit_Test_Prepare_Workspace_Clean" />
+        <CallTarget Targets="_nBuildKit_Test_Prepare_Workspace_CopyFiles" />
     </Target>
 
     <Target

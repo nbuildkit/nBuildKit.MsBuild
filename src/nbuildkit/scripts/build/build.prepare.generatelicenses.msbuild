@@ -19,10 +19,10 @@
         Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
         Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
 
-        <CallTarget Targets="_nBuildKit_Build_Prepare_GenerateLicenses_Generate" />
     <Target
         DependsOnTargets="_nBuildKit_Build_Prepare_GenerateLicenses_DisplayInfo"
         Name="nBuildKit_Build_Prepare_GenerateLicenses_Run">
+        <CallTarget Targets="_nBuildKit_Build_Prepare_GenerateLicenses_Generate" />
     </Target>
 
     <Target
