@@ -15,16 +15,19 @@
         -->
         <DirUserSettings>$(DirWorkspace)</DirUserSettings>
 
+        <!-- nBuildKit -->
+        <!--
+            Defines the version number of the entrypoint file
+        -->
+        <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
         <!--
             Hard-code the paths to the different directories because we're dog-fooding here because we know exactly
             where all the files are.
         -->
+        <DirNBuildKit>$(MSBuildProjectDirectory)\src\nbuildkit\scripts</DirNBuildKit>
         <DirNBuildKitMsBuildExtensions>$(DirWorkspace)\src\nbuildkit\extensions</DirNBuildKitMsBuildExtensions>
         <DirNBuildKitMsBuildShared>$(DirWorkspace)\src\nbuildkit\shared</DirNBuildKitMsBuildShared>
         <DirNBuildKitMsBuildTemplates>$(DirWorkspace)\src\nbuildkit\templates</DirNBuildKitMsBuildTemplates>
-
-        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
-        <DirNBuildKit>$(DirMsBuildScripts)\src\nbuildkit\scripts</DirNBuildKit>
     </PropertyGroup>
 
     <!--
