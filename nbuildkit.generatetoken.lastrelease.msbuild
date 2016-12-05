@@ -15,11 +15,11 @@
 
     <Target Name="_NBuildKit_GenerateToken_LastRelease_FromNuGet"
             Condition="!Exists('$FileNBuildKitLastRelease')">
-        <GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
+        <GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
             <Output TaskParameter="Major" PropertyName="NBuildKitLatestMajorVersion" />
             <Output TaskParameter="Minor" PropertyName="NBuildKitLatestMinorVersion" />
             <Output TaskParameter="Patch" PropertyName="NBuildKitLatestPatchVersion" />
-        </GetLatestNBuildKitVersionFromNuGet>
+        </GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet>
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileNBuildKitLastRelease)'))">
             <Output TaskParameter="Value" PropertyName="DirToCreate" />
@@ -45,11 +45,11 @@
 
     <Target Name="nbuildkit_generatetoken_lastrelease"
             DependsOnTargets="_NBuildKit_GenerateToken_LastRelease_FromNuGet">
-        <GetLastReleaseVersionFromFile VersionFile="$(FileNBuildKitLastRelease)">
+        <GetLastRelease_LocalTask_GetLastReleaseVersionFromFile VersionFile="$(FileNBuildKitLastRelease)">
             <Output TaskParameter="VersionMajor" PropertyName="NBuildKitLatestMajorVersion" />
             <Output TaskParameter="VersionMinor" PropertyName="NBuildKitLatestMinorVersion" />
             <Output TaskParameter="VersionPatch" PropertyName="NBuildKitLatestPatchVersion" />
-        </GetLastReleaseVersionFromFile>
+        </GetLastRelease_LocalTask_GetLastReleaseVersionFromFile>
 
         <ItemGroup>
             <TemplateTokens Include="NBuildKitLatestMajorVersion">
@@ -67,7 +67,7 @@
         </ItemGroup>
     </Target>
 
-    <UsingTask TaskName="GetLatestNBuildKitVersionFromNuGet"
+    <UsingTask TaskName="GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet"
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>
@@ -169,7 +169,7 @@
         </Task>
     </UsingTask>
 
-    <UsingTask TaskName="GetLastReleaseVersionFromFile"
+    <UsingTask TaskName="GetLastRelease_LocalTask_GetLastReleaseVersionFromFile"
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MsBuildTasksAssembly)">
         <ParameterGroup>

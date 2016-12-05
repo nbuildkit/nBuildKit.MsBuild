@@ -385,23 +385,6 @@
                  Condition=" '$(DirPackages)' == '' " />
     </Target>
 
-    <UsingTask TaskName="DownloadFile"
-               TaskFactory="CodeTaskFactory"
-               AssemblyFile="$(MsBuildTasksAssembly)">
-        <ParameterGroup>
-            <Address ParameterType="System.String" Required="true"/>
-            <Destination ParameterType="System.String" Required="true" />
-        </ParameterGroup>
-        <Task>
-            <Reference Include="System" />
-            <Code Type="Fragment" Language="cs">
-                <![CDATA[
-                    new System.Net.WebClient().DownloadFile(Address, Destination);
-                ]]>
-            </Code>
-        </Task>
-    </UsingTask>
-
     <!--
         Ideally we'd use the NuGetRestore task from nBuildKit, however this task is used to potentially restore the nBuildKit
         NuGet package so that we can use the tasks and scripts from nBuildKit ...
