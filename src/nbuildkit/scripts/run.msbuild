@@ -168,7 +168,8 @@
         <CallTarget Targets="_Custom_TransformConfigurations" />
     </Target>
 
-    <Target Name="_nBuildKit_Run_PrepareUserConfiguration">
+    <Target Name="_nBuildKit_Run_PrepareUserConfiguration"
+            Condition=" '@(UserSettingsFiles)' != '' ">
         <!--
             Only copy the settings files if the originals are newer than the ones in the 'DirUserConfiguration'
             directory
