@@ -41,6 +41,7 @@
         ${ProductNameInFilePath}   - The product name written in a way that it can be used in the file path
         ${ProductDescription}      - The (short) description of the product
         ${ProductNamespace}        - The namespace in which all the code for the product is placed
+        ${ProductUrl}              - The URL of the product website
         ${ProductStartingYear}     - The year the current product was created / released.
 
         ${CompanyName}             - The name of the company
@@ -112,6 +113,12 @@
         <ProductNamespace Condition=" '$(ProductNamespace)' == '' ">NBuildKit.MsBuild</ProductNamespace>
 
         <!--
+            The URL of the product website. This is for instance used for:
+            * nuspec files
+        -->
+        <ProductUrl Condition=" '$(ProductUrl)' == '' ">https://github.com/nbuildkit/nBuildKit.MsBuild</ProductUrl>
+
+        <!--
             The first year the product was available / created. This is for instance used for:
             * Copyrights
         -->
@@ -134,7 +141,7 @@
             The URL of the company website. This is for instance used for:
             * nuspec files
         -->
-        <CompanyUrl Condition=" '$(CompanyUrl)' == '' ">https://github.com/nbuildkit/nBuildKit.MsBuild</CompanyUrl>
+        <CompanyUrl Condition=" '$(CompanyUrl)' == '' ">https://github.com/nbuildkit</CompanyUrl>
 
         <!--
             The email address that is specified in the documentation. This is for instance used for:
