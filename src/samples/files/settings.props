@@ -41,6 +41,7 @@
         ${ProductNameInFilePath}   - The product name written in a way that it can be used in the file path
         ${ProductDescription}      - The (short) description of the product
         ${ProductNamespace}        - The namespace in which all the code for the product is placed
+        ${ProductUrl}              - The URL of the product website
         ${ProductStartingYear}     - The year the current product was created / released.
 
         ${CompanyName}             - The name of the company
@@ -110,6 +111,12 @@
             * Generated code files that contain namespaces
         -->
         <ProductNamespace Condition=" '$(ProductNamespace)' == '' ">MyProduct</ProductNamespace>
+
+        <!--
+            The URL of the product website. This is for instance used for:
+            * nuspec files
+        -->
+        <ProductUrl Condition=" '$(ProductUrl)' == '' ">UNDEFINED</ProductUrl>
 
         <!--
             The first year the product was available / created. This is for instance used for:
