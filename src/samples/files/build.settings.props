@@ -256,6 +256,15 @@
             </Groups>
         </BuildStepsToExecute>
 
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeXml)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+            <Groups>
+                Analyze;
+            </Groups>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
             <Properties>
                 Configuration=$(TestConfiguration);
@@ -577,6 +586,24 @@
         <!--<OpenCoverFilters Include="-[%2A$(UnitTestAssemblyNamePrefix)%2A]%2A" />-->
         <!--<OpenCoverFilters Include="-[NUnit]%2A" />-->
         <!--<OpenCoverFilters Include="-[NUnit.%2A]%2A" />-->
+    </ItemGroup>
+
+
+    <!--
+        **** SOURCE ANALYSIS - XML ****
+    -->
+    <ItemGroup>
+        <!--
+            The paths to the XML files that should be validated against the given schema.
+        -->
+        <!--
+        <XmlFilesToValidate
+            Include="$(DirSrc)\**\*.xml"
+            Exclude="$(DirSrc)\**\ignore.xml">
+            <SchemaFile></SchemaFile>
+            <TargetNamespace></TargetNamespace>
+        </XmlFilesToValidate>
+        -->
     </ItemGroup>
 
 
