@@ -16,7 +16,7 @@
         <!-- <ProductionConfiguration Condition=" '$(ProductionConfiguration)' == '' ">release</ProductionConfiguration> -->
 
         <!-- The platform for which the binaries will be build -->
-        <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+        <!-- <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform> -->
         <!-- <PlatformWithoutSpaces>$(Platform.Replace(" ",""))</PlatformWithoutSpaces> -->
     </PropertyGroup>
 
@@ -410,6 +410,13 @@
         The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
     <ItemGroup>
+        <SolutionsToBuild Include="$(DirSrc)\nbuildkit\tools\nBuildKit.MsBuild.Tasks.sln">
+            <Configuration>$(ProductionConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties></Properties>
+        </SolutionsToBuild>
+
         <SolutionsToBuild Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
@@ -568,7 +575,7 @@
             The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
             e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
         -->
-        <!-- <UnitTestAssemblies Include="$(DirSrc)\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" /> -->
+        <UnitTestAssemblies Include="$(DirSrc)\nBuildKit\tasks\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
     </ItemGroup>
     <ItemGroup>
         <!--
