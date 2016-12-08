@@ -92,7 +92,7 @@
         </CreateProperty>
 
         <Exec
-            Command="&quot;$(ToolsExternalNuGetPath)&quot; restore &quot;$(FilePackages)&quot; -OutputDirectory &quot;$(DirPackages)&quot; @(NuGetSources-> '-Source &quot;%(Identity)&quot;', ' ')"
+            Command="&quot;$(ToolsExternalNuGetPath)&quot; restore &quot;$(FilePackages)&quot; -OutputDirectory &quot;$(DirPackages)&quot; -NonInteractive -Verbosity detailed -NoCache @(NuGetSources-> '-Source &quot;%(Identity)&quot;', ' ')"
             Condition="Exists('$(FilePackages)') AND '$(ShouldExecute)' == 'true' "
             IgnoreStandardErrorWarningFormat="true" />
 
