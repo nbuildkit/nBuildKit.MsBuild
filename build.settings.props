@@ -96,6 +96,13 @@
         Additionally any properties defined by the 'Properties' section are also pushed up.
     -->
     <ItemGroup>
+        <BuildStepsToExecute Include="$(DirWorkspace)\bootstrap.build.tasks.msbuild">
+            <Properties>
+            </Properties>
+            <Groups>
+                Clean;
+            </Groups>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
             <Properties>
             </Properties>
@@ -318,6 +325,27 @@
             </Groups>
         </BuildFailureStepsToExecute>
         -->
+    </ItemGroup>
+
+
+    <!--
+        **** BOOTSTRAP - BUILD TASKS ****
+    -->
+    <!--
+        The collection of all Visual Studio projects that contain MsBuild tasks for nBuildKit. These will be
+        compiled and placed in a bootstrap directory so that the nBuildKit build can use them.
+    -->
+    <ItemGroup>
+        <BootstrapProjectsToBuild Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\nBuildKit.MsBuild.Tasks.csproj">
+            <Configuration>$(ProductionConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties>
+                OutputPath=$(DirBuildBootstrap);
+                ShouldRunAnalyzers=false;
+                ShouldPerformCodeAnalysis=false;
+            </Properties>
+        </BootstrapProjectsToBuild>
     </ItemGroup>
 
 

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Bootstrap_Build_Tasks_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBootstrapBuildTasks>true</ExistsBootstrapBuildTasks>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
+
+    <Target
+        DependsOnTargets="_nBuildKit_Bootstrap_Build_Tasks_DisplayInfo"
+        Name="nBuildKit_Bootstrap_Build_Tasks_Run">
+        <CallTarget Targets="_nBuildKit_Bootstrap_Build_Tasks_Execute" />
+    </Target>
+
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Bootstrap_Build_Tasks_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build output is located at:           $(DirBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build logs is located at:             $(DirBuildLogs)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
+
+        <Message
+            Importance="low"
+            Text="NuGet command line executable is located at:                       $(ToolsExternalNuGetPath)" />
+        <Message
+            Importance="low"
+            Text=" " />
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Bootstrap_Build_Tasks_DebugLog"
+        Name="_nBuildKit_Bootstrap_Build_Tasks_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Building Visual Studio project that contains the nBuildKit Tasks for bootstrap purposes ..." />
+    </Target>
+
+    <Target
+        Condition=" '@(BootstrapProjectsToBuild)' != '' "
+        Name="_nBuildKit_Bootstrap_Build_Tasks_Execute"
+        Outputs="%(BootstrapProjectsToBuild.Identity)">
+        <CreateProperty Value="%(BootstrapProjectsToBuild.FullPath)">
+            <Output
+                PropertyName="FileBootstrapProject"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <Error
+            Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Text="No NuGet executable defined. Will not be able to restore the packages." />
+        <Error
+            Condition="!Exists('$(FileBootstrapProject)') AND  '$(ShouldExecute)' == 'true' "
+            Text="Expected $(FileBootstrapProject) to point to a valid path but it does not." />
+
+        <Message
+            Importance="normal"
+            Text="Building $(FileBootstrapProject) for targets = %(BootstrapProjectsToBuild.Targets) with: Configuration = %(BootstrapProjectsToBuild.Configuration) and Platform = %(BootstrapProjectsToBuild.Platform) ..." />
+
+        <CreateProperty Value="$([System.IO.Path]::Combine('%(BootstrapProjectsToBuild.RootDir)%(BootstrapProjectsToBuild.Directory)', 'packages.config'))">
+            <Output
+                PropertyName="FilePackages"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <Exec
+            Command="&quot;$(ToolsExternalNuGetPath)&quot; restore &quot;$(FilePackages)&quot; -OutputDirectory &quot;$(DirPackages)&quot; @(NuGetSources-> '-Source &quot;%(Identity)&quot;', ' ')"
+            Condition="Exists('$(FilePackages)') AND '$(ShouldExecute)' == 'true' "
+            IgnoreStandardErrorWarningFormat="true" />
+
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(FileBootstrapProject)"
+            Properties="Configuration=%(BootstrapProjectsToBuild.Configuration);Platform=%(BootstrapProjectsToBuild.Platform);%(BootstrapProjectsToBuild.Properties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
+            Targets="%(BootstrapProjectsToBuild.Targets)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True"
+            Condition=" '$(ShouldExecute)' == 'true' ">
+            <Output
+                ItemName="GeneratedAssemblies"
+                TaskParameter="TargetOutputs" />
+        </MSBuild>
+    </Target>
+ </Project>

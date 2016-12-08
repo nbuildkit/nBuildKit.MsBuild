@@ -275,6 +275,11 @@
         -->
         <!-- <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig> -->
 
+        <!--
+            The directory to which the nBuildKit task assemblies are compiled for nBuildKit build bootstrapping.
+        -->
+        <DirBuildBootstrap Condition=" '$(DirBuildBootstrap)' == '' ">$(DirBuild)\bootstrap</DirBuildBootstrap>
+
         <!-- The directory that will contain all the generated artifacts during the build process -->
         <!-- <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy> -->
 
