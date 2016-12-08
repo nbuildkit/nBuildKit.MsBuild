@@ -257,6 +257,16 @@
             </Groups>
         </BuildStepsToExecute>
 
+        <BuildStepsToExecute Include="$(BuildStepsGenerateTargetsFile)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+            <Groups>
+                UnitTest;
+            </Groups>
+        </BuildStepsToExecute>
+
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeXml)">
             <Properties>
                 Configuration=$(TestConfiguration);

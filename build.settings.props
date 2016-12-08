@@ -103,6 +103,13 @@
                 Clean;
             </Groups>
         </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsGenerateTargetsFile)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Clean;
+            </Groups>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
             <Properties>
             </Properties>
@@ -438,7 +445,7 @@
         The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
     <ItemGroup>
-        <SolutionsToBuild Include="$(DirSrc)\nbuildkit\tools\nBuildKit.MsBuild.Tasks.sln">
+        <SolutionsToBuild Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
