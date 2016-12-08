@@ -20,8 +20,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\IsInCollection.msbuild') AND '$(ExistsExtensionsIsInCollection)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\IsInCollection.msbuild" />
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.extension.IsInCollection.msbuild') AND '$(ExistsExtensionsIsInCollection)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.extension.IsInCollection.msbuild" />
 
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
@@ -108,26 +108,26 @@
                 ItemName="ExecutionGroupsForStep"
                 TaskParameter="Include" />
         </CreateItem>
-        <IsInCollection
+        <SharedExtensionIsInCollection
             Collection="@(ExecutionGroupsFromUser)"
             Items="@(ExecutionGroupsForStep)">
             <Output
                 PropertyName="ShouldExecuteStep"
                 TaskParameter="IsInList" />
-        </IsInCollection>
+        </SharedExtensionIsInCollection>
 
         <CreateItem Include="all">
             <Output
                 ItemName="ExecutionGroupsForAllSteps"
                 TaskParameter="Include" />
         </CreateItem>
-        <IsInCollection
+        <SharedExtensionIsInCollection
             Collection="@(ExecutionGroupsForAllSteps)"
             Items="@(ExecutionGroupsFromUser)">
             <Output
                 PropertyName="ShouldExecuteAllSteps"
                 TaskParameter="IsInList" />
-        </IsInCollection>
+        </SharedExtensionIsInCollection>
 
         <CreateProperty Value="false">
             <Output
@@ -205,26 +205,26 @@
                 ItemName="ExecutionGroupsForStep"
                 TaskParameter="Include" />
         </CreateItem>
-        <IsInCollection
+        <SharedExtensionIsInCollection
             Collection="@(ExecutionGroupsFromUser)"
             Items="@(ExecutionGroupsForStep)">
             <Output
                 PropertyName="ShouldExecuteStep"
                 TaskParameter="IsInList" />
-        </IsInCollection>
+        </SharedExtensionIsInCollection>
 
         <CreateItem Include="all">
             <Output
                 ItemName="ExecutionGroupsForAllSteps"
                 TaskParameter="Include" />
         </CreateItem>
-        <IsInCollection
+        <SharedExtensionIsInCollection
             Collection="@(ExecutionGroupsForAllSteps)"
             Items="@(ExecutionGroupsFromUser)">
             <Output
                 PropertyName="ShouldExecuteAllSteps"
                 TaskParameter="IsInList" />
-        </IsInCollection>
+        </SharedExtensionIsInCollection>
 
         <CreateProperty Value="false">
             <Output

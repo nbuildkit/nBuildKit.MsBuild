@@ -1,0 +1,109 @@
+<!--
+     Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
+-->
+
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsExtensionsIsInCollection>true</ExistsExtensionsIsInCollection>
+
+        <!--
+            For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
+            However starting with version 14 that is no longer the case so have to differentiate between these cases.
+        -->
+        <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
+        <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
+    </PropertyGroup>
+
+    <!--
+        This task is here for the build.msbuild, test.msbuild and deploy.msbuild scripts. It is kept here because
+        those scripts need it but we can't put it in the Tasks DLL because that doesn't necessarily exist when
+        the nBuildKit build starts. So in order to prevent cyclic dependencies (build.msbuild depends on the Tasks
+        DLL but in order to create the Tasks DLL we need to execute the build and thus run build.msbuild, which ..)
+        we keep this file here.
+    -->
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="SharedExtensionIsInCollection">
+        <ParameterGroup>
+            <Collection
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]"
+                Required="true" />
+            <Items
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]"
+                Required="false" />
+            <Item
+                ParameterType="System.String"
+                Required="false" />
+            <IsInList
+                Output="true"
+                ParameterType="System.Boolean" />
+        </ParameterGroup>
+        <Task>
+            <Code
+                Language="cs"
+                Type="Method">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        IsInList = false;
+                        try
+                        {
+                            var listOfItems = new System.Collections.Generic.List<string>();
+                            if (Items != null)
+                            {
+                                ITaskItem[] processedItems = Items;
+                                for (int i = 0; i < processedItems.Length; i++)
+                                {
+                                    ITaskItem taskItem = processedItems[i];
+                                    if (!string.IsNullOrEmpty(taskItem.ItemSpec))
+                                    {
+                                        listOfItems.Add(taskItem.ItemSpec);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (!string.IsNullOrEmpty(Item))
+                                {
+                                    listOfItems.Add(Item);
+                                }
+                            }
+
+                            var listOfCollectionItems = new System.Collections.Generic.List<string>();
+                            if (Collection != null)
+                            {
+                                ITaskItem[] processedItems = Collection;
+                                for (int i = 0; i < processedItems.Length; i++)
+                                {
+                                    ITaskItem taskItem = processedItems[i];
+                                    if (!string.IsNullOrEmpty(taskItem.ItemSpec))
+                                    {
+                                        listOfCollectionItems.Add(taskItem.ItemSpec);
+                                    }
+                                }
+                            }
+
+                            IsInList = listOfCollectionItems.Intersect(listOfItems).Any();
+                        }
+                        catch (Exception e)
+                        {
+                            Log.LogError(
+                                string.Format(
+                                    "Failed to determine if the collection contains any of the items. Error was: {0}",
+                                    e));
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+</Project>
