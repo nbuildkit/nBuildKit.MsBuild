@@ -171,9 +171,6 @@ namespace NBuildKit.MsBuild.Tasks
                 Log.LogError("Failed to save the targets file to {0}", outputPath);
             }
 
-            // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
-            // from a task's constructor or property setter. As long as this task is written to always log an error
-            // when it fails, we can reliably return HasLoggedErrors.
             return !Log.HasLoggedErrors;
         }
 
