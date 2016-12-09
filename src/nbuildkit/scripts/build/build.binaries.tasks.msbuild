@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project
-    DefaultTargets="nBuildKit_Bootstrap_Build_Tasks_Run"
+    DefaultTargets="nBuildKit_Build_Binaries_Tasks_Run"
     ToolsVersion="11.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
@@ -13,14 +13,14 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Bootstrap_Build_Tasks_DisplayInfo"
-        Name="nBuildKit_Bootstrap_Build_Tasks_Run">
-        <CallTarget Targets="_nBuildKit_Bootstrap_Build_Tasks_Execute" />
+        DependsOnTargets="_nBuildKit_Build_Binaries_Tasks_DisplayInfo"
+        Name="nBuildKit_Build_Binaries_Tasks_Run">
+        <CallTarget Targets="_nBuildKit_Build_Binaries_Tasks_Execute" />
     </Target>
 
     <Target
         Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Bootstrap_Build_Tasks_DebugLog">
+        Name="_nBuildKit_Build_Binaries_Tasks_DebugLog">
         <Message
             Importance="low"
             Text="Project directory structure:" />
@@ -58,34 +58,34 @@
     </Target>
 
     <Target
-        DependsOnTargets="_nBuildKit_Bootstrap_Build_Tasks_DebugLog"
-        Name="_nBuildKit_Bootstrap_Build_Tasks_DisplayInfo">
+        DependsOnTargets="_nBuildKit_Build_Binaries_Tasks_DebugLog"
+        Name="_nBuildKit_Build_Binaries_Tasks_DisplayInfo">
         <Message
             Importance="normal"
-            Text="Building Visual Studio project that contains the nBuildKit Tasks for bootstrap purposes ..." />
+            Text="Building Visual Studio project that contains the MsBuild Tasks ..." />
     </Target>
 
     <Target
-        Condition=" '@(BootstrapProjectsToBuild)' != '' "
-        Name="_nBuildKit_Bootstrap_Build_Tasks_Execute"
-        Outputs="%(BootstrapProjectsToBuild.Identity)">
-        <CreateProperty Value="%(BootstrapProjectsToBuild.FullPath)">
+        Condition=" '@(MsBuildTasksProjectsToBuild)' != '' "
+        Name="_nBuildKit_Build_Binaries_Tasks_Execute"
+        Outputs="%(MsBuildTasksProjectsToBuild.Identity)">
+        <CreateProperty Value="%(MsBuildTasksProjectsToBuild.FullPath)">
             <Output
-                PropertyName="FileBootstrapProject"
+                PropertyName="FileMsBuildTasksProject"
                 TaskParameter="Value" />
         </CreateProperty>
         <Error
             Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' "
             Text="No NuGet executable defined. Will not be able to restore the packages." />
         <Error
-            Condition="!Exists('$(FileBootstrapProject)') AND  '$(ShouldExecute)' == 'true' "
-            Text="Expected $(FileBootstrapProject) to point to a valid path but it does not." />
+            Condition="!Exists('$(FileMsBuildTasksProject)') AND  '$(ShouldExecute)' == 'true' "
+            Text="Expected $(FileMsBuildTasksProject) to point to a valid path but it does not." />
 
         <Message
             Importance="normal"
-            Text="Building $(FileBootstrapProject) for targets = %(BootstrapProjectsToBuild.Targets) with: Configuration = %(BootstrapProjectsToBuild.Configuration) and Platform = %(BootstrapProjectsToBuild.Platform) ..." />
+            Text="Building $(FileMsBuildTasksProject) for targets = %(MsBuildTasksProjectsToBuild.Targets) with: Configuration = %(MsBuildTasksProjectsToBuild.Configuration) and Platform = %(MsBuildTasksProjectsToBuild.Platform) ..." />
 
-        <CreateProperty Value="$([System.IO.Path]::Combine('%(BootstrapProjectsToBuild.RootDir)%(BootstrapProjectsToBuild.Directory)', 'packages.config'))">
+        <CreateProperty Value="$([System.IO.Path]::Combine('%(MsBuildTasksProjectsToBuild.RootDir)%(MsBuildTasksProjectsToBuild.Directory)', 'packages.config'))">
             <Output
                 PropertyName="FilePackages"
                 TaskParameter="Value" />
@@ -98,15 +98,15 @@
 
         <MSBuild
             BuildInParallel="False"
-            Projects="$(FileBootstrapProject)"
-            Properties="Configuration=%(BootstrapProjectsToBuild.Configuration);Platform=%(BootstrapProjectsToBuild.Platform);%(BootstrapProjectsToBuild.Properties)"
+            Projects="$(FileMsBuildTasksProject)"
+            Properties="Configuration=%(MsBuildTasksProjectsToBuild.Configuration);Platform=%(MsBuildTasksProjectsToBuild.Platform);%(MsBuildTasksProjectsToBuild.Properties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
             SkipNonexistentProjects="False"
             StopOnFirstFailure="False"
             TargetAndPropertyListSeparators=""
-            Targets="%(BootstrapProjectsToBuild.Targets)"
+            Targets="%(MsBuildTasksProjectsToBuild.Targets)"
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True"
