@@ -11,10 +11,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 
 namespace NBuildKit.MsBuild.Tasks
 {
