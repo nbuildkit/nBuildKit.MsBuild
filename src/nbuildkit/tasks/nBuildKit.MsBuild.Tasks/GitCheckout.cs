@@ -11,7 +11,7 @@ using Microsoft.Build.Framework;
 namespace NBuildKit.MsBuild.Tasks
 {
     /// <summary>
-    /// Defines a <see cref="ITask"/> that performs a Git checkout
+    /// Defines a <see cref="ITask"/> that performs a Git checkout.
     /// </summary>
     public sealed class GitCheckout : GitCommandLineToolTask
     {

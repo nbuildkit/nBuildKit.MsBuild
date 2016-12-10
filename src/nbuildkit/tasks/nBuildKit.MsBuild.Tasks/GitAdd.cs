@@ -11,7 +11,7 @@ using Microsoft.Build.Framework;
 namespace NBuildKit.MsBuild.Tasks
 {
     /// <summary>
-    /// Defines a <see cref="ITask"/> that performs a Git add
+    /// Defines a <see cref="ITask"/> that performs a Git add.
     /// </summary>
     public sealed class GitAdd : GitCommandLineToolTask
     {
