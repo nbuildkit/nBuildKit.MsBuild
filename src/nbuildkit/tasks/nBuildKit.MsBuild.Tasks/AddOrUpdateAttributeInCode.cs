@@ -17,7 +17,7 @@ namespace NBuildKit.MsBuild.Tasks
     /// <summary>
     /// Defines a <see cref="Task"/> that adds or updates an <see cref="Attribute"/> in a code file.
     /// </summary>
-    public sealed class AddOrUpdateAttributeInCode : Task
+    public sealed class AddOrUpdateAttributeInCode : NBuildKitMsBuildTask
     {
         /// <summary>
         /// Gets or sets the name of the attribute that should be updated.
@@ -41,13 +41,13 @@ namespace NBuildKit.MsBuild.Tasks
         /// <inheritdoc/>
         public override bool Execute()
         {
-            if (string.IsNullOrEmpty(InputFile.ItemSpec))
+            var filePath = GetAbsolutePath(InputFile);
+            if (string.IsNullOrEmpty(filePath))
             {
                 Log.LogError("No input file provided");
                 return false;
             }
 
-            var filePath = Path.GetFullPath(InputFile.ItemSpec);
             if (!File.Exists(filePath))
             {
                 Log.LogError("Input File '{0}' cannot be found", InputFile);

@@ -23,7 +23,7 @@ namespace NBuildKit.MsBuild.Tasks
     /// Defines a <see cref="Task"/> that generates a targets file from a given <see cref="Assembly"/> that
     /// contains one or more <see cref="ITask"/> implementations.
     /// </summary>
-    public sealed class GenerateTargetsFile : Task
+    public sealed class GenerateTargetsFile : NBuildKitMsBuildTask
     {
         private static void AppendUsingTask(XmlNode node, string typeName)
         {
@@ -80,26 +80,26 @@ namespace NBuildKit.MsBuild.Tasks
         /// <inheritdoc/>
         public override bool Execute()
         {
-            if (string.IsNullOrEmpty(AssemblyFile.ItemSpec))
+            var filePath = GetAbsolutePath(AssemblyFile);
+            if (string.IsNullOrEmpty(filePath))
             {
                 Log.LogError("No input file provided");
                 return false;
             }
 
-            var filePath = Path.GetFullPath(AssemblyFile.ItemSpec);
             if (!File.Exists(filePath))
             {
                 Log.LogError("Input File '{0}' cannot be found", AssemblyFile);
                 return false;
             }
 
-            if (string.IsNullOrEmpty(TargetsFile.ItemSpec))
+            var outputPath = GetAbsolutePath(TargetsFile);
+            if (string.IsNullOrEmpty(outputPath))
             {
                 Log.LogError("No output file provided");
                 return false;
             }
 
-            var outputPath = Path.GetFullPath(TargetsFile.ItemSpec);
             if (!Directory.Exists(Path.GetDirectoryName(outputPath)))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(outputPath));

@@ -21,7 +21,7 @@ namespace NBuildKit.MsBuild.Tasks
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that invoke a command line tool.
     /// </summary>
-    public abstract class CommandLineToolTask : Task
+    public abstract class CommandLineToolTask : NBuildKitMsBuildTask
     {
         /// <summary>
         /// Gets the event handler that processes data from the data stream, or standard output stream, of
@@ -60,38 +60,6 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <summary>
-        /// Returns the absolute path for the given path item.
-        /// </summary>
-        /// <param name="path">The path</param>
-        /// <returns>The absolute path.</returns>
-        protected string GetAbsolutePath(ITaskItem path)
-        {
-            return GetAbsolutePath(path.ItemSpec);
-        }
-
-        /// <summary>
-        /// Returns the absolute path for the given path item.
-        /// </summary>
-        /// <param name="path">The path</param>
-        /// <returns>The absolute path.</returns>
-        protected string GetAbsolutePath(string path)
-        {
-            Log.LogMessage(
-                MessageImportance.Low,
-                string.Format(
-                    "Searching for full path of {0}",
-                    path));
-
-            var result = path;
-            if (!Path.IsPathRooted(result))
-            {
-                result = Path.GetFullPath(result);
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Returns the most complete path for the given executable tool. May return just the name of the tool if the tool path is found via the
         /// PATH environment variable.
         /// </summary>
@@ -116,12 +84,7 @@ namespace NBuildKit.MsBuild.Tasks
                     "Searching for full path of {0}",
                     path));
 
-            var result = path;
-            if (!Path.IsPathRooted(result))
-            {
-                result = Path.GetFullPath(result);
-            }
-
+            var result = GetAbsolutePath(path);
             if (!File.Exists(result))
             {
                 // Fall back to using the 'where' command. This really only searches based on the file name so ...
