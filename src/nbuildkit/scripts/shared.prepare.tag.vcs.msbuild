@@ -17,8 +17,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_DisplayInfo"

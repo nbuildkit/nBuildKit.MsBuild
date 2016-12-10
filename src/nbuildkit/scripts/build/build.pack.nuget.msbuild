@@ -17,29 +17,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\FindAndReplaceInFile.msbuild') AND '$(ExistsExtensionsFindAndReplaceInFile)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\FindAndReplaceInFile.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild') AND '$(ExistsExtensionsGatherNuGetDependenciesForProject)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GatherNuGetDependenciesForProject.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetPack.msbuild') AND '$(ExistsExtensionsNuGetPack)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetPack.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Build_Pack_NuGet_DisplayInfo"

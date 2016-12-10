@@ -17,14 +17,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Zip.msbuild') AND '$(ExistsExtensionsZip)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\Zip.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Build_Pack_Zip_DisplayInfo"

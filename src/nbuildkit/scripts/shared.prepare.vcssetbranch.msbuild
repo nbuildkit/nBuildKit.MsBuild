@@ -12,14 +12,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild') AND '$(ExistsExtensionsGitCheckout)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild') AND '$(ExistsExtensionsGitReset)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target
         Condition="!Exists('$(FileVcsInfo)')"

@@ -12,8 +12,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target Name="shared_generatetoken_versions">
         <GetSemanticVersionFromFile

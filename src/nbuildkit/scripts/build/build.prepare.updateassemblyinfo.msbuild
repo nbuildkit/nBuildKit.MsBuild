@@ -17,17 +17,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\AddOrUpdateAttributeInCode.msbuild') AND '$(ExistsExtensionsAddOrUpdateAttributeInCode)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\AddOrUpdateAttributeInCode.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild') AND '$(ExistsExtensionsGenerateInternalsVisibleToAttributes)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GenerateInternalsVisibleToAttributes.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild') AND '$(ExistsExtensionsTemplateFile)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateFile.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\UpdateAttributeInCode.msbuild') AND '$(ExistsExtensionsUpdateAttributeInCode)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\UpdateAttributeInCode.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"

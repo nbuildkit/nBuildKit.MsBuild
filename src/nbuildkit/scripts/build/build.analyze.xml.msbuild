@@ -17,8 +17,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ValidateXmlAgainstSchema.msbuild') AND '$(ExistsExtensionsValidateXmlAgainstSchema)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\ValidateXmlAgainstSchema.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Build_Analyze_Xml_DisplayInfo"

@@ -12,8 +12,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\HtmlEncodeText.msbuild') AND '$(ExistsExtensionsHtmlEncodeText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\HtmlEncodeText.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target Name="shared_generatetoken_releasenotes">
         <CreateProperty

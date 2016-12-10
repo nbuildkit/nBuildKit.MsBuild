@@ -17,29 +17,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitAdd.msbuild') AND '$(ExistsExtensionsGitAdd)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitAdd.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitClone.msbuild') AND '$(ExistsExtensionsGitClone)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitClone.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCommit.msbuild') AND '$(ExistsExtensionsGitCommit)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitCommit.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitNewFiles.msbuild') AND '$(ExistsExtensionsGitNewFiles)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitNewFiles.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild') AND '$(ExistsExtensionsGitPush)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild') AND '$(ExistsExtensionsUnzip)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Deploy_PushTo_GitBranch_DisplayInfo"

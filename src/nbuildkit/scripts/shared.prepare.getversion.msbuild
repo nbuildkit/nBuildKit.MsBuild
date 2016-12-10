@@ -13,20 +13,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitVersion)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Import
         Condition=" '$(ScriptGetVersion)' != '' AND '$(ScriptGetVersion)' != 'UNDEFINED' AND Exists('$(ScriptGetVersion)')"

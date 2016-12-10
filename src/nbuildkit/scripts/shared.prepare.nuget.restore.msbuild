@@ -13,8 +13,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild') AND '$(ExistsExtensionsNuGetRestore)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <PropertyGroup>
         <FileNuGetRestoreComplete>$(DirBuildTemp)\nuget_restore.json</FileNuGetRestoreComplete>

@@ -17,11 +17,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetPush.msbuild') AND '$(ExistsExtensionsNuGetPush)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetPush.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
+        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Deploy_PushTo_NuGet_DisplayInfo"
