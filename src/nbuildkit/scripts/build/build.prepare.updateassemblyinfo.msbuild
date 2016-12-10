@@ -209,11 +209,11 @@
             AttributeTemplateForSignedAssemblies="$(InternalsVisibleToForSignedAssembliesTemplate)"
             AttributeTemplateForUnsignedAssemblies="$(InternalsVisibleToForUnsignedAssembliesTemplate)"
             Condition=" '@(InternalsVisibleTo)' != '' AND '$(AssemblyName)' != '' "
-            DirPackages="$(DirPackages)"
-            DirTemp="$(DirBuildTemp)"
             Items="@(InternalsVisibleTo)"
+            PackagesDirectory="$(DirPackages)"
             Project="$(AssemblyName)"
-            SnExe="$(ToolsExternalSnPath)">
+            SnExe="$(ToolsExternalSnPath)"
+            TemporaryDirectory="$(DirBuildTemp)">
             <Output
                 PropertyName="InternalsVisibleToAttributes"
                 TaskParameter="Result" />
