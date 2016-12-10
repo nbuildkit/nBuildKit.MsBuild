@@ -137,7 +137,7 @@ namespace NBuildKit.MsBuild.Tasks
             var propertyGroupNode = doc.CreateElement(string.Empty, "PropertyGroup", string.Empty);
             projectNode.AppendChild(propertyGroupNode);
 
-            var existsExtensionsNode = doc.CreateElement(string.Empty, "ExistsExtensions", string.Empty);
+            var existsExtensionsNode = doc.CreateElement(string.Empty, ExtensionsFlag, string.Empty);
             existsExtensionsNode.InnerText = "true";
             propertyGroupNode.AppendChild(existsExtensionsNode);
 
@@ -172,6 +172,16 @@ namespace NBuildKit.MsBuild.Tasks
             }
 
             return !Log.HasLoggedErrors;
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the property that should be used to indicate that the extensions targets file is loaded.
+        /// </summary>
+        [Required]
+        public string ExtensionsFlag
+        {
+            get;
+            set;
         }
 
         private IEnumerable<string> GetTaskTypes(string assemblyPath)
