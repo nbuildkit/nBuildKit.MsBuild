@@ -23,7 +23,6 @@
     <Target
         DependsOnTargets="_nBuildKit_Build_Pack_NuGet_DisplayInfo"
         Name="nBuildKit_Build_Pack_NuGet_Run">
-        <CallTarget Targets="_nBuildKit_Build_Pack_NuGet_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Build_Pack_NuGet_Pack" />
     </Target>
 
@@ -75,49 +74,13 @@
             Text="Template: %(NuGetPackageSpecs.Template) - Output: %(NuGetPackageSpecs.Identity)" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Pack_NuGet_GetToolPaths">
-        <Error
-            Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "
-            Text="The packages directory does not exist. Cannot search for the NuGet binaries." />
-
-        <NuGetInstall
-            Condition=" '$(ToolsExternalNuGetVersioningPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
-            PackageDirectory="$(DirPackages)"
-            PackageName="NuGet.Versioning"
-            PackageVersion="$(ToolsExternalNuGetVersioningVersion)"
-            Sources="@(NuGetSources)" />
-        <SearchPackagesDirectoryForToolPath
-            Condition=" '$(ToolsExternalNuGetVersioningPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' "
-            FileToLocate="NuGet.Versioning.dll"
-            PackagesDir="$(DirPackages)">
-            <Output
-                PropertyName="ToolsExternalNuGetVersioningPath"
-                TaskParameter="Path" />
-        </SearchPackagesDirectoryForToolPath>
-        <GetToolFullPath
-            Condition=" '$(ToolsExternalNuGetVersioningPath)' != 'UNDEFINED' "
-            Tool="$(ToolsExternalNuGetVersioningPath)">
-            <Output
-                PropertyName="ToolsExternalNuGetVersioningPath"
-                TaskParameter="Path" />
-        </GetToolFullPath>
-        <Message
-            Condition="Exists('$(ToolsExternalNuGetVersioningPath)') AND '$(ShouldExecute)' == 'true' "
-            Importance="low"
-            Text="The NuGet.Versioning assembly was found at: $(ToolsExternalNuGetVersioningPath)" />
-        <Error
-            Condition="!Exists('$(ToolsExternalNuGetVersioningPath)') AND '$(ShouldExecute)' == 'true' "
-            Text="Could not locate the NuGet.Versioning assembly. Cannot gather dependencies." />
-    </Target>
-
     <!--
         Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
         once for each entry in the NuGetPackagesSpecs ItemGroup.
     -->
     <Target
         Condition=" '@(NuGetPackageSpecs)' != '' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_Pack_NuGet_GetToolPaths"
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;"
         Name="_nBuildKit_Build_Pack_NuGet_Pack"
         Outputs="%(NuGetPackageSpecs.Identity)">
         <Message
@@ -183,7 +146,6 @@
             Condition=" '$(ShouldExecute)' == 'true' "
             DesignTimePackages="@(DesignTimeDependencies)"
             NuGetSpec="$(FileNuGetNuSpec)"
-            NuGetVersionDllPath="$(ToolsExternalNuGetVersioningPath)"
             Packages="@(PackageDependencies)"
             VersionRangeType="$(NuGetDependencyVersionRangeStrategy)">
             <Output
