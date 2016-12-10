@@ -115,17 +115,22 @@
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)" />
 
-        <GitInfo
+        <GitCurrentBranch
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
-                PropertyName="TargetGitBranch"
-                TaskParameter="CurrentBranch" />
+                PropertyName="GitRevNoCurrentBranch"
+                TaskParameter="CurrentRevision" />
+        </GitCurrentBranch>
+        <GitCurrentRevision
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="GitRevNoCurrentBranch"
                 TaskParameter="CurrentRevision" />
-        </GitInfo>
+        </GitCurrentRevision>
         <Message Text="Target branch: $(TargetGitBranch)" />
         <Message Text="Target revision: $(GitRevNoCurrentBranch)" />
 
@@ -138,17 +143,22 @@
             <GitMergeItems Include="        &lt;target branch=&quot;%(BranchMergeTarget.Identity)&quot; revision=&quot;$(GitRevNoCurrentBranch)&quot; /&gt;" />
         </ItemGroup>
 
-        <GitInfo
+        <GitCurrentBranch
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="PostMergeBranch"
                 TaskParameter="CurrentBranch" />
+        </GitCurrentBranch>
+        <GitCurrentRevision
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="PostMergeRevision"
                 TaskParameter="CurrentRevision" />
-        </GitInfo>
+        </GitCurrentRevision>
         <Message Text="Post-merge branch: $(PostMergeBranch)" />
         <Message Text="Post-merge revision: $(PostMergeRevision)" />
     </Target>

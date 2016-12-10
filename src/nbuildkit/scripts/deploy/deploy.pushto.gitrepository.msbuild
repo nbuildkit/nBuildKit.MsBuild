@@ -215,24 +215,25 @@
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirRepositoryWorkspace)" />
 
-        <Exec
-            Command="$(ToolsExternalGitPath) rev-parse HEAD"
-            ConsoleToMSBuild="true"
-            IgnoreExitCode="true"
-            WorkingDirectory="$(DirRepositoryWorkspace)">
+        <GitCurrentRevision
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirRepositoryWorkspace)">
             <Output
                 PropertyName="GitRevNoLocalBranch"
-                TaskParameter="ConsoleOutput" />
-        </Exec>
-        <Exec
-            Command="$(ToolsExternalGitPath) rev-parse origin/@(OriginBranch)"
-            ConsoleToMSBuild="true"
-            IgnoreExitCode="true"
-            WorkingDirectory="$(DirRepositoryWorkspace)">
+                TaskParameter="CurrentRevision" />
+        </GitCurrentRevision>
+
+        <GitCurrentRevision
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            RevisionSpec="origin/@(OriginBranch)"
+            Workspace="$(DirRepositoryWorkspace)">
             <Output
                 PropertyName="GitRevNoServerBranch"
-                TaskParameter="ConsoleOutput" />
-        </Exec>
+                TaskParameter="CurrentRevision" />
+        </GitCurrentRevision>
+
         <Message Text="For @(OriginBranch): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
         <Error
             Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' AND '$(ShouldExecute)' == 'true' "
@@ -251,28 +252,25 @@
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirRepositoryWorkspace)" />
 
-        <!--
-            Get the previous revision for the current local branch.
-            Note that the extra ^ is required because CMD uses ^ as an escape character
-        -->
-        <Exec
-            Command="$(ToolsExternalGitPath) rev-parse HEAD^^"
-            ConsoleToMSBuild="true"
-            IgnoreExitCode="true"
-            WorkingDirectory="$(DirRepositoryWorkspace)">
+        <GitCurrentRevision
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            RevisionSpec="HEAD^"
+            Workspace="$(DirRepositoryWorkspace)">
             <Output
                 PropertyName="GitRevNoLocalBranch"
-                TaskParameter="ConsoleOutput" />
-        </Exec>
-        <Exec
-            Command="$(ToolsExternalGitPath) rev-parse origin/%(TargetBranches.Identity)"
-            ConsoleToMSBuild="true"
-            IgnoreExitCode="true"
-            WorkingDirectory="$(DirRepositoryWorkspace)">
+                TaskParameter="CurrentRevision" />
+        </GitCurrentRevision>
+
+        <GitCurrentRevision
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            RevisionSpec="origin/%(TargetBranches.Identity)"
+            Workspace="$(DirRepositoryWorkspace)">
             <Output
                 PropertyName="GitRevNoServerBranch"
-                TaskParameter="ConsoleOutput" />
-        </Exec>
+                TaskParameter="CurrentRevision" />
+        </GitCurrentRevision>
         <Message Text="For %(TargetBranches.Identity): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
         <Error
             Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' AND '$(ShouldExecute)' == 'true' "

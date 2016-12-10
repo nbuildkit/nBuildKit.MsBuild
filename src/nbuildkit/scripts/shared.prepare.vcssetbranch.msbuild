@@ -92,14 +92,14 @@
             Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
             Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
-        <GitInfo
+        <GitCurrentBranch
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="CurrentGitBranch"
                 TaskParameter="CurrentBranch" />
-        </GitInfo>
+        </GitCurrentBranch>
         <Message Text="Current branch: $(CurrentGitBranch)" />
 
         <Message
@@ -111,14 +111,14 @@
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)" />
 
-        <GitInfo
+        <GitCurrentRevision
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="GitRevNoCurrentBranch"
                 TaskParameter="CurrentRevision" />
-        </GitInfo>
+        </GitCurrentRevision>
         <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
 
         <Message

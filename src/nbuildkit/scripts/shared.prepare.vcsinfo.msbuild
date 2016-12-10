@@ -96,17 +96,22 @@
             Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
             Directories="$(DirToCreate)" />
 
-        <GitInfo
+        <GitCurrentBranch
+            Condition=" '$(ShouldExecute)' == 'true' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
+            <Output
+                PropertyName="GitCurrentBranch"
+                TaskParameter="CurrentBranch" />
+        </GitCurrentBranch>
+        <GitCurrentRevision
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="GitCurrentRevision"
                 TaskParameter="CurrentRevision" />
-            <Output
-                PropertyName="GitCurrentBranch"
-                TaskParameter="CurrentBranch" />
-        </GitInfo>
+        </GitCurrentRevision>
 
         <ItemGroup>
             <GitInfoItems Include="{" />

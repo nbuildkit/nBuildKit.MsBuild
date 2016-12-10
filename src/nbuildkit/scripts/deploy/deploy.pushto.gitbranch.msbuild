@@ -174,14 +174,14 @@
             Workspace="$(DirRepositoryWorkspace)" />
 
         <!-- Verify that we're on the branch!' -->
-        <GitInfo
+        <GitCurrentBranch
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             WorkingDirectory="$(DirRepositoryWorkspace)">
             <Output
                 PropertyName="GitCurrentBranch"
                 TaskParameter="CurrentBranch" />
-        </GitInfo>
+        </GitCurrentBranch>
         <Error
             Condition=" '$(GitCurrentBranch)' != '$(BranchToPushTo)' "
             Text="Not on expected branch, expected to be on $(BranchToPushTo) but are on $(GitCurrentBranch)" />
