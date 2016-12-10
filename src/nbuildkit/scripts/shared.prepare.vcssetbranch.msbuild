@@ -95,7 +95,7 @@
         <GitInfo
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)">
+            Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="CurrentGitBranch"
                 TaskParameter="CurrentBranch" />
@@ -109,12 +109,12 @@
             Branch="$(GitBranchExpected)"
             Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)" />
+            Workspace="$(DirWorkspace)" />
 
         <GitInfo
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)">
+            Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="GitRevNoCurrentBranch"
                 TaskParameter="CurrentRevision" />
@@ -128,6 +128,6 @@
             Commit="$(GitRevNoExpected)"
             Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)" />
+            Workspace="$(DirWorkspace)" />
     </Target>
  </Project>

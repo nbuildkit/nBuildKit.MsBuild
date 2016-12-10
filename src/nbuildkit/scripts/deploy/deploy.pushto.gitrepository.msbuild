@@ -213,7 +213,7 @@
         <GitCheckout
             Branch="@(OriginBranch)"
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirRepositoryWorkspace)" />
+            Workspace="$(DirRepositoryWorkspace)" />
 
         <Exec
             Command="$(ToolsExternalGitPath) rev-parse HEAD"
@@ -249,7 +249,7 @@
         <GitCheckout
             Branch="%(TargetBranches.Identity)"
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirRepositoryWorkspace)" />
+            Workspace="$(DirRepositoryWorkspace)" />
 
         <!--
             Get the previous revision for the current local branch.
@@ -288,6 +288,6 @@
             Condition=" '$(RepositoryToPushTo)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Tags="true"
-            WorkingDirectory="$(DirRepositoryWorkspace)" />
+            Workspace="$(DirRepositoryWorkspace)" />
     </Target>
 </Project>

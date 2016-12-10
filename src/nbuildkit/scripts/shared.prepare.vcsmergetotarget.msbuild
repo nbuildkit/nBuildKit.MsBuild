@@ -112,12 +112,13 @@
         <Message Text="Checking out merge target branch: %(BranchMergeTarget.Identity) ..." />
         <GitCheckout
             Branch="%(BranchMergeTarget.Identity)"
-            GitExecutablePath="$(ToolsExternalGitPath)" />
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)" />
 
         <GitInfo
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)">
+            Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="TargetGitBranch"
                 TaskParameter="CurrentBranch" />
@@ -140,7 +141,7 @@
         <GitInfo
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)">
+            Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="PostMergeBranch"
                 TaskParameter="CurrentBranch" />

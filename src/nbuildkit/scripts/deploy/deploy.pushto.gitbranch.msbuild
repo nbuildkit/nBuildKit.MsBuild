@@ -168,10 +168,10 @@
         <Message Text="Cloning repository $(RepositoryToPushTo) and switching to branch $(BranchToPushTo) ..." />
         <GitClone
             Branch="$(BranchToPushTo)"
-            CloneLocation="$(DirRepositoryWorkspace)"
             Condition=" '$(RepositoryToPushTo)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            Repository="$(RepositoryToPushTo)" />
+            Repository="$(RepositoryToPushTo)"
+            Workspace="$(DirRepositoryWorkspace)" />
 
         <!-- Verify that we're on the branch!' -->
         <GitInfo
@@ -258,7 +258,7 @@
         <Message Text="Adding new files to list of changes to commit on branch $(BranchToPushTo) ..." />
         <GitNewFiles
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirRepositoryWorkspace)">
+            Workspace="$(DirRepositoryWorkspace)">
             <Output
                 ItemName="NewFilesForGit"
                 TaskParameter="NewFiles" />
@@ -268,14 +268,14 @@
             Condition=" '@(NewFilesForGit)' != '' "
             FilesToAdd="@(NewFilesForGit)"
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirRepositoryWorkspace)" />
+            Workspace="$(DirRepositoryWorkspace)" />
 
         <Message Text="Commiting changes on branch $(BranchToPushTo) ..." />
         <GitCommit
             Condition=" '$(CommitMessageToProvide)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Message="$(CommitMessageToProvide)"
-            WorkingDirectory="$(DirRepositoryWorkspace)" />
+            Workspace="$(DirRepositoryWorkspace)" />
     </Target>
 
     <Target
@@ -287,6 +287,6 @@
             Branch="$(BranchToPushTo)"
             Condition=" '$(RepositoryToPushTo)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirRepositoryWorkspace)" />
+            Workspace="$(DirRepositoryWorkspace)" />
     </Target>
 </Project>
