@@ -18,6 +18,36 @@ namespace NBuildKit.MsBuild.Tasks
     public abstract class GitCommandLineToolTask : CommandLineToolTask
     {
         /// <summary>
+        /// Invokes the GIT command line tool with the given arguments in the provided workspace directory.
+        /// </summary>
+        /// <param name="arguments">The collection of arguments.</param>
+        /// <returns>The output of the GIT process</returns>
+        protected string GetGitOutput(IEnumerable<string> arguments)
+        {
+            var text = new StringBuilder();
+            DataReceivedEventHandler standardOutputHandler = (s, e) =>
+            {
+                if (!string.IsNullOrWhiteSpace(e.Data))
+                {
+                    text.Append(e.Data);
+                }
+            };
+
+            var exitCode = InvokeGit(arguments, standardOutputHandler: standardOutputHandler);
+            if (exitCode != 0)
+            {
+                Log.LogError(
+                    string.Format(
+                        "{0} exited with a non-zero exit code. Exit code was: {1}",
+                        System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
+                        exitCode));
+                Log.LogError(string.Format("Output was: {0}", text));
+            }
+
+            return text.ToString();
+        }
+
+        /// <summary>
         /// Gets or sets the path to the GIT command line executable.
         /// </summary>
         [Required]
@@ -31,17 +61,24 @@ namespace NBuildKit.MsBuild.Tasks
         /// Invokes the GIT command line tool with the given arguments in the provided workspace directory.
         /// </summary>
         /// <param name="arguments">The collection of arguments.</param>
+        /// <param name="standardOutputHandler">
+        ///     The event handler that handles the standard output stream of the command line application. If no value is provided
+        ///     then all messages are logged.
+        /// </param>
         /// <returns>The output of the GIT process</returns>
-        protected string InvokeGit(IEnumerable<string> arguments)
+        protected int InvokeGit(IEnumerable<string> arguments, DataReceivedEventHandler standardOutputHandler = null)
         {
             var text = new StringBuilder();
-            DataReceivedEventHandler standardOutputHandler = (s, e) =>
+            if (standardOutputHandler == null)
             {
-                if (!string.IsNullOrWhiteSpace(e.Data))
+                standardOutputHandler = (s, e) =>
                 {
-                    text.Append(e.Data);
-                }
-            };
+                    if (!string.IsNullOrWhiteSpace(e.Data))
+                    {
+                        Log.LogMessage(MessageImportance.Normal, e.Data);
+                    }
+                };
+            }
 
             DataReceivedEventHandler standardErrorHandler = (s, e) =>
             {
@@ -64,12 +101,9 @@ namespace NBuildKit.MsBuild.Tasks
                         "{0} exited with a non-zero exit code. Exit code was: {1}",
                         System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
                         exitCode));
-                Log.LogError(string.Format("Output was: {0}", text));
-
-                return null;
             }
 
-            return text.ToString();
+            return exitCode;
         }
 
         /// <summary>

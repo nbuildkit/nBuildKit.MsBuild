@@ -37,7 +37,7 @@ namespace NBuildKit.MsBuild.Tasks
             var regex = new System.Text.RegularExpressions.Regex(!string.IsNullOrEmpty(IssueIdRegex) ? IssueIdRegex : DefaultIssueIdRegex);
             foreach (var commit in unmergedCommits)
             {
-                var logMessage = InvokeGit(
+                var logMessage = GetGitOutput(
                     new[]
                     {
                         string.Format(
@@ -95,7 +95,7 @@ namespace NBuildKit.MsBuild.Tasks
         private string[] UnmergedCommits()
         {
             // Get the SHA1 values for all the commits that haven't been merged to the target branch yet
-            var gitOutput = InvokeGit(
+            var gitOutput = GetGitOutput(
                 new[]
                 {
                     string.Format("cherry {0}", MergeTargetBranch)
