@@ -195,12 +195,12 @@
         <GitHubReleaseCreate
             Condition=" '$(ShouldExecute)' == 'true' "
             GitHubReleasePath="$(ToolsExternalGitHubReleasePath)"
-            LocalPath="$(DirWorkspace)"
             ReleaseDescription="$(GitHubReleaseDescription)"
             ReleaseName="$(GitHubReleaseName)"
             Repository="$(GitHubReleaseRepository)"
             Tag="$(VersionSemantic)"
-            UserName="$(GitHubUserName)" />
+            UserName="$(GitHubUserName)"
+            WorkingDirectory="$(DirWorkspace)" />
 
         <!-- Upload the files -->
         <Message
