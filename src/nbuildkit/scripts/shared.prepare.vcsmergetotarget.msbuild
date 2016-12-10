@@ -135,9 +135,11 @@
         <Message Text="Target revision: $(GitRevNoCurrentBranch)" />
 
         <Message Text="Merging changes from branch $(GitBranchExpected) to branch %(BranchMergeTarget.Identity) ..." />
-        <Exec
-            Command="$(ToolsExternalGitPath) merge $(GitBranchExpected) --no-ff --commit --no-edit --no-progress --verbose"
-            Condition=" '$(GitBranchExpected)' != '%(BranchMergeTarget.Identity)' " />
+        <GitMerge
+            BranchToMerge="$(GitBranchExpected)"
+            Condition=" '$(GitBranchExpected)' != '%(BranchMergeTarget.Identity)' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
 
         <ItemGroup>
             <GitMergeItems Include="        &lt;target branch=&quot;%(BranchMergeTarget.Identity)&quot; revision=&quot;$(GitRevNoCurrentBranch)&quot; /&gt;" />
