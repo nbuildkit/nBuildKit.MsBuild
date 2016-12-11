@@ -96,7 +96,7 @@
             Text="No NuGet package configuration files found to restore packages from." />
         <NuGetRestore
             Condition=" '@(NuGetPackageFiles)' != '' AND '$(ShouldExecute)' == 'true' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageFile="%(NuGetPackageFiles.FullPath)"
             Sources="@(NuGetSources)" />
