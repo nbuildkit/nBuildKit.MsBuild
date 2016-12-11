@@ -135,7 +135,7 @@
             Text="Pushing: @(NuGetPackagesToPushLocal)" />
         <NuGetPush
             Condition=" '$(ShouldExecute)' == 'true' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesToPush="@(NuGetPackagesToPushLocal)"
             Source="$(NuGetRepositoryToPushTo)" />
     </Target>
