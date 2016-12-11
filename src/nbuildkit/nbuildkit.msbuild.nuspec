@@ -57,10 +57,11 @@
             target="build\deploy" />
 
         <file
-            src="$DirSrc$\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\nBuildKit.MsBuild.Tasks\bin\$Configuration$\*.dll"
+            src="$DirSrc$\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$Configuration$\*.dll"
+            exclude="$DirSrc$\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$Configuration$\Microsoft.Build.*.dll"
             target="build/extensions" />
         <file
-            src="$DirSrc$\nbuildkit\extensions\*.msbuild"
+            src="$DirBootstrap$\*.targets"
             target="build/extensions" />
 
         <file
@@ -72,9 +73,6 @@
         <file
             src="$DirTemp$\scripts\deploy\packages.config"
             target="build\deploy" />
-        <file
-            src="$DirTemp$\nbuildkit.readme.txt"
-            target="content" />
 
         <file
             src="$DirWorkspace$\README.md" />
