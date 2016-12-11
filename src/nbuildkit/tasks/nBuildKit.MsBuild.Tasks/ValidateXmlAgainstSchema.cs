@@ -5,6 +5,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
 using Microsoft.Build.Framework;
@@ -34,6 +35,7 @@ namespace NBuildKit.MsBuild.Tasks
             // Create the XmlReader object.
             Log.LogWarning(
                 string.Format(
+                    CultureInfo.InvariantCulture,
                     "Validating XML in {0} for target namespace '{1}' with schema from '{2}'",
                     InputFile,
                     TargetNamespace,
@@ -88,6 +90,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 Log.LogWarning(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "XML validation {0}: {1}",
                         args.Severity,
                         args.Message));
@@ -96,6 +99,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 Log.LogError(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "XML validation {0}: {1}",
                         args.Severity,
                         args.Message));

@@ -20,7 +20,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// <inheritdoc/>
         public override bool Execute()
         {
-            Path = Directory.EnumerateFiles(GetAbsolutePath(PackagesDir), FileToLocate, SearchOption.AllDirectories)
+            Path = Directory.EnumerateFiles(GetAbsolutePath(PackagesDirectory), FileToLocate, SearchOption.AllDirectories)
                 .OrderBy(k => System.IO.Path.GetDirectoryName(k))
                 .Select(k => new TaskItem(k))
                 .LastOrDefault();
@@ -42,7 +42,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the full path to the packages directory.
         /// </summary>
         [Required]
-        public ITaskItem PackagesDir
+        public ITaskItem PackagesDirectory
         {
             get;
             set;

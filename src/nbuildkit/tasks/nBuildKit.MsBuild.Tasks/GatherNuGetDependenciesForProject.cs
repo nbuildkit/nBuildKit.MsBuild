@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -48,7 +49,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 foreach (var token in DesignTimePackages)
                 {
-                    var packagePartialName = token.ToString().ToLower();
+                    var packagePartialName = token.ToString().ToLowerInvariant();
                     excludedDependencies.Add(packagePartialName);
                 }
             }
@@ -92,6 +93,7 @@ namespace NBuildKit.MsBuild.Tasks
                 catch (Exception)
                 {
                     Log.LogError("Failed to load document {0}.", packageFile);
+                    throw;
                 }
 
                 var packages = from package in xDoc.Element("packages").Descendants("package")
@@ -103,7 +105,7 @@ namespace NBuildKit.MsBuild.Tasks
 
                 foreach (var package in packages)
                 {
-                    if (excludedDependencies.Any(p => package.Id.ToLower().Contains(p)))
+                    if (excludedDependencies.Any(p => package.Id.ToLowerInvariant().Contains(p)))
                     {
                         Log.LogMessage("Ignoring design time package: {0}", package.Id);
                         continue;
@@ -121,23 +123,23 @@ namespace NBuildKit.MsBuild.Tasks
 
                     var packageVersion = new NuGetVersion(package.Version);
                     var versionRange = package.Version;
-                    if (!string.IsNullOrEmpty(VersionRangeType) && !"none".Equals(VersionRangeType.ToLower()))
+                    if (!string.IsNullOrEmpty(VersionRangeType) && !"none".Equals(VersionRangeType.ToLowerInvariant()))
                     {
-                        switch (VersionRangeType.ToLower())
+                        switch (VersionRangeType.ToLowerInvariant())
                         {
                             case "major":
-                                versionRange = string.Format("[{0}, {1})", package.Version, ((int)packageVersion.Major) + 1);
+                                versionRange = string.Format(CultureInfo.InvariantCulture, "[{0}, {1})", package.Version, ((int)packageVersion.Major) + 1);
                                 break;
                             case "minor":
-                                versionRange = string.Format("[{0}, {1}.{2})", package.Version, packageVersion.Major, ((int)packageVersion.Minor) + 1);
+                                versionRange = string.Format(CultureInfo.InvariantCulture, "[{0}, {1}.{2})", package.Version, packageVersion.Major, ((int)packageVersion.Minor) + 1);
                                 break;
                             case "patch":
-                                versionRange = string.Format("[{0}, {1}.{2}.{3})", package.Version, packageVersion.Major, packageVersion.Minor, ((int)packageVersion.Patch) + 1);
+                                versionRange = string.Format(CultureInfo.InvariantCulture, "[{0}, {1}.{2}.{3})", package.Version, packageVersion.Major, packageVersion.Minor, ((int)packageVersion.Patch) + 1);
                                 break;
                         }
                     }
 
-                    builder.Append(string.Format("<dependency id='{0}' version='{1}' />", package.Id, versionRange));
+                    builder.Append(string.Format(CultureInfo.InvariantCulture, "<dependency id='{0}' version='{1}' />", package.Id, versionRange));
                     knownDependencies.Add(package.Id);
                 }
             }

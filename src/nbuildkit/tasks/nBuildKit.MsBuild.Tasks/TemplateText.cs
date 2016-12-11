@@ -33,7 +33,7 @@ namespace NBuildKit.MsBuild.Tasks
                 | System.Text.RegularExpressions.RegexOptions.Compiled
                 | System.Text.RegularExpressions.RegexOptions.Singleline);
 
-            var tokenPairs = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var tokenPairs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (Tokens != null)
             {
                 ITaskItem[] processedTokens = Tokens;

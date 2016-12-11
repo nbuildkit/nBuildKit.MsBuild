@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -48,7 +49,7 @@ namespace NBuildKit.MsBuild.Tasks
                         {
                             var newItem = new TaskItem(directory);
                             newItem.SetMetadata(MetadataFilesTag, string.Empty);
-                            newItem.SetMetadata(MetadataCountTag, (list.Count + 1).ToString());
+                            newItem.SetMetadata(MetadataCountTag, (list.Count + 1).ToString(CultureInfo.InvariantCulture));
 
                             list.Add(directory, newItem);
                         }

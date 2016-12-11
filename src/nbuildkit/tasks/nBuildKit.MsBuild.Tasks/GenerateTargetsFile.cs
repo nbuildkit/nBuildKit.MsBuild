@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -78,6 +79,10 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Microsoft.Design",
+            "CA1031:DoNotCatchGeneralExceptionTypes",
+            Justification = "Catching to log. Letting MsBuild handle the rest.")]
         public override bool Execute()
         {
             var filePath = GetAbsolutePath(AssemblyFile);
@@ -137,7 +142,7 @@ namespace NBuildKit.MsBuild.Tasks
             var propertyGroupNode = doc.CreateElement(string.Empty, "PropertyGroup", string.Empty);
             projectNode.AppendChild(propertyGroupNode);
 
-            var existsExtensionsNode = doc.CreateElement(string.Empty, ExtensionsFlag, string.Empty);
+            var existsExtensionsNode = doc.CreateElement(string.Empty, ExtensionsProperty, string.Empty);
             existsExtensionsNode.InnerText = "true";
             propertyGroupNode.AppendChild(existsExtensionsNode);
 
@@ -178,7 +183,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the name of the property that should be used to indicate that the extensions targets file is loaded.
         /// </summary>
         [Required]
-        public string ExtensionsFlag
+        public string ExtensionsProperty
         {
             get;
             set;
@@ -285,11 +290,15 @@ namespace NBuildKit.MsBuild.Tasks
                 }
             }
 
+            [SuppressMessage(
+                "Microsoft.Design",
+                "CA1031:DoNotCatchGeneralExceptionTypes",
+                Justification = "Assembly loading can throw many exceptions. Don't know which ones they are.")]
             public List<string> Scan(string assemblyFileToScan)
             {
                 if (assemblyFileToScan == null)
                 {
-                    throw new ArgumentNullException("assemblyFilesToScan");
+                    throw new ArgumentNullException("assemblyFileToScan");
                 }
 
                 try
@@ -316,6 +325,10 @@ namespace NBuildKit.MsBuild.Tasks
 
         private sealed class RemoteAssemblyScannerLoader : MarshalByRefObject
         {
+            [SuppressMessage(
+                "Microsoft.Performance",
+                "CA1822:MarkMembersAsStatic",
+                Justification = "This class is injected into a remote AppDomain in order to create a new RemoteAssemblyScanner instance. Should stay an instance method.")]
             public RemoteAssemblyScanner Load(TaskLoggingHelper logger)
             {
                 return new RemoteAssemblyScanner(logger);

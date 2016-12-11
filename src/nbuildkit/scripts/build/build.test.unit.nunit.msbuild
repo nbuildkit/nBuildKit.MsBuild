@@ -110,7 +110,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' "
             FileToLocate="nunit-console.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalNUnitConsolePath"
                 TaskParameter="Path" />
@@ -140,7 +140,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' "
             FileToLocate="opencover.console.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalOpenCoverPath"
                 TaskParameter="Path" />
@@ -170,7 +170,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' "
             FileToLocate="ReportGenerator.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalReportGeneratorPath"
                 TaskParameter="Path" />
@@ -200,7 +200,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
             FileToLocate="OpenCoverToCoberturaConverter.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath"
                 TaskParameter="Path" />
@@ -310,7 +310,7 @@
         <Message Text="Executing unit tests for: " />
         <Message Text="--- %(UnitTestAssembliesForDirectory.FullPath)" />
         <OpenCover
-            BinDir="%(UnitTestDirectories.FullPath)"
+            BinDirectory="%(UnitTestDirectories.FullPath)"
             Condition=" Exists('$(ToolsExternalOpenCoverPath)') AND '$(ShouldExecute)' == 'true' "
             OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
             OpenCoverExe="$(ToolsExternalOpenCoverPath)"
@@ -333,7 +333,7 @@
         <ReportGenerator
             Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "
             OpenCoverOutputFiles="@(FilesReportOpenCoverXml)"
-            OutputDir="$(DirReportGeneratorOutput)"
+            OutputDirectory="$(DirReportGeneratorOutput)"
             ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)" />
 
         <ReportGeneratorOutputToCsv

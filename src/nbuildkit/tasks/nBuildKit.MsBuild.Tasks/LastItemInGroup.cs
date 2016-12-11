@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -19,32 +20,19 @@ namespace NBuildKit.MsBuild.Tasks
         /// <inheritdoc/>
         public override bool Execute()
         {
-            try
+            if (Items != null)
             {
-                if (Items != null)
+                ITaskItem[] processedItems = Items;
+                if (processedItems.Length > 0)
                 {
-                    ITaskItem[] processedItems = Items;
-                    if (processedItems.Length > 0)
+                    var taskItem = processedItems[processedItems.Length - 1];
+                    if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                     {
-                        var taskItem = processedItems[processedItems.Length - 1];
-                        if (!string.IsNullOrEmpty(taskItem.ItemSpec))
-                        {
-                            Item = new TaskItem(taskItem.ItemSpec);
-                        }
+                        Item = new TaskItem(taskItem.ItemSpec);
                     }
                 }
             }
-            catch (Exception e)
-            {
-                Log.LogError(
-                    string.Format(
-                        "Failed to find the last item in the collection. Error was: {0}",
-                        e));
-            }
 
-            // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
-            // from a task's constructor or property setter. As long as this task is written to always log an error
-            // when it fails, we can reliably return HasLoggedErrors.
             return !Log.HasLoggedErrors;
         }
 

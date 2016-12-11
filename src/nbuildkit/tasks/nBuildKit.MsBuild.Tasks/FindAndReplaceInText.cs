@@ -21,7 +21,7 @@ namespace NBuildKit.MsBuild.Tasks
         {
             const string MetadataValueTag = "ReplacementValue";
 
-            var toReplace = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var toReplace = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (Tokens != null)
             {
                 ITaskItem[] processedTokens = Tokens;

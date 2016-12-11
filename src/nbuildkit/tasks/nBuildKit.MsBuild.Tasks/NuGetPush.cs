@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -38,17 +39,17 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 var arguments = new List<string>();
                 {
-                    arguments.Add(string.Format("push \"{0}\" ", package.TrimEnd('\\')));
+                    arguments.Add(string.Format(CultureInfo.InvariantCulture, "push \"{0}\" ", package.TrimEnd('\\')));
                     arguments.Add("-NonInteractive -Verbosity detailed ");
                     if (!string.IsNullOrEmpty(Source))
                     {
-                        arguments.Add(string.Format("-Source \"{0}\" ", Source.TrimEnd('\\')));
+                        arguments.Add(string.Format(CultureInfo.InvariantCulture, "-Source \"{0}\" ", Source.TrimEnd('\\')));
                     }
 
                     var apiKey = Environment.GetEnvironmentVariable("NuGetApiKey");
                     if (!string.IsNullOrEmpty(apiKey))
                     {
-                        arguments.Add(string.Format("-ApiKey \"{0}\" ", apiKey.TrimEnd('\\')));
+                        arguments.Add(string.Format(CultureInfo.InvariantCulture, "-ApiKey \"{0}\" ", apiKey.TrimEnd('\\')));
                     }
                 }
 
@@ -57,6 +58,7 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     Log.LogError(
                         string.Format(
+                            CultureInfo.InvariantCulture,
                             "{0} exited with a non-zero exit code. Exit code was: {1}",
                             Path.GetFileName(NuGetExecutablePath.ItemSpec),
                             exitCode));

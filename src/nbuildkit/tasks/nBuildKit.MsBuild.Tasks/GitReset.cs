@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -33,7 +34,7 @@ namespace NBuildKit.MsBuild.Tasks
                 arguments.Add("reset ");
                 arguments.Add("--hard ");
                 arguments.Add("--quiet ");
-                arguments.Add(string.Format("{0} ", Commit));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "{0} ", Commit));
             }
 
             InvokeGit(arguments);

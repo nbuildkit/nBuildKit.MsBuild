@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -32,7 +33,7 @@ namespace NBuildKit.MsBuild.Tasks
                 arguments.Add("push origin ");
                 if (!string.IsNullOrWhiteSpace(Branch))
                 {
-                    arguments.Add(string.Format("\"{0}\" ", Branch.TrimEnd('\\')));
+                    arguments.Add(string.Format(CultureInfo.InvariantCulture, "\"{0}\" ", Branch.TrimEnd('\\')));
                 }
                 else
                 {

@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Build.Framework;
 
@@ -40,7 +41,7 @@ namespace NBuildKit.MsBuild.Tasks
                     ITaskItem item = processedItems[i];
                     if (!string.IsNullOrEmpty(item.ItemSpec))
                     {
-                        var index = int.Parse(item.GetMetadata(MetadataOrderTag));
+                        var index = int.Parse(item.GetMetadata(MetadataOrderTag), CultureInfo.InvariantCulture);
                         list.Add(index, item);
                     }
                 }

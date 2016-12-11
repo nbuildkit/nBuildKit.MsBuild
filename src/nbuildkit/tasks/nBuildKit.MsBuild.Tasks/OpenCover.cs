@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using Microsoft.Build.Framework;
 
@@ -22,7 +23,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the full path to the directory containing the binaries.
         /// </summary>
         [Required]
-        public ITaskItem BinDir
+        public ITaskItem BinDirectory
         {
             get;
             set;
@@ -36,18 +37,18 @@ namespace NBuildKit.MsBuild.Tasks
 
             var arguments = new List<string>();
             {
-                arguments.Add(string.Format("-register:user "));
-                arguments.Add(string.Format("-returntargetcode:3000 "));
-                arguments.Add(string.Format("-target:\"{0}\" ", UnitTestExe));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-register:user "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-returntargetcode:3000 "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-target:\"{0}\" ", UnitTestExe));
 
                 // Make sure we remove the back-slash because if we don't then
                 // the closing quote will be eaten by the command line parser. Note that
                 // this is only necessary because we're dealing with a directory
-                arguments.Add(string.Format("-targetdir:\"{0}\" ", GetAbsolutePath(BinDir).TrimEnd('\\')));
-                arguments.Add(string.Format("-targetargs:\"{0}\" ", UnitTestArguments.TrimEnd('\\')));
-                arguments.Add(string.Format("-output:\"{0}\" ", GetAbsolutePath(OpenCoverOutput).TrimEnd('\\')));
-                arguments.Add(string.Format("-filter:\"{0}\" ", OpenCoverFilters.TrimEnd('\\')));
-                arguments.Add(string.Format("-excludebyattribute:{0} ", OpenCoverExcludeAttributes));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-targetdir:\"{0}\" ", GetAbsolutePath(BinDirectory).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-targetargs:\"{0}\" ", UnitTestArguments.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-output:\"{0}\" ", GetAbsolutePath(OpenCoverOutput).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-filter:\"{0}\" ", OpenCoverFilters.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-excludebyattribute:{0} ", OpenCoverExcludeAttributes));
             }
 
             DataReceivedEventHandler standardErrorHandler =
@@ -64,10 +65,10 @@ namespace NBuildKit.MsBuild.Tasks
                             return;
                         }
 
-                        Log.LogError(string.Format("OpenCover error: {0}", e.Data));
+                        Log.LogError(string.Format(CultureInfo.InvariantCulture, "OpenCover error: {0}", e.Data));
                     }
                 };
-            var exitCode = InvokeCommandlineTool(
+            var exitCode = InvokeCommandLineTool(
                 OpenCoverExe,
                 arguments,
                 standardErrorHandler: standardErrorHandler);
@@ -75,6 +76,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 Log.LogError(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0} exited with a non-zero exit code. Exit code was: {1}",
                         System.IO.Path.GetFileName(GetFullToolPath(OpenCoverExe)),
                         exitCode));

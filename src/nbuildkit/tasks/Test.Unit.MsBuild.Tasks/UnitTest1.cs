@@ -8,7 +8,7 @@
 using System;
 using NUnit.Framework;
 
-namespace Test.Unit.MsBuild.Tasks
+namespace NBuildKit.MsBuild.Tasks
 {
     [TestFixture]
     public class UnitTest1

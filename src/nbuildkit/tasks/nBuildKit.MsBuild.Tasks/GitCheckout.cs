@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -30,7 +31,7 @@ namespace NBuildKit.MsBuild.Tasks
         {
             var arguments = new List<string>();
             {
-                arguments.Add(string.Format("checkout \"{0}\" ", Branch.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "checkout \"{0}\" ", Branch.TrimEnd('\\')));
                 arguments.Add("--quiet ");
             }
 

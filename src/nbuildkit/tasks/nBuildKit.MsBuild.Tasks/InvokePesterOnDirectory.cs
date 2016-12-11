@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
@@ -22,91 +23,90 @@ namespace NBuildKit.MsBuild.Tasks
         /// <inheritdoc/>
         public override bool Execute()
         {
-            try
+            // Create the script
+            var scriptPath = Path.Combine(
+                GetAbsolutePath(TempDirectory),
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}.ps1",
+                    Guid.NewGuid().ToString()));
+            using (var writer = new StreamWriter(scriptPath, false, Encoding.Unicode))
             {
-                // Create the script
-                var scriptPath = Path.Combine(
-                    GetAbsolutePath(TempDirectory),
+                // Stop if anything goes wrong
+                writer.WriteLine("$ErrorActionPreference = 'Stop'");
+
+                // Add the pester directory to the module path
+                writer.WriteLine(
                     string.Format(
-                        "{0}.ps1",
-                        Guid.NewGuid().ToString()));
-                using (var writer = new StreamWriter(scriptPath, false, Encoding.Unicode))
-                {
-                    // Stop if anything goes wrong
-                    writer.WriteLine("$ErrorActionPreference = 'Stop'");
+                        CultureInfo.InvariantCulture,
+                        "$env:PSModulePath = $env:PSModulePath + ';' + '{0}'",
+                        GetAbsolutePath(PesterModulePath)));
 
-                    // Add the pester directory to the module path
-                    writer.WriteLine(
-                        string.Format(
-                            "$env:PSModulePath = $env:PSModulePath + ';' + '{0}'",
-                            GetAbsolutePath(PesterModulePath)));
+                // Import pester
+                writer.WriteLine(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "& Import-Module '{0}\\Pester.psm1' ",
+                        GetAbsolutePath(PesterModulePath)));
 
-                    // Import pester
-                    writer.WriteLine(
-                        string.Format(
-                            "& Import-Module '{0}\\Pester.psm1' ",
-                            GetAbsolutePath(PesterModulePath)));
-
-                    // Execute pester tests
-                    writer.WriteLine(
-                        string.Format(
-                            "$result = Invoke-Pester -Path '{0}' -OutputFormat NUnitXml -OutputFile '{1}' -EnableExit -Verbose",
-                            GetAbsolutePath(TestsDirectory),
-                            GetAbsolutePath(ReportFile)));
-                }
-
-                var arguments = new List<string>();
-                {
-                    arguments.Add("-NonInteractive ");
-                    arguments.Add("-NoProfile ");
-                    arguments.Add("-ExecutionPolicy Bypass ");
-                    arguments.Add(
-                        string.Format(
-                            "-File \"{0}\"",
-                            scriptPath));
-                }
-
-                var powershellPath = GetFullToolPath(PowershellExePath);
-                DataReceivedEventHandler standardErrorOutput =
-                    (s, e) =>
-                    {
-                        if (!string.IsNullOrWhiteSpace(e.Data))
-                        {
-                            if (IgnoreErrors)
-                            {
-                                Log.LogWarning(e.Data);
-                            }
-                            else
-                            {
-                                Log.LogError(e.Data);
-                            }
-                        }
-                    };
-
-                var exitCode = InvokeCommandlineTool(
-                    powershellPath,
-                    arguments,
-                    standardErrorHandler: standardErrorOutput);
-
-                if (exitCode != 0)
-                {
-                    var text = string.Format(
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        Path.GetFileName(powershellPath),
-                        exitCode);
-                    if (IgnoreExitCode)
-                    {
-                        Log.LogWarning(text);
-                    }
-                    else
-                    {
-                        Log.LogError(text);
-                    }
-                }
+                // Execute pester tests
+                writer.WriteLine(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "$result = Invoke-Pester -Path '{0}' -OutputFormat NUnitXml -OutputFile '{1}' -EnableExit -Verbose",
+                        GetAbsolutePath(TestsDirectory),
+                        GetAbsolutePath(ReportFile)));
             }
-            catch (Exception e)
+
+            var arguments = new List<string>();
             {
-                Log.LogError(e.ToString());
+                arguments.Add("-NonInteractive ");
+                arguments.Add("-NoProfile ");
+                arguments.Add("-ExecutionPolicy Bypass ");
+                arguments.Add(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "-File \"{0}\"",
+                        scriptPath));
+            }
+
+            var powershellPath = GetFullToolPath(PowershellExePath);
+            DataReceivedEventHandler standardErrorOutput =
+                (s, e) =>
+                {
+                    if (!string.IsNullOrWhiteSpace(e.Data))
+                    {
+                        if (IgnoreErrors)
+                        {
+                            Log.LogWarning(e.Data);
+                        }
+                        else
+                        {
+                            Log.LogError(e.Data);
+                        }
+                    }
+                };
+
+            var exitCode = InvokeCommandLineTool(
+                powershellPath,
+                arguments,
+                standardErrorHandler: standardErrorOutput);
+
+            if (exitCode != 0)
+            {
+                var text = string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    Path.GetFileName(powershellPath),
+                    exitCode);
+                if (IgnoreExitCode)
+                {
+                    Log.LogWarning(text);
+                }
+                else
+                {
+                    Log.LogError(text);
+                }
             }
 
             return !Log.HasLoggedErrors;

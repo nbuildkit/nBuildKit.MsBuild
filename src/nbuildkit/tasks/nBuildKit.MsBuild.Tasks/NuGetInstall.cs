@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -21,10 +22,10 @@ namespace NBuildKit.MsBuild.Tasks
         {
             var arguments = new List<string>();
             {
-                arguments.Add(string.Format("install \"{0}\" ", PackageName));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "install \"{0}\" ", PackageName));
                 if (!string.IsNullOrWhiteSpace(PackageVersion))
                 {
-                    arguments.Add(string.Format("-Version \"{0}\" ", PackageVersion));
+                    arguments.Add(string.Format(CultureInfo.InvariantCulture, "-Version \"{0}\" ", PackageVersion));
                 }
 
                 arguments.Add("-NonInteractive -Verbosity detailed -NoCache ");
@@ -32,7 +33,7 @@ namespace NBuildKit.MsBuild.Tasks
                 // Make sure we remove the back-slash because if we don't then
                 // the closing quote will be eaten by the command line parser. Note that
                 // this is only necessary because we're dealing with a directory
-                arguments.Add(string.Format("-OutputDirectory \"{0}\" ", GetAbsolutePath(PackageDirectory).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-OutputDirectory \"{0}\" ", GetAbsolutePath(PackageDirectory).TrimEnd('\\')));
 
                 // If the user has specified any sources to install from then only search those sources.
                 if (Sources != null)
@@ -42,7 +43,7 @@ namespace NBuildKit.MsBuild.Tasks
                         // Make sure we remove the back-slash because if we don't then
                         // the closing quote will be eaten by the command line parser. Note that
                         // this is only necessary because we're dealing with a directory
-                        arguments.Add(string.Format("-Source \"{0}\" ", source.ItemSpec.TrimEnd('\\')));
+                        arguments.Add(string.Format(CultureInfo.InvariantCulture, "-Source \"{0}\" ", source.ItemSpec.TrimEnd('\\')));
                     }
                 }
             }
@@ -52,6 +53,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 Log.LogError(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0} exited with a non-zero exit code. Exit code was: {1}",
                         Path.GetFileName(NuGetExecutablePath.ItemSpec),
                         exitCode));

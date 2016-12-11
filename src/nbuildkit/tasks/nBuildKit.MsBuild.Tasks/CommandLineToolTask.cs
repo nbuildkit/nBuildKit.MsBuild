@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
@@ -65,6 +66,11 @@ namespace NBuildKit.MsBuild.Tasks
         /// <returns>The most complete path for the given executable tool.</returns>
         protected string GetFullToolPath(ITaskItem path)
         {
+            if (path == null)
+            {
+                return string.Empty;
+            }
+
             return GetFullToolPath(path.ItemSpec);
         }
 
@@ -79,6 +85,7 @@ namespace NBuildKit.MsBuild.Tasks
             Log.LogMessage(
                 MessageImportance.Low,
                 string.Format(
+                    CultureInfo.InvariantCulture,
                     "Searching for full path of {0}",
                     path));
 
@@ -127,6 +134,7 @@ namespace NBuildKit.MsBuild.Tasks
                     Log.LogMessage(
                         MessageImportance.Low,
                         string.Format(
+                            CultureInfo.InvariantCulture,
                             "{0} exited with a non-zero exit code. Exit code was: {1}",
                             Path.GetFileName(process.StartInfo.FileName),
                             process.ExitCode));
@@ -141,6 +149,7 @@ namespace NBuildKit.MsBuild.Tasks
                     Log.LogMessage(
                         MessageImportance.Low,
                         string.Format(
+                            CultureInfo.InvariantCulture,
                             "{0} exited with a non-zero exit code. Exit code was: {1}",
                             Path.GetFileName(process.StartInfo.FileName),
                             process.ExitCode));
@@ -150,13 +159,14 @@ namespace NBuildKit.MsBuild.Tasks
                 var output = text.ToString();
                 if (!string.IsNullOrWhiteSpace(output))
                 {
-                    result = output.Substring(0, output.IndexOf(Environment.NewLine));
+                    result = output.Substring(0, output.IndexOf(Environment.NewLine, StringComparison.OrdinalIgnoreCase));
                 }
             }
 
             Log.LogMessage(
                 MessageImportance.Low,
                 string.Format(
+                    CultureInfo.InvariantCulture,
                     "Full path for tool: {0} is: {1}",
                     path,
                     result));
@@ -179,14 +189,14 @@ namespace NBuildKit.MsBuild.Tasks
         ///     then all messages are logged as errors.
         /// </param>
         /// <returns>The exit code of the application.</returns>
-        protected int InvokeCommandlineTool(
+        protected int InvokeCommandLineTool(
             ITaskItem exePath,
             IEnumerable<string> arguments,
             ITaskItem workingDirectory = null,
             DataReceivedEventHandler standardOutputHandler = null,
             DataReceivedEventHandler standardErrorHandler = null)
         {
-            if (string.IsNullOrEmpty(exePath.ItemSpec))
+            if ((exePath == null) || string.IsNullOrEmpty(exePath.ItemSpec))
             {
                 Log.LogError("The command line executable name was not provided");
                 return -1;
@@ -198,7 +208,7 @@ namespace NBuildKit.MsBuild.Tasks
                 workingDirectoryAsString = Directory.GetCurrentDirectory();
             }
 
-            return InvokeCommandlineTool(
+            return InvokeCommandLineTool(
                 exePath.ItemSpec,
                 arguments,
                 workingDirectoryAsString,
@@ -221,13 +231,19 @@ namespace NBuildKit.MsBuild.Tasks
         ///     then all messages are logged as errors.
         /// </param>
         /// <returns>The exit code of the application.</returns>
-        protected int InvokeCommandlineTool(
+        protected int InvokeCommandLineTool(
             string exePath,
             IEnumerable<string> arguments,
             string workingDirectory = null,
             DataReceivedEventHandler standardOutputHandler = null,
             DataReceivedEventHandler standardErrorHandler = null)
         {
+            if (arguments == null)
+            {
+                Log.LogError("The arguments collection is null.");
+                return -1;
+            }
+
             if (workingDirectory == null)
             {
                 workingDirectory = Directory.GetCurrentDirectory();
@@ -270,12 +286,12 @@ namespace NBuildKit.MsBuild.Tasks
                 Log.LogMessage(
                     MessageImportance.Low,
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0}: {1}",
                         pair.Key,
                         pair.Value));
             }
 
-            var text = new StringBuilder();
             var process = new Process();
             process.StartInfo = info;
 

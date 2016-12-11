@@ -5,8 +5,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Build.Framework;
 
@@ -15,6 +15,10 @@ namespace NBuildKit.MsBuild.Tasks
     /// <summary>
     /// Defines a <see cref="ITask"/> that determines if a specific item  or items exist in a collection.
     /// </summary>
+    [SuppressMessage(
+        "Microsoft.Naming",
+        "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
+        Justification = "Task name indicates that it finds out if an element is in a collection.")]
     public sealed class IsInCollection : NBuildKitMsBuildTask
     {
         /// <summary>
@@ -31,52 +35,42 @@ namespace NBuildKit.MsBuild.Tasks
         public override bool Execute()
         {
             IsInList = false;
-            try
+            var listOfItems = new List<string>();
+            if (Items != null)
             {
-                var listOfItems = new List<string>();
-                if (Items != null)
+                ITaskItem[] processedItems = Items;
+                for (int i = 0; i < processedItems.Length; i++)
                 {
-                    ITaskItem[] processedItems = Items;
-                    for (int i = 0; i < processedItems.Length; i++)
+                    ITaskItem taskItem = processedItems[i];
+                    if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                     {
-                        ITaskItem taskItem = processedItems[i];
-                        if (!string.IsNullOrEmpty(taskItem.ItemSpec))
-                        {
-                            listOfItems.Add(taskItem.ItemSpec);
-                        }
+                        listOfItems.Add(taskItem.ItemSpec);
                     }
                 }
-                else
-                {
-                    if (!string.IsNullOrEmpty(Item.ItemSpec))
-                    {
-                        listOfItems.Add(Item.ItemSpec);
-                    }
-                }
-
-                var listOfCollectionItems = new List<string>();
-                if (Collection != null)
-                {
-                    ITaskItem[] processedItems = Collection;
-                    for (int i = 0; i < processedItems.Length; i++)
-                    {
-                        ITaskItem taskItem = processedItems[i];
-                        if (!string.IsNullOrEmpty(taskItem.ItemSpec))
-                        {
-                            listOfCollectionItems.Add(taskItem.ItemSpec);
-                        }
-                    }
-                }
-
-                IsInList = listOfCollectionItems.Intersect(listOfItems).Any();
             }
-            catch (Exception e)
+            else
             {
-                Log.LogError(
-                    string.Format(
-                        "Failed to determine if the collection contains any of the items. Error was: {0}",
-                        e));
+                if (!string.IsNullOrEmpty(Item.ItemSpec))
+                {
+                    listOfItems.Add(Item.ItemSpec);
+                }
             }
+
+            var listOfCollectionItems = new List<string>();
+            if (Collection != null)
+            {
+                ITaskItem[] processedItems = Collection;
+                for (int i = 0; i < processedItems.Length; i++)
+                {
+                    ITaskItem taskItem = processedItems[i];
+                    if (!string.IsNullOrEmpty(taskItem.ItemSpec))
+                    {
+                        listOfCollectionItems.Add(taskItem.ItemSpec);
+                    }
+                }
+            }
+
+            IsInList = listOfCollectionItems.Intersect(listOfItems).Any();
 
             return !Log.HasLoggedErrors;
         }

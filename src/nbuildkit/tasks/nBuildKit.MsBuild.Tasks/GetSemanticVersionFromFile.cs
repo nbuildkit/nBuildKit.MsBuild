@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -19,74 +20,67 @@ namespace NBuildKit.MsBuild.Tasks
         /// <inheritdoc/>
         public override bool Execute()
         {
-            try
+            string text;
+            using (var reader = new StreamReader(GetAbsolutePath(VersionFile)))
             {
-                string text;
-                using (var reader = new StreamReader(GetAbsolutePath(VersionFile)))
-                {
-                    text = reader.ReadToEnd();
-                }
-
-                const string fullSemVersionStart = "\"FullSemVer\": \"";
-                var index = text.IndexOf(fullSemVersionStart);
-                VersionSemanticFull = text.Substring(
-                    index + fullSemVersionStart.Length,
-                    text.IndexOf("\"", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length));
-
-                const string nugetSemVersionStart = "\"NuGetSemVer\": \"";
-                index = text.IndexOf(nugetSemVersionStart);
-                VersionSemanticNuGet = text.Substring(
-                    index + nugetSemVersionStart.Length,
-                    text.IndexOf("\"", index + nugetSemVersionStart.Length) - (index + nugetSemVersionStart.Length));
-
-                const string semVersionStart = "\"SemVer\": \"";
-                index = text.IndexOf(semVersionStart);
-                VersionSemantic = text.Substring(
-                    index + semVersionStart.Length,
-                    text.IndexOf("\"", index + semVersionStart.Length) - (index + semVersionStart.Length));
-
-                const string majorVersionStart = "\"Major\": \"";
-                index = text.IndexOf(majorVersionStart);
-                var versionMajorText = text.Substring(
-                    index + majorVersionStart.Length,
-                    text.IndexOf("\"", index + majorVersionStart.Length) - (index + majorVersionStart.Length));
-                VersionMajor = int.Parse(versionMajorText);
-                VersionMajorNext = VersionMajor + 1;
-
-                const string minorVersionStart = "\"Minor\": \"";
-                index = text.IndexOf(minorVersionStart);
-                var versionMinorText = text.Substring(
-                    index + minorVersionStart.Length,
-                    text.IndexOf("\"", index + minorVersionStart.Length) - (index + minorVersionStart.Length));
-                VersionMinor = int.Parse(versionMinorText);
-                VersionMinorNext = VersionMinor + 1;
-
-                const string patchVersionStart = "\"Patch\": \"";
-                index = text.IndexOf(patchVersionStart);
-                var versionPatchText = text.Substring(
-                    index + patchVersionStart.Length,
-                    text.IndexOf("\"", index + patchVersionStart.Length) - (index + patchVersionStart.Length));
-                VersionPatch = int.Parse(versionPatchText);
-                VersionPatchNext = VersionPatch + 1;
-
-                const string buildVersionStart = "\"Build\": \"";
-                index = text.IndexOf(buildVersionStart);
-                var versionBuildText = text.Substring(
-                    index + buildVersionStart.Length,
-                    text.IndexOf("\"", index + buildVersionStart.Length) - (index + buildVersionStart.Length));
-                VersionBuild = int.Parse(versionBuildText);
-                VersionBuildNext = VersionBuild + 1;
-
-                const string prereleaseVersionStart = "\"PreRelease\": \"";
-                index = text.IndexOf(prereleaseVersionStart);
-                VersionPreRelease = text.Substring(
-                    index + prereleaseVersionStart.Length,
-                    text.IndexOf("\"", index + prereleaseVersionStart.Length) - (index + prereleaseVersionStart.Length));
+                text = reader.ReadToEnd();
             }
-            catch (Exception e)
-            {
-                Log.LogError(e.ToString());
-            }
+
+            const string fullSemVersionStart = "\"FullSemVer\": \"";
+            var index = text.IndexOf(fullSemVersionStart, StringComparison.OrdinalIgnoreCase);
+            VersionSemanticFull = text.Substring(
+                index + fullSemVersionStart.Length,
+                text.IndexOf("\"", index + fullSemVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + fullSemVersionStart.Length));
+
+            const string nugetSemVersionStart = "\"NuGetSemVer\": \"";
+            index = text.IndexOf(nugetSemVersionStart, StringComparison.OrdinalIgnoreCase);
+            VersionSemanticNuGet = text.Substring(
+                index + nugetSemVersionStart.Length,
+                text.IndexOf("\"", index + nugetSemVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + nugetSemVersionStart.Length));
+
+            const string semVersionStart = "\"SemVer\": \"";
+            index = text.IndexOf(semVersionStart, StringComparison.OrdinalIgnoreCase);
+            VersionSemantic = text.Substring(
+                index + semVersionStart.Length,
+                text.IndexOf("\"", index + semVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + semVersionStart.Length));
+
+            const string majorVersionStart = "\"Major\": \"";
+            index = text.IndexOf(majorVersionStart, StringComparison.OrdinalIgnoreCase);
+            var versionMajorText = text.Substring(
+                index + majorVersionStart.Length,
+                text.IndexOf("\"", index + majorVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + majorVersionStart.Length));
+            VersionMajor = int.Parse(versionMajorText, CultureInfo.InvariantCulture);
+            VersionMajorNext = VersionMajor + 1;
+
+            const string minorVersionStart = "\"Minor\": \"";
+            index = text.IndexOf(minorVersionStart, StringComparison.OrdinalIgnoreCase);
+            var versionMinorText = text.Substring(
+                index + minorVersionStart.Length,
+                text.IndexOf("\"", index + minorVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + minorVersionStart.Length));
+            VersionMinor = int.Parse(versionMinorText, CultureInfo.InvariantCulture);
+            VersionMinorNext = VersionMinor + 1;
+
+            const string patchVersionStart = "\"Patch\": \"";
+            index = text.IndexOf(patchVersionStart, StringComparison.OrdinalIgnoreCase);
+            var versionPatchText = text.Substring(
+                index + patchVersionStart.Length,
+                text.IndexOf("\"", index + patchVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + patchVersionStart.Length));
+            VersionPatch = int.Parse(versionPatchText, CultureInfo.InvariantCulture);
+            VersionPatchNext = VersionPatch + 1;
+
+            const string buildVersionStart = "\"Build\": \"";
+            index = text.IndexOf(buildVersionStart, StringComparison.OrdinalIgnoreCase);
+            var versionBuildText = text.Substring(
+                index + buildVersionStart.Length,
+                text.IndexOf("\"", index + buildVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + buildVersionStart.Length));
+            VersionBuild = int.Parse(versionBuildText, CultureInfo.InvariantCulture);
+            VersionBuildNext = VersionBuild + 1;
+
+            const string prereleaseVersionStart = "\"PreRelease\": \"";
+            index = text.IndexOf(prereleaseVersionStart, StringComparison.OrdinalIgnoreCase);
+            VersionPrerelease = text.Substring(
+                index + prereleaseVersionStart.Length,
+                text.IndexOf("\"", index + prereleaseVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + prereleaseVersionStart.Length));
 
             // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
             // from a task's constructor or property setter. As long as this task is written to always log an error
@@ -188,7 +182,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the prerelease information of the semantic version.
         /// </summary>
         [Output]
-        public string VersionPreRelease
+        public string VersionPrerelease
         {
             get;
             set;

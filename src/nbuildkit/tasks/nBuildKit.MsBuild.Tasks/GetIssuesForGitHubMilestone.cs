@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -45,6 +46,10 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Microsoft.Design",
+            "CA1031:DoNotCatchGeneralExceptionTypes",
+            Justification = "Catching to log. Letting MsBuild handle the rest.")]
         public override bool Execute()
         {
             var list = new SortedList<int, ITaskItem>();
@@ -53,6 +58,7 @@ namespace NBuildKit.MsBuild.Tasks
                 Log.LogMessage(
                             MessageImportance.Low,
                             string.Format(
+                                CultureInfo.InvariantCulture,
                                 "Searching for milestone with title: {0}. ",
                                 MilestoneName));
 
@@ -62,6 +68,7 @@ namespace NBuildKit.MsBuild.Tasks
                     Log.LogMessage(
                             MessageImportance.Low,
                             string.Format(
+                                CultureInfo.InvariantCulture,
                                 "Getting issues for milestone [{0}] - {1}. ",
                                 milestone.number,
                                 milestone.title));
@@ -71,7 +78,7 @@ namespace NBuildKit.MsBuild.Tasks
                     {
                         if (!list.ContainsKey(issue.number))
                         {
-                            var newItem = new TaskItem(issue.number.ToString());
+                            var newItem = new TaskItem(issue.number.ToString(CultureInfo.InvariantCulture));
 
                             newItem.SetMetadata(MetadataTitleTag, issue.title);
                             newItem.SetMetadata(MetadataUrlTag, issue.url);
@@ -89,15 +96,18 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     Log.LogError(
                         string.Format(
+                            CultureInfo.InvariantCulture,
                             "Failed to find a milestone with title: {0}",
                             MilestoneName));
                 }
             }
             catch (Exception e)
             {
-                Log.LogError(string.Format(
-                    "Failed to gather the issues for the given milestone on GitHub. Exception was: {0}",
-                    e));
+                Log.LogError(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Failed to gather the issues for the given milestone on GitHub. Exception was: {0}",
+                        e));
             }
 
             Issues = list.Values.ToArray();
@@ -125,6 +135,7 @@ namespace NBuildKit.MsBuild.Tasks
                 }
 
                 var uri = string.Format(
+                    CultureInfo.InvariantCulture,
                     "{0}/issues?milestone={1}{2}",
                     GitHubApiUri(),
                     milestone.number,
@@ -133,6 +144,7 @@ namespace NBuildKit.MsBuild.Tasks
                 Log.LogMessage(
                     MessageImportance.Low,
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "Getting issue information from: {0}. ",
                         uri));
 
@@ -154,12 +166,14 @@ namespace NBuildKit.MsBuild.Tasks
             using (var client = CreateWebClient())
             {
                 var uri = string.Format(
+                    CultureInfo.InvariantCulture,
                     "{0}/milestones",
                     GitHubApiUri());
 
                 Log.LogMessage(
                     MessageImportance.Low,
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "Getting milestone information from: {0}. ",
                         uri));
 
@@ -181,6 +195,7 @@ namespace NBuildKit.MsBuild.Tasks
         private string GitHubApiUri()
         {
             return string.Format(
+                    CultureInfo.InvariantCulture,
                     "https://api.github.com/repos/{0}/{1}",
                     GitHubUserName,
                     GitHubProjectName);
@@ -237,6 +252,10 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         [DataContract]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "Instantiated by the serializer.")]
         internal sealed class Assignee
         {
             [DataMember]
@@ -428,6 +447,10 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         [DataContract]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "Instantiated by the serializer.")]
         internal sealed class Creator
         {
             [DataMember]
@@ -619,6 +642,10 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         [DataContract]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "Instantiated by the serializer.")]
         internal sealed class Issue
         {
             [DataMember]
@@ -843,6 +870,10 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         [DataContract]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "Instantiated by the serializer.")]
         internal sealed class Label
         {
             [DataMember]
@@ -880,6 +911,10 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         [DataContract]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "Instantiated by the serializer.")]
         internal sealed class Milestone
         {
             [DataMember]
@@ -1049,6 +1084,10 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         [DataContract]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "Instantiated by the serializer.")]
         internal sealed class User
         {
             [DataMember]

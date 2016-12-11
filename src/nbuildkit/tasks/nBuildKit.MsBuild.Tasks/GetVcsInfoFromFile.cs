@@ -29,30 +29,23 @@ namespace NBuildKit.MsBuild.Tasks
         /// <inheritdoc/>
         public override bool Execute()
         {
-            try
+            string text;
+            using (var reader = new StreamReader(GetAbsolutePath(InfoFile)))
             {
-                string text;
-                using (var reader = new StreamReader(GetAbsolutePath(InfoFile)))
-                {
-                    text = reader.ReadToEnd();
-                }
-
-                const string revisionStart = "\"revision\": \"";
-                var index = text.IndexOf(revisionStart);
-                Revision = text.Substring(
-                    index + revisionStart.Length,
-                    text.IndexOf("\"", index + revisionStart.Length) - (index + revisionStart.Length));
-
-                const string branchStart = "\"branch\": \"";
-                index = text.IndexOf(branchStart);
-                Branch = text.Substring(
-                    index + branchStart.Length,
-                    text.IndexOf("\"", index + branchStart.Length) - (index + branchStart.Length));
+                text = reader.ReadToEnd();
             }
-            catch (Exception e)
-            {
-                Log.LogError(e.ToString());
-            }
+
+            const string revisionStart = "\"revision\": \"";
+            var index = text.IndexOf(revisionStart, StringComparison.OrdinalIgnoreCase);
+            Revision = text.Substring(
+                index + revisionStart.Length,
+                text.IndexOf("\"", index + revisionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + revisionStart.Length));
+
+            const string branchStart = "\"branch\": \"";
+            index = text.IndexOf(branchStart, StringComparison.OrdinalIgnoreCase);
+            Branch = text.Substring(
+                index + branchStart.Length,
+                text.IndexOf("\"", index + branchStart.Length, StringComparison.OrdinalIgnoreCase) - (index + branchStart.Length));
 
             return !Log.HasLoggedErrors;
         }

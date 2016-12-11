@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -32,6 +33,7 @@ namespace NBuildKit.MsBuild.Tasks
                         {
                             arguments.Add(
                                 string.Format(
+                                    CultureInfo.InvariantCulture,
                                     "\"{0}\" ",
                                     GetRelativePath(GetAbsolutePath(taskItem), workingDirectory)));
                         }

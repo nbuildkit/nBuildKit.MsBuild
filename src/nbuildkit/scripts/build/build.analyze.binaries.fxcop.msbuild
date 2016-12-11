@@ -129,7 +129,7 @@
         <SearchPackagesDirectoryForToolDirectory
             Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
             FileToLocate="$(FileFxCopCmdExe)"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalFxCopDir"
                 TaskParameter="Path" />
@@ -143,7 +143,7 @@
 
         <FxCopViaProject
             Condition=" '$(ShouldExecute)' == 'true' "
-            FxCopDir="$(ToolsExternalFxCopDir)"
+            FxCopDirectory="$(ToolsExternalFxCopDir)"
             OutputFile="$(FileReportFxCopExpanded)"
             ProjectFile="$(FileProjectFxCop)"
             WarningsAsErrors="$(FxCopWarningsAsErrors)" />
@@ -171,7 +171,7 @@
         <SearchPackagesDirectoryForToolDirectory
             Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
             FileToLocate="$(FileFxCopCmdExe)"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalFxCopDir"
                 TaskParameter="Path" />
@@ -189,7 +189,7 @@
             Condition=" '$(ShouldExecute)' == 'true' "
             Culture="$(FxCopCulture)"
             Dictionary="$(FxCopCustomDictionary)"
-            FxCopDir="$(ToolsExternalFxCopDir)"
+            FxCopDirectory="$(ToolsExternalFxCopDir)"
             OutputFile="$(FileReportFxCopExpanded)"
             ReferenceDirectories="@(FxCopReferenceDirectories)"
             ReferenceFiles="@(FxCopReferenceFiles)"

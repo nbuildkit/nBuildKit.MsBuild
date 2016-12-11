@@ -112,7 +112,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
             FileToLocate="VSCoverageToReportGenerator.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalVSCoverageToReportGeneratorPath"
                 TaskParameter="Path" />
@@ -142,7 +142,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
             FileToLocate="ReportGenerator.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalReportGeneratorPath"
                 TaskParameter="Path" />
@@ -172,7 +172,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
             FileToLocate="OpenCoverToCoberturaConverter.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath"
                 TaskParameter="Path" />
@@ -333,7 +333,7 @@
         <ReportGenerator
             Condition=" Exists('$(ToolsExternalReportGeneratorPath)') AND '@(ReportFilesToProcess)' != '' AND '$(ShouldExecute)' == 'true' "
             OpenCoverOutputFiles="@(ReportFilesToProcess)"
-            OutputDir="$(DirReportGeneratorOutput)"
+            OutputDirectory="$(DirReportGeneratorOutput)"
             ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)" />
 
         <ReportGeneratorOutputToCsv

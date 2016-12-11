@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -32,7 +33,7 @@ namespace NBuildKit.MsBuild.Tasks
                     if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                     {
                         var metadataItem = taskItem.GetMetadata(MetadataValueTag);
-                        properties.Add(string.Format("{0}=\"{1}\"", taskItem.ItemSpec, metadataItem.TrimEnd('\\')));
+                        properties.Add(string.Format(CultureInfo.InvariantCulture, "{0}=\"{1}\"", taskItem.ItemSpec, metadataItem.TrimEnd('\\')));
                     }
                 }
 
@@ -41,7 +42,7 @@ namespace NBuildKit.MsBuild.Tasks
 
             var arguments = new List<string>();
             {
-                arguments.Add(string.Format("pack \"{0}\" ", GetAbsolutePath(File).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "pack \"{0}\" ", GetAbsolutePath(File).TrimEnd('\\')));
                 if (ShouldBuildSymbols)
                 {
                     arguments.Add("-Symbols ");
@@ -50,11 +51,11 @@ namespace NBuildKit.MsBuild.Tasks
                 // Make sure we remove the back-slash because if we don't then
                 // the closing quote will be eaten by the command line parser. Note that
                 // this is only necessary because we're dealing with a directory
-                arguments.Add(string.Format("-OutputDirectory \"{0}\" ", GetAbsolutePath(OutputDirectory).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-OutputDirectory \"{0}\" ", GetAbsolutePath(OutputDirectory).TrimEnd('\\')));
 
                 if (!string.IsNullOrEmpty(propertyText))
                 {
-                    arguments.Add(string.Format("-Properties {0} ", propertyText));
+                    arguments.Add(string.Format(CultureInfo.InvariantCulture, "-Properties {0} ", propertyText));
                 }
             }
 
@@ -63,6 +64,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 Log.LogError(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0} exited with a non-zero exit code. Exit code was: {1}",
                         Path.GetFileName(NuGetExecutablePath.ItemSpec),
                         exitCode));

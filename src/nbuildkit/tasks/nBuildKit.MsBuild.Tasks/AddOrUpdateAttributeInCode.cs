@@ -61,12 +61,26 @@ namespace NBuildKit.MsBuild.Tasks
             switch (ext)
             {
                 case "cs":
-                    attribute = string.Format("[assembly: {0}({1})]", AttributeName, Value);
-                    assemblyAttributeMatcher = string.Format("(^\\s*\\[assembly:\\s*{0})(.*$)", AttributeName);
+                    attribute = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "[assembly: {0}({1})]",
+                        AttributeName,
+                        Value);
+                    assemblyAttributeMatcher = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "(^\\s*\\[assembly:\\s*{0})(.*$)",
+                        AttributeName);
                     break;
                 case "vb":
-                    attribute = string.Format("<Assembly: {0}({1})>", AttributeName, Value);
-                    assemblyAttributeMatcher = string.Format("(^\\s*<Assembly:\\s*{0})(.*$)", AttributeName);
+                    attribute = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "<Assembly: {0}({1})>",
+                        AttributeName,
+                        Value);
+                    assemblyAttributeMatcher = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "(^\\s*<Assembly:\\s*{0})(.*$)",
+                        AttributeName);
                     break;
             }
 

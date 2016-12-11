@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -28,14 +29,14 @@ namespace NBuildKit.MsBuild.Tasks
 
             var arguments = new List<string>();
             {
-                arguments.Add(string.Format("release --security-token {0} ", gitHubToken.TrimEnd('\\')));
-                arguments.Add(string.Format("--user \"{0}\" ", UserName.TrimEnd('\\')));
-                arguments.Add(string.Format("--repo \"{0}\" ", Repository.TrimEnd('\\')));
-                arguments.Add(string.Format("--tag \"{0}\" ", Tag.TrimEnd('\\')));
-                arguments.Add(string.Format("--name \"{0}\" ", ReleaseName.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "release --security-token {0} ", gitHubToken.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "--user \"{0}\" ", UserName.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "--repo \"{0}\" ", Repository.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "--tag \"{0}\" ", Tag.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "--name \"{0}\" ", ReleaseName.TrimEnd('\\')));
                 if (!string.IsNullOrEmpty(escapedDescription))
                 {
-                    arguments.Add(string.Format("--description \"{0}\"", escapedDescription.TrimEnd('\\')));
+                    arguments.Add(string.Format(CultureInfo.InvariantCulture, "--description \"{0}\"", escapedDescription.TrimEnd('\\')));
                 }
             }
 
@@ -58,7 +59,7 @@ namespace NBuildKit.MsBuild.Tasks
                     }
                 };
 
-            var exitCode = InvokeCommandlineTool(
+            var exitCode = InvokeCommandLineTool(
                 GitHubReleasePath,
                 arguments,
                 WorkingDirectory,
@@ -69,6 +70,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 Log.LogError(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0} exited with a non-zero exit code. Exit code was: {1}",
                         Path.GetFileName(GetFullToolPath(GitHubReleasePath)),
                         exitCode));

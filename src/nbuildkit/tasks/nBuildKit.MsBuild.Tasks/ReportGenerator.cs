@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
@@ -43,7 +44,7 @@ namespace NBuildKit.MsBuild.Tasks
                         reportFileBuilder.Append(";");
                     }
 
-                    reportFileBuilder.Append(string.Format("\"{0}\"", filePath.TrimEnd('\\')));
+                    reportFileBuilder.Append(string.Format(CultureInfo.InvariantCulture, "\"{0}\"", filePath.TrimEnd('\\')));
                 }
 
                 if (reportFileBuilder.Length == 0)
@@ -52,22 +53,23 @@ namespace NBuildKit.MsBuild.Tasks
                     return false;
                 }
 
-                arguments.Add(string.Format("-reports:{0} ", reportFileBuilder.ToString()));
-                arguments.Add(string.Format("-reporttypes:Html;HtmlSummary;XmlSummary;TextSummary;Badges "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-reports:{0} ", reportFileBuilder.ToString()));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-reporttypes:Html;HtmlSummary;XmlSummary;TextSummary;Badges "));
 
                 // Make sure we remove the back-slash because if we don't then
                 // the closing quote will be eaten by the command line parser. Note that
                 // this is only necessary because we're dealing with a directory
-                arguments.Add(string.Format("-targetdir:\"{0}\" ", GetAbsolutePath(OutputDir).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-targetdir:\"{0}\" ", GetAbsolutePath(OutputDirectory).TrimEnd('\\')));
             }
 
-            var exitCode = InvokeCommandlineTool(
+            var exitCode = InvokeCommandLineTool(
                 ReportGeneratorExe,
                 arguments);
             if (exitCode != 0)
             {
                 Log.LogError(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0} exited with a non-zero exit code. Exit code was: {1}",
                         Path.GetFileName(GetFullToolPath(ReportGeneratorExe)),
                         exitCode));
@@ -91,7 +93,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the full path to the directory into which the reports should be placed.
         /// </summary>
         [Required]
-        public ITaskItem OutputDir
+        public ITaskItem OutputDirectory
         {
             get;
             set;

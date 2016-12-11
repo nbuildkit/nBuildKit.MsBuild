@@ -10,6 +10,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.Build.Framework;
@@ -23,6 +25,10 @@ namespace NBuildKit.MsBuild.Tasks
     public sealed class CalculateSemanticVersionWithGitVersion : CommandLineToolTask
     {
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Microsoft.Design",
+            "CA1031:DoNotCatchGeneralExceptionTypes",
+            Justification = "Catching them all because we don't know what could be thrown.")]
         public override bool Execute()
         {
             var arguments = new List<string>();
@@ -31,16 +37,28 @@ namespace NBuildKit.MsBuild.Tasks
 
                 if (!string.IsNullOrEmpty(UserName))
                 {
-                    arguments.Add(string.Format("/u \"{0}\" ", UserName));
+                    arguments.Add(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "/u \"{0}\" ",
+                            UserName));
                     arguments.Add("/p \"%GitPassWord%\" ");
                 }
 
-                if (!string.IsNullOrEmpty(RemoteRepositoryUrl) && !string.IsNullOrEmpty(UserName))
+                if (!string.IsNullOrEmpty(RemoteRepositoryUri) && !string.IsNullOrEmpty(UserName))
                 {
-                    arguments.Add(string.Format("/url \"{0}\" ", RemoteRepositoryUrl));
+                    arguments.Add(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "/url \"{0}\" ",
+                            RemoteRepositoryUri));
                 }
 
-                arguments.Add(string.Format("/l \"{0}\" ", LogPath));
+                arguments.Add(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "/l \"{0}\" ",
+                        LogPath));
             }
 
             var text = new StringBuilder();
@@ -52,7 +70,7 @@ namespace NBuildKit.MsBuild.Tasks
                     }
                 };
 
-            var exitCode = InvokeCommandlineTool(
+            var exitCode = InvokeCommandLineTool(
                 ExePath,
                 arguments,
                 standardOutputHandler: standardOutputHandler);
@@ -60,10 +78,15 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 Log.LogError(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0} exited with a non-zero exit code. Exit code was: {1}",
                         System.IO.Path.GetFileName(ExePath.ItemSpec),
                         exitCode));
-                Log.LogError(string.Format("Output was: {0}", text));
+                Log.LogError(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Output was: {0}",
+                        text));
 
                 return false;
             }
@@ -72,63 +95,63 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 string versionText = text.ToString();
                 const string fullSemVersionStart = "\"FullSemVer\":";
-                var index = versionText.IndexOf(fullSemVersionStart);
+                var index = versionText.IndexOf(fullSemVersionStart, StringComparison.OrdinalIgnoreCase);
                 VersionSemanticFull = versionText.Substring(
                         index + fullSemVersionStart.Length,
-                        versionText.IndexOf(",", index + fullSemVersionStart.Length) - (index + fullSemVersionStart.Length))
+                        versionText.IndexOf(",", index + fullSemVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + fullSemVersionStart.Length))
                     .Trim('"');
 
                 const string nugetSemVersionStart = "\"NuGetVersionV2\":";
-                index = versionText.IndexOf(nugetSemVersionStart);
+                index = versionText.IndexOf(nugetSemVersionStart, StringComparison.OrdinalIgnoreCase);
                 VersionSemanticNuGet = versionText.Substring(
                         index + nugetSemVersionStart.Length,
-                        versionText.IndexOf(",", index + nugetSemVersionStart.Length) - (index + nugetSemVersionStart.Length))
+                        versionText.IndexOf(",", index + nugetSemVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + nugetSemVersionStart.Length))
                     .Trim('"');
 
                 const string semVersionStart = "\"MajorMinorPatch\":";
-                index = versionText.IndexOf(semVersionStart);
+                index = versionText.IndexOf(semVersionStart, StringComparison.OrdinalIgnoreCase);
                 VersionSemantic = versionText.Substring(
                         index + semVersionStart.Length,
-                        versionText.IndexOf(",", index + semVersionStart.Length) - (index + semVersionStart.Length))
+                        versionText.IndexOf(",", index + semVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + semVersionStart.Length))
                     .Trim('"');
 
                 const string majorVersionStart = "\"Major\":";
-                index = versionText.IndexOf(majorVersionStart);
+                index = versionText.IndexOf(majorVersionStart, StringComparison.OrdinalIgnoreCase);
                 VersionMajor = versionText.Substring(
                         index + majorVersionStart.Length,
-                        versionText.IndexOf(",", index + majorVersionStart.Length) - (index + majorVersionStart.Length))
+                        versionText.IndexOf(",", index + majorVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + majorVersionStart.Length))
                     .Trim('"');
 
                 const string minorVersionStart = "\"Minor\":";
-                index = versionText.IndexOf(minorVersionStart);
+                index = versionText.IndexOf(minorVersionStart, StringComparison.OrdinalIgnoreCase);
                 VersionMinor = versionText.Substring(
                         index + minorVersionStart.Length,
-                        versionText.IndexOf(",", index + minorVersionStart.Length) - (index + minorVersionStart.Length))
+                        versionText.IndexOf(",", index + minorVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + minorVersionStart.Length))
                     .Trim('"');
 
                 const string patchVersionStart = "\"Patch\":";
-                index = versionText.IndexOf(patchVersionStart);
+                index = versionText.IndexOf(patchVersionStart, StringComparison.OrdinalIgnoreCase);
                 VersionPatch = versionText.Substring(
                         index + patchVersionStart.Length,
-                        versionText.IndexOf(",", index + patchVersionStart.Length) - (index + patchVersionStart.Length))
+                        versionText.IndexOf(",", index + patchVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + patchVersionStart.Length))
                     .Trim('"');
 
                 const string buildVersionStart = "\"BuildMetaData\":";
-                index = versionText.IndexOf(buildVersionStart);
+                index = versionText.IndexOf(buildVersionStart, StringComparison.OrdinalIgnoreCase);
                 VersionBuild = versionText.Substring(
                         index + buildVersionStart.Length,
-                        versionText.IndexOf(",", index + buildVersionStart.Length) - (index + buildVersionStart.Length))
+                        versionText.IndexOf(",", index + buildVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + buildVersionStart.Length))
                     .Trim('"');
 
                 const string tagVersionStart = "\"PreReleaseTag\":";
-                index = versionText.IndexOf(tagVersionStart);
-                VersionPreRelease = versionText.Substring(
+                index = versionText.IndexOf(tagVersionStart, StringComparison.OrdinalIgnoreCase);
+                VersionPrerelease = versionText.Substring(
                         index + tagVersionStart.Length,
-                        versionText.IndexOf(",", index + tagVersionStart.Length) - (index + tagVersionStart.Length))
+                        versionText.IndexOf(",", index + tagVersionStart.Length, StringComparison.OrdinalIgnoreCase) - (index + tagVersionStart.Length))
                     .Trim('"');
-                if (VersionPreRelease.IndexOf(".") > -1)
+                if (VersionPrerelease.IndexOf(".", StringComparison.OrdinalIgnoreCase) > -1)
                 {
-                    VersionPreRelease = VersionPreRelease.Substring(0, VersionPreRelease.IndexOf("."));
+                    VersionPrerelease = VersionPrerelease.Substring(0, VersionPrerelease.IndexOf(".", StringComparison.OrdinalIgnoreCase));
                 }
             }
             catch (Exception e)
@@ -163,7 +186,11 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the URL of the remote repository.
         /// </summary>
         [Required]
-        public string RemoteRepositoryUrl
+        [SuppressMessage(
+            "Microsoft.Design",
+            "CA1056:UriPropertiesShouldNotBeStrings",
+            Justification = "This can be an empty string in which case the default origin will be used.")]
+        public string RemoteRepositoryUri
         {
             get;
             set;
@@ -178,6 +205,11 @@ namespace NBuildKit.MsBuild.Tasks
         /// </param>
         protected override void UpdateEnvironmentVariables(StringDictionary environmentVariables)
         {
+            if (environmentVariables == null)
+            {
+                return;
+            }
+
             // GitVersion does all kinds of magic when it detects that it is running on a build server.
             // That magic can stuff up any changes we make to the git workspace because if we change branches
             // (e.g. during a merge) then GitVersion may change back to the original branch. So we remove any
@@ -268,7 +300,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the prerelease information of the semantic version.
         /// </summary>
         [Output]
-        public string VersionPreRelease
+        public string VersionPrerelease
         {
             get;
             set;

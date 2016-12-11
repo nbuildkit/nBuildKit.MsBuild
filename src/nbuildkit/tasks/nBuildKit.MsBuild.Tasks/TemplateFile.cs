@@ -51,7 +51,7 @@ namespace NBuildKit.MsBuild.Tasks
             }
             else
             {
-                var tokenPairs = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+                var tokenPairs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 if (Tokens != null)
                 {
                     ITaskItem[] processedTokens = Tokens;

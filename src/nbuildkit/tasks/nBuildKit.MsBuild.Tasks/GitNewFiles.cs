@@ -26,7 +26,7 @@ namespace NBuildKit.MsBuild.Tasks
             foreach (var line in output.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var fileStatus = line.Trim();
-                if (fileStatus.StartsWith("??"))
+                if (fileStatus.StartsWith("??", StringComparison.OrdinalIgnoreCase))
                 {
                     var newItem = new TaskItem(System.IO.Path.Combine(GetAbsolutePath(Workspace), fileStatus.Trim('?').Trim()));
                     list.Add(newItem);

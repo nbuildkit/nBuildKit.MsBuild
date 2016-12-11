@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -52,12 +53,12 @@ namespace NBuildKit.MsBuild.Tasks
                 switch (ext)
                 {
                     case "cs":
-                        attribute = string.Format("[assembly: {0}({1})]", AttributeName, Value);
-                        assemblyAttributeMatcher = string.Format("(^\\s*\\[assembly:\\s*{0})(.*$)", AttributeName);
+                        attribute = string.Format(CultureInfo.InvariantCulture, "[assembly: {0}({1})]", AttributeName, Value);
+                        assemblyAttributeMatcher = string.Format(CultureInfo.InvariantCulture, "(^\\s*\\[assembly:\\s*{0})(.*$)", AttributeName);
                         break;
                     case "vb":
-                        attribute = string.Format("<Assembly: {0}({1})>", AttributeName, Value);
-                        assemblyAttributeMatcher = string.Format("(^\\s*<Assembly:\\s*{0})(.*$)", AttributeName);
+                        attribute = string.Format(CultureInfo.InvariantCulture, "<Assembly: {0}({1})>", AttributeName, Value);
+                        assemblyAttributeMatcher = string.Format(CultureInfo.InvariantCulture, "(^\\s*<Assembly:\\s*{0})(.*$)", AttributeName);
                         break;
                 }
 
@@ -78,7 +79,14 @@ namespace NBuildKit.MsBuild.Tasks
 
                     if (System.Text.RegularExpressions.Regex.IsMatch(text, assemblyAttributeMatcher))
                     {
-                        Log.LogMessage(MessageImportance.Low, string.Format("Replacing in file: {0}. Old line \"{1}\". New line: \"{2}\"", InputFile, lines[i], attribute));
+                        Log.LogMessage(
+                            MessageImportance.Low,
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                "Replacing in file: {0}. Old line \"{1}\". New line: \"{2}\"",
+                                InputFile,
+                                lines[i],
+                                attribute));
                         lines[i] = attribute;
 
                         found = true;

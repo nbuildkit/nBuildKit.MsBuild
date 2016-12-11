@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -20,6 +21,12 @@ namespace NBuildKit.MsBuild.Tasks
     /// </summary>
     public sealed class Zip : NBuildKitMsBuildTask
     {
+        private static IEnumerable<FileInfo> GetFilteredFilePaths(string baseDirectory, string fileFilter, bool recurse)
+        {
+            var dirInfo = new DirectoryInfo(baseDirectory);
+            return dirInfo.EnumerateFiles(fileFilter, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+        }
+
         private void Compress(
             string outputFile,
             IDictionary<string, List<string>> files,
@@ -30,33 +37,30 @@ namespace NBuildKit.MsBuild.Tasks
             var buffer = new byte[BufferSize];
             var fileMode = overwriteExistingFile ? FileMode.Create : FileMode.CreateNew;
 
-            using (var outputFileStream = new FileStream(outputFile, fileMode))
+            using (var archive = new ZipArchive(new FileStream(outputFile, fileMode), ZipArchiveMode.Create))
             {
-                using (var archive = new ZipArchive(outputFileStream, ZipArchiveMode.Create))
+                foreach (var pair in files)
                 {
-                    foreach (var pair in files)
+                    var filePath = pair.Key;
+                    var list = pair.Value;
+
+                    using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
-                        var filePath = pair.Key;
-                        var list = pair.Value;
-
-                        using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        foreach (var relativePath in list)
                         {
-                            foreach (var relativePath in list)
+                            Log.LogMessage(MessageImportance.Low, string.Format(CultureInfo.InvariantCulture, "Adding: {0}. Storing as: {1}", filePath, relativePath));
+                            var archiveEntry = archive.CreateEntry(relativePath);
+
+                            using (var zipStream = archiveEntry.Open())
                             {
-                                Log.LogMessage(MessageImportance.Low, string.Format("Adding: {0}. Storing as: {1}", filePath, relativePath));
-                                var archiveEntry = archive.CreateEntry(relativePath);
-
-                                using (var zipStream = archiveEntry.Open())
+                                int bytesRead = -1;
+                                while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
                                 {
-                                    int bytesRead = -1;
-                                    while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
-                                    {
-                                        zipStream.Write(buffer, 0, bytesRead);
-                                    }
+                                    zipStream.Write(buffer, 0, bytesRead);
                                 }
-
-                                fs.Position = 0;
                             }
+
+                            fs.Position = 0;
                         }
                     }
                 }
@@ -75,7 +79,7 @@ namespace NBuildKit.MsBuild.Tasks
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(GetAbsolutePath(File));
             var name = xmlDoc.SelectSingleNode("//archive/name/text()").InnerText;
-            var outputFilePath = Path.Combine(GetAbsolutePath(OutputDirectory), string.Format("{0}.zip", name));
+            var outputFilePath = Path.Combine(GetAbsolutePath(OutputDirectory), string.Format(CultureInfo.InvariantCulture, "{0}.zip", name));
 
             var files = new Dictionary<string, List<string>>();
             var filesNode = xmlDoc.SelectSingleNode("//archive/files");
@@ -125,7 +129,7 @@ namespace NBuildKit.MsBuild.Tasks
                 }
             }
 
-            Log.LogMessage(MessageImportance.Normal, string.Format("Creating archive at: {0}", outputFilePath));
+            Log.LogMessage(MessageImportance.Normal, string.Format(CultureInfo.InvariantCulture, "Creating archive at: {0}", outputFilePath));
             Compress(outputFilePath, files, OverwriteExistingFiles);
 
             // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
@@ -142,12 +146,6 @@ namespace NBuildKit.MsBuild.Tasks
         {
             get;
             set;
-        }
-
-        private IEnumerable<FileInfo> GetFilteredFilePaths(string baseDirectory, string fileFilter, bool recurse)
-        {
-            var dirInfo = new DirectoryInfo(baseDirectory);
-            return dirInfo.EnumerateFiles(fileFilter, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
         }
 
         /// <summary>

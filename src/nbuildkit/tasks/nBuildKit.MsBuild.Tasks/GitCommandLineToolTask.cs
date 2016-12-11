@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using Microsoft.Build.Framework;
 
@@ -38,10 +39,11 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 Log.LogError(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0} exited with a non-zero exit code. Exit code was: {1}",
                         System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
                         exitCode));
-                Log.LogError(string.Format("Output was: {0}", text));
+                Log.LogError(string.Format(CultureInfo.InvariantCulture, "Output was: {0}", text));
             }
 
             return text.ToString();
@@ -68,7 +70,6 @@ namespace NBuildKit.MsBuild.Tasks
         /// <returns>The output of the GIT process</returns>
         protected int InvokeGit(IEnumerable<string> arguments, DataReceivedEventHandler standardOutputHandler = null)
         {
-            var text = new StringBuilder();
             if (standardOutputHandler == null)
             {
                 standardOutputHandler = (s, e) =>
@@ -88,7 +89,7 @@ namespace NBuildKit.MsBuild.Tasks
                 }
             };
 
-            var exitCode = InvokeCommandlineTool(
+            var exitCode = InvokeCommandLineTool(
                 GitExecutablePath,
                 arguments,
                 Workspace,
@@ -98,6 +99,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 Log.LogError(
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0} exited with a non-zero exit code. Exit code was: {1}",
                         System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
                         exitCode));

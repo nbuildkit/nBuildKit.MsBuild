@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -41,6 +42,7 @@ namespace NBuildKit.MsBuild.Tasks
                     new[]
                     {
                         string.Format(
+                            CultureInfo.InvariantCulture,
                             "log -n 1 --pretty=format:%B {0}",
                             commit)
                     });
@@ -98,7 +100,7 @@ namespace NBuildKit.MsBuild.Tasks
             var gitOutput = GetGitOutput(
                 new[]
                 {
-                    string.Format("cherry {0}", MergeTargetBranch)
+                    string.Format(CultureInfo.InvariantCulture, "cherry {0}", MergeTargetBranch)
                 });
             return gitOutput.Replace("+ ", Environment.NewLine).Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
         }

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -119,8 +120,8 @@ namespace NBuildKit.MsBuild.Tasks
                             try
                             {
                                 {
-                                    var arguments = new[] { string.Format("-p \"{0}\" \"{1}\"", keyFile, publicKeyFile) };
-                                    var exitCode = InvokeCommandlineTool(
+                                    var arguments = new[] { string.Format(CultureInfo.InvariantCulture, "-p \"{0}\" \"{1}\"", keyFile, publicKeyFile) };
+                                    var exitCode = InvokeCommandLineTool(
                                         SnExe,
                                         arguments);
 
@@ -128,6 +129,7 @@ namespace NBuildKit.MsBuild.Tasks
                                     {
                                         Log.LogError(
                                             string.Format(
+                                                CultureInfo.InvariantCulture,
                                                 "{0} exited with a non-zero exit code while trying to extract the public key file from the signing key file. Exit code was: {1}",
                                                 snExeFileName,
                                                 exitCode));
@@ -137,7 +139,7 @@ namespace NBuildKit.MsBuild.Tasks
 
                                 var text = new StringBuilder();
                                 {
-                                    var arguments = new[] { string.Format("-tp \"{0}\"", publicKeyFile) };
+                                    var arguments = new[] { string.Format(CultureInfo.InvariantCulture, "-tp \"{0}\"", publicKeyFile) };
                                     DataReceivedEventHandler standardOutputHandler = (s, e) =>
                                         {
                                             text.Append(e.Data);
@@ -146,7 +148,7 @@ namespace NBuildKit.MsBuild.Tasks
                                                 Log.LogMessage(MessageImportance.Low, e.Data);
                                             }
                                         };
-                                    var exitCode = InvokeCommandlineTool(
+                                    var exitCode = InvokeCommandLineTool(
                                         SnExe,
                                         arguments,
                                         standardOutputHandler: standardOutputHandler);
@@ -154,6 +156,7 @@ namespace NBuildKit.MsBuild.Tasks
                                     {
                                         Log.LogError(
                                             string.Format(
+                                                CultureInfo.InvariantCulture,
                                                 "{0} exited with a non-zero exit code while trying to extract the public key information from the public key file. Exit code was: {1}",
                                                 snExeFileName,
                                                 exitCode));
@@ -170,8 +173,8 @@ namespace NBuildKit.MsBuild.Tasks
 
                                 const string startString = "Public key (hash algorithm: sha1):";
                                 const string endString = "Public key token is";
-                                var startIndex = publicKeyText.IndexOf(startString);
-                                var endIndex = publicKeyText.IndexOf(endString);
+                                var startIndex = publicKeyText.IndexOf(startString, StringComparison.OrdinalIgnoreCase);
+                                var endIndex = publicKeyText.IndexOf(endString, StringComparison.OrdinalIgnoreCase);
                                 key = publicKeyText.Substring(startIndex + startString.Length, endIndex - (startIndex + startString.Length));
                             }
                             finally
@@ -208,15 +211,16 @@ namespace NBuildKit.MsBuild.Tasks
                                             Log.LogMessage(MessageImportance.Low, e.Data);
                                         }
                                     };
-                                var exitCode = InvokeCommandlineTool(
+                                var exitCode = InvokeCommandLineTool(
                                     SnExe,
-                                    new[] { string.Format("-Tp \"{0}\"", assemblyPath.TrimEnd('\\')) },
+                                    new[] { string.Format(CultureInfo.InvariantCulture, "-Tp \"{0}\"", assemblyPath.TrimEnd('\\')) },
                                     standardOutputHandler: standardOutputHandler);
 
                                 if (exitCode != 0)
                                 {
                                     Log.LogError(
                                         string.Format(
+                                            CultureInfo.InvariantCulture,
                                             "{0} exited with a non-zero exit code while trying to extract the public key from a signed assembly. Exit code was: {1}",
                                             snExeFileName,
                                             exitCode));
@@ -232,8 +236,8 @@ namespace NBuildKit.MsBuild.Tasks
 
                                 const string startString = "Public key (hash algorithm: sha1):";
                                 const string endString = "Public key token is";
-                                var startIndex = publicKeyText.IndexOf(startString);
-                                var endIndex = publicKeyText.IndexOf(endString);
+                                var startIndex = publicKeyText.IndexOf(startString, StringComparison.OrdinalIgnoreCase);
+                                var endIndex = publicKeyText.IndexOf(endString, StringComparison.OrdinalIgnoreCase);
                                 key = publicKeyText.Substring(startIndex + startString.Length, endIndex - (startIndex + startString.Length));
                             }
                         }
@@ -241,7 +245,7 @@ namespace NBuildKit.MsBuild.Tasks
 
                     if (!string.IsNullOrEmpty(key))
                     {
-                        var tokenPairs = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+                        var tokenPairs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                                         {
                                             { "AssemblyName", taskItem.ItemSpec },
                                             { "Key", key },
@@ -261,7 +265,7 @@ namespace NBuildKit.MsBuild.Tasks
                     }
                     else
                     {
-                        var tokenPairs = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+                        var tokenPairs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                                         {
                                             { "AssemblyName", taskItem.ItemSpec },
                                         };

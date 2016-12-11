@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -20,12 +21,12 @@ namespace NBuildKit.MsBuild.Tasks
         {
             var arguments = new List<string>();
             {
-                arguments.Add(string.Format("/project:\"{0}\" ", GetAbsolutePath(ProjectFile).TrimEnd('\\')));
-                arguments.Add(string.Format("/out:\"{0}\" ", GetAbsolutePath(OutputFile).TrimEnd('\\')));
-                arguments.Add(string.Format("/ignoregeneratedcode "));
-                arguments.Add(string.Format("/searchgac "));
-                arguments.Add(string.Format("/forceoutput "));
-                arguments.Add(string.Format("/successfile "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/project:\"{0}\" ", GetAbsolutePath(ProjectFile).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/out:\"{0}\" ", GetAbsolutePath(OutputFile).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/ignoregeneratedcode "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/searchgac "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/forceoutput "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/successfile "));
             }
 
             InvokeFxCop(arguments);

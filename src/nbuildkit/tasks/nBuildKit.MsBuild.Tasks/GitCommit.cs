@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -22,7 +23,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 arguments.Add("commit ");
                 arguments.Add("--all ");
-                arguments.Add(string.Format("--message=\"{0}\" ", Message.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "--message=\"{0}\" ", Message.TrimEnd('\\')));
                 arguments.Add("--quiet ");
             }
 

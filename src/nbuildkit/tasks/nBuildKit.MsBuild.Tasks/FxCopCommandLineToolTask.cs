@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -21,7 +22,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the full path to the directory that contains the 'FxCopCmd' executable.
         /// </summary>
         [Required]
-        public ITaskItem FxCopDir
+        public ITaskItem FxCopDirectory
         {
             get;
             set;
@@ -33,7 +34,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// <param name="arguments">The collection containing the arguments.</param>
         protected void InvokeFxCop(IEnumerable<string> arguments)
         {
-            var exePath = Path.Combine(GetAbsolutePath(FxCopDir), "FxCopCmd.exe");
+            var exePath = Path.Combine(GetAbsolutePath(FxCopDirectory), "FxCopCmd.exe");
             DataReceivedEventHandler standardOutputhandler =
                 (s, e) =>
                 {
@@ -51,7 +52,7 @@ namespace NBuildKit.MsBuild.Tasks
                         Log.LogError(e.Data);
                     }
                 };
-            var exitCode = InvokeCommandlineTool(
+            var exitCode = InvokeCommandLineTool(
                 exePath,
                 arguments,
                 standardOutputHandler: standardOutputhandler,
@@ -63,7 +64,8 @@ namespace NBuildKit.MsBuild.Tasks
                     Log.LogMessage(
                         MessageImportance.Normal,
                         string.Format(
-                            "{0} exited with exit code: {1}. Build will continue because errors are assumed to be warnings. To change this set FxCopWarningsAsErrors to 'true' in the settings file.",
+                            CultureInfo.InvariantCulture,
+                            "{0} exited with exit code: {1}. Build will continue because errors are assumed to be warnings. To change this set WarningsAsErrors to 'true' in the settings file.",
                             Path.GetFileName(exePath),
                             exitCode));
                 }
@@ -71,6 +73,7 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     Log.LogError(
                         string.Format(
+                            CultureInfo.InvariantCulture,
                             "{0} exited with a non-zero exit code. Exit code was: {1}",
                             Path.GetFileName(exePath),
                             exitCode));

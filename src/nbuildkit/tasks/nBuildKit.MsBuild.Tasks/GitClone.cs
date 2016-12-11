@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -29,14 +30,14 @@ namespace NBuildKit.MsBuild.Tasks
         {
             var arguments = new List<string>();
             {
-                arguments.Add(string.Format("clone \"{0}\" ", Repository.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "clone \"{0}\" ", Repository.TrimEnd('\\')));
 
                 if (!string.IsNullOrWhiteSpace(Branch))
                 {
-                    arguments.Add(string.Format("--branch \"{0}\" ", Branch.TrimEnd('\\')));
+                    arguments.Add(string.Format(CultureInfo.InvariantCulture, "--branch \"{0}\" ", Branch.TrimEnd('\\')));
                 }
 
-                arguments.Add(string.Format("\"{0}\" ", GetAbsolutePath(Workspace).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "\"{0}\" ", GetAbsolutePath(Workspace).TrimEnd('\\')));
                 arguments.Add("--quiet ");
             }
 

@@ -28,7 +28,7 @@ namespace NBuildKit.MsBuild.Tasks
             }
             else
             {
-                var toReplace = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+                var toReplace = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 if (Tokens != null)
                 {
                     ITaskItem[] processedTokens = Tokens;

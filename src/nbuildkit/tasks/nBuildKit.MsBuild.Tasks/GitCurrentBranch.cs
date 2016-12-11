@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -52,7 +53,7 @@ namespace NBuildKit.MsBuild.Tasks
                             lines.Add(e.Data);
                         };
 
-                    InvokeGit(new[] { string.Format("branch --contains {0}", currentRevision) }, standardOutputHandler: standardOutputHandler);
+                    InvokeGit(new[] { string.Format(CultureInfo.InvariantCulture, "branch --contains {0}", currentRevision) }, standardOutputHandler: standardOutputHandler);
 
                     // Explicitly ignoring the error codes because GIT is a little silly with error codes
                     // It produces error codes even if there's not really an error.

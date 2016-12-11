@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -40,63 +41,57 @@ namespace NBuildKit.MsBuild.Tasks
         /// <inheritdoc/>
         public override bool Execute()
         {
-            try
-            {
-                // If the node tool is installed on the machine there will be a 'cmd' type script
-                // that can be used to invoke it. In that case we are probably passed the path to this cmd script
-                // or just the name of the tool, e.g. 'npm'. In that case we just execute the tool with cmd (running
-                // it straight with System.Diagnostics.Process doesn't work, it complains about the node tool not being
-                // a windows executable).
-                //
-                // If we got passed the path to a js file then we assume that the tools are a local install and
-                // we invoke them through node.
-                var isJsFile = Path.GetExtension(ToolPath.ItemSpec).Equals(".js");
-                var toolFileName = (!isJsFile)
-                    ? "cmd.exe"
-                    : GetFullToolPath(NodeExecutablePath);
-                var toolArguments = (!isJsFile)
-                    ? string.Format("/c {0} {1}", ToolPath, Arguments)
-                    : string.Format("{0} {1}", ToolPath, Arguments);
+            // If the node tool is installed on the machine there will be a 'cmd' type script
+            // that can be used to invoke it. In that case we are probably passed the path to this cmd script
+            // or just the name of the tool, e.g. 'npm'. In that case we just execute the tool with cmd (running
+            // it straight with System.Diagnostics.Process doesn't work, it complains about the node tool not being
+            // a windows executable).
+            //
+            // If we got passed the path to a js file then we assume that the tools are a local install and
+            // we invoke them through node.
+            var isJsFile = Path.GetExtension(ToolPath.ItemSpec).Equals(".js");
+            var toolFileName = (!isJsFile)
+                ? "cmd.exe"
+                : GetFullToolPath(NodeExecutablePath);
+            var toolArguments = (!isJsFile)
+                ? string.Format(CultureInfo.InvariantCulture, "/c {0} {1}", ToolPath, Arguments)
+                : string.Format(CultureInfo.InvariantCulture, "{0} {1}", ToolPath, Arguments);
 
-                DataReceivedEventHandler standardErrorHandler =
-                    (s, e) =>
-                    {
-                        if (!string.IsNullOrWhiteSpace(e.Data))
-                        {
-                            if (IgnoreErrors)
-                            {
-                                Log.LogWarning(e.Data);
-                            }
-                            else
-                            {
-                                Log.LogError(e.Data);
-                            }
-                        }
-                    };
-                var exitCode = InvokeCommandlineTool(
-                    toolFileName,
-                    new[] { toolArguments },
-                    GetAbsolutePath(WorkingDirectory),
-                    standardErrorHandler: standardErrorHandler);
-                if (exitCode != 0)
+            DataReceivedEventHandler standardErrorHandler =
+                (s, e) =>
                 {
-                    var text = string.Format(
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        Path.GetFileName(NodeExecutablePath.ItemSpec),
-                        exitCode);
-                    if (IgnoreExitCode)
+                    if (!string.IsNullOrWhiteSpace(e.Data))
                     {
-                        Log.LogWarning(text);
+                        if (IgnoreErrors)
+                        {
+                            Log.LogWarning(e.Data);
+                        }
+                        else
+                        {
+                            Log.LogError(e.Data);
+                        }
                     }
-                    else
-                    {
-                        Log.LogError(text);
-                    }
-                }
-            }
-            catch (Exception e)
+                };
+            var exitCode = InvokeCommandLineTool(
+                toolFileName,
+                new[] { toolArguments },
+                GetAbsolutePath(WorkingDirectory),
+                standardErrorHandler: standardErrorHandler);
+            if (exitCode != 0)
             {
-                Log.LogError(e.ToString());
+                var text = string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    Path.GetFileName(NodeExecutablePath.ItemSpec),
+                    exitCode);
+                if (IgnoreExitCode)
+                {
+                    Log.LogWarning(text);
+                }
+                else
+                {
+                    Log.LogError(text);
+                }
             }
 
             // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
@@ -154,6 +149,11 @@ namespace NBuildKit.MsBuild.Tasks
         /// </param>
         protected override void UpdateEnvironmentVariables(StringDictionary environmentVariables)
         {
+            if (environmentVariables == null)
+            {
+                return;
+            }
+
             environmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH");
 
             var nodeWorkingDirectory = Path.GetDirectoryName(GetFullToolPath(NodeExecutablePath));

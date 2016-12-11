@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -25,29 +26,30 @@ namespace NBuildKit.MsBuild.Tasks
                 var outputFilePath = Path.Combine(
                     Path.GetDirectoryName(outputFile),
                     string.Format(
+                        CultureInfo.InvariantCulture,
                         "{0}_{1}{2}",
                         Path.GetFileNameWithoutExtension(outputFile),
                         targetFramework.Replace(" ", string.Empty).Replace(".", string.Empty),
                         Path.GetExtension(outputFile)));
 
-                arguments.Add(string.Format("/ruleset:=\"{0}\" ", ruleSetFilePath.TrimEnd('\\')));
-                arguments.Add(string.Format("/rulesetdirectory:\"{0}\" ", GetAbsolutePath(RuleSetDirectory).TrimEnd('\\')));
-                arguments.Add(string.Format("/out:\"{0}\" ", outputFilePath));
-                arguments.Add(string.Format("/ignoregeneratedcode "));
-                arguments.Add(string.Format("/searchgac "));
-                arguments.Add(string.Format("/forceoutput "));
-                arguments.Add(string.Format("/successfile "));
-                arguments.Add(string.Format("/targetframeworkversion:v{0} ", targetFramework));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/ruleset:=\"{0}\" ", ruleSetFilePath.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/rulesetdirectory:\"{0}\" ", GetAbsolutePath(RuleSetDirectory).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/out:\"{0}\" ", outputFilePath));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/ignoregeneratedcode "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/searchgac "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/forceoutput "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/successfile "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/targetframeworkversion:v{0} ", targetFramework));
 
                 var dictionaryFile = GetAbsolutePath(Dictionary);
                 if (!string.IsNullOrEmpty(dictionaryFile))
                 {
-                    arguments.Add(string.Format("/dictionary:\"{0}\" ", dictionaryFile.TrimEnd('\\')));
+                    arguments.Add(string.Format(CultureInfo.InvariantCulture, "/dictionary:\"{0}\" ", dictionaryFile.TrimEnd('\\')));
                 }
 
                 if (!string.IsNullOrEmpty(Culture))
                 {
-                    arguments.Add(string.Format("/culture:\"{0}\" ", Culture.TrimEnd('\\')));
+                    arguments.Add(string.Format(CultureInfo.InvariantCulture, "/culture:\"{0}\" ", Culture.TrimEnd('\\')));
                 }
 
                 if (ReferenceFiles != null)
@@ -55,7 +57,7 @@ namespace NBuildKit.MsBuild.Tasks
                     foreach (var referenceFileName in ReferenceFiles)
                     {
                         var referenceFile = GetAbsolutePath(referenceFileName);
-                        arguments.Add(string.Format("/reference:\"{0}\" ", referenceFile.TrimEnd('\\')));
+                        arguments.Add(string.Format(CultureInfo.InvariantCulture, "/reference:\"{0}\" ", referenceFile.TrimEnd('\\')));
                     }
                 }
 
@@ -64,13 +66,13 @@ namespace NBuildKit.MsBuild.Tasks
                     foreach (var referenceDirectory in ReferenceDirectories)
                     {
                         var referenceDir = GetAbsolutePath(referenceDirectory);
-                        arguments.Add(string.Format("/directory:\"{0}\" ", referenceDir.TrimEnd('\\')));
+                        arguments.Add(string.Format(CultureInfo.InvariantCulture, "/directory:\"{0}\" ", referenceDir.TrimEnd('\\')));
                     }
                 }
 
                 foreach (var inputFileName in assemblyPaths)
                 {
-                    arguments.Add(string.Format("/file:\"{0}\" ", inputFileName.TrimEnd('\\')));
+                    arguments.Add(string.Format(CultureInfo.InvariantCulture, "/file:\"{0}\" ", inputFileName.TrimEnd('\\')));
                 }
             }
 
@@ -159,6 +161,7 @@ namespace NBuildKit.MsBuild.Tasks
                     Log.LogMessage(
                         MessageImportance.Normal,
                         string.Format(
+                            CultureInfo.InvariantCulture,
                             "Analyzing assemblies with target framework [{0}] with FxCop",
                             map.Key));
 
