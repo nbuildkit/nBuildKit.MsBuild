@@ -127,7 +127,6 @@ namespace NBuildKit.MsBuild.Tasks
         /// <summary>
         /// Gets or sets the regular expression that will be used to locate the template variables.
         /// </summary>
-        [Required]
         public string SearchExpression
         {
             get;
