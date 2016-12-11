@@ -26,6 +26,8 @@ namespace NBuildKit.MsBuild.Tasks
     /// </summary>
     public sealed class GenerateTargetsFile : NBuildKitMsBuildTask
     {
+        private const string DefaultNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
+
         private static void AppendUsingTask(XmlNode node, string typeName)
         {
             /*
@@ -39,7 +41,7 @@ namespace NBuildKit.MsBuild.Tasks
 
             var doc = node.OwnerDocument;
 
-            var usingTaskNode = doc.CreateElement(string.Empty, "UsingTask", string.Empty);
+            var usingTaskNode = doc.CreateElement("UsingTask", DefaultNamespace);
             node.AppendChild(usingTaskNode);
 
             var assemblyFileAttribute = doc.CreateAttribute("AssemblyFile");
@@ -136,17 +138,17 @@ namespace NBuildKit.MsBuild.Tasks
             var root = doc.DocumentElement;
             doc.InsertBefore(xmlDeclaration, root);
 
-            var projectNode = doc.CreateElement(string.Empty, "Project", "http://schemas.microsoft.com/developer/msbuild/2003");
+            var projectNode = doc.CreateElement(string.Empty, "Project", DefaultNamespace);
             doc.AppendChild(projectNode);
 
-            var propertyGroupNode = doc.CreateElement(string.Empty, "PropertyGroup", string.Empty);
+            var propertyGroupNode = doc.CreateElement("PropertyGroup", DefaultNamespace);
             projectNode.AppendChild(propertyGroupNode);
 
-            var existsExtensionsNode = doc.CreateElement(string.Empty, ExtensionsProperty, string.Empty);
+            var existsExtensionsNode = doc.CreateElement(ExtensionsProperty, DefaultNamespace);
             existsExtensionsNode.InnerText = "true";
             propertyGroupNode.AppendChild(existsExtensionsNode);
 
-            var filePropertyNode = doc.CreateElement(string.Empty, "FileTasksAssembly", string.Empty);
+            var filePropertyNode = doc.CreateElement("FileTasksAssembly", DefaultNamespace);
             filePropertyNode.InnerText = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}(MSBuildThisFileDirectory){1}",
