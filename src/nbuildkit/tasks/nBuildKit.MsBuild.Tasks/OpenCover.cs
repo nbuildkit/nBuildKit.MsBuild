@@ -14,7 +14,7 @@ using Microsoft.Build.Framework;
 namespace NBuildKit.MsBuild.Tasks
 {
     /// <summary>
-    /// Defines a <see cref="ITask"/> that performs invokes OpenCover with a given unit testing framework.
+    /// Defines a <see cref="ITask"/> that invokes OpenCover with a given unit testing framework.
     /// </summary>
     public sealed class OpenCover : CommandLineToolTask
     {
