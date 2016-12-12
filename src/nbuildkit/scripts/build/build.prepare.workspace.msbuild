@@ -92,11 +92,12 @@
         -->
         <ItemGroup>
             <BuildFilesToDelete
+                Condition="Exists('$(DirBuild)')"
                 Exclude="$(DirUserConfiguration)\**\*.*"
                 Include="$(DirBuild)\**\*.*" />
         </ItemGroup>
         <Delete
-            Condition=" '$(ShouldExecute)' == 'true' "
+            Condition=" '@(BuildFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
             ContinueOnError="True"
             Files="@(BuildFilesToDelete)" />
 
@@ -137,17 +138,18 @@
                 Include="%(BuildFilesToGenerate.FullPath)" />
         </ItemGroup>
         <Delete
-            Condition=" '$(ShouldExecute)' == 'true' "
+            Condition=" '@(GeneratedFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
             ContinueOnError="True"
             Files="@(GeneratedFilesToDelete)" />
 
         <ItemGroup>
             <BuildDirectoriesToDelete
+                Condition="Exists('$(DirBuild)')"
                 Exclude="$(DirBuild);$(DirUserConfiguration)"
                 Include="$([System.IO.Directory]::GetDirectories('$(DirBuild)', '*', System.IO.SearchOption.TopDirectoryOnly))" />
         </ItemGroup>
         <RemoveDir
-            Condition=" '$(ShouldExecute)' == 'true' "
+            Condition=" '@(BuildDirectoriesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
             ContinueOnError="True"
             Directories="@(BuildDirectoriesToDelete)" />
     </Target>
