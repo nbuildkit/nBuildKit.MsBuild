@@ -17,8 +17,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(FileExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileExtensionsImport)" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Deploy_PushTo_Directory_DisplayInfo"

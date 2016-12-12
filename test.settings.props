@@ -11,13 +11,14 @@
         The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
         determines in which order the test steps are executed.
 
-        The following default steps are always executed:
-        - Clearing the existing build artifacts from the workspace and creation of the required directories. Clearing the
-          existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
-        - Restoring the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally also restores the
-          NuGet packages as specified in the nBuildKit specific 'packages.config' files.
-
         The following test steps are by default provided through the given properties:
+        $(TestStepsPrepareWorkspace)     - Clears the existing build artifacts from the workspace and creates the required directories. Clearing the
+                                           existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
+        $(TestStepsBuildTargetsAssembly) - Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio
+                                           solutions so that it is possible to build MsBuild tasks that will be used in the build process.
+        $(TestStepsGenerateTargetsFile)  - Generates a targets file for use with an MsBuild tasks assembly.
+        $(TestStepsPrepareRestoreNuGet)  - Restores the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally
+                                           also restores the NuGet packages as specified in the nBuildKit specific 'packages.config' files.
         $(TestStepsPrepareVcsBranch)     - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
                                            name as the remote tracking branch.
         $(TestStepsPrepareGetVersion)    - Gathers version information and stores it in a temporary file for use by the rest of the test process.
@@ -70,6 +71,26 @@
                 Clean;
             </Groups>
         </TestStepsToExecute>
+
+        <TestStepsToExecute
+            Condition="!Exists('$(FileNBuildKitExtensionsImport)')"
+            Include="$(TestStepsBuildTargetsAssembly)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Bootstrap;
+            </Groups>
+        </TestStepsToExecute>
+        <TestStepsToExecute
+            Condition="!Exists('$(FileNBuildKitExtensionsImport)')"
+            Include="$(TestStepsGenerateTargetsFile)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Bootstrap;
+            </Groups>
+        </TestStepsToExecute>
+
         <TestStepsToExecute Include="$(TestStepsPrepareRestoreNuGet)">
             <Properties>
                 StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\test\packages.config

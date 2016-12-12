@@ -366,27 +366,6 @@
 
 
     <!--
-        **** BOOTSTRAP - BUILD TASKS ****
-    -->
-    <!--
-        The collection of all Visual Studio projects that contain MsBuild tasks for nBuildKit. These will be
-        compiled and placed in a bootstrap directory so that the nBuildKit build can use them.
-    -->
-    <ItemGroup>
-        <MsBuildTasksProjectsToBuild Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\nBuildKit.MsBuild.Tasks.csproj">
-            <Configuration>$(ProductionConfiguration)</Configuration>
-            <Platform>$(Platform)</Platform>
-            <Targets>Rebuild</Targets>
-            <Properties>
-                OutputPath=$(DirBuildBootstrap);
-                ShouldRunAnalyzers=false;
-                ShouldPerformCodeAnalysis=false;
-            </Properties>
-        </MsBuildTasksProjectsToBuild>
-    </ItemGroup>
-
-
-    <!--
         **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
     -->
     <!--
