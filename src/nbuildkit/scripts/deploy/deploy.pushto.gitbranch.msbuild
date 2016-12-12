@@ -17,29 +17,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitAdd.msbuild') AND '$(ExistsExtensionsGitAdd)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitAdd.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitClone.msbuild') AND '$(ExistsExtensionsGitClone)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitClone.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCommit.msbuild') AND '$(ExistsExtensionsGitCommit)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitCommit.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitNewFiles.msbuild') AND '$(ExistsExtensionsGitNewFiles)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitNewFiles.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild') AND '$(ExistsExtensionsGitPush)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitPush.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild') AND '$(ExistsExtensionsUnzip)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\Unzip.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Deploy_PushTo_GitBranch_DisplayInfo"
@@ -189,20 +168,20 @@
         <Message Text="Cloning repository $(RepositoryToPushTo) and switching to branch $(BranchToPushTo) ..." />
         <GitClone
             Branch="$(BranchToPushTo)"
-            CloneLocation="$(DirRepositoryWorkspace)"
             Condition=" '$(RepositoryToPushTo)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            Repository="$(RepositoryToPushTo)" />
+            Repository="$(RepositoryToPushTo)"
+            Workspace="$(DirRepositoryWorkspace)" />
 
         <!-- Verify that we're on the branch!' -->
-        <GitInfo
+        <GitCurrentBranch
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             WorkingDirectory="$(DirRepositoryWorkspace)">
             <Output
                 PropertyName="GitCurrentBranch"
                 TaskParameter="CurrentBranch" />
-        </GitInfo>
+        </GitCurrentBranch>
         <Error
             Condition=" '$(GitCurrentBranch)' != '$(BranchToPushTo)' "
             Text="Not on expected branch, expected to be on $(BranchToPushTo) but are on $(GitCurrentBranch)" />
@@ -279,7 +258,7 @@
         <Message Text="Adding new files to list of changes to commit on branch $(BranchToPushTo) ..." />
         <GitNewFiles
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirRepositoryWorkspace)">
+            Workspace="$(DirRepositoryWorkspace)">
             <Output
                 ItemName="NewFilesForGit"
                 TaskParameter="NewFiles" />
@@ -289,14 +268,14 @@
             Condition=" '@(NewFilesForGit)' != '' "
             FilesToAdd="@(NewFilesForGit)"
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirRepositoryWorkspace)" />
+            Workspace="$(DirRepositoryWorkspace)" />
 
         <Message Text="Commiting changes on branch $(BranchToPushTo) ..." />
         <GitCommit
             Condition=" '$(CommitMessageToProvide)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Message="$(CommitMessageToProvide)"
-            WorkingDirectory="$(DirRepositoryWorkspace)" />
+            Workspace="$(DirRepositoryWorkspace)" />
     </Target>
 
     <Target
@@ -308,6 +287,6 @@
             Branch="$(BranchToPushTo)"
             Condition=" '$(RepositoryToPushTo)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirRepositoryWorkspace)" />
+            Workspace="$(DirRepositoryWorkspace)" />
     </Target>
 </Project>

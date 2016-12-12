@@ -13,11 +13,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Build_Prepare_GenerateLicenses_DisplayInfo"
@@ -87,7 +84,7 @@
         Name="_nBuildKit_Build_Prepare_GenerateLicenses_Generate">
         <NuGetInstall
             Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="NTreva"
             PackageVersion="$(ToolsExternalNTrevaVersion)"
@@ -95,7 +92,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED'  AND '$(ShouldExecute)' == 'true' "
             FileToLocate="NTreva.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalNTrevaPath"
                 TaskParameter="Path" />

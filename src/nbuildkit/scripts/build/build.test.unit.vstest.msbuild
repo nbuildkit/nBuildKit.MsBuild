@@ -21,23 +21,8 @@
         Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ReportGenerator.msbuild') AND '$(ExistsExtensionsReportGenerator)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\ReportGenerator.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild') AND '$(ExistsExtensionsReportGeneratorOutputToCsv)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\ReportGeneratorOutputToCsv.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_DisplayInfo"
@@ -120,14 +105,14 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="nBuildKit.Tools.VsCoverageToReportGenerator"
             Sources="@(NuGetSources)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
             FileToLocate="VSCoverageToReportGenerator.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalVSCoverageToReportGeneratorPath"
                 TaskParameter="Path" />
@@ -149,7 +134,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="ReportGenerator"
             PackageVersion="$(ToolsExternalReportGeneratorVersion)"
@@ -157,7 +142,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
             FileToLocate="ReportGenerator.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalReportGeneratorPath"
                 TaskParameter="Path" />
@@ -179,7 +164,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="OpenCoverToCoberturaConverter"
             PackageVersion="$(ToolsExternalOpenCoverToCoberturaConverterVersion)"
@@ -187,7 +172,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
             FileToLocate="OpenCoverToCoberturaConverter.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath"
                 TaskParameter="Path" />
@@ -348,7 +333,7 @@
         <ReportGenerator
             Condition=" Exists('$(ToolsExternalReportGeneratorPath)') AND '@(ReportFilesToProcess)' != '' AND '$(ShouldExecute)' == 'true' "
             OpenCoverOutputFiles="@(ReportFilesToProcess)"
-            OutputDir="$(DirReportGeneratorOutput)"
+            OutputDirectory="$(DirReportGeneratorOutput)"
             ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)" />
 
         <ReportGeneratorOutputToCsv

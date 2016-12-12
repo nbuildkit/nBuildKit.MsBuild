@@ -247,6 +247,9 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
 
         private static string GetLibraryLicenses()
         {
+            /*
+            Until nTreva has been updated to handle the latest version of NuGet we will disable this.
+            
             var licenseXml = EmbeddedResourceExtracter.LoadEmbeddedStream(
                 Assembly.GetExecutingAssembly(),
                 @"nBuildKit.Tools.VSCoverageToReportGenerator.Properties.licenses.xml");
@@ -260,7 +263,6 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
                                License = (element.Element("licenseurl").FirstNode as XCData).Value,
                            };
 
-            var builder = new StringBuilder();
             builder.AppendLine(Resources.Header_OtherPackages_Intro);
             foreach (var license in licenses)
             {
@@ -272,7 +274,8 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
                         license.Version,
                         license.Source));
             }
-
+            */
+            var builder = new StringBuilder();
             return builder.ToString();
         }
 

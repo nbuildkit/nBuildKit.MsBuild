@@ -4,6 +4,42 @@
     ToolsVersion="11.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
+        **** BOOTSTRAP - BUILD TASKS ****
+    -->
+    <!--
+        The collection of all Visual Studio projects that contain MsBuild tasks for nBuildKit. These will be
+        compiled and placed in a bootstrap directory so that the nBuildKit build can use them.
+    -->
+    <ItemGroup Condition=" '@(MsBuildTasksProjectsToBuild)' == '' ">
+        <!--
+        <MsBuildTasksProjectsToBuild Include="$(DirSrc)\MyTasks.Tasks.csproj">
+            <Configuration>$(ProductionConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties>
+                OutputPath=$(DirBuildBootstrap);
+                ShouldRunAnalyzers=false;
+                ShouldPerformCodeAnalysis=false;
+            </Properties>
+        </MsBuildTasksProjectsToBuild>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** BOOTSTRAP - GENERATE TARGETS ****
+    -->
+    <!--
+        The collection that contains all the assembly files that contain custom MsBuild Task definitions.
+    -->
+    <ItemGroup Condition=" '@(ExtensionAssemblies)' == '' ">
+        <!--
+        <ExtensionAssemblies Include="$(DirBuildBootstrap)\*.Tasks.dll" />
+        -->
+    </ItemGroup>
+
+
+    <!--
         **** PREPARE - MERGE ****
     -->
     <PropertyGroup>

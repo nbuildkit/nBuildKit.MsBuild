@@ -13,20 +13,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\InvokePesterOnFile.msbuild') AND '$(ExistsExtensionsInvokePesterOnFile)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\InvokePesterOnFile.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolDirectory)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolDirectory.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Test_Integration_DisplayInfo"
@@ -94,7 +82,7 @@
     <Target Name="_nBuildKit_Test_Integration_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="Pester"
             PackageVersion="$(ToolsExternalPesterVersion)"
@@ -102,7 +90,7 @@
         <SearchPackagesDirectoryForToolDirectory
             Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' "
             FileToLocate="Pester.psm1"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalPesterPath"
                 TaskParameter="Path" />

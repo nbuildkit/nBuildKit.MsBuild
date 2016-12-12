@@ -13,20 +13,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitHubFlowVersion)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitHubFlowVersion.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild') AND '$(ExistsExtensionsCalculateSemanticVersionWithGitVersion)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\CalculateSemanticVersionWithGitVersion.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Import
         Condition=" '$(ScriptGetVersion)' != '' AND '$(ScriptGetVersion)' != 'UNDEFINED' AND Exists('$(ScriptGetVersion)')"
@@ -192,7 +180,7 @@
         Name="_nBuildKit_Shared_Prepare_GetVersion_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="GitVersion.CommandLine"
             PackageVersion="$(ToolsExternalGitVersionVersion)"
@@ -200,7 +188,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "
             FileToLocate="GitVersion.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalGitVersionPath"
                 TaskParameter="Path" />
@@ -233,7 +221,7 @@
             Condition=" '$(ShouldExecute)' == 'true' "
             ExePath="$(ToolsExternalGitVersionPath)"
             LogPath="$(DirBuildLogs)\gitversion.log"
-            RemoteRepositoryUrl="$(GitRemoteRepository)"
+            RemoteRepositoryUri="$(GitRemoteRepository)"
             UserName="$(GitUserName)">
             <Output
                 PropertyName="VersionMajor"

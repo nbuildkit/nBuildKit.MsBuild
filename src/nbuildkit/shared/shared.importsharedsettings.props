@@ -90,4 +90,11 @@
     <Import
         Condition="Exists('$(DirNBuildKitMsBuild)\artefacts.shared.props') AND '$(ExistsSharedArtefactSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuild)\artefacts.shared.props" />
+
+    <!--
+        Define the location of the nBuildKit.MsBuild targets file.
+    -->
+    <PropertyGroup>
+        <FileNBuildKitExtensionsImport>$(DirNBuildKitMsBuildExtensions)\nBuildKit.MsBuild.Tasks.targets</FileNBuildKitExtensionsImport>
+    </PropertyGroup>
 </Project>

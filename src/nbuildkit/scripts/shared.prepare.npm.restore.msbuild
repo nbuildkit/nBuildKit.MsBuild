@@ -13,17 +13,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild') AND '$(ExistsExtensionsGetToolFullPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GetToolFullPath.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild') AND '$(ExistsExtensionsInvokeNodeTool)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\InvokeNodeTool.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild') AND '$(ExistsExtensionsNuGetInstall)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetInstall.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild') AND '$(ExistsExtensionsSearchPackagesDirectoryForToolPath)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\SearchPackagesDirectoryForToolPath.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo"
@@ -78,7 +69,7 @@
         Name="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="Node.js"
             PackageVersion="$(ToolsExternalNodeJsVersion)"
@@ -86,7 +77,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "
             FileToLocate="node.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalNodeJsPath"
                 TaskParameter="Path" />
@@ -110,7 +101,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="Python.Runtime"
             PackageVersion="$(ToolsExternalPythonVersion)"
@@ -118,7 +109,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "
             FileToLocate="python.exe"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalPythonPath"
                 TaskParameter="Path" />
@@ -141,7 +132,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="Npm"
             PackageVersion="$(ToolsExternalNpmVersion)"
@@ -149,7 +140,7 @@
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "
             FileToLocate="npm-cli.js"
-            PackagesDir="$(DirPackages)">
+            PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalNpmPath"
                 TaskParameter="Path" />

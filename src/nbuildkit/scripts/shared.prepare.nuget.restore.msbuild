@@ -13,8 +13,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild') AND '$(ExistsExtensionsNuGetRestore)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\NuGetRestore.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <PropertyGroup>
         <FileNuGetRestoreComplete>$(DirBuildTemp)\nuget_restore.json</FileNuGetRestoreComplete>
@@ -96,7 +96,7 @@
             Text="No NuGet package configuration files found to restore packages from." />
         <NuGetRestore
             Condition=" '@(NuGetPackageFiles)' != '' AND '$(ShouldExecute)' == 'true' "
-            NuGetPath="$(ToolsExternalNuGetPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageFile="%(NuGetPackageFiles.FullPath)"
             Sources="@(NuGetSources)" />

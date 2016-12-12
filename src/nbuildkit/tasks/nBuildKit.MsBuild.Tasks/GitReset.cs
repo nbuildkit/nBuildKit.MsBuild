@@ -1,0 +1,45 @@
+﻿//-----------------------------------------------------------------------
+// <copyright company="nBuildKit">
+// Copyright (c) nBuildKit. All rights reserved.
+// Licensed under the Apache License, Version 2.0 license. See LICENCE.md file in the project root for full license information.
+// </copyright>
+//-----------------------------------------------------------------------
+
+using System.Collections.Generic;
+using System.Globalization;
+using Microsoft.Build.Framework;
+
+namespace NBuildKit.MsBuild.Tasks
+{
+    /// <summary>
+    /// Defines a <see cref="ITask"/> that performs a Git reset.
+    /// </summary>
+    public sealed class GitReset : GitCommandLineToolTask
+    {
+        /// <summary>
+        /// Gets or sets the commit ID to which the current workspace should be reset.
+        /// </summary>
+        [Required]
+        public string Commit
+        {
+            get;
+            set;
+        }
+
+        /// <inheritdoc/>
+        public override bool Execute()
+        {
+            var arguments = new List<string>();
+            {
+                arguments.Add("reset ");
+                arguments.Add("--hard ");
+                arguments.Add("--quiet ");
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "{0} ", Commit));
+            }
+
+            InvokeGit(arguments);
+
+            return !Log.HasLoggedErrors;
+        }
+    }
+}

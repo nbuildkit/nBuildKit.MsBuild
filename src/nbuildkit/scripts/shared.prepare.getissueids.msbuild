@@ -12,11 +12,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\ExtractIssueIdsFromGitCommitMessages.msbuild') AND '$(ExistsExtensionsExtractIssueIdsFromGitCommitMessages)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\ExtractIssueIdsFromGitCommitMessages.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild') AND '$(ExistsExtensionsLastItemInGroup)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\LastItemInGroup.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
         Condition="!Exists('$(FileWorkItems)') AND '@(BranchMergeTarget)' != '' "

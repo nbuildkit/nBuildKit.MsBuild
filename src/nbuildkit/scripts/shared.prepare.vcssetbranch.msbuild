@@ -12,14 +12,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild') AND '$(ExistsExtensionsGitCheckout)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitCheckout.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild') AND '$(ExistsExtensionsGitInfo)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitInfo.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild') AND '$(ExistsExtensionsGitReset)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GitReset.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
         Condition="!Exists('$(FileVcsInfo)')"
@@ -98,14 +92,14 @@
             Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
             Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
-        <GitInfo
+        <GitCurrentBranch
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)">
+            Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="CurrentGitBranch"
                 TaskParameter="CurrentBranch" />
-        </GitInfo>
+        </GitCurrentBranch>
         <Message Text="Current branch: $(CurrentGitBranch)" />
 
         <Message
@@ -115,16 +109,16 @@
             Branch="$(GitBranchExpected)"
             Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)" />
+            Workspace="$(DirWorkspace)" />
 
-        <GitInfo
+        <GitCurrentRevision
             Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)">
+            Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="GitRevNoCurrentBranch"
                 TaskParameter="CurrentRevision" />
-        </GitInfo>
+        </GitCurrentRevision>
         <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
 
         <Message
@@ -134,6 +128,6 @@
             Commit="$(GitRevNoExpected)"
             Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirWorkspace)" />
+            Workspace="$(DirWorkspace)" />
     </Target>
  </Project>
