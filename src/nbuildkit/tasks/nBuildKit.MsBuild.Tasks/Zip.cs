@@ -117,7 +117,10 @@ namespace NBuildKit.MsBuild.Tasks
 
                     foreach (var file in filesToInclude)
                     {
-                        var relativePath = Path.Combine(target, GetRelativePath(file, directory));
+                        var relativefilePath = GetFilePathRelativeToDirectory(file, directory);
+                        var relativePath = Path.Combine(
+                            target,
+                            relativefilePath);
                         if (!files.ContainsKey(file))
                         {
                             files.Add(file, new List<string>());

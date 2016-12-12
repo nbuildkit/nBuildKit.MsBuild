@@ -35,7 +35,7 @@ namespace NBuildKit.MsBuild.Tasks
                                 string.Format(
                                     CultureInfo.InvariantCulture,
                                     "\"{0}\" ",
-                                    GetRelativePath(GetAbsolutePath(taskItem), workingDirectory)));
+                                    GetFilePathRelativeToDirectory(GetAbsolutePath(taskItem), workingDirectory)));
                         }
                     }
                 }

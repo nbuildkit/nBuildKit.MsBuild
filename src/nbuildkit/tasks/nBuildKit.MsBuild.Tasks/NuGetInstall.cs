@@ -76,7 +76,6 @@ namespace NBuildKit.MsBuild.Tasks
         /// <summary>
         /// Gets or sets the version of the package that should be installed.
         /// </summary>
-        [Required]
         public string PackageVersion
         {
             get;

@@ -31,7 +31,7 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <summary>
-        /// Creates a relative path from one file or folder to another.
+        /// Creates a relative path from one directory to another.
         /// </summary>
         /// <remarks>
         /// Original code here: http://stackoverflow.com/a/275749/539846
@@ -39,8 +39,10 @@ namespace NBuildKit.MsBuild.Tasks
         /// <param name="fromPath">Contains the directory that defines the start of the relative path.</param>
         /// <param name="toPath">Contains the path that defines the endpoint of the relative path.</param>
         /// <returns>The relative path from the start directory to the end path.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="fromPath"/> or <paramref name="toPath"/> is <c>null</c>.</exception>
-        protected static string GetRelativePath(string fromPath, string toPath)
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="fromPath"/> or <paramref name="toPath"/> is <c>null</c>.
+        /// </exception>
+        protected static string GetRelativeDirectoryPath(string fromPath, string toPath)
         {
             if (string.IsNullOrEmpty(fromPath))
             {
@@ -70,6 +72,64 @@ namespace NBuildKit.MsBuild.Tasks
             }
 
             return relativePath;
+        }
+
+        /// <summary>
+        /// Creates a relative path from one file to another.
+        /// </summary>
+        /// <remarks>
+        /// Original code here: http://stackoverflow.com/a/275749/539846
+        /// </remarks>
+        /// <param name="fromPath">Contains the file path that defines the start of the relative path.</param>
+        /// <param name="toPath">Contains the path that defines the endpoint of the relative path.</param>
+        /// <returns>The relative path from the start file to the end path.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="fromPath"/> or <paramref name="toPath"/> is <c>null</c>.
+        /// </exception>
+        protected static string GetRelativeFilePath(string fromPath, string toPath)
+        {
+            if (string.IsNullOrEmpty(fromPath))
+            {
+                throw new ArgumentNullException("fromPath");
+            }
+
+            if (string.IsNullOrEmpty(toPath))
+            {
+                throw new ArgumentNullException("toPath");
+            }
+
+            // The Uri class treats paths that are directories but don't end in a directory separator as files.
+            Uri fromUri = new Uri(fromPath);
+            Uri toUri = new Uri(toPath);
+
+            if (fromUri.Scheme != toUri.Scheme)
+            {
+                return toPath;
+            }
+
+            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+            string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+            if (string.Equals(toUri.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
+            {
+                relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            }
+
+            return relativePath;
+        }
+
+        /// <summary>
+        /// Creates a relative path for a file based on a given directory.
+        /// </summary>
+        /// <param name="fromPath">Contains the file path that defines the start of the relative path.</param>
+        /// <param name="directoryPath">The path of the base directory.</param>
+        /// <returns>The relative path from the start file to the directory.</returns>
+        protected static string GetFilePathRelativeToDirectory(string fromPath, string directoryPath)
+        {
+            var relativeDirectoryPath = GetRelativeDirectoryPath(Path.GetDirectoryName(fromPath), directoryPath);
+            return Path.Combine(
+                relativeDirectoryPath,
+                Path.GetFileName(fromPath));
         }
 
         /// <summary>
