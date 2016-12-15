@@ -8,6 +8,8 @@
         <ExistsTestSteps>true</ExistsTestSteps>
     </PropertyGroup>
     <PropertyGroup>
+        <TestStepsShowHelp>$(DirNBuildKitMsBuild)\test\test.show.help.msbuild</TestStepsShowHelp>
+
         <TestStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\test\test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
 
         <TestStepsBuildTargetsAssembly>$(DirNBuildKitMsBuild)\shared.bootstrap.build.tasks.msbuild</TestStepsBuildTargetsAssembly>
@@ -21,4 +23,56 @@
         <TestStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
         <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\test\test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
     </PropertyGroup>
+    <ItemGroup>
+        <AvailableTestSteps Include="TestStepsPrepareWorkspace">
+            <Description>
+                Clears the existing build artifacts from the workspace and creates the required directories. Clearing the existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsBuildTargetsAssembly">
+            <Description>
+                Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio solutions so that it is possible to build MsBuild tasks that will be used in the build process.
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsGenerateTargetsFile">
+            <Description>
+                Generates a targets file for use with an MsBuild tasks assembly.
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsPrepareGetIssueIds">
+            <Description>
+                Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsPrepareVcsBranch">
+            <Description>
+                When building from a GIT repository on Jenkins ensures that the current checkout has the same branch name as the remote tracking branch.
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsPrepareRestoreNuGet">
+            <Description>
+                Restores the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally also restores the NuGet packages as specified in the nBuildKit specific 'packages.config' files.
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsPrepareGetVersion">
+            <Description>
+                $(TestStepsPrepareGetVersion)    - Gathers version information and stores it in a temporary file for use by the rest of the test process.
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsPrepareReleaseNotes">
+            <Description>
+                Gathers the release notes and stores them for later use during the test process.
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsPrepareVcsInfo">
+            <Description>
+                Stores the Version Control System (VCS) information in a file for later use. Currently supported version control systems is GIT
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsPrepareGenerateFiles">
+            <Description>
+                Generates one or more files from a set of template files.
+            </Description>
+        </AvailableTestSteps>
+    </ItemGroup>
 </Project>
