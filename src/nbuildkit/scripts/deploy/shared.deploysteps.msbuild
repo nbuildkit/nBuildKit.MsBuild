@@ -9,6 +9,8 @@
         <ExistsDeploySteps>true</ExistsDeploySteps>
     </PropertyGroup>
     <PropertyGroup>
+        <DeployStepsShowHelp>$(DirNBuildKitMsBuild)\deploy\deploy.show.help.msbuild</DeployStepsShowHelp>
+
         <DeployStepsBuildTargetsAssembly>$(DirNBuildKitMsBuild)\shared.bootstrap.build.tasks.msbuild</DeployStepsBuildTargetsAssembly>
         <DeployStepsGenerateTargetsFile>$(DirNBuildKitMsBuild)\shared.bootstrap.generate.targetsfile.msbuild</DeployStepsGenerateTargetsFile>
 
@@ -27,4 +29,76 @@
         <DeployStepsPushToGitBranch>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
         <DeployStepsPushToGitRepository>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.gitrepository.msbuild</DeployStepsPushToGitRepository>
     </PropertyGroup>
+    <ItemGroup>
+        <AvailableDeploySteps Include="DeployStepsBuildTargetsAssembly">
+            <Description>
+                Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio solutions so that it is possible to build MsBuild tasks that will be used in the build process.
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsGenerateTargetsFile">
+            <Description>
+                Generates a targets file for use with an MsBuild tasks assembly.
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPrepareVcsBranch">
+            <Description>
+                When building from a GIT repository on Jenkins ensures that the current checkout has the same branch name as the remote tracking branch.
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPrepareGetVersion">
+            <Description>
+                Gathers version information and stores it in a temporary file for use by the rest of the deploy process.
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPrepareTagVcs">
+            <Description>
+                Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPrepareGetIssueIds">
+            <Description>
+                Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsRestoreNuGet">
+            <Description>
+                Restores the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally also restores the NuGet packages as specified in the nBuildKit specific 'packages.config' files.
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPushToTags">
+            <Description>
+                Pushes the tags to a remote git repository
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPushToNuget">
+            <Description>
+                Pushes one or more artifacts to a NuGet feed
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPushToDirectory">
+            <Description>
+                Pushes one or more artifacts to a directory
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPushToSymbolServer">
+            <Description>
+                Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPushToGitHubRelease">
+            <Description>
+                Pushes zero or more files to a GitHub release
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPushToGitBranch">
+            <Description>
+                Pushes zero or more files to a Git branch. Any files that currently exist on that branch are removed and replaced by the specified files.
+            </Description>
+        </AvailableDeploySteps>
+        <AvailableDeploySteps Include="DeployStepsPushToGitRepository">
+            <Description>
+                Pushes an archived local workspace to a Git repository.
+            </Description>
+        </AvailableDeploySteps>
+    </ItemGroup>
 </Project>
