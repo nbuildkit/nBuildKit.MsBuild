@@ -18,7 +18,7 @@ namespace NBuildKit.MsBuild.Tasks.Testing
     /// <summary>
     /// Defines a <see cref="ITask"/> that invokes the Pester powershell unit testing framework on a given set of test files.
     /// </summary>
-    public sealed class InvokePesterOnFile : CommandLineToolTask
+    public sealed class InvokePesterOnFile : PowershellCommandLineToolTask
     {
         /// <inheritdoc/>
         public override bool Execute()
@@ -87,78 +87,8 @@ namespace NBuildKit.MsBuild.Tasks.Testing
                         GetAbsolutePath(ReportFile)));
             }
 
-            var arguments = new List<string>();
-            {
-                arguments.Add("-NonInteractive ");
-                arguments.Add("-NoProfile ");
-                arguments.Add("-ExecutionPolicy Bypass ");
-                arguments.Add(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "-File \"{0}\"",
-                        scriptPath));
-            }
-
-            var powershellPath = GetFullToolPath(PowershellExePath);
-            DataReceivedEventHandler standardErrorOutput =
-                (s, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
-                    {
-                        if (IgnoreErrors)
-                        {
-                            Log.LogWarning(e.Data);
-                        }
-                        else
-                        {
-                            Log.LogError(e.Data);
-                        }
-                    }
-                };
-
-            var exitCode = InvokeCommandLineTool(
-                powershellPath,
-                arguments,
-                standardErrorHandler: standardErrorOutput);
-
-            if (exitCode != 0)
-            {
-                var text = string.Format(
-                    CultureInfo.InvariantCulture,
-                    "{0} exited with a non-zero exit code. Exit code was: {1}",
-                    Path.GetFileName(powershellPath),
-                    exitCode);
-                if (IgnoreExitCode)
-                {
-                    Log.LogWarning(text);
-                }
-                else
-                {
-                    Log.LogError(text);
-                }
-            }
-
+            InvokePowershellFile(scriptPath);
             return !Log.HasLoggedErrors;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether error should be ignored.
-        /// </summary>
-        [Required]
-        public bool IgnoreErrors
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the exit code should be ignored.
-        /// </summary>
-        [Required]
-        public bool IgnoreExitCode
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -166,16 +96,6 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         /// </summary>
         [Required]
         public ITaskItem PesterModulePath
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the full path to the Powershell executable.
-        /// </summary>
-        [Required]
-        public ITaskItem PowershellExePath
         {
             get;
             set;
