@@ -153,7 +153,7 @@ namespace NBuildKit.MsBuild.Tasks
                 MessageImportance.Low,
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "Searching for full path of {0}",
+                    "Searching for absolute path of {0}",
                     path));
 
             var result = path;

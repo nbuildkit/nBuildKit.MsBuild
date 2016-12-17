@@ -26,7 +26,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets the event handler that processes data from the data stream, or standard output stream, of
         /// the command line application.By default logs a message for each output.
         /// </summary>
-        private DataReceivedEventHandler DefaultDataHandler
+        protected virtual DataReceivedEventHandler DefaultDataHandler
         {
             get
             {
@@ -44,7 +44,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets the event handler that processes data from the data stream, or standard output stream, of
         /// the command line application.By default logs a message for each output.
         /// </summary>
-        private DataReceivedEventHandler DefaultErrorHandler
+        protected virtual DataReceivedEventHandler DefaultErrorHandler
         {
             get
             {
@@ -280,16 +280,19 @@ namespace NBuildKit.MsBuild.Tasks
                 filePath,
                 absoluteWorkingDirectory,
                 argumentsAsText);
-            Log.LogMessage(MessageImportance.Low, "Environment variables for the process are: ");
-            foreach (DictionaryEntry pair in info.EnvironmentVariables)
+            if (LogEnvironmentVariables)
             {
-                Log.LogMessage(
-                    MessageImportance.Low,
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0}: {1}",
-                        pair.Key,
-                        pair.Value));
+                Log.LogMessage(MessageImportance.Low, "Environment variables for the process are: ");
+                foreach (DictionaryEntry pair in info.EnvironmentVariables)
+                {
+                    Log.LogMessage(
+                        MessageImportance.Low,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0}: {1}",
+                            pair.Key,
+                            pair.Value));
+                }
             }
 
             var process = new Process();
@@ -309,6 +312,15 @@ namespace NBuildKit.MsBuild.Tasks
 
             var exitCode = process.ExitCode;
             return exitCode;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the environment variables for the process should be logged.
+        /// </summary>
+        public bool LogEnvironmentVariables
+        {
+            get;
+            set;
         }
 
         /// <summary>
