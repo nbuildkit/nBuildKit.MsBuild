@@ -8,7 +8,7 @@
     <ProjectGuid>{8450F57F-6333-4AD6-8833-1048CA754C4B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>nBuildKit.MsBuild.Tasks</RootNamespace>
+    <RootNamespace>NBuildKit.MsBuild.Tasks</RootNamespace>
     <AssemblyName>nBuildKit.MsBuild.Tasks</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -61,43 +61,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddOrUpdateAttributeInCode.cs" />
-    <Compile Include="CalculateSemanticVersionWithGitVersion.cs" />
+    <Compile Include="Code\AddOrUpdateAttributeInCode.cs" />
+    <Compile Include="PowershellCommandLineToolTask.cs" />
+    <Compile Include="Script\InvokePowershellCommand.cs" />
+    <Compile Include="Script\InvokePowershellFile.cs" />
+    <Compile Include="Versions\CalculateSemanticVersionWithGitVersion.cs" />
     <Compile Include="CommandLineToolTask.cs" />
-    <Compile Include="ExtractIssueIdsFromGitCommitMessages.cs" />
-    <Compile Include="FindAndReplaceInFile.cs" />
-    <Compile Include="FindAndReplaceInText.cs" />
-    <Compile Include="FxCopCommandLineToolTask.cs" />
-    <Compile Include="FxCopViaAssemblies.cs" />
-    <Compile Include="FxCopViaProject.cs" />
-    <Compile Include="GatherNuGetDependenciesForProject.cs" />
-    <Compile Include="GenerateInternalsVisibleToAttributes.cs" />
+    <Compile Include="VersionControl\ExtractIssueIdsFromGitCommitMessages.cs" />
+    <Compile Include="Templating\FindAndReplaceInFile.cs" />
+    <Compile Include="Templating\FindAndReplaceInText.cs" />
+    <Compile Include="Validation\FxCopCommandLineToolTask.cs" />
+    <Compile Include="Validation\FxCopViaAssemblies.cs" />
+    <Compile Include="Validation\FxCopViaProject.cs" />
+    <Compile Include="Packaging\GatherNuGetDependenciesForProject.cs" />
+    <Compile Include="Code\GenerateInternalsVisibleToAttributes.cs" />
     <Compile Include="GenerateTargetsFile.cs" />
-    <Compile Include="GetFileVersion.cs" />
-    <Compile Include="GetIssuesForGitHubMilestone.cs" />
-    <Compile Include="GetSemanticVersionFromFile.cs" />
-    <Compile Include="GetToolFullPath.cs" />
-    <Compile Include="GetVcsInfoFromFile.cs" />
-    <Compile Include="GitAdd.cs" />
-    <Compile Include="GitCheckout.cs" />
-    <Compile Include="GitClone.cs" />
-    <Compile Include="GitCommandLineToolTask.cs" />
-    <Compile Include="GitCommit.cs" />
-    <Compile Include="GitCurrentBranch.cs" />
-    <Compile Include="GitCurrentRevision.cs" />
-    <Compile Include="GitHubReleaseCreate.cs" />
-    <Compile Include="GitHubReleaseUpload.cs" />
-    <Compile Include="GitMerge.cs" />
-    <Compile Include="GitNewFiles.cs" />
-    <Compile Include="GitPush.cs" />
-    <Compile Include="GitReset.cs" />
+    <Compile Include="Versions\GetFileVersion.cs" />
+    <Compile Include="Projects\GetIssuesForGitHubMilestone.cs" />
+    <Compile Include="Versions\GetSemanticVersionFromFile.cs" />
+    <Compile Include="FileSystem\GetToolFullPath.cs" />
+    <Compile Include="VersionControl\GetVcsInfoFromFile.cs" />
+    <Compile Include="VersionControl\GitAdd.cs" />
+    <Compile Include="VersionControl\GitCheckout.cs" />
+    <Compile Include="VersionControl\GitClone.cs" />
+    <Compile Include="VersionControl\GitCommandLineToolTask.cs" />
+    <Compile Include="VersionControl\GitCommit.cs" />
+    <Compile Include="VersionControl\GitCurrentBranch.cs" />
+    <Compile Include="VersionControl\GitCurrentRevision.cs" />
+    <Compile Include="Projects\GitHubReleaseCreate.cs" />
+    <Compile Include="Projects\GitHubReleaseUpload.cs" />
+    <Compile Include="VersionControl\GitMerge.cs" />
+    <Compile Include="VersionControl\GitNewFiles.cs" />
+    <Compile Include="VersionControl\GitPush.cs" />
+    <Compile Include="VersionControl\GitReset.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HtmlEncodeText.cs" />
-    <Compile Include="InvokeNodeTool.cs" />
-    <Compile Include="InvokePesterOnDirectory.cs" />
-    <Compile Include="InvokePesterOnFile.cs" />
-    <Compile Include="IsInCollection.cs" />
-    <Compile Include="LastItemInGroup.cs" />
+    <Compile Include="Script\InvokeNodeTool.cs" />
+    <Compile Include="Testing\InvokePesterOnDirectory.cs" />
+    <Compile Include="Testing\InvokePesterOnFile.cs" />
+    <Compile Include="Groups\IsInCollection.cs" />
+    <Compile Include="Groups\LastItemInGroup.cs" />
     <Compile Include="NBuildKitMsBuildTask.cs" />
     <Compile Include="Nuclei\AppDomains\AppDomainBuilder.cs" />
     <Compile Include="Nuclei\AppDomains\AppDomainBuilder.DirectoryBasedResolver.cs" />
@@ -114,28 +117,28 @@
     <Compile Include="Nuclei\ExceptionHandling\TopLevelExceptionGuard.cs" />
     <Compile Include="Nuclei\Fusion\AssemblyNameElements.cs" />
     <Compile Include="Nuclei\Fusion\FusionHelper.cs" />
-    <Compile Include="NuGetCommandLineToolTask.cs" />
-    <Compile Include="NuGetInstall.cs" />
-    <Compile Include="NuGetPack.cs" />
-    <Compile Include="NuGetPush.cs" />
-    <Compile Include="NuGetRestore.cs" />
-    <Compile Include="OpenCover.cs" />
+    <Compile Include="Packaging\NuGetCommandLineToolTask.cs" />
+    <Compile Include="Packaging\NuGetInstall.cs" />
+    <Compile Include="Packaging\NuGetPack.cs" />
+    <Compile Include="Packaging\NuGetPush.cs" />
+    <Compile Include="Packaging\NuGetRestore.cs" />
+    <Compile Include="Testing\OpenCover.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicKeySignatureFromKeyFile.cs" />
-    <Compile Include="ReportGenerator.cs" />
-    <Compile Include="ReportGeneratorOutputToCsv.cs" />
-    <Compile Include="SearchPackagesDirectoryForToolDirectory.cs" />
-    <Compile Include="SearchPackagesDirectoryForToolPath.cs" />
+    <Compile Include="Testing\ReportGenerator.cs" />
+    <Compile Include="Testing\ReportGeneratorOutputToCsv.cs" />
+    <Compile Include="FileSystem\SearchPackagesDirectoryForToolDirectory.cs" />
+    <Compile Include="FileSystem\SearchPackagesDirectoryForToolPath.cs" />
     <Compile Include="SetEnvironmentVariable.cs" />
-    <Compile Include="SortFilesByDirectory.cs" />
-    <Compile Include="SortItemGroupByKey.cs" />
+    <Compile Include="FileSystem\SortFilesByDirectory.cs" />
+    <Compile Include="FileSystem\SortItemGroupByKey.cs" />
     <Compile Include="TaskItemExtensions.cs" />
-    <Compile Include="TemplateFile.cs" />
-    <Compile Include="TemplateText.cs" />
-    <Compile Include="Unzip.cs" />
-    <Compile Include="UpdateAttributeInCode.cs" />
-    <Compile Include="ValidateXmlAgainstSchema.cs" />
-    <Compile Include="Zip.cs" />
+    <Compile Include="Templating\TemplateFile.cs" />
+    <Compile Include="Templating\TemplateText.cs" />
+    <Compile Include="Packaging\Unzip.cs" />
+    <Compile Include="Code\UpdateAttributeInCode.cs" />
+    <Compile Include="Validation\ValidateXmlAgainstSchema.cs" />
+    <Compile Include="Packaging\Zip.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
