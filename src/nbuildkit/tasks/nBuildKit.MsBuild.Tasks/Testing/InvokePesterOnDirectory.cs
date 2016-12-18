@@ -23,7 +23,7 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         {
             // Create the script
             var scriptPath = Path.Combine(
-                GetAbsolutePath(TempDirectory),
+                GetAbsolutePath(TemporaryDirectory),
                 string.Format(
                     CultureInfo.InvariantCulture,
                     "{0}.ps1",
@@ -94,7 +94,7 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         /// Gets or sets the full path to a directory that can be used to write temporary files.
         /// </summary>
         [Required]
-        public ITaskItem TempDirectory
+        public ITaskItem TemporaryDirectory
         {
             get;
             set;
