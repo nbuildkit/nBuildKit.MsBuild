@@ -25,6 +25,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
     /// </summary>
     public sealed class InvokeStandaloneMsBuild : CommandLineToolTask
     {
+        private static IEnumerable<string> _potentialMsBuildPaths = GetPotentialMsBuildPaths();
+
         private static string GetOutputPath(XmlElement element)
         {
             var node = element.SelectSingleNode("path") as XmlElement;
@@ -34,6 +36,20 @@ namespace NBuildKit.MsBuild.Tasks.Script
             }
 
             return node.InnerText;
+        }
+
+        private static IEnumerable<string> GetPotentialMsBuildPaths()
+        {
+            var programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            if (!Environment.Is64BitOperatingSystem)
+            {
+                programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            }
+
+            var msbuildBasePath = Path.Combine(programFilesPath, "MSBuild");
+            return Directory.GetFiles(msbuildBasePath, "msbuild.exe", SearchOption.AllDirectories)
+                .OrderByDescending(f => f)
+                .ToList();
         }
 
         private static string GetProjectPath(XmlElement element)
@@ -124,11 +140,15 @@ namespace NBuildKit.MsBuild.Tasks.Script
             {
                 arguments.Add("/nodeReuse:false");
                 arguments.Add("/nologo");
-                arguments.Add(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "/toolsversion:{0}",
-                        ToolsVersion));
+
+                if (!string.IsNullOrEmpty(ToolsVersion))
+                {
+                    arguments.Add(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "/toolsversion:{0}",
+                            ToolsVersion));
+                }
 
                 var verbosity = GetVerbosityForCurrentInstance();
                 if (!string.IsNullOrEmpty(verbosity))
@@ -148,6 +168,16 @@ namespace NBuildKit.MsBuild.Tasks.Script
             }
 
             var msbuildPath = Process.GetCurrentProcess().MainModule.FileName;
+            if (!string.Equals(Path.GetFileNameWithoutExtension(msbuildPath), "msbuild", StringComparison.OrdinalIgnoreCase))
+            {
+                msbuildPath = _potentialMsBuildPaths.FirstOrDefault();
+                if (string.IsNullOrEmpty(msbuildPath))
+                {
+                    Log.LogError("Could not locate a suitable version of MsBuild.");
+                    return false;
+                }
+            }
+
             var workingDirectory = GetAbsolutePath(WorkingDirectory);
             var exitCode = InvokeCommandLineTool(
                 msbuildPath,
@@ -219,6 +249,18 @@ namespace NBuildKit.MsBuild.Tasks.Script
             text = text.Replace("${RUN_TARGETS_SEPARATELY}$", RunEachTargetSeparately.ToString());
             text = text.Replace("${SKIP_NONEXISTANT_PROJECTS}$", SkipNonexistentProjects.ToString());
             text = text.Replace("${STOP_ON_FIRST_FAILURE}$", StopOnFirstFailure.ToString());
+
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            dir = Path.GetDirectoryName(targetOutputPath);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
 
             File.WriteAllLines(path, new[] { text }, Encoding.UTF8);
         }
