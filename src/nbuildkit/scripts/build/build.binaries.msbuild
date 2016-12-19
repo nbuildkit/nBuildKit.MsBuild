@@ -109,25 +109,21 @@
             PackageFile="$(FileSln)"
             Sources="@(NuGetSources)" />
 
-        <MSBuild
-            BuildInParallel="False"
+        <InvokeStandaloneMsBuild
+            Condition=" '$(ShouldExecute)' == 'true' "
             Projects="$(FileSln)"
             Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=%(SolutionsToBuild.Platform);%(SolutionsToBuild.Properties)"
-            RebaseOutputs="False"
-            RemoveProperties=""
             RunEachTargetSeparately="True"
             SkipNonexistentProjects="False"
             StopOnFirstFailure="False"
-            TargetAndPropertyListSeparators=""
             Targets="%(SolutionsToBuild.Targets)"
+            TemporaryDirectory="$(DirBuildTemp)"
             ToolsVersion="$(MSBuildToolsVersion)"
-            UnloadProjectsOnCompletion="True"
-            UseResultsCache="True"
-            Condition=" '$(ShouldExecute)' == 'true' ">
+            WorkingDirectory="$(DirWorkspace)">
             <Output
                 ItemName="GeneratedAssemblies"
                 TaskParameter="TargetOutputs" />
-        </MSBuild>
+        </InvokeStandaloneMsBuild>
 
         <MakeDir
             Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' "
