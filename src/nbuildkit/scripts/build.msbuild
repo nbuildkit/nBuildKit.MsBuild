@@ -163,6 +163,50 @@
             Condition=" '$(ShouldExecute)' == 'true' "
             Importance="normal"
             Text="Executing %(BuildStepsToExecute.Identity)" />
+
+        <!--
+            Execute the global pre-steps
+        -->
+        <MSBuild
+            BuildInParallel="False"
+            Projects="@(BuildPreStepsToExecute)"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties);%(BuildStepsToExecute.Properties);BuildStep=%(BuildStepsToExecute.Identity)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="True"
+            StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True"
+            Condition=" '@(BuildPreStepsToExecute)' != '' AND  $(ShouldExecute) == 'true' ">
+        </MSBuild>
+
+        <!--
+            Execute the pre-steps
+        -->
+        <MSBuild
+            BuildInParallel="False"
+            Projects="%(BuildPreStepsToExecute.Identity)"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties);%(BuildStepsToExecute.Properties);BuildStep=%(BuildStepsToExecute.Identity)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True"
+            Condition=" $(ShouldExecute) == 'true' ">
+        </MSBuild>
+
+        <!--
+            Execute the build step
+        -->
         <MSBuild
             BuildInParallel="False"
             Projects="%(BuildStepsToExecute.Identity)"
@@ -178,6 +222,45 @@
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True"
             Condition=" $(ShouldExecute) == 'true' ">
+        </MSBuild>
+
+        <!--
+            Execute the post-steps
+        -->
+        <MSBuild
+            BuildInParallel="False"
+            Projects="%(BuildPreStepsToExecute.Identity)"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties);%(BuildStepsToExecute.Properties);BuildStep=%(BuildStepsToExecute.Identity)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True"
+            Condition=" $(ShouldExecute) == 'true' ">
+        </MSBuild>
+
+        <!--
+            Execute the global post-steps
+        --><MSBuild
+            BuildInParallel="False"
+            Projects="@(BuildPostStepsToExecute)"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties);%(BuildStepsToExecute.Properties);BuildStep=%(BuildStepsToExecute.Identity)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="True"
+            StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True"
+            Condition=" '@(BuildPostStepsToExecute)' != '' AND  $(ShouldExecute) == 'true' ">
         </MSBuild>
 
         <OnError ExecuteTargets="_nBuildKit_Build_OnError" />

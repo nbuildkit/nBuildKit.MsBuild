@@ -23,6 +23,19 @@
     <!--
         **** BUILD STEPS ****
     -->
+    <ItemGroup Condition=" '@(BuildPreStepsToExecute)' == '' ">
+        <!--
+        <BuildPreStepsToExecute Include="">
+        </BuildPreStepsToExecute>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(BuildPostStepsToExecute)' == '' ">
+        <!--
+        <BuildPostStepsToExecute Include="">
+        </BuildPostStepsToExecute>
+        -->
+    </ItemGroup>
+
     <ItemGroup Condition=" '@(BuildStepsToExecute)' == '' ">
         <BuildStepsToExecute Include="$(BuildStepsShowHelp)">
             <Properties>
@@ -30,26 +43,13 @@
             <Groups>
                 Help;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
     </ItemGroup>
 
-    <!--
-        Define the scripts that should be executed when any one of the build steps fails.
-
-        Steps can be defined by providing the path to the MsBuild script that should be executed
-        for that step, e.g. adding a build step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
-        that script.
-
-        Each script has the following properties passed to it:
-        $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
-        $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
-        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
-        $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
-
-        Additionally any properties defined by the 'Properties' section are also pushed up.
-    -->
     <ItemGroup Condition=" '@(BuildFailureStepsToExecute)' == '' ">
         <!--
         <BuildFailureStepsToExecute Include="">
@@ -57,6 +57,10 @@
             </Properties>
             <Groups>
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildFailureStepsToExecute>
         -->
     </ItemGroup>
