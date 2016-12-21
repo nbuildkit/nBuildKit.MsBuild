@@ -96,6 +96,26 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
 
         private string[] UnmergedCommits()
         {
+            // Make sure the MergeTargetBranch actually exists
+            var localBranchesAsText = GetGitOutput(
+                new[]
+                {
+                    "branch"
+                });
+            var hasMergeTarget = localBranchesAsText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(t => t.Contains(MergeTargetBranch))
+                .Any();
+
+            // If the MergeTargetBranch doesn't exist, create it in the same location as the tracking branch (which should exist).
+            if (!hasMergeTarget)
+            {
+                InvokeGit(
+                    new[]
+                    {
+                        string.Format(CultureInfo.InvariantCulture, "branch --track {0} origin/{0}", MergeTargetBranch)
+                    });
+            }
+
             // Get the SHA1 values for all the commits that haven't been merged to the target branch yet
             var gitOutput = GetGitOutput(
                 new[]

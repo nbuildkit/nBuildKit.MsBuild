@@ -342,7 +342,7 @@
             OutputFile="$(FileReportOpenCoverCsvExpanded)" />
 
         <Exec
-            Command="&quot;$(ToolsExternalOpenCoverToCoberturaConverterPath)&quot; -input:&quot;%(FilesReportOpenCoverXml.Identity)&quot; -output:&quot;$([System.IO.Path]::GetDirectoryName('$(DirReportOpenCoverCoberturaExpanded)'))\cobertura-$([System.IO.Path]::GetFileName('%(FilesReportOpenCoverXml.Identity)'))&quot; -sources:&quot;$(DirSrc)&quot;"
+            Command="&quot;$(ToolsExternalOpenCoverToCoberturaConverterPath)&quot; -input:&quot;%(FilesReportOpenCoverXml.Identity)&quot; -output:&quot;$(DirReportOpenCoverCoberturaExpanded)\cobertura-$([System.IO.Path]::GetFileName('%(FilesReportOpenCoverXml.Identity)'))&quot; -sources:&quot;$(DirSrc)&quot;"
             Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') AND '$(ShouldExecute)' == 'true' " />
     </Target>
  </Project>

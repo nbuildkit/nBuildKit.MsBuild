@@ -12,8 +12,8 @@
         <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == '' OR '$(IsOnBuildServer)' == 'UNDEFINED' ">false</IsOnBuildServer>
 
         <!-- Git parameters -->
-        <GitBranchExpected>UNDEFINED</GitBranchExpected>
-        <GitRevNoExpected>UNDEFINED</GitRevNoExpected>
+        <GitBranchExpected Condition=" '$(GitBranchExpected)' == '' ">UNDEFINED</GitBranchExpected>
+        <GitRevNoExpected Condition=" '$(GitRevNoExpected)' == '' ">UNDEFINED</GitRevNoExpected>
     </PropertyGroup>
 
     <!--
