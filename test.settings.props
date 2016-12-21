@@ -170,7 +170,6 @@
                 DirTestLocal=$(DirBuildTestLatestCSharp);
                 NameTestRepository=Test.Integration.Latest.MsBuild.CSharp;
                 ScriptTest=$(DirTest)\latest.csharp.tests.ps1;
-                FileTestReport=$(FileReportVerificationLatestBuildCSharp)
             </Properties>
             <Groups>
                 Test.CSharp;
@@ -183,7 +182,6 @@
                 DirTestLocal=$(DirBuildTestOldestCSharp);
                 NameTestRepository=Test.Integration.Oldest.MsBuild.CSharp;
                 ScriptTest=$(DirTest)\oldest.csharp.tests.ps1;
-                FileTestReport=$(FileReportVerificationOldestBuildCSharp)
             </Properties>
             <Groups>
                 Test.CSharp;
@@ -196,7 +194,6 @@
                 DirTestLocal=$(DirBuildTestLatestVBNet);
                 NameTestRepository=Test.Integration.Latest.MsBuild.VbNet;
                 ScriptTest=$(DirTest)\latest.vbnet.tests.ps1;
-                FileTestReport=$(FileReportVerificationLatestBuildVbNet)
             </Properties>
             <Groups>
                 Test.VBNet;
@@ -209,7 +206,6 @@
                 DirTestLocal=$(DirBuildTestOldestVBNet);
                 NameTestRepository=Test.Integration.Oldest.MsBuild.VBNet;
                 ScriptTest=$(DirTest)\oldest.vbnet.tests.ps1;
-                FileTestReport=$(FileReportVerificationOldestBuildVbNet)
             </Properties>
             <Groups>
                 Test.VBNet;
@@ -321,7 +317,7 @@
         <!--
             Defines the active branch in the remote repository on which the test will be executed.
         -->
-        <BranchActiveTest Condition=" '$(BranchActiveTest)' == '' ">feature/nbuildkit_$(VersionSemantic)</BranchActiveTest>
+        <BranchActiveTest Condition=" '$(BranchActiveTest)' == '' ">feature/nbuildkit_${VersionSemantic}</BranchActiveTest>
 
         <!--
              The full path to the directory into which the bare repository will be cloned. $(DirTestLocal) will be
@@ -357,13 +353,16 @@
     </PropertyGroup>
     <!--
         The list of all arguments that should be passed to the Pester test.
+
+        The value elements may contain zero or more template parameters as indicated at the top of this
+        file. Template parameters must be enclosed in '${}'.
     -->
     <ItemGroup>
         <PesterTestArguments Include="nbuildkitminimumversion">
-            <Value>$(VersionSemantic)</Value>
+            <Value>${VersionSemantic}</Value>
         </PesterTestArguments>
         <PesterTestArguments Include="nbuildkitmaximumversion">
-            <Value>$(VersionMajorNext).0.0</Value>
+            <Value>${VersionMajorNext}.0.0</Value>
         </PesterTestArguments>
         <PesterTestArguments Include="localNuGetFeed">
             <Value>$(DirBuildDeploy)</Value>
@@ -396,6 +395,7 @@
             <Value>$(DirTestTemp)</Value>
         </PesterTestArguments>
     </ItemGroup>
+
 
 
 

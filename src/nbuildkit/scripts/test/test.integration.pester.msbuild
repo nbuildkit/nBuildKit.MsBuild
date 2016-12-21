@@ -13,6 +13,10 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props" />
 
     <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
+
+    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -104,7 +108,31 @@
     </Target>
 
     <Target
-        DependsOnTargets="_nBuildKit_Test_Integration_Pester_GetToolPaths"
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+        Name="_nBuildKit_Test_Integration_Pester_ExpandTemplates"
+        Outputs="%(PesterTestArguments.Identity)">
+
+        <TemplateText
+            Condition=" '%(PesterTestArguments.Value)' != '' AND '$(ShouldExecute)' == 'true' "
+            Template="%(PesterTestArguments.Value)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="PesterTestArgumentValueExpanded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <CreateItem
+            AdditionalMetadata="Value=$(PesterTestArgumentValueExpanded)"
+            Condition=" '%(PesterTestArguments.Identity)' != '' "
+            Include="%(PesterTestArguments.Identity)">
+            <Output
+                ItemName="PesterTestArgumentsExpanded"
+                TaskParameter="Include" />
+        </CreateItem>
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Test_Integration_Pester_GetToolPaths;_nBuildKit_Test_Integration_Pester_ExpandTemplates"
         Name="nBuildKit_Test_Integration_Pester_Run">
 
         <TemplateText
@@ -121,7 +149,7 @@
             PowershellExePath="$(ToolsExternalPowershellPath)"
             ReportFile="$(FileReportPesterXmlExpanded)"
             TemporaryDirectory="$(DirBuildTemp)"
-            TestArguments="@(PesterTestArguments)"
+            TestArguments="@(PesterTestArgumentsExpanded)"
             TestFile="$(ScriptTest)" />
     </Target>
  </Project>
