@@ -50,6 +50,22 @@ param(
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
+# prepare the environment
+if (-not (Test-Path $nugetPath))
+{
+    New-Item -Path $nugetPath -ItemType Directory | Out-Null
+}
+
+if (-not (Test-Path $symbolsPath))
+{
+    New-Item -Path $symbolsPath -ItemType Directory | Out-Null
+}
+
+if (-not (Test-Path $artefactsPath))
+{
+    New-Item -Path $artefactsPath -ItemType Directory | Out-Null
+}
+
 Describe 'For the C# test' {
 
     Context 'the preparation of the workspace' {
