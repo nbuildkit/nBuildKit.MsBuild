@@ -108,6 +108,27 @@
     </ItemGroup>
 
 
+    <!--
+        **** INTEGRATION - PESTER ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the file into which Pester will write the test results.
+        -->
+        <FileTestReport Condition=" '$(FileTestReport)' == '' ">$(DirBuildLogs)\pester.integration.xml</FileTestReport>
+    </PropertyGroup>
+    <!--
+        The list of all arguments that should be passed to the Pester test.
+    -->
+    <ItemGroup Condition=" '@(PesterTestArguments)' == '' ">
+        <!--
+        <PesterTestArguments Include="">
+            <Value></Value>
+        </PesterTestArguments>
+        -->
+    </ItemGroup>
+
+
 
 
 
