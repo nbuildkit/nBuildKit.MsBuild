@@ -44,9 +44,9 @@ param(
     [string] $tempLocation
 )
 
-. (Join-Path $PSScriptRoot 'TestFunctions.Git.ps1')
-. (Join-Path $PSScriptRoot 'TestFunctions.MsBuild.ps1')
-. (Join-Path $PSScriptRoot 'TestFunctions.PrepareWorkspace.ps1')
+. (Join-Path $PSScriptRoot '..\src\tests\TestFunctions.Git.ps1')
+. (Join-Path $PSScriptRoot '..\src\tests\TestFunctions.MsBuild.ps1')
+. (Join-Path $PSScriptRoot '..\src\tests\TestFunctions.PrepareWorkspace.ps1')
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
