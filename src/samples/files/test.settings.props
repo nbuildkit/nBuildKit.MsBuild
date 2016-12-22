@@ -46,6 +46,7 @@
         $(TestStepsPrepareVcsInfo)       - Stores the Version Control System (VCS) information in a file for later use.
                                            Currently supported version control systems is GIT
         $(TestStepsPrepareGenerateFiles) - Generates one or more files from a set of template files.
+        $(TestStepsIntegrationPester)    - Runs Pester on a specified test script file.
 
         Additional test steps can be defined by providing the path to the MsBuild script that should be executed
         for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
@@ -146,6 +147,15 @@
                 Prepare;
             </Groups>
         </TestStepsToExecute>
+
+        <TestStepsToExecute Include="$(TestStepsIntegrationPester)">
+            <Properties>
+            </Properties>
+            <Groups>
+                Integration;
+                Pester;
+            </Groups>
+        </TestStepsToExecute>
     </ItemGroup>
 
     <!--
@@ -233,6 +243,30 @@
             <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
             <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>-->
+    </ItemGroup>
+
+
+    <!--
+        **** INTEGRATION - PESTER ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the file into which Pester will write the test results.
+        -->
+        <!-- <FileTestReport Condition=" '$(FileTestReport)' == '' ">$(DirBuildLogs)\pester.integration.xml</FileTestReport> -->
+    </PropertyGroup>
+    <!--
+        The list of all arguments that should be passed to the Pester test.
+
+        The value elements may contain zero or more template parameters as indicated at the top of this
+        file. Template parameters must be enclosed in '${}'.
+    -->
+    <ItemGroup>
+        <!--
+        <PesterTestArguments Include="">
+            <Value></Value>
+        </PesterTestArguments>
+        -->
     </ItemGroup>
 
 

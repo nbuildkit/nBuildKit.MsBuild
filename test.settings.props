@@ -50,6 +50,7 @@
         $(TestStepsPrepareVcsInfo)       - Stores the Version Control System (VCS) information in a file for later use.
                                            Currently supported version control systems is GIT
         $(TestStepsPrepareGenerateFiles) - Generates one or more files from a set of template files.
+        $(TestStepsIntegrationPester)    - Runs Pester on a specified test script file.
 
         Additional test steps can be defined by providing the path to the MsBuild script that should be executed
         for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
@@ -164,12 +165,11 @@
                 Prepare;
             </Groups>
         </TestStepsToExecute>
-        <TestStepsToExecute Include="$(DirWorkspace)\test.integration.msbuild">
+        <TestStepsToExecute Include="$(TestStepsIntegrationPester)">
             <Properties>
                 DirTestLocal=$(DirBuildTestLatestCSharp);
                 NameTestRepository=Test.Integration.Latest.MsBuild.CSharp;
                 ScriptTest=$(DirTest)\latest.csharp.tests.ps1;
-                FileTestReport=$(FileReportVerificationLatestBuildCSharp)
             </Properties>
             <Groups>
                 Test.CSharp;
@@ -177,12 +177,11 @@
                 Test.CSharp.Latest;
             </Groups>
         </TestStepsToExecute>
-        <TestStepsToExecute Include="$(DirWorkspace)\test.integration.msbuild">
+        <TestStepsToExecute Include="$(TestStepsIntegrationPester)">
             <Properties>
                 DirTestLocal=$(DirBuildTestOldestCSharp);
                 NameTestRepository=Test.Integration.Oldest.MsBuild.CSharp;
                 ScriptTest=$(DirTest)\oldest.csharp.tests.ps1;
-                FileTestReport=$(FileReportVerificationOldestBuildCSharp)
             </Properties>
             <Groups>
                 Test.CSharp;
@@ -190,12 +189,11 @@
                 Test.CSharp.Oldest;
             </Groups>
         </TestStepsToExecute>
-        <TestStepsToExecute Include="$(DirWorkspace)\test.integration.msbuild">
+        <TestStepsToExecute Include="$(TestStepsIntegrationPester)">
             <Properties>
                 DirTestLocal=$(DirBuildTestLatestVBNet);
                 NameTestRepository=Test.Integration.Latest.MsBuild.VbNet;
                 ScriptTest=$(DirTest)\latest.vbnet.tests.ps1;
-                FileTestReport=$(FileReportVerificationLatestBuildVbNet)
             </Properties>
             <Groups>
                 Test.VBNet;
@@ -203,12 +201,11 @@
                 Test.VBNet.Latest;
             </Groups>
         </TestStepsToExecute>
-        <TestStepsToExecute Include="$(DirWorkspace)\test.integration.msbuild">
+        <TestStepsToExecute Include="$(TestStepsIntegrationPester)">
             <Properties>
                 DirTestLocal=$(DirBuildTestOldestVBNet);
                 NameTestRepository=Test.Integration.Oldest.MsBuild.VBNet;
                 ScriptTest=$(DirTest)\oldest.vbnet.tests.ps1;
-                FileTestReport=$(FileReportVerificationOldestBuildVbNet)
             </Properties>
             <Groups>
                 Test.VBNet;
@@ -309,14 +306,96 @@
 
 
     <!--
-        **** REPORT FILES ****
+        **** INTEGRATION - PESTER ****
     -->
     <PropertyGroup>
-        <FileReportVerificationLatestBuildCSharp>$(DirBuildLogs)\verification.latest.build.csharp.xml</FileReportVerificationLatestBuildCSharp>
-        <FileReportVerificationOldestBuildCSharp>$(DirBuildLogs)\verification.oldest.build.csharp.xml</FileReportVerificationOldestBuildCSharp>
-        <FileReportVerificationLatestBuildVbNet>$(DirBuildLogs)\verification.latest.build.vbnet.xml</FileReportVerificationLatestBuildVbNet>
-        <FileReportVerificationOldestBuildVbNet>$(DirBuildLogs)\verification.oldest.build.vbnet.xml</FileReportVerificationOldestBuildVbNet>
+        <!--
+            The full path to the file into which Pester will write the test results.
+        -->
+        <FileTestReport Condition=" '$(FileTestReport)' == '' ">$(DirBuildLogs)\$(NameTestRepository).xml</FileTestReport>
+
+        <!--
+            Defines the active branch in the remote repository on which the test will be executed.
+        -->
+        <BranchActiveTest Condition=" '$(BranchActiveTest)' == '' ">feature/nbuildkit_${VersionSemantic}</BranchActiveTest>
+
+        <!--
+             The full path to the directory into which the bare repository will be cloned. $(DirTestLocal) will be
+             provided as a property on the test step.
+        -->
+        <DirTestRepository>$(DirTestLocal)\repo</DirTestRepository>
+        <!--
+             The full path to the directory into which the working version of the repository will be cloned.
+             $(DirTestLocal) will be  provided as a property on the test step.
+        -->
+        <DirTestWorkspace>$(DirTestLocal)\workspace</DirTestWorkspace>
+        <!--
+             The full path to the directory into which the temporary files and directories for the test can
+             be dropped. $(DirTestLocal) will be provided as a property on the test step.
+        -->
+        <DirTestTemp>$(DirTestLocal)\temp</DirTestTemp>
+
+        <!--
+             The full path to the directory into which the artefacts will be published after the build.
+             $(DirTestLocal) will be provided as a property on the test step.
+        -->
+        <DirTestDropArtefacts>$(DirTestLocal)\drop\artefacts</DirTestDropArtefacts>
+        <!--
+             The full path to the directory into which nuget packages will be published after the build.
+             $(DirTestLocal) will be provided as a property on the test step.
+        -->
+        <DirTestDropNuGet>$(DirTestLocal)\drop\nuget</DirTestDropNuGet>
+        <!--
+             The full path to the directory into which nuget symbol packages will be published after the build.
+             $(DirTestLocal) will be  provided as a property on the test step.
+        -->
+        <DirTestDropSymbols>$(DirTestLocal)\drop\symbols</DirTestDropSymbols>
     </PropertyGroup>
+    <!--
+        The list of all arguments that should be passed to the Pester test.
+
+        The value elements may contain zero or more template parameters as indicated at the top of this
+        file. Template parameters must be enclosed in '${}'.
+    -->
+    <ItemGroup>
+        <PesterTestArguments Include="nbuildkitminimumversion">
+            <Value>${VersionSemantic}</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="nbuildkitmaximumversion">
+            <Value>${VersionMajorNext}.0.0</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="localNuGetFeed">
+            <Value>$(DirBuildDeploy)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="remoteRepositoryUrl">
+            <Value>http://github.com/$(GitHubUserName)/$(NameTestRepository)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="activeBranch">
+            <Value>$(BranchActiveTest)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="repositoryLocation">
+            <Value>$(DirTestRepository)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="workspaceLocation">
+            <Value>$(DirTestWorkspace)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="nugetPath">
+            <Value>$(DirTestDropNuGet)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="symbolsPath">
+            <Value>$(DirTestDropSymbols)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="artefactsPath">
+            <Value>$(DirTestDropArtefacts)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="logLocation">
+            <Value>$(DirBuildLogs)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="tempLocation">
+            <Value>$(DirTestTemp)</Value>
+        </PesterTestArguments>
+    </ItemGroup>
+
 
 
 

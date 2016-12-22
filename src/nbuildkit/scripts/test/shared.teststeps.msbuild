@@ -22,6 +22,8 @@
         <TestStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
         <TestStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
         <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\test\test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
+
+        <TestStepsIntegrationPester>$(DirNBuildKitMsBuild)\test\test.integration.pester.msbuild</TestStepsIntegrationPester>
     </PropertyGroup>
     <ItemGroup>
         <AvailableTestSteps Include="TestStepsPrepareWorkspace">
@@ -72,6 +74,11 @@
         <AvailableTestSteps Include="TestStepsPrepareGenerateFiles">
             <Description>
                 Generates one or more files from a set of template files.
+            </Description>
+        </AvailableTestSteps>
+        <AvailableTestSteps Include="TestStepsIntegrationPester">
+            <Description>
+                Runs Pester on a specified test script file.
             </Description>
         </AvailableTestSteps>
     </ItemGroup>

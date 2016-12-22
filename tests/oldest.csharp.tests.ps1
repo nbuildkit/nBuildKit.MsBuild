@@ -44,11 +44,27 @@ param(
     [string] $tempLocation
 )
 
-. (Join-Path $PSScriptRoot 'TestFunctions.Git.ps1')
-. (Join-Path $PSScriptRoot 'TestFunctions.MsBuild.ps1')
-. (Join-Path $PSScriptRoot 'TestFunctions.PrepareWorkspace.ps1')
+. (Join-Path $PSScriptRoot '..\src\tests\TestFunctions.Git.ps1')
+. (Join-Path $PSScriptRoot '..\src\tests\TestFunctions.MsBuild.ps1')
+. (Join-Path $PSScriptRoot '..\src\tests\TestFunctions.PrepareWorkspace.ps1')
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+# prepare the environment
+if (-not (Test-Path $nugetPath))
+{
+    New-Item -Path $nugetPath -ItemType Directory | Out-Null
+}
+
+if (-not (Test-Path $symbolsPath))
+{
+    New-Item -Path $symbolsPath -ItemType Directory | Out-Null
+}
+
+if (-not (Test-Path $artefactsPath))
+{
+    New-Item -Path $artefactsPath -ItemType Directory | Out-Null
+}
 
 Describe 'For the C# test' {
 

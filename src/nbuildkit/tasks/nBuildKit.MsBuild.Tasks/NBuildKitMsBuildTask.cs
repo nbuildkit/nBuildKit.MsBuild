@@ -14,7 +14,7 @@ using Microsoft.Build.Utilities;
 namespace NBuildKit.MsBuild.Tasks
 {
     /// <summary>
-    /// Defins the base class for implementations of an MsBuild task.
+    /// Defines the base class for implementations of an MsBuild task.
     /// </summary>
     public abstract class NBuildKitMsBuildTask : Task
     {
