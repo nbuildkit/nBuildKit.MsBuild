@@ -12,6 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -24,23 +25,62 @@ namespace NBuildKit.MsBuild.Tasks
     {
         private static ITaskItem[] LocalPreSteps(ITaskItem step)
         {
-            const string MetadataValueTag = "PreSteps";
-            var steps = step.GetMetadata(MetadataValueTag);
+            const string MetadataTag = "PreSteps";
+            var steps = step.GetMetadata(MetadataTag);
             return steps.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => new TaskItem(s)).ToArray();
         }
 
         private static ITaskItem[] LocalPostSteps(ITaskItem step)
         {
-            const string MetadataValueTag = "PostSteps";
-            var steps = step.GetMetadata(MetadataValueTag);
+            const string MetadataTag = "PostSteps";
+            var steps = step.GetMetadata(MetadataTag);
             return steps.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => new TaskItem(s)).ToArray();
         }
 
         private static IEnumerable<string> StepGroups(ITaskItem step)
         {
-            const string MetadataValueTag = "Groups";
-            var groups = step.GetMetadata(MetadataValueTag);
+            const string MetadataTag = "Groups";
+            var groups = step.GetMetadata(MetadataTag);
             return groups.ToLower(CultureInfo.InvariantCulture).Split(';');
+        }
+
+        private void AddStepMetadata(ITaskItem subStep, string stepPath, ITaskItem[] metadata)
+        {
+            const string MetadataTag = "Properties";
+
+            var stepMetadata = GetStepMetadata(stepPath, metadata);
+
+            var stepProperties = subStep.GetMetadata(MetadataTag);
+            if (!string.IsNullOrEmpty(stepProperties))
+            {
+                Hashtable additionalProjectPropertiesTable = null;
+                if (!PropertyParser.GetTableWithEscaping(Log, "AdditionalProperties", "AdditionalProperties", stepProperties.Split(';'), out additionalProjectPropertiesTable))
+                {
+                    // Ignore it ...
+                }
+
+                foreach (DictionaryEntry entry in additionalProjectPropertiesTable)
+                {
+                    if (!stepMetadata.ContainsKey(entry.Key))
+                    {
+                        stepMetadata.Add(entry.Key, entry.Value);
+                    }
+                }
+            }
+
+            // Turn the hashtable into a properties string again.
+            var builder = new StringBuilder();
+            foreach (DictionaryEntry entry in stepMetadata)
+            {
+                builder.Append(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}={1};",
+                        entry.Key,
+                        EscapingUtilities.UnescapeAll(entry.Value as string)));
+            }
+
+            subStep.SetMetadata(MetadataTag, builder.ToString());
         }
 
         /// <inheritdoc/>
@@ -63,7 +103,10 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!ExecuteStep(step, groups))
                     {
-                        break;
+                        if (StopOnFirstFailure)
+                        {
+                            break;
+                        }
                     }
                 }
                 catch (Exception e)
@@ -80,7 +123,10 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!ExecuteFailureStep(step, groups))
                     {
-                        break;
+                        if (StopOnFirstFailure)
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -126,20 +172,34 @@ namespace NBuildKit.MsBuild.Tasks
                 return true;
             }
 
-            bool result = true;
+            var stepPath = GetAbsolutePath(step.ItemSpec);
             if (PreSteps != null)
             {
                 foreach (var globalPreStep in PreSteps)
                 {
                     if (!string.IsNullOrEmpty(globalPreStep.ItemSpec))
                     {
-                        result = InvokeBuildEngine(globalPreStep);
-                        if (!result && StopOnFirstFailure)
+                        AddStepMetadata(globalPreStep, stepPath, StepMetadata);
+                        var result = InvokeBuildEngine(globalPreStep);
+                        if (!result)
                         {
-                            Log.LogError(
-                                "Failed while executing global pre-step action from '{0}'",
-                                globalPreStep.ItemSpec);
-                            return false;
+                            if (FailOnPreStepFailure)
+                            {
+                                Log.LogError(
+                                    "Failed while executing global pre-step action from '{0}'",
+                                    globalPreStep.ItemSpec);
+                            }
+                            else
+                            {
+                                Log.LogWarning(
+                                    "Failed while executing global pre-step action from '{0}'",
+                                    globalPreStep.ItemSpec);
+                            }
+
+                            if (StopOnPreStepFailure)
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -152,20 +212,34 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!string.IsNullOrEmpty(localPreStep.ItemSpec))
                     {
-                        result = InvokeBuildEngine(localPreStep);
-                        if (!result && StopOnFirstFailure)
+                        AddStepMetadata(localPreStep, stepPath, StepMetadata);
+                        var result = InvokeBuildEngine(localPreStep);
+                        if (!result)
                         {
-                            Log.LogError(
-                                "Failed while executing step specific pre-step action from '{0}'",
-                                localPreStep.ItemSpec);
-                            return false;
+                            if (FailOnPreStepFailure)
+                            {
+                                Log.LogError(
+                                    "Failed while executing step specific pre-step action from '{0}'",
+                                    localPreStep.ItemSpec);
+                            }
+                            else
+                            {
+                                Log.LogWarning(
+                                    "Failed while executing step specific pre-step action from '{0}'",
+                                    localPreStep.ItemSpec);
+                            }
+
+                            if (StopOnPreStepFailure)
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
             }
 
-            result = InvokeBuildEngine(step);
-            if (!result && StopOnFirstFailure)
+            var stepResult = InvokeBuildEngine(step);
+            if (!stepResult && StopOnFirstFailure)
             {
                 Log.LogError(
                     "Failed while executing step action from '{0}'",
@@ -180,13 +254,27 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!string.IsNullOrEmpty(localPostStep.ItemSpec))
                     {
-                        result = InvokeBuildEngine(localPostStep);
-                        if (!result && StopOnFirstFailure)
+                        AddStepMetadata(localPostStep, stepPath, StepMetadata);
+                        var result = InvokeBuildEngine(localPostStep);
+                        if (!result)
                         {
-                            Log.LogError(
-                                "Failed while executing step specific post-step action from '{0}'",
-                                localPostStep.ItemSpec);
-                            return false;
+                            if (FailOnPostStepFailure)
+                            {
+                                Log.LogError(
+                                    "Failed while executing step specific post-step action from '{0}'",
+                                    localPostStep.ItemSpec);
+                            }
+                            else
+                            {
+                                Log.LogWarning(
+                                    "Failed while executing step specific post-step action from '{0}'",
+                                    localPostStep.ItemSpec);
+                            }
+
+                            if (StopOnPostStepFailure)
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -198,19 +286,51 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!string.IsNullOrEmpty(globalPostStep.ItemSpec))
                     {
-                        result = InvokeBuildEngine(globalPostStep);
+                        AddStepMetadata(globalPostStep, stepPath, StepMetadata);
+                        var result = InvokeBuildEngine(globalPostStep);
                         if (!result && StopOnFirstFailure)
                         {
-                            Log.LogError(
-                                "Failed while executing global post-step action from '{0}'",
-                                globalPostStep.ItemSpec);
-                            return false;
+                            if (FailOnPostStepFailure)
+                            {
+                                Log.LogError(
+                                    "Failed while executing global post-step action from '{0}'",
+                                    globalPostStep.ItemSpec);
+                            }
+                            else
+                            {
+                                Log.LogWarning(
+                                    "Failed while executing global post-step action from '{0}'",
+                                    globalPostStep.ItemSpec);
+                            }
+
+                            if (StopOnPostStepFailure)
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
             }
 
-            return true;
+            return stepResult;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the process should fail if a pre-step fails
+        /// </summary>
+        public bool FailOnPreStepFailure
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the process should fail if a post-step fails
+        /// </summary>
+        public bool FailOnPostStepFailure
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -220,6 +340,36 @@ namespace NBuildKit.MsBuild.Tasks
         {
             get;
             set;
+        }
+
+        private Hashtable GetStepMetadata(string stepPath, ITaskItem[] metadata)
+        {
+            const string MetadataTagDescription = "Description";
+            const string MetadataTagId = "Id";
+            const string MetadataTagName = "Name";
+
+            var stepFileName = Path.GetFileName(stepPath);
+            var stepMetadata = metadata.FirstOrDefault(t => string.Equals(stepFileName, t.ItemSpec, StringComparison.OrdinalIgnoreCase));
+            var result = new Hashtable(StringComparer.OrdinalIgnoreCase);
+
+            var description = stepMetadata != null
+                    ? stepMetadata.GetMetadata(MetadataTagDescription)
+                    : string.Empty;
+            result.Add("StepDescription", description);
+
+            var id = (stepMetadata != null) && !string.IsNullOrEmpty(stepMetadata.GetMetadata(MetadataTagId))
+                    ? stepMetadata.GetMetadata(MetadataTagId)
+                    : stepFileName;
+            result.Add("StepId", id);
+
+            var name = (stepMetadata != null) && !string.IsNullOrEmpty(stepMetadata.GetMetadata(MetadataTagName))
+                    ? stepMetadata.GetMetadata(MetadataTagName)
+                    : stepFileName;
+            result.Add("StepName", name);
+
+            result.Add("StepPath", stepPath);
+
+            return result;
         }
 
         private IEnumerable<string> Groups()
@@ -286,12 +436,6 @@ namespace NBuildKit.MsBuild.Tasks
                         }
 
                         propertiesTable = combinedTable;
-                    }
-
-                    // If the user specified a different toolsVersion for this project - then override the setting
-                    if (!string.IsNullOrEmpty(project.GetMetadata("ToolsVersion")))
-                    {
-                        toolsVersion = project.GetMetadata("ToolsVersion");
                     }
                 }
 
@@ -371,6 +515,16 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <summary>
+        /// Gets or sets the collection containing the metadata describing the different steps.
+        /// </summary>
+        [Required]
+        public ITaskItem[] StepMetadata
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets the steps that should be taken for the current process.
         /// </summary>
         [Required]
@@ -385,6 +539,24 @@ namespace NBuildKit.MsBuild.Tasks
         /// Default is false.
         /// </summary>
         public bool StopOnFirstFailure
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the process should stop if a pre-step fails
+        /// </summary>
+        public bool StopOnPreStepFailure
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the process should stop if a post-step fails
+        /// </summary>
+        public bool StopOnPostStepFailure
         {
             get;
             set;

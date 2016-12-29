@@ -127,13 +127,18 @@
         </CreateItem>
 
         <InvokeSteps
+            FailOnPreStepFailure="$(FailBuildOnPreStepFailure)"
+            FailOnPostStepFailure="$(FailBuildOnPostStepFailure)"
             FailureSteps="@(BuildFailureStepsToExecute)"
             GroupsToExecute="@(ExecutionGroupsFromUser)"
             PreSteps="@(BuildPreStepsToExecute)"
             PostSteps="@(BuildPostStepsToExecute)"
             Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
             Steps="@(BuildStepsToExecute)"
+            StepMetadata="@(AvailableStepMetadata)"
             StopOnFirstFailure="true"
+            StopOnPreStepFailure="$(StopBuildOnPreStepFailure)"
+            StopOnPostStepFailure="$(StopBuildOnPostStepFailure)"
             ToolsVersion="$(MSBuildToolsVersion)" />
     </Target>
 </Project>
