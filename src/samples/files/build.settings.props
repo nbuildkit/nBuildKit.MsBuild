@@ -297,6 +297,16 @@
             </Groups>
         </BuildStepsToExecute>
 
+        <BuildStepsToExecute Include="$(BuildStepsBuildILMerge)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+            <Groups>
+                Package;
+            </Groups>
+        </BuildStepsToExecute>
+
         <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
@@ -751,6 +761,11 @@
         <!-- <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop')">$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir> -->
+        <!--
+            The full path and version to the ILRepack command line executable. If not defined the packages directory is searched.
+        -->
+        <!--<ToolsExternalILRepackPath Condition=" '$(ToolsExternalILRepackPath)' == '' ">UNDEFINED</ToolsExternalILRepackPath>
+        <ToolsExternalILRepackVersion Condition=" '$(ToolsExternalILRepackVersion)' == '' ">2.0.12</ToolsExternalILRepackVersion>-->
         <!--
             The full path to the MsTest command line executable.
         -->

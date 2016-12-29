@@ -40,6 +40,8 @@
         <BuildStepsAnalyzeXml>$(DirNBuildKitMsBuild)\build\build.analyze.xml.msbuild</BuildStepsAnalyzeXml>
         <BuildStepsAnalyzeBinariesFxCop>$(DirNBuildKitMsBuild)\build\build.analyze.binaries.fxcop.msbuild</BuildStepsAnalyzeBinariesFxCop>
 
+        <BuildStepsBuildILMerge>$(DirNBuildKitMsBuild)\build\build.ilmerge.msbuild</BuildStepsBuildILMerge>
+
         <BuildStepsPackNuGet>$(DirNBuildKitMsBuild)\build\build.pack.nuget.msbuild</BuildStepsPackNuGet>
         <BuildStepsPackZip>$(DirNBuildKitMsBuild)\build\build.pack.zip.msbuild</BuildStepsPackZip>
     </PropertyGroup>
@@ -152,6 +154,11 @@
         <AvailableBuildSteps Include="BuildStepsAnalyzeBinariesFxCop">
             <Description>
                 Analyzes the binary files with FxCop.
+            </Description>
+        </AvailableBuildSteps>
+        <AvailableBuildSteps Include="BuildStepsBuildILMerge">
+            <Description>
+                IL merges assemblies.
             </Description>
         </AvailableBuildSteps>
         <AvailableBuildSteps Include="BuildStepsPackNuGet">
