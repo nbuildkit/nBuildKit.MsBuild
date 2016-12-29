@@ -8,10 +8,14 @@
     -->
     <ItemGroup Condition=" '@(TestStepsToExecute)' == '' ">
         <TestStepsToExecute Include="$(TestStepsShowHelp)">
-            <Properties>
+           <Properties>
+                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props;
+                HelpFileSettings=test.settings.props;
+                HelpProcess=test;
+                HelpStepGroup=TestStepsToExecute;
             </Properties>
             <Groups>
-                Clean;
+                Help;
             </Groups>
         </TestStepsToExecute>
     </ItemGroup>

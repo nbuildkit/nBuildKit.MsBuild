@@ -39,6 +39,10 @@
     <ItemGroup Condition=" '@(BuildStepsToExecute)' == '' ">
         <BuildStepsToExecute Include="$(BuildStepsShowHelp)">
             <Properties>
+                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props;
+                HelpFileSettings=build.settings.props;
+                HelpProcess=build;
+                HelpStepGroup=BuildStepsToExecute;
             </Properties>
             <Groups>
                 Help;

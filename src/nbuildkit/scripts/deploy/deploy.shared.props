@@ -9,9 +9,13 @@
     <ItemGroup Condition=" '@(DeployStepsToExecute)' == '' ">
         <DeployStepsToExecute Include="$(DeployStepsShowHelp)">
             <Properties>
+                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props;
+                HelpFileSettings=deploy.settings.props;
+                HelpProcess=deploy;
+                HelpStepGroup=DeployStepsToExecute;
             </Properties>
             <Groups>
-                Bootstrap;
+                Help;
             </Groups>
         </DeployStepsToExecute>
     </ItemGroup>
