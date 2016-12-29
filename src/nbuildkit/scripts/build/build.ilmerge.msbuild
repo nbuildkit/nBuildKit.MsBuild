@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Build_ILRepack_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildBinaries>true</ExistsBuildBinaries>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
+
+    <Import
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
+
+    <Target
+        DependsOnTargets="_nBuildKit_Build_ILRepack_DisplayInfo"
+        Name="nBuildKit_Build_ILRepack_Run">
+        <CallTarget Targets="_nBuildKit_Build_ILRepack_Execute" />
+    </Target>
+
+    <Target
+        Condition="$(ShouldDisplayDebugLog)"
+        Name="_nBuildKit_Build_ILRepack_DebugLog">
+        <Message
+            Importance="low"
+            Text="Project directory structure:" />
+        <Message
+            Importance="low"
+            Text="The workspace is located at:                                       $(DirWorkspace)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build output is located at:           $(DirBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the build logs is located at:             $(DirBuildLogs)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
+        <Message
+            Importance="low"
+            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
+        <Message
+            Importance="low"
+            Text=" " />
+
+        <Message
+            Importance="low"
+            Text="ILRepack command line executable is located at:                     $(ToolsExternalILRepackPath)" />
+        <Message
+            Importance="low"
+            Text=" " />
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Build_ILRepack_DebugLog"
+        Name="_nBuildKit_Build_ILRepack_DisplayInfo">
+        <Message
+            Importance="normal"
+            Text="Performing ILRepack on assemblies ..." />
+    </Target>
+
+    <Target Name="_nBuildKit_Build_ILRepack_GetToolPaths">
+        <Error
+            Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "
+            Text="The packages directory does not exist. Cannot search for the unit test executables." />
+
+        <NuGetInstall
+            Condition=" '$(ToolsExternalILRepackPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackageDirectory="$(DirPackages)"
+            PackageName="ILRepack"
+            PackageVersion="$(ToolsExternalILRepackVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalILRepackPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' "
+            FileToLocate="ilrepack.exe"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalILRepackPath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalILRepackPath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalILRepackPath)">
+            <Output
+                PropertyName="ToolsExternalILRepackPath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalILRepackPath)') AND '$(ShouldExecute)' == 'true' "
+            Importance="low"
+            Text="The ILRepack executable was found at: $(ToolsExternalILRepackPath)" />
+        <Error
+            Condition="!Exists('$(ToolsExternalILRepackPath)') AND '$(ShouldExecute)' == 'true' "
+            Text="Could not locate the ILRepack executable path. Cannot merge assemblies." />
+    </Target>
+
+    <Target
+        Condition=" '@(AssembliesToMerge)' != '' "
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_ILRepack_GetToolPaths"
+        Name="_nBuildKit_Build_ILRepack_Execute"
+        Outputs="%(AssembliesToMerge.Destination)">
+
+        <!-- Process the build templates in the primairy assembly path -->
+        <TemplateText
+            Template="%(AssembliesToMerge.Identity)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilePrimaryAssembly"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the destination path -->
+        <TemplateText
+            Template="%(AssembliesToMerge.Destination)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileMergedAssembly"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the key file path -->
+        <TemplateText
+            Condition=" '%(AssembliesToMerge.KeyFile)' != '' "
+            Template="%(AssembliesToMerge.KeyFile)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="KeyFile"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the version -->
+        <TemplateText
+            Template="%(AssembliesToMerge.Version)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="AssemblyVersion"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the included assemblies -->
+        <TemplateText
+            Condition=" '%(AssembliesToMerge.AssembliesToInclude)' != '' "
+            Template="%(AssembliesToMerge.AssembliesToInclude)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilesAssembliesIncluded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the excluded assemblies -->
+        <TemplateText
+            Condition=" '%(AssembliesToMerge.AssembliesToExclude)' != '' "
+            Template="%(AssembliesToMerge.AssembliesToExclude)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilesAssembliesExcluded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <Message
+            Importance="low"
+            Text="Creating NuGet package from: $(FileNuGetNuSpec)" />
+        <MakeDir
+            Condition="!Exists('$(DirBuildDeploy)') AND  '$(ShouldExecute)' == 'true' "
+            Directories="$(DirBuildDeploy)" />
+
+        <Message
+            Importance="low"
+            Text="Included dependencies: $(FilesAssembliesIncluded)" />
+        <Message
+            Importance="low"
+            Text="Excluded dependencies: $(FilesAssembliesExcluded)" />
+
+        <!--
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Exclude="$(FilesAssembliesExcluded.Split(';'))"
+            Include="$(FilesAssembliesIncluded.Split(';'))">
+            <Output
+                ItemName="AssembliesToMerge"
+                TaskParameter="Include" />
+        </CreateItem>
+
+        <Message
+            Importance="normal"
+            Text="Merging $(FilePrimaryAssembly) and @(AssembliesToMerge) into $(FileMergedAssembly) ..." />
+
+        <ILRepack
+            AssembliesToMerge="@(AssembliesToMerge)"
+            ILRepackExe="$(ToolsExternalILRepackPath)"
+            KeyFile="$(KeyFile)"
+            LogFile="$(DirBuildLogs)\$([System.IO.Path]::GetFileNameWithoutExtension('$(FilePrimaryAssembly)')).ilrepack.log"
+            MergedAssembly="$(FileMergedAssembly)"
+            PrimaryAssembly="$(FilePrimaryAssembly)"
+            Version="$(AssemblyVersion)"
+            WorkingDirectory="$([System.IO.Path]::GetDirectoryName('$(FilePrimaryAssembly)'))" />
+    </Target>
+ </Project>
