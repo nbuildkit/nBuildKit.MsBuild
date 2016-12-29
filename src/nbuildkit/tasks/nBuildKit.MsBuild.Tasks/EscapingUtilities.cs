@@ -7,10 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
-namespace NBuildKit.MsBuild.Tasks.Bootstrap
+namespace NBuildKit.MsBuild.Tasks
 {
     /// <summary>
     /// This class implements static methods to assist with unescaping of %XX codes

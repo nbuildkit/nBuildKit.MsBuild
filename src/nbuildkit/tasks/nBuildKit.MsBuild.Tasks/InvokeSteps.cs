@@ -15,12 +15,12 @@ using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace NBuildKit.MsBuild.Tasks.Bootstrap
+namespace NBuildKit.MsBuild.Tasks
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that executes steps for nBuildKit.
     /// </summary>
-    public sealed class InvokeSteps : Task
+    public sealed class InvokeSteps : NBuildKitMsBuildTask
     {
         private static ITaskItem[] LocalPreSteps(ITaskItem step)
         {
@@ -127,28 +127,40 @@ namespace NBuildKit.MsBuild.Tasks.Bootstrap
             }
 
             bool result = true;
-            foreach (var globalPreStep in PreSteps)
+            if (PreSteps != null)
             {
-                result = InvokeBuildEngine(globalPreStep);
-                if (!result && StopOnFirstFailure)
+                foreach (var globalPreStep in PreSteps)
                 {
-                    Log.LogError(
-                        "Failed while executing global pre-step action from '{0}'",
-                        globalPreStep.ItemSpec);
-                    return false;
+                    if (!string.IsNullOrEmpty(globalPreStep.ItemSpec))
+                    {
+                        result = InvokeBuildEngine(globalPreStep);
+                        if (!result && StopOnFirstFailure)
+                        {
+                            Log.LogError(
+                                "Failed while executing global pre-step action from '{0}'",
+                                globalPreStep.ItemSpec);
+                            return false;
+                        }
+                    }
                 }
             }
 
             var localPreSteps = LocalPreSteps(step);
-            foreach (var localPreStep in localPreSteps)
+            if (localPreSteps != null)
             {
-                result = InvokeBuildEngine(localPreStep);
-                if (!result && StopOnFirstFailure)
+                foreach (var localPreStep in localPreSteps)
                 {
-                    Log.LogError(
-                        "Failed while executing step specific pre-step action from '{0}'",
-                        localPreStep.ItemSpec);
-                    return false;
+                    if (!string.IsNullOrEmpty(localPreStep.ItemSpec))
+                    {
+                        result = InvokeBuildEngine(localPreStep);
+                        if (!result && StopOnFirstFailure)
+                        {
+                            Log.LogError(
+                                "Failed while executing step specific pre-step action from '{0}'",
+                                localPreStep.ItemSpec);
+                            return false;
+                        }
+                    }
                 }
             }
 
@@ -162,27 +174,39 @@ namespace NBuildKit.MsBuild.Tasks.Bootstrap
             }
 
             var localPostSteps = LocalPostSteps(step);
-            foreach (var localPostStep in localPostSteps)
+            if (localPostSteps != null)
             {
-                result = InvokeBuildEngine(localPostStep);
-                if (!result && StopOnFirstFailure)
+                foreach (var localPostStep in localPostSteps)
                 {
-                    Log.LogError(
-                        "Failed while executing step specific post-step action from '{0}'",
-                        localPostStep.ItemSpec);
-                    return false;
+                    if (!string.IsNullOrEmpty(localPostStep.ItemSpec))
+                    {
+                        result = InvokeBuildEngine(localPostStep);
+                        if (!result && StopOnFirstFailure)
+                        {
+                            Log.LogError(
+                                "Failed while executing step specific post-step action from '{0}'",
+                                localPostStep.ItemSpec);
+                            return false;
+                        }
+                    }
                 }
             }
 
-            foreach (var globalPostStep in PostSteps)
+            if (PostSteps != null)
             {
-                result = InvokeBuildEngine(globalPostStep);
-                if (!result && StopOnFirstFailure)
+                foreach (var globalPostStep in PostSteps)
                 {
-                    Log.LogError(
-                        "Failed while executing global post-step action from '{0}'",
-                        globalPostStep.ItemSpec);
-                    return false;
+                    if (!string.IsNullOrEmpty(globalPostStep.ItemSpec))
+                    {
+                        result = InvokeBuildEngine(globalPostStep);
+                        if (!result && StopOnFirstFailure)
+                        {
+                            Log.LogError(
+                                "Failed while executing global post-step action from '{0}'",
+                                globalPostStep.ItemSpec);
+                            return false;
+                        }
+                    }
                 }
             }
 
@@ -196,29 +220,6 @@ namespace NBuildKit.MsBuild.Tasks.Bootstrap
         {
             get;
             set;
-        }
-
-        private string GetAbsolutePath(string path)
-        {
-            Log.LogMessage(
-                MessageImportance.Low,
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "Searching for absolute path of {0}",
-                    path));
-
-            var result = path;
-            if (string.IsNullOrEmpty(result))
-            {
-                return string.Empty;
-            }
-
-            if (!Path.IsPathRooted(result))
-            {
-                result = Path.GetFullPath(result);
-            }
-
-            return result;
         }
 
         private IEnumerable<string> Groups()

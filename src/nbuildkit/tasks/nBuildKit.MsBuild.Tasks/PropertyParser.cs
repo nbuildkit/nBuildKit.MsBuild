@@ -13,7 +13,7 @@ using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace NBuildKit.MsBuild.Tasks.Bootstrap
+namespace NBuildKit.MsBuild.Tasks
 {
     /// <summary>
     /// Defines helper methods for parsing properties from strings.
