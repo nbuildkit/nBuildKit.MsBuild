@@ -283,6 +283,9 @@
         <!-- The directory that will contain all the documentation files which are generated during the build process -->
         <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc>
 
+        <!-- The directory in which nBuildKit drops files / assemblies it needs -->
+        <DirBuildInternal>$(DirBuild)\nbuildkit</DirBuildInternal>
+
         <!-- The directory that will contain all the generated build logs during the build process -->
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
 
@@ -703,5 +706,10 @@
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedSettings>true</ExistsSharedSettings>
+    </PropertyGroup>
+
+    <!-- nBuildKit internals -->
+    <PropertyGroup>
+        <FileTasksBootstrap>$(DirBuildInternal)\nBuildKit.MsBuild.Tasks.Bootstrap.dll</FileTasksBootstrap>
     </PropertyGroup>
 </Project>
