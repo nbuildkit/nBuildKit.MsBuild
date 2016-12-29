@@ -93,7 +93,7 @@
         <ItemGroup>
             <BuildFilesToDelete
                 Condition="Exists('$(DirBuild)')"
-                Exclude="$(DirUserConfiguration)\**\*.*"
+                Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*"
                 Include="$(DirBuild)\**\*.*" />
         </ItemGroup>
         <Delete
@@ -145,7 +145,7 @@
         <ItemGroup>
             <BuildDirectoriesToDelete
                 Condition="Exists('$(DirBuild)')"
-                Exclude="$(DirBuild);$(DirUserConfiguration)"
+                Exclude="$(DirBuild);$(DirBuildBootstrap);$(DirUserConfiguration)"
                 Include="$([System.IO.Directory]::GetDirectories('$(DirBuild)', '*', System.IO.SearchOption.TopDirectoryOnly))" />
         </ItemGroup>
         <RemoveDir

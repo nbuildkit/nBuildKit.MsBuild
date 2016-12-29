@@ -277,14 +277,16 @@
         -->
         <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig>
 
+        <!--
+            The directory to which the nBuildKit task assemblies are compiled for nBuildKit build bootstrapping.
+        -->
+        <DirBuildBootstrap Condition=" '$(DirBuildBootstrap)' == '' ">$(DirBuild)\bootstrap</DirBuildBootstrap>
+
         <!-- The directory that will contain all the generated artifacts during the build process -->
         <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
 
         <!-- The directory that will contain all the documentation files which are generated during the build process -->
         <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc>
-
-        <!-- The directory in which nBuildKit drops files / assemblies it needs -->
-        <DirBuildInternal>$(DirBuild)\nbuildkit</DirBuildInternal>
 
         <!-- The directory that will contain all the generated build logs during the build process -->
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
@@ -710,6 +712,6 @@
 
     <!-- nBuildKit internals -->
     <PropertyGroup>
-        <FileTasksBootstrap>$(DirBuildInternal)\nBuildKit.MsBuild.Tasks.Bootstrap.dll</FileTasksBootstrap>
+        <FileNBuildKitExtensionsAssembly>$(DirNBuildKitMsBuildExtensions)\nBuildKit.MsBuild.Tasks.dll</FileNBuildKitExtensionsAssembly>
     </PropertyGroup>
 </Project>

@@ -78,20 +78,20 @@
     </Target>
 
     <Target
-        Condition="!Exists('$(FileTasksBootstrap)')"
+        Condition="!Exists('$(FileNBuildKitExtensionsAssembly)')"
         Name="_nBuildKit_Deploy_Bootstrap">
 
         <MSBuild
             BuildInParallel="False"
-            Projects="$(DirSrc)\tasks\nBuildKit.MsBuild.Tasks.Bootstrap\nBuildKit.MsBuild.Tasks.Bootstrap.csproj"
-            Properties="Configuration=Release;Platform=AnyCPU;OutputPath=$(DirBuildInternal);ShouldRunAnalyzers=false;ShouldPerformCodeAnalysis=false;"
+            Projects="$(MSBuildThisFileDirectory)shared.bootstrap.build.tasks.msbuild"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
             SkipNonexistentProjects="False"
-            StopOnFirstFailure="False"
+            StopOnFirstFailure="True"
             TargetAndPropertyListSeparators=""
-            Targets="%(MsBuildTasksProjectsToBuild.Targets)"
+            Targets=""
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True"
@@ -103,12 +103,12 @@
             may cause DLL loading issues, so we'll nuke em
         -->
         <ItemGroup>
-            <BootstrapFilesToDelete Include="$(DirBuildInternal)\Microsoft.Build.*.dll" />
+            <BootstrapFilesToDelete Include="$(DirBuildBootstrapInternal)\Microsoft.Build.*.dll" />
         </ItemGroup>
         <Delete Files="@(BootstrapFilesToDelete)" />
     </Target>
 
-    <UsingTask TaskName="NBuildKit.MsBuild.Tasks.Bootstrap.InvokeSteps" AssemblyFile="$(FileTasksBootstrap)">
+    <UsingTask TaskName="NBuildKit.MsBuild.Tasks.InvokeSteps" AssemblyFile="$(FileNBuildKitExtensionsAssembly)" />
     <Target
         Condition=" '@(DeployStepsToExecute)' != ''"
         DependsOnTargets="_nBuildKit_Deploy_Bootstrap"
