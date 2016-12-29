@@ -23,17 +23,38 @@
     <!--
         **** BUILD STEPS ****
     -->
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the build -->
+        <!-- <FailBuildOnPreStepFailure Condition=" '$(FailBuildOnPreStepFailure)' == '' ">false</FailBuildOnPreStepFailure> -->
+
+        <!-- Indicate if an error in the post-step actions should fail the build -->
+        <!-- <FailBuildOnPostStepFailure Condition=" '$(FailBuildOnPostStepFailure)' == '' ">false</FailBuildOnPostStepFailure> -->
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the build -->
+        <!-- <StopBuildOnPreStepFailure Condition=" '$(StopBuildOnPreStepFailure)' == '' ">false</StopBuildOnPreStepFailure> -->
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the build -->
+        <!-- <StopBuildOnPostStepFailure Condition=" '$(StopBuildOnPostStepFailure)' == '' ">false</StopBuildOnPostStepFailure> -->
+    </PropertyGroup>
 
     <!--
          A list of all additional scripts and their targets that should be executed before each of the selected build steps. Globally defined
          pre-steps will be executed prior to the presteps of the individual steps.
 
-        The full path to the script that is about to be executed is passed to each pre-step under the 'BuildStep' property. Additionally all
-        the standard properties as seen below and the properties for the given build step are passed in.
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given build step are passed in.
     -->
     <ItemGroup>
         <!--
         <BuildPreStepsToExecute Include="">
+            <Properties>
+            </Properties>
         </BuildPreStepsToExecute>
         -->
     </ItemGroup>
@@ -42,12 +63,20 @@
         A list of all additional scripts and their targets that should be executed after each of the selected build steps. Globally defined
          post-steps will be executed after the poststeps of the individual steps.
 
-        The full path to the script that was executed is passed to each post-step under the 'BuildStep' property. Additionally all the
-        standard properties as seen below and the properties for the given build step are passed in.
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given build step are passed in.
     -->
     <ItemGroup>
         <!--
         <BuildPostStepsToExecute Include="">
+            <Properties>
+            </Properties>
         </BuildPostStepsToExecute>
         -->
     </ItemGroup>
@@ -65,9 +94,14 @@
         - PostSteps                                      - A semi-colon separated list of all additional scripts and their targets that should be executed after
                                                            the selected build step.
 
-        Pre- and Post-steps are passed the full path to the script that is about to be or was executed under the 'BuildStep' property. Additionally all the
-        standard properties as seen below and the properties for the given build step are passed in.
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
 
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given build step are passed in.
 
         The following build steps are by default provided through the given properties:
         $(BuildStepsPrepareWorkspace)                    - Clears the existing build artifacts from the workspace and creates the required directories. Clearing the
@@ -137,6 +171,9 @@
         $(DirNBuildKitMsBuildTemplates)                  - The full path to the directory that contains the nBuildKit templates.
 
         Additionally any properties defined by the 'Properties' section are also pushed up.
+
+        Custom build steps may chose to add metadata to the 'AvailableStepMetadata' ItemGroup. This ItemGroup contains metadata describing
+        all known steps.
     -->
     <ItemGroup>
         <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
@@ -490,6 +527,24 @@
             <Groups>
             </Groups>
         </BuildFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
+    <!--
+        The following item group stores metadata describing the custom build steps that are executed in the build process.
+        By providing this metadata it is possible for pre- and post-step actions to more clearly determine which step
+        they were attached to.
+    -->
+    <ItemGroup>
+        <!--
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DirWorkspace)\my.build.step.msbuild'))">
+            <Description>
+                The description for my cool build step
+            </Description>
+            <Id></Id>
+            <Name>My build step</Name>
+            <Path>$(DirWorkspace)\my.build.step.msbuild</Path>
+        </AvailableStepMetadata>
         -->
     </ItemGroup>
 

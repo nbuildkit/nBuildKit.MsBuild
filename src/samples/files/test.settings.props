@@ -3,7 +3,86 @@
     DefaultTargets="Run"
     ToolsVersion="11.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the deploy -->
+        <!-- <FailTestOnPreStepFailure Condition=" '$(FailTestOnPreStepFailure)' == '' ">false</FailTestOnPreStepFailure> -->
+
+        <!-- Indicate if an error in the post-step actions should fail the deploy -->
+        <!-- <FailTestOnPostStepFailure Condition=" '$(FailTestOnPostStepFailure)' == '' ">false</FailTestOnPostStepFailure> -->
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the deploy -->
+        <!-- <StopTestOnPreStepFailure Condition=" '$(StopTestOnPreStepFailure)' == '' ">false</StopTestOnPreStepFailure> -->
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the deploy -->
+        <!-- <StopTestOnPostStepFailure Condition=" '$(StopTestOnPostStepFailure)' == '' ">false</StopTestOnPostStepFailure> -->
+    </PropertyGroup>
+
     <!--
+         A list of all additional scripts and their targets that should be executed before each of the selected deploy steps. Globally defined
+         pre-steps will be executed prior to the presteps of the individual steps.
+
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
+    -->
+    <ItemGroup>
+        <!--
+        <TestPreStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </TestPreStepsToExecute>
+        -->
+    </ItemGroup>
+
+    <!--
+        A list of all additional scripts and their targets that should be executed after each of the selected deploy steps. Globally defined
+         post-steps will be executed after the poststeps of the individual steps.
+
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
+    -->
+    <ItemGroup>
+        <!--
+        <TestPostStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </TestPostStepsToExecute>
+        -->
+    </ItemGroup>
+
+    <!--
+        The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
+        determines in which order the test steps are executed.
+
+        Each test step can define the following items:
+        - Properties                                     - The semi-colon separated set of properties that should be passed to the script.
+                                                           Properties are written as 'key=value'.
+        - Groups                                         - All the groups that a given step belongs to. The user can elect to only run test steps for a given group.
+        - PreSteps                                       - A semi-colon separated list of all additional scripts and their targets that should be executed before
+                                                           the selected test step.
+        - PostSteps                                      - A semi-colon separated list of all additional scripts and their targets that should be executed after
+                                                           the selected test step.
+
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given test step are passed in.
+
         The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
         determines in which order the test steps are executed.
 
@@ -67,6 +146,10 @@
             <Groups>
                 Clean;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsBuildTargetsAssembly)">
@@ -75,6 +158,10 @@
             <Groups>
                 Bootstrap;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsGenerateTargetsFile)">
             <Properties>
@@ -82,6 +169,10 @@
             <Groups>
                 Bootstrap;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsPrepareRestoreNuGet)">
@@ -93,6 +184,10 @@
                 Prepare;
                 Restore;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
 
         <!--
@@ -105,6 +200,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareVcsInfo)">
             <Properties>
@@ -112,6 +211,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareGetIssueIds)">
             <Properties>
@@ -119,6 +222,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
 
         <!--
@@ -131,6 +238,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareReleaseNotes)">
             <Properties>
@@ -138,6 +249,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
             <Properties>
@@ -146,6 +261,10 @@
                 Generate;
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsIntegrationPester)">
@@ -155,6 +274,10 @@
                 Integration;
                 Pester;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
     </ItemGroup>
 
@@ -181,6 +304,24 @@
             <Properties>
             </Properties>
         </TestFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
+    <!--
+        The following item group stores metadata describing the custom test steps that are executed in the test process.
+        By providing this metadata it is possible for pre- and post-step actions to more clearly determine which step
+        they were attached to.
+    -->
+    <ItemGroup>
+        <!--
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DirWorkspace)\my.test.step.msbuild'))">
+            <Description>
+                The description for my cool test step
+            </Description>
+            <Id></Id>
+            <Name>My test step</Name>
+            <Path>$(DirWorkspace)\my.test.step.msbuild</Path>
+        </AvailableStepMetadata>
         -->
     </ItemGroup>
 

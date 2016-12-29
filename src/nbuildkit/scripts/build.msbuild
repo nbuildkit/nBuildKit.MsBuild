@@ -84,8 +84,27 @@
     </Target>
 
     <Target
-        Condition="!Exists('$(FileNBuildKitExtensionsAssembly)')"
+        Condition="!Exists('$(FileNBuildKitExtensionsAssembly)') OR '$([System.IO.Path]::GetDirectoryName($(FileNBuildKitExtensionsAssembly)))' == '$(DirBuildBootstrap)' "
         Name="_nBuildKit_Build_Bootstrap">
+
+        <PropertyGroup>
+            <DirToClear>$([System.IO.Path]::GetDirectoryName($(FileNBuildKitExtensionsAssembly)))</DirToClear>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <BootstrapFilesToDelete
+                Condition="Exists('$(DirToClear)')"
+                Include="$(DirToClear)\**\*.*" />
+        </ItemGroup>
+        <Delete
+            Condition=" '@(BootstrapFilesToDelete)' != ''"
+            ContinueOnError="True"
+            Files="@(BootstrapFilesToDelete)" />
+
+        <RemoveDir
+            Condition=" '$(DirToClear)' != '' "
+            ContinueOnError="True"
+            Directories="$(DirToClear)" />
 
         <MSBuild
             BuildInParallel="False"
@@ -100,18 +119,8 @@
             Targets=""
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
-            UseResultsCache="True"
-            Condition=" '$(ShouldExecute)' == 'true' ">
+            UseResultsCache="True">
         </MSBuild>
-
-        <!--
-            The compile process also drops the MsBuild binaries. We don't really want those because they
-            may cause DLL loading issues, so we'll nuke em
-        -->
-        <ItemGroup>
-            <BootstrapFilesToDelete Include="$(DirBuildBootstrapInternal)\Microsoft.Build.*.dll" />
-        </ItemGroup>
-        <Delete Files="@(BootstrapFilesToDelete)" />
     </Target>
 
     <UsingTask TaskName="NBuildKit.MsBuild.Tasks.InvokeSteps" AssemblyFile="$(FileNBuildKitExtensionsAssembly)" />

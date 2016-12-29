@@ -6,6 +6,35 @@
     <!--
         **** TEST STEPS ****
     -->
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the test -->
+        <FailTestOnPreStepFailure Condition=" '$(FailTestOnPreStepFailure)' == '' ">false</FailTestOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should fail the test -->
+        <FailTestOnPostStepFailure Condition=" '$(FailTestOnPostStepFailure)' == '' ">false</FailTestOnPostStepFailure>
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the test -->
+        <StopTestOnPreStepFailure Condition=" '$(StopTestOnPreStepFailure)' == '' ">false</StopTestOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the test -->
+        <StopTestOnPostStepFailure Condition=" '$(StopTestOnPostStepFailure)' == '' ">false</StopTestOnPostStepFailure>
+    </PropertyGroup>
+    <ItemGroup Condition=" '@(TestPreStepsToExecute)' == '' ">
+        <!--
+        <TestPreStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </TestPreStepsToExecute>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(TestPostStepsToExecute)' == '' ">
+        <!--
+        <TestPostStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </TestPostStepsToExecute>
+        -->
+    </ItemGroup>
     <ItemGroup Condition=" '@(TestStepsToExecute)' == '' ">
         <TestStepsToExecute Include="$(TestStepsShowHelp)">
            <Properties>
@@ -17,6 +46,10 @@
             <Groups>
                 Help;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </TestStepsToExecute>
     </ItemGroup>
 

@@ -23,15 +23,32 @@
     <!--
         **** BUILD STEPS ****
     -->
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the build -->
+        <FailBuildOnPreStepFailure Condition=" '$(FailBuildOnPreStepFailure)' == '' ">false</FailBuildOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should fail the build -->
+        <FailBuildOnPostStepFailure Condition=" '$(FailBuildOnPostStepFailure)' == '' ">false</FailBuildOnPostStepFailure>
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the build -->
+        <StopBuildOnPreStepFailure Condition=" '$(StopBuildOnPreStepFailure)' == '' ">false</StopBuildOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the build -->
+        <StopBuildOnPostStepFailure Condition=" '$(StopBuildOnPostStepFailure)' == '' ">false</StopBuildOnPostStepFailure>
+    </PropertyGroup>
     <ItemGroup Condition=" '@(BuildPreStepsToExecute)' == '' ">
         <!--
         <BuildPreStepsToExecute Include="">
+            <Properties>
+            </Properties>
         </BuildPreStepsToExecute>
         -->
     </ItemGroup>
     <ItemGroup Condition=" '@(BuildPostStepsToExecute)' == '' ">
         <!--
         <BuildPostStepsToExecute Include="">
+            <Properties>
+            </Properties>
         </BuildPostStepsToExecute>
         -->
     </ItemGroup>
