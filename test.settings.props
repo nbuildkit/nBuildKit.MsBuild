@@ -289,17 +289,23 @@
         The list of all files that should be generated and their template files.
 
         The template file may contain zero or more template parameters as indicated at the top of this
-        file. Template parameters must be enclosed in '${}'.
+        file. By default template parameters must be enclosed in '${}'. By providing a value for
+        'Expression' it is possible to use a custom regular expression to search for elements to replace,
+        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
+        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
+
+        Only the 'Template' value is required.
 
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
         <!--
         <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\tools\environment.props">
+            <Encoding>UTF-8</Encoding>
+            <Expression>(MyRegex)</Expression>
+            <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
             <Template>$(DirTestLatestCSharp)\tools\environment.props</Template>
             <Token>LocalNuGetRepository</Token>
-            <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
-            <Encoding>UTF-8</Encoding>
         </TestFilesToGenerate>
         -->
     </ItemGroup>
