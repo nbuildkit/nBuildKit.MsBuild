@@ -79,6 +79,29 @@
 
 
     <!--
+        **** PACK - ILMERGE ****
+    -->
+    <!--
+        The item group defining which assemblies should be IL merged.
+    -->
+    <ItemGroup>
+        <AssembliesToMerge Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\nBuildKit.MsBuild.Tasks.dll">
+            <AssembliesToExclude>
+                $(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\nBuildKit.MsBuild.Tasks.dll;
+                $(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\Microsoft.Build.*.dll
+            </AssembliesToExclude>
+            <AssembliesToInclude>
+                $(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\*.dll
+            </AssembliesToInclude>
+            <Destination>
+                $(DirBuildBinPlatformConfig)\nBuildKit.MsBuild.Tasks.dll
+            </Destination>
+            <Version>${VersionSemantic}</Version>
+        </AssembliesToMerge>
+    </ItemGroup>
+
+
+    <!--
         **** PACK - NUGET ****
     -->
     <!--
