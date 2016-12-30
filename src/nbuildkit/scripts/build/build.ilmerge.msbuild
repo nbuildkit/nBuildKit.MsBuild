@@ -139,7 +139,7 @@
             Template="%(AssembliesToMerge.KeyFile)"
             Tokens="@(TemplateTokens)">
             <Output
-                PropertyName="KeyFile"
+                PropertyName="ILRepackStrongNameFile"
                 TaskParameter="Result" />
         </TemplateText>
 
@@ -205,7 +205,7 @@
         <ILRepack
             AssembliesToMerge="@(AssembliesToMerge)"
             ILRepackExe="$(ToolsExternalILRepackPath)"
-            KeyFile="$(KeyFile)"
+            KeyFile="$(ILRepackStrongNameFile)"
             LogFile="$(DirBuildLogs)\$([System.IO.Path]::GetFileNameWithoutExtension('$(FilePrimaryAssembly)')).ilrepack.log"
             MergedAssembly="$(FileMergedAssembly)"
             PrimaryAssembly="$(FilePrimaryAssembly)"
