@@ -244,11 +244,8 @@ namespace NBuildKit.MsBuild.Tasks
                 }
             }
 
+            // Get the result but always try to excecute the post-step actions
             var stepResult = InvokeBuildEngine(step);
-            if (!stepResult && StopOnFirstFailure)
-            {
-                return false;
-            }
 
             var localPostSteps = LocalPostSteps(step);
             if (localPostSteps != null)
