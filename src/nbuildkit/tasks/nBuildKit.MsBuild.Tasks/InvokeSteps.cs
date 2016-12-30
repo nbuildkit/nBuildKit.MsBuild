@@ -96,6 +96,7 @@ namespace NBuildKit.MsBuild.Tasks
             }
 
             // Get groups and determine which steps should be executed
+            var hasFailed = false;
             var groups = Groups();
             foreach (var step in Steps)
             {
@@ -103,6 +104,7 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!ExecuteStep(step, groups))
                     {
+                        hasFailed = true;
                         if (StopOnFirstFailure)
                         {
                             break;
@@ -111,13 +113,14 @@ namespace NBuildKit.MsBuild.Tasks
                 }
                 catch (Exception e)
                 {
+                    hasFailed = true;
                     Log.LogError(
                         "Execution of steps failed with exception. Exception was: {0}",
                         e);
                 }
             }
 
-            if (Log.HasLoggedErrors)
+            if (Log.HasLoggedErrors || hasFailed)
             {
                 if (FailureSteps != null)
                 {
@@ -137,7 +140,7 @@ namespace NBuildKit.MsBuild.Tasks
                 }
             }
 
-            return !Log.HasLoggedErrors;
+            return !Log.HasLoggedErrors && !hasFailed;
         }
 
         private bool ExecuteFailureStep(ITaskItem step, IEnumerable<string> groups)
