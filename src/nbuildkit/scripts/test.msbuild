@@ -19,10 +19,6 @@
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props" />
 
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.extension.IsInCollection.msbuild') AND '$(ExistsExtensionsIsInCollection)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.extension.IsInCollection.msbuild" />
-
     <!-- Default values for all the properties in case they were not overriden -->
     <PropertyGroup>
         <DefaultPropertyDirectories>
@@ -88,86 +84,13 @@
     </Target>
 
     <Target
-        Condition=" '@(TestStepsToExecute)' != ''"
-        Name="_nBuildKit_Test_Execute"
-        Outputs="%(TestStepsToExecute.Identity)">
-
-        <CreateItem Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
-            <Output
-                ItemName="ExecutionGroupsFromUser"
-                TaskParameter="Include" />
-        </CreateItem>
-
-        <CreateProperty Value="%(TestStepsToExecute.Groups)">
-            <Output
-                PropertyName="TestStepGroups"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <CreateItem Include="$(TestStepGroups.ToLower().Split(';'))">
-            <Output
-                ItemName="ExecutionGroupsForStep"
-                TaskParameter="Include" />
-        </CreateItem>
-        <SharedExtensionIsInCollection
-            Collection="@(ExecutionGroupsFromUser)"
-            Items="@(ExecutionGroupsForStep)">
-            <Output
-                PropertyName="ShouldExecuteStep"
-                TaskParameter="IsInList" />
-        </SharedExtensionIsInCollection>
-
-        <CreateItem Include="all">
-            <Output
-                ItemName="ExecutionGroupsForAllSteps"
-                TaskParameter="Include" />
-        </CreateItem>
-        <SharedExtensionIsInCollection
-            Collection="@(ExecutionGroupsForAllSteps)"
-            Items="@(ExecutionGroupsFromUser)">
-            <Output
-                PropertyName="ShouldExecuteAllSteps"
-                TaskParameter="IsInList" />
-        </SharedExtensionIsInCollection>
-
-        <CreateProperty Value="false">
-            <Output
-                PropertyName="ShouldExecute"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <CreateProperty
-            Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '$(TestStepGroups)' == '' AND '$(GroupsToExecute.ToLower())' == 'all')"
-            Value="true">
-            <Output
-                PropertyName="ShouldExecute"
-                TaskParameter="Value" />
-        </CreateProperty>
-
-        <Message
-            Condition=" '$(ShouldExecute)' != 'true' "
-            Importance="normal"
-            Text="Skipping %(TestStepsToExecute.Identity)." />
-        <Message
-            Condition=" $(ShouldExecuteStep.ToLower()) != 'true' "
-            Importance="low"
-            Text="Step not included in execution group list." />
-        <Message
-            Condition=" $(ShouldExecuteAllSteps.ToLower()) != 'true' "
-            Importance="low"
-            Text="'All' execution group not included in group list." />
-        <Message
-            Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(GroupsToExecute.ToLower())' != 'all' "
-            Importance="low"
-            Text="Execution group list is empty and 'All' execution group is not included in group list." />
-
-        <Message
-            Condition=" '$(ShouldExecute)' == 'true' "
-            Importance="normal"
-            Text="Executing %(TestStepsToExecute.Identity)" />
+        Condition="!Exists('$(FileNBuildKitExtensionsAssembly)')"
+        Name="_nBuildKit_Test_Bootstrap">
 
         <MSBuild
             BuildInParallel="False"
-            Projects="%(TestStepsToExecute.Identity)"
-            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties);%(TestStepsToExecute.Properties)"
+            Projects="$(MSBuildThisFileDirectory)shared.bootstrap.build.tasks.msbuild"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -178,16 +101,24 @@
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True"
-            Condition=" $(ShouldExecute) == 'true' ">
+            Condition=" '$(ShouldExecute)' == 'true' ">
         </MSBuild>
 
-        <OnError ExecuteTargets="_nBuildKit_Test_OnError" />
+        <!--
+            The compile process also drops the MsBuild binaries. We don't really want those because they
+            may cause DLL loading issues, so we'll nuke em
+        -->
+        <ItemGroup>
+            <BootstrapFilesToDelete Include="$(DirBuildBootstrapInternal)\Microsoft.Build.*.dll" />
+        </ItemGroup>
+        <Delete Files="@(BootstrapFilesToDelete)" />
     </Target>
 
+    <UsingTask TaskName="NBuildKit.MsBuild.Tasks.InvokeSteps" AssemblyFile="$(FileNBuildKitExtensionsAssembly)" />
     <Target
-        Condition=" '@(TestFailureStepsToExecute)' != '' "
-        Name="_nBuildKit_Test_OnError"
-        Outputs="%(TestFailureStepsToExecute.Identity)">
+        Condition=" '@(TestStepsToExecute)' != ''"
+        DependsOnTargets="_nBuildKit_Test_Bootstrap"
+        Name="_nBuildKit_Test_Execute">
 
         <CreateItem Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
             <Output
@@ -195,87 +126,19 @@
                 TaskParameter="Include" />
         </CreateItem>
 
-        <CreateProperty Value="%(TestFailureStepsToExecute.Groups)">
-            <Output
-                PropertyName="TestFailureStepGroups"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <CreateItem Include="$(TestFailureStepGroups.ToLower().Split(';'))">
-            <Output
-                ItemName="ExecutionGroupsForStep"
-                TaskParameter="Include" />
-        </CreateItem>
-        <SharedExtensionIsInCollection
-            Collection="@(ExecutionGroupsFromUser)"
-            Items="@(ExecutionGroupsForStep)">
-            <Output
-                PropertyName="ShouldExecuteStep"
-                TaskParameter="IsInList" />
-        </SharedExtensionIsInCollection>
-
-        <CreateItem Include="all">
-            <Output
-                ItemName="ExecutionGroupsForAllSteps"
-                TaskParameter="Include" />
-        </CreateItem>
-        <SharedExtensionIsInCollection
-            Collection="@(ExecutionGroupsForAllSteps)"
-            Items="@(ExecutionGroupsFromUser)">
-            <Output
-                PropertyName="ShouldExecuteAllSteps"
-                TaskParameter="IsInList" />
-        </SharedExtensionIsInCollection>
-
-        <CreateProperty Value="false">
-            <Output
-                PropertyName="ShouldExecute"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <CreateProperty
-            Condition="$(ShouldExecuteStep.ToLower()) == 'true' OR $(ShouldExecuteAllSteps.ToLower()) == 'true' OR ( '%(TestFailureStepsToExecute.Groups)' == '' AND '$(GroupsToExecute.ToLower())' == 'all')"
-            Value="true">
-            <Output
-                PropertyName="ShouldExecute"
-                TaskParameter="Value" />
-        </CreateProperty>
-
-        <Message
-            Condition=" '$(ShouldExecute)' != 'true' "
-            Importance="normal"
-            Text="Skipping %(TestFailureStepsToExecute.Identity)." />
-        <Message
-            Condition=" $(ShouldExecuteStep.ToLower()) != 'true' "
-            Importance="low"
-            Text="Step not included in execution group list." />
-        <Message
-            Condition=" $(ShouldExecuteAllSteps.ToLower()) != 'true' "
-            Importance="low"
-            Text="'All' execution group not included in group list." />
-        <Message
-            Condition=" '@(ExecutionGroupsForStep)' == '' AND '$(GroupsToExecute.ToLower())' != 'all' "
-            Importance="low"
-            Text="Execution group list is empty and 'All' execution group is not included in group list." />
-
-        <Message
-            Condition=" '$(ShouldExecute)' == 'true' "
-            Importance="normal"
-            Text="Executing %(TestFailureStepsToExecute.Identity)" />
-
-        <MSBuild
-            BuildInParallel="False"
-            Projects="%(TestFailureStepsToExecute.Identity)"
-            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties);%(TestFailureStepsToExecute.Properties)"
-            RebaseOutputs="False"
-            RemoveProperties=""
-            RunEachTargetSeparately="True"
-            SkipNonexistentProjects="False"
-            StopOnFirstFailure="False"
-            TargetAndPropertyListSeparators=""
-            Targets=""
-            ToolsVersion="$(MSBuildToolsVersion)"
-            UnloadProjectsOnCompletion="True"
-            UseResultsCache="True"
-            Condition=" $(ShouldExecute) == 'true' ">
-        </MSBuild>
+        <InvokeSteps
+            FailOnPreStepFailure="$(FailTestOnPreStepFailure)"
+            FailOnPostStepFailure="$(FailTestOnPostStepFailure)"
+            FailureSteps="@(TestFailureStepsToExecute)"
+            GroupsToExecute="@(ExecutionGroupsFromUser)"
+            PreSteps="@(TestPreStepsToExecute)"
+            PostSteps="@(TestPostStepsToExecute)"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
+            Steps="@(TestStepsToExecute)"
+            StepMetadata="@(AvailableStepMetadata)"
+            StopOnFirstFailure="true"
+            StopOnPreStepFailure="$(StopTestOnPreStepFailure)"
+            StopOnPostStepFailure="$(StopTestOnPostStepFailure)"
+            ToolsVersion="$(MSBuildToolsVersion)" />
     </Target>
 </Project>

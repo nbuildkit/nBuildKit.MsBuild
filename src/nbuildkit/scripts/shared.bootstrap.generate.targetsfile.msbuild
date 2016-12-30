@@ -16,9 +16,6 @@
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
-    <PropertyGroup>
-        <FileNBuildKitExtensionsAssembly>$(DirNBuildKitMsBuildExtensions)\nBuildKit.MsBuild.Tasks.dll</FileNBuildKitExtensionsAssembly>
-    </PropertyGroup>
     <UsingTask
         AssemblyFile="$(FileNBuildKitExtensionsAssembly)"
         Condition="!Exists('$(FileNBuildKitExtensionsImport)') AND Exists('$(FileNBuildKitExtensionsAssembly)') AND '$(ExistsNBuildKitExtensions)' != 'true' "

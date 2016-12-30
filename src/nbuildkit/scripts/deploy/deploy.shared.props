@@ -6,13 +6,50 @@
     <!--
         **** DEPLOY STEPS ****
     -->
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the deploy -->
+        <FailDeployOnPreStepFailure Condition=" '$(FailDeployOnPreStepFailure)' == '' ">false</FailDeployOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should fail the deploy -->
+        <FailDeployOnPostStepFailure Condition=" '$(FailDeployOnPostStepFailure)' == '' ">false</FailDeployOnPostStepFailure>
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the deploy -->
+        <StopDeployOnPreStepFailure Condition=" '$(StopDeployOnPreStepFailure)' == '' ">false</StopDeployOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the deploy -->
+        <StopDeployOnPostStepFailure Condition=" '$(StopDeployOnPostStepFailure)' == '' ">false</StopDeployOnPostStepFailure>
+    </PropertyGroup>
+    <ItemGroup Condition=" '@(DeployPreStepsToExecute)' == '' ">
+        <!--
+        <DeployPreStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployPreStepsToExecute>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(DeployPostStepsToExecute)' == '' ">
+        <!--
+        <DeployPostStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployPostStepsToExecute>
+        -->
+    </ItemGroup>
     <ItemGroup Condition=" '@(DeployStepsToExecute)' == '' ">
         <DeployStepsToExecute Include="$(DeployStepsShowHelp)">
             <Properties>
+                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props;
+                HelpFileSettings=deploy.settings.props;
+                HelpProcess=deploy;
+                HelpStepGroup=DeployStepsToExecute;
             </Properties>
             <Groups>
-                Bootstrap;
+                Help;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
     </ItemGroup>
 

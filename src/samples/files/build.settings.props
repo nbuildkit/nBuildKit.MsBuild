@@ -23,9 +23,85 @@
     <!--
         **** BUILD STEPS ****
     -->
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the build -->
+        <!-- <FailBuildOnPreStepFailure Condition=" '$(FailBuildOnPreStepFailure)' == '' ">false</FailBuildOnPreStepFailure> -->
+
+        <!-- Indicate if an error in the post-step actions should fail the build -->
+        <!-- <FailBuildOnPostStepFailure Condition=" '$(FailBuildOnPostStepFailure)' == '' ">false</FailBuildOnPostStepFailure> -->
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the build -->
+        <!-- <StopBuildOnPreStepFailure Condition=" '$(StopBuildOnPreStepFailure)' == '' ">false</StopBuildOnPreStepFailure> -->
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the build -->
+        <!-- <StopBuildOnPostStepFailure Condition=" '$(StopBuildOnPostStepFailure)' == '' ">false</StopBuildOnPostStepFailure> -->
+    </PropertyGroup>
+
+    <!--
+         A list of all additional scripts and their targets that should be executed before each of the selected build steps. Globally defined
+         pre-steps will be executed prior to the presteps of the individual steps.
+
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given build step are passed in.
+    -->
+    <ItemGroup>
+        <!--
+        <BuildPreStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </BuildPreStepsToExecute>
+        -->
+    </ItemGroup>
+
+    <!--
+        A list of all additional scripts and their targets that should be executed after each of the selected build steps. Globally defined
+         post-steps will be executed after the poststeps of the individual steps.
+
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given build step are passed in.
+    -->
+    <ItemGroup>
+        <!--
+        <BuildPostStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </BuildPostStepsToExecute>
+        -->
+    </ItemGroup>
+
     <!--
         The following ItemGroup defines which steps are taken during the build process. The order of the items in the item group
         determines in which order the build steps are executed.
+
+        Each build step can define the following items:
+        - Properties                                     - The semi-colon separated set of properties that should be passed to the script.
+                                                           Properties are written as 'key=value'.
+        - Groups                                         - All the groups that a given step belongs to. The user can elect to only run build steps for a given group.
+        - PreSteps                                       - A semi-colon separated list of all additional scripts and their targets that should be executed before
+                                                           the selected build step.
+        - PostSteps                                      - A semi-colon separated list of all additional scripts and their targets that should be executed after
+                                                           the selected build step.
+
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given build step are passed in.
 
         The following build steps are by default provided through the given properties:
         $(BuildStepsPrepareWorkspace)                    - Clears the existing build artifacts from the workspace and creates the required directories. Clearing the
@@ -95,6 +171,9 @@
         $(DirNBuildKitMsBuildTemplates)                  - The full path to the directory that contains the nBuildKit templates.
 
         Additionally any properties defined by the 'Properties' section are also pushed up.
+
+        Custom build steps may chose to add metadata to the 'AvailableStepMetadata' ItemGroup. This ItemGroup contains metadata describing
+        all known steps.
     -->
     <ItemGroup>
         <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
@@ -103,6 +182,10 @@
             <Groups>
                 Clean;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsBuildTargetsAssembly)">
@@ -111,6 +194,10 @@
             <Groups>
                 Bootstrap;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsGenerateTargetsFile)">
@@ -119,6 +206,10 @@
             <Groups>
                 Bootstrap;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNuGet)">
@@ -130,6 +221,10 @@
                 Prepare;
                 Restore;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <!--
@@ -142,6 +237,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareVcsInfo)">
             <Properties>
@@ -149,6 +248,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGetIssueIds)">
             <Properties>
@@ -156,6 +259,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <!--
@@ -169,6 +276,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <!--
@@ -181,6 +292,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute
             Condition=" '$(IsGitFlow)' == 'true' AND ('$(IsReleaseBranch)' == 'true' OR '$(IsHotfixBranch)' == 'true') "
@@ -190,6 +305,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsPrepareReleaseNotes)">
@@ -198,6 +317,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNpm)">
@@ -208,6 +331,10 @@
                 Prepare;
                 Restore;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreBower)">
             <Properties>
@@ -217,6 +344,10 @@
                 Prepare;
                 Restore;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsPrepareAssemblyInfo)">
@@ -225,6 +356,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateLicenses)">
             <Properties>
@@ -232,6 +367,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareGenerateFiles)">
             <Properties>
@@ -240,6 +379,10 @@
                 Generate;
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsBuildVisualStudioSolution)">
@@ -248,6 +391,10 @@
             <Groups>
                 Compile;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
@@ -258,6 +405,10 @@
             <Groups>
                 UnitTest;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsUnitTestMsTest)">
             <Properties>
@@ -267,6 +418,10 @@
             <Groups>
                 UnitTest;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsUnitTestVsTest)">
             <Properties>
@@ -276,6 +431,10 @@
             <Groups>
                 UnitTest;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeXml)">
@@ -286,6 +445,10 @@
             <Groups>
                 Analyze;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
             <Properties>
@@ -295,6 +458,10 @@
             <Groups>
                 Analyze;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsBuildILMerge)">
@@ -315,6 +482,10 @@
             <Groups>
                 Package;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPackZip)">
             <Properties>
@@ -324,6 +495,10 @@
             <Groups>
                 Package;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
     </ItemGroup>
 
@@ -352,6 +527,24 @@
             <Groups>
             </Groups>
         </BuildFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
+    <!--
+        The following item group stores metadata describing the custom build steps that are executed in the build process.
+        By providing this metadata it is possible for pre- and post-step actions to more clearly determine which step
+        they were attached to.
+    -->
+    <ItemGroup>
+        <!--
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DirWorkspace)\my.build.step.msbuild'))">
+            <Description>
+                The description for my cool build step
+            </Description>
+            <Id></Id>
+            <Name>My build step</Name>
+            <Path>$(DirWorkspace)\my.build.step.msbuild</Path>
+        </AvailableStepMetadata>
         -->
     </ItemGroup>
 

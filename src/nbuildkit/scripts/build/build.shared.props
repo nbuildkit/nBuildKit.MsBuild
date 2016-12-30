@@ -23,33 +23,54 @@
     <!--
         **** BUILD STEPS ****
     -->
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the build -->
+        <FailBuildOnPreStepFailure Condition=" '$(FailBuildOnPreStepFailure)' == '' ">false</FailBuildOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should fail the build -->
+        <FailBuildOnPostStepFailure Condition=" '$(FailBuildOnPostStepFailure)' == '' ">false</FailBuildOnPostStepFailure>
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the build -->
+        <StopBuildOnPreStepFailure Condition=" '$(StopBuildOnPreStepFailure)' == '' ">false</StopBuildOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the build -->
+        <StopBuildOnPostStepFailure Condition=" '$(StopBuildOnPostStepFailure)' == '' ">false</StopBuildOnPostStepFailure>
+    </PropertyGroup>
+    <ItemGroup Condition=" '@(BuildPreStepsToExecute)' == '' ">
+        <!--
+        <BuildPreStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </BuildPreStepsToExecute>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(BuildPostStepsToExecute)' == '' ">
+        <!--
+        <BuildPostStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </BuildPostStepsToExecute>
+        -->
+    </ItemGroup>
+
     <ItemGroup Condition=" '@(BuildStepsToExecute)' == '' ">
         <BuildStepsToExecute Include="$(BuildStepsShowHelp)">
             <Properties>
+                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props;
+                HelpFileSettings=build.settings.props;
+                HelpProcess=build;
+                HelpStepGroup=BuildStepsToExecute;
             </Properties>
             <Groups>
                 Help;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildStepsToExecute>
     </ItemGroup>
 
-    <!--
-        Define the scripts that should be executed when any one of the build steps fails.
-
-        Steps can be defined by providing the path to the MsBuild script that should be executed
-        for that step, e.g. adding a build step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
-        that script.
-
-        Each script has the following properties passed to it:
-        $(ShouldDisplayDebugLog)         - A flag indicating whether or not to display debug log information, usually at the start of the script execution.
-        $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
-        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
-        $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
-
-        Additionally any properties defined by the 'Properties' section are also pushed up.
-    -->
     <ItemGroup Condition=" '@(BuildFailureStepsToExecute)' == '' ">
         <!--
         <BuildFailureStepsToExecute Include="">
@@ -57,6 +78,10 @@
             </Properties>
             <Groups>
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </BuildFailureStepsToExecute>
         -->
     </ItemGroup>

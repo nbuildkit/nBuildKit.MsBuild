@@ -51,7 +51,7 @@ namespace NBuildKit.MsBuild.Tasks.Testing
                 writer.WriteLine(
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        "$result = Invoke-Pester -Path '{0}' -OutputFormat NUnitXml -OutputFile '{1}' -EnableExit -Verbose",
+                        "$result = Invoke-Pester -Path '{0}' -OutputFormat NUnitXml -OutputFile '{1}' -EnableExit",
                         GetAbsolutePath(TestsDirectory),
                         GetAbsolutePath(ReportFile)));
             }

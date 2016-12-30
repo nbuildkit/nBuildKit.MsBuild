@@ -3,7 +3,86 @@
     DefaultTargets="Run"
     ToolsVersion="11.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the deploy -->
+        <!-- <FailDeployOnPreStepFailure Condition=" '$(FailDeployOnPreStepFailure)' == '' ">false</FailDeployOnPreStepFailure> -->
+
+        <!-- Indicate if an error in the post-step actions should fail the deploy -->
+        <!-- <FailDeployOnPostStepFailure Condition=" '$(FailDeployOnPostStepFailure)' == '' ">false</FailDeployOnPostStepFailure> -->
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the deploy -->
+        <!-- <StopDeployOnPreStepFailure Condition=" '$(StopDeployOnPreStepFailure)' == '' ">false</StopDeployOnPreStepFailure> -->
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the deploy -->
+        <!-- <StopDeployOnPostStepFailure Condition=" '$(StopDeployOnPostStepFailure)' == '' ">false</StopDeployOnPostStepFailure> -->
+    </PropertyGroup>
+
     <!--
+         A list of all additional scripts and their targets that should be executed before each of the selected deploy steps. Globally defined
+         pre-steps will be executed prior to the presteps of the individual steps.
+
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
+    -->
+    <ItemGroup>
+        <!--
+        <DeployPreStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployPreStepsToExecute>
+        -->
+    </ItemGroup>
+
+    <!--
+        A list of all additional scripts and their targets that should be executed after each of the selected deploy steps. Globally defined
+         post-steps will be executed after the poststeps of the individual steps.
+
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
+    -->
+    <ItemGroup>
+        <!--
+        <DeployPostStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployPostStepsToExecute>
+        -->
+    </ItemGroup>
+
+    <!--
+        The following ItemGroup defines which steps are taken during the deploy process. The order of the items in the item group
+        determines in which order the deploy steps are executed.
+
+        Each deploy step can define the following items:
+        - Properties                                     - The semi-colon separated set of properties that should be passed to the script.
+                                                           Properties are written as 'key=value'.
+        - Groups                                         - All the groups that a given step belongs to. The user can elect to only run deploy steps for a given group.
+        - PreSteps                                       - A semi-colon separated list of all additional scripts and their targets that should be executed before
+                                                           the selected deploy step.
+        - PostSteps                                      - A semi-colon separated list of all additional scripts and their targets that should be executed after
+                                                           the selected deploy step.
+
+        The metadata to the script that is about to be executed is passed to each pre-step under the following properties:
+
+        - StepDescription : The full description of the step to be executed.
+        - StepId          : The ID of the step. In general the name of the property that references the step file.
+        - StepName        : The name of the step.
+        - StepPath        : The full path to the script file for the step.
+
+        Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
+
         The following ItemGroup defines which steps are taken during the deploy process. The order of the items in the item group
         determines in which order the deploy steps are executed.
 
@@ -13,40 +92,40 @@
         $(DeployStepsGenerateTargetsFile)  - Generates a targets file for use with an MsBuild tasks assembly.
         $(DeployStepsPrepareRestoreNuGet)  - Restores the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally
                                              also restores the NuGet packages as specified in the nBuildKit specific 'packages.config' files.
-        $(DeployStepsPrepareVcsBranch)    - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
-                                            name as the remote tracking branch.
-        $(DeployStepsPrepareGetVersion)   - Gathers version information and stores it in a temporary file for use by the rest of the deploy process.
-                                            Currently supported methods of gathering version information are using (in order):
-                                            - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
-                                                in the 'VersionScriptPath' property. The task should output:
-                                                - VersionMajor
-                                                - VersionMinor
-                                                - VersionPatch
-                                                - VersionBuild
-                                                - VersionPreRelease
-                                                - VersionSemantic
-                                                - VersionSemanticFull
-                                                - VersionSemanticNuget
-                                            - The version stored in an 'version.xml' file which contains an MsBuild property group with
-                                                the properties:
-                                                - BuildNumber
-                                                - VersionMajor
-                                                - VersionMinor
-                                                - VersionPatch
-                                                - VersionBuild
-                                                - VersionPreRelease
-                                            - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
-                                            - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
-        $(DeployStepsPrepareTagVcs)       - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
-        $(DeployStepsPrepareGetIssueIds)  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
-        $(DeployStepsPushToTags)          - Pushes the tags to a remote git repository
-        $(DeployStepsPushToNuget)         - Pushes one or more artifacts to a NuGet feed
-        $(DeployStepsPushToDirectory)     - Pushes one or more artifacts to a directory
-        $(DeployStepsPushToSymbolServer)  - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
-        $(DeployStepsPushToGitHubRelease) - Pushes zero or more files to a GitHub release
-        $(DeployStepsPushToGitBranch)     - Pushes zero or more files to a Git branch. Any files that currently exist on that branch are removed
-                                            and replaced by the specified files.
-        $(DeployStepsPushToGitRepository) - Pushes an archived local workspace to a Git repository.
+        $(DeployStepsPrepareVcsBranch)     - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
+                                             name as the remote tracking branch.
+        $(DeployStepsPrepareGetVersion)    - Gathers version information and stores it in a temporary file for use by the rest of the deploy process.
+                                             Currently supported methods of gathering version information are using (in order):
+                                             - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
+                                               in the 'VersionScriptPath' property. The task should output:
+                                                 - VersionMajor
+                                                 - VersionMinor
+                                                 - VersionPatch
+                                                 - VersionBuild
+                                                 - VersionPreRelease
+                                                 - VersionSemantic
+                                                 - VersionSemanticFull
+                                                 - VersionSemanticNuget
+                                             - The version stored in an 'version.xml' file which contains an MsBuild property group with
+                                               the properties:
+                                                 - BuildNumber
+                                                 - VersionMajor
+                                                 - VersionMinor
+                                                 - VersionPatch
+                                                 - VersionBuild
+                                                 - VersionPreRelease
+                                             - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
+                                             - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
+        $(DeployStepsPrepareTagVcs)        - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
+        $(DeployStepsPrepareGetIssueIds)   - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
+        $(DeployStepsPushToTags)           - Pushes the tags to a remote git repository
+        $(DeployStepsPushToNuget)          - Pushes one or more artifacts to a NuGet feed
+        $(DeployStepsPushToDirectory)      - Pushes one or more artifacts to a directory
+        $(DeployStepsPushToSymbolServer)   - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
+        $(DeployStepsPushToGitHubRelease)  - Pushes zero or more files to a GitHub release
+        $(DeployStepsPushToGitBranch)      - Pushes zero or more files to a Git branch. Any files that currently exist on that branch are removed
+                                             and replaced by the specified files.
+        $(DeployStepsPushToGitRepository)  - Pushes an archived local workspace to a Git repository.
 
         Additional deploy steps can be defined by providing the path to the MsBuild script that should be executed
         for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
@@ -63,21 +142,16 @@
     <ItemGroup>
         <DeployStepsToExecute
             Condition="!Exists('$(FileNBuildKitExtensionsImport)')"
-            Include="$(DeployStepsBuildTargetsAssembly)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Bootstrap;
-            </Groups>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute
-            Condition="!Exists('$(FileNBuildKitExtensionsImport)')"
             Include="$(DeployStepsGenerateTargetsFile)">
             <Properties>
             </Properties>
             <Groups>
                 Bootstrap;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
 
         <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
@@ -89,6 +163,10 @@
                 Prepare;
                 Restore;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
 
         <!--
@@ -101,6 +179,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
             <Properties>
@@ -108,6 +190,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
 
         <!--
@@ -120,6 +206,10 @@
             <Groups>
                 Prepare;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         <!--
         <DeployStepsToExecute Include="$(DeployStepsPrepareTagVcs)">
@@ -131,6 +221,10 @@
                 Prepare;
                 Tag;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         -->
 
@@ -144,6 +238,10 @@
                 Tag;
                 Push;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         -->
         <DeployStepsToExecute Include="$(DeployStepsPushToNuget)">
@@ -155,6 +253,10 @@
                 NuGet;
                 Push;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         <!--
         <DeployStepsToExecute Include="$(DeployStepsPushToDirectory)">
@@ -166,6 +268,10 @@
                 Directory;
                 Push;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsPushToSymbolServer)">
             <Properties>
@@ -176,6 +282,10 @@
                 Push;
                 SymbolServer;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         -->
         <DeployStepsToExecute Include="$(DeployStepsPushToGitHubRelease)">
@@ -187,6 +297,10 @@
                 GitHub;
                 Push;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         <!--
          <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
@@ -198,6 +312,10 @@
                 Git;
                 Push;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         -->
         <!--
@@ -210,6 +328,10 @@
                 Git;
                 Push;
             </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
         </DeployStepsToExecute>
         -->
     </ItemGroup>
