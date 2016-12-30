@@ -119,13 +119,19 @@ namespace NBuildKit.MsBuild.Tasks
 
             if (Log.HasLoggedErrors)
             {
-                foreach (var step in FailureSteps)
+                if (FailureSteps != null)
                 {
-                    if (!ExecuteFailureStep(step, groups))
+                    foreach (var step in FailureSteps)
                     {
-                        if (StopOnFirstFailure)
+                        if (!string.IsNullOrEmpty(step.ItemSpec))
                         {
-                            break;
+                            if (!ExecuteFailureStep(step, groups))
+                            {
+                                if (StopOnFirstFailure)
+                                {
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -150,9 +156,6 @@ namespace NBuildKit.MsBuild.Tasks
             var result = InvokeBuildEngine(step);
             if (!result && StopOnFirstFailure)
             {
-                Log.LogError(
-                    "Failed while executing step action from '{0}'",
-                    step.ItemSpec);
                 return false;
             }
 
@@ -241,9 +244,6 @@ namespace NBuildKit.MsBuild.Tasks
             var stepResult = InvokeBuildEngine(step);
             if (!stepResult && StopOnFirstFailure)
             {
-                Log.LogError(
-                    "Failed while executing step action from '{0}'",
-                    step.ItemSpec);
                 return false;
             }
 
