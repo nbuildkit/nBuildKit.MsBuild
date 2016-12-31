@@ -75,18 +75,18 @@
 
     <Target Name="_nBuildKit_Build_ILRepack_GetToolPaths">
         <Error
-            Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirPackages)')"
             Text="The packages directory does not exist. Cannot search for the unit test executables." />
 
         <NuGetInstall
-            Condition=" '$(ToolsExternalILRepackPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalILRepackPath)' == 'UNDEFINED' "
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="ILRepack"
             PackageVersion="$(ToolsExternalILRepackVersion)"
             Sources="@(NuGetSources)" />
         <SearchPackagesDirectoryForToolPath
-            Condition=" '$(ToolsExternalILRepackPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalILRepackPath)' == 'UNDEFINED' "
             FileToLocate="ilrepack.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -101,11 +101,11 @@
                 TaskParameter="Path" />
         </GetToolFullPath>
         <Message
-            Condition="Exists('$(ToolsExternalILRepackPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalILRepackPath)')"
             Importance="low"
             Text="The ILRepack executable was found at: $(ToolsExternalILRepackPath)" />
         <Error
-            Condition="!Exists('$(ToolsExternalILRepackPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalILRepackPath)')"
             Text="Could not locate the ILRepack executable path. Cannot merge assemblies." />
     </Target>
 
@@ -176,7 +176,7 @@
             Importance="low"
             Text="Creating NuGet package from: $(FileNuGetNuSpec)" />
         <MakeDir
-            Condition="!Exists('$(DirBuildDeploy)') AND  '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirBuildDeploy)')"
             Directories="$(DirBuildDeploy)" />
 
         <Message

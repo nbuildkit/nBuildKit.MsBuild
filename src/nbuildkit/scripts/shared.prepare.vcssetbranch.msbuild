@@ -89,11 +89,10 @@
         Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' "
         Name="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch">
         <Error
-            Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalGitPath)' == '' "
             Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
         <GitCurrentBranch
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -112,7 +111,6 @@
             Workspace="$(DirWorkspace)" />
 
         <GitCurrentRevision
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output

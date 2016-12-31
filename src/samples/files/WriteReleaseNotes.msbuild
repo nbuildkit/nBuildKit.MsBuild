@@ -41,7 +41,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)') "
             Directories="$(DirToCreate)" />
 
         <ItemGroup>
@@ -55,7 +55,6 @@
         </ItemGroup>
 
         <WriteLinesToFile
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileReleaseNotesHtml)"
             Lines="@(ReleaseNoteHtmlLines)"
             Overwrite="true" />

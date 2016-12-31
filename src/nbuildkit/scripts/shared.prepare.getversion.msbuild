@@ -101,7 +101,7 @@
             Importance="low"
             Text="Getting version from the custom version algorithm ..." />
 
-        <CalculateCustomVersion Condition=" '$(ShouldExecute)' == 'true' ">
+        <CalculateCustomVersion>
             <Output
                 PropertyName="VersionMajor"
                 TaskParameter="VersionMajor" />
@@ -201,12 +201,12 @@
                 TaskParameter="Path" />
         </GetToolFullPath>
         <Message
-            Condition="Exists('$(ToolsExternalGitVersionPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalGitVersionPath)') "
             Importance="low"
             Text="The GitVersion executable was found at: $(ToolsExternalGitVersionPath)" />
 
         <Error
-            Condition="!Exists('$(ToolsExternalGitVersionPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalGitVersionPath)') "
             Text="Could not locate the GitVersion executable path. Cannot get semantic version." />
     </Target>
 
@@ -218,7 +218,6 @@
             Text="Getting version from the GitVersion ..." />
 
         <CalculateSemanticVersionWithGitVersion
-            Condition=" '$(ShouldExecute)' == 'true' "
             ExePath="$(ToolsExternalGitVersionPath)"
             LogPath="$(DirBuildLogs)\gitversion.log"
             RemoteRepositoryUri="$(GitRemoteRepository)"
@@ -261,7 +260,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)') "
             Directories="$(DirToCreate)" />
 
         <CreateProperty
@@ -337,7 +336,7 @@
         </ItemGroup>
 
         <WriteLinesToFile
-            Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(FileSemanticVersion)') "
             File="$(FileSemanticVersion)"
             Lines="@(Items_SemanticVersion)"
             Overwrite="true" />
@@ -387,11 +386,11 @@
         <!-- Push to AppVeyor -->
         <!-- Note to make sure that the version that AppVeyor gets is unique we append the build number at the end. -->
         <Message
-            Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') "
             Importance="normal"
             Text="Pushing version number to AppVeyor's build number ..." />
         <Exec
             Command="appveyor UpdateBuild -Version &quot;$(VersionSemanticFull)-$(APPVEYOR_BUILD_NUMBER)&quot;"
-            Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' " />
+            Condition=" '$(APPVEYOR_BUILD_NUMBER)' != '' AND Exists('$(FileSemanticVersion)') " />
     </Target>
  </Project>

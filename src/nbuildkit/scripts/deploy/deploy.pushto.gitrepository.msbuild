@@ -127,14 +127,14 @@
                 TaskParameter="Include" />
         </CreateItem>
         <Error
-            Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(FilesToPush)' == '' "
             Text="There are no files to be pushed" />
 
         <PropertyGroup>
             <DirBuildTempCopy>$(DirBuildTemp)\copy</DirBuildTempCopy>
         </PropertyGroup>
         <MakeDir
-            Condition="!Exists('$(DirBuildTempCopy)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirBuildTempCopy)') "
             Directories="$(DirBuildTempCopy)" />
 
         <Copy
@@ -216,7 +216,6 @@
             Workspace="$(DirRepositoryWorkspace)" />
 
         <GitCurrentRevision
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirRepositoryWorkspace)">
             <Output
@@ -225,7 +224,6 @@
         </GitCurrentRevision>
 
         <GitCurrentRevision
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             RevisionSpec="origin/@(OriginBranch)"
             Workspace="$(DirRepositoryWorkspace)">
@@ -236,7 +234,7 @@
 
         <Message Text="For @(OriginBranch): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
         <Error
-            Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' "
             Text="For @(OriginBranch) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 
@@ -253,7 +251,6 @@
             Workspace="$(DirRepositoryWorkspace)" />
 
         <GitCurrentRevision
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             RevisionSpec="HEAD^"
             Workspace="$(DirRepositoryWorkspace)">
@@ -263,7 +260,6 @@
         </GitCurrentRevision>
 
         <GitCurrentRevision
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             RevisionSpec="origin/%(TargetBranches.Identity)"
             Workspace="$(DirRepositoryWorkspace)">
@@ -273,7 +269,7 @@
         </GitCurrentRevision>
         <Message Text="For %(TargetBranches.Identity): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
         <Error
-            Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' "
             Text="For %(TargetBranches.Identity) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 

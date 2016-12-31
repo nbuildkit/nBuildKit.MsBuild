@@ -102,10 +102,10 @@
 
     <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
         <Error
-            Condition="!Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(FileSemanticVersion)') "
             Text="The semantic version file does not exist. Will not be able to get the version." />
         <GetSemanticVersionFromFile
-            Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(FileSemanticVersion)') "
             VersionFile="$(FileSemanticVersion)">
             <Output
                 PropertyName="VersionSemantic"
@@ -122,12 +122,11 @@
         DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion"
         Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Git">
         <Error
-            Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalGitPath)' == '' "
             Text="The git executable does not exist. Cannot apply tags." />
 
         <Exec
             Command="&quot;$(ToolsExternalGitPath)&quot; tag -a -m &quot;Tagging $(VersionSemantic)&quot; &quot;$(VersionSemantic)&quot;"
-            Condition=" '$(ShouldExecute)' == 'true' "
             WorkingDirectory="$(DirWorkspace)" />
     </Target>
 
@@ -136,11 +135,9 @@
         DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion"
         Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Tfs">
         <Error
-            Condition=" '$(ToolsExternalTfsPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalTfsPath)' == '' "
             Text="The TFS executable does not exist. Cannot apply tags." />
 
-        <Exec
-            Command="&quot;$(ToolsExternalTfsPath)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive"
-            Condition=" '$(ShouldExecute)' == 'true' " />
+        <Exec Command="&quot;$(ToolsExternalTfsPath)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive" />
     </Target>
  </Project>

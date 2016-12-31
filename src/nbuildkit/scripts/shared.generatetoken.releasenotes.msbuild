@@ -17,7 +17,7 @@
 
     <Target Name="shared_generatetoken_releasenotes">
         <CreateProperty
-            Condition="Exists('$(FileReleaseNotes)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(FileReleaseNotes)') "
             Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotes)'))">
             <Output
                 PropertyName="ReleaseNotes"

@@ -94,7 +94,6 @@
             <TestFilesToDelete Include="$(DirBuildTest)\**\*.*"/>
         </ItemGroup>
         <Delete
-            Condition=" '$(ShouldExecute)' == 'true' "
             ContinueOnError="True"
             Files="@(TestFilesToDelete)" />
 
@@ -103,7 +102,6 @@
             <TestDirectoriesToDelete Include="$(DirBuildTemp)" />
         </ItemGroup>
         <RemoveDir
-            Condition=" '$(ShouldExecute)' == 'true' "
             ContinueOnError="True"
             Directories="@(TestDirectoriesToDelete)" />
     </Target>

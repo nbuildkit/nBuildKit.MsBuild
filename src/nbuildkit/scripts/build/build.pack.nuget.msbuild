@@ -120,7 +120,7 @@
             Importance="low"
             Text="Creating NuGet package from: $(FileNuGetNuSpec)" />
         <MakeDir
-            Condition="!Exists('$(DirBuildDeploy)') AND  '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirBuildDeploy)')"
             Directories="$(DirBuildDeploy)" />
 
         <Message
@@ -143,7 +143,6 @@
         </CreateItem>
 
         <GatherNuGetDependenciesForProject
-            Condition=" '$(ShouldExecute)' == 'true' "
             DesignTimePackages="@(DesignTimeDependencies)"
             NuGetSpec="$(FileNuGetNuSpec)"
             Packages="@(PackageDependencies)"
@@ -171,14 +170,13 @@
             like $ (%24), * (%2A), ? (%3F)
         -->
         <TemplateFile
-            Condition="Exists('$(FileNuGetNuSpec)') AND '$(ShouldExecute)' == 'true'"
+            Condition="Exists('$(FileNuGetNuSpec)')"
             Encoding="UTF-8"
             OutputFileName="$(FileNuGetNuSpecTokensReplaced)"
             SearchExpression="(%3F&lt;token&gt;\%24(?&lt;identifier&gt;\w%2A)\%24)"
             Template="$(FileNuGetNuSpec)"
             Tokens="@(TemplateTokens)" />
         <NuGetPack
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileNuGetNuSpecTokensReplaced)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             OutputDirectory="$(DirBuildDeploy)"

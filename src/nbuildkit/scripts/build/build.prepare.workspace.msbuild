@@ -121,7 +121,7 @@
                 Include="%(BuildFilesToGenerate.FullPath)" />
         </ItemGroup>
         <Delete
-            Condition=" '@(GeneratedFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(GeneratedFilesToDelete)' != '' "
             ContinueOnError="True"
             Files="@(GeneratedFilesToDelete)" />
     </Target>
@@ -211,7 +211,7 @@
                 Include="$(DirBuild)\**\*.*" />
         </ItemGroup>
         <Delete
-            Condition=" '@(BuildFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(BuildFilesToDelete)' != '' "
             ContinueOnError="True"
             Files="@(BuildFilesToDelete)" />
 
@@ -222,7 +222,7 @@
                 Include="$([System.IO.Directory]::GetDirectories('$(DirBuild)', '*', System.IO.SearchOption.TopDirectoryOnly))" />
         </ItemGroup>
         <RemoveDir
-            Condition=" '@(BuildDirectoriesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(BuildDirectoriesToDelete)' != '' "
             ContinueOnError="True"
             Directories="@(BuildDirectoriesToDelete)" />
     </Target>

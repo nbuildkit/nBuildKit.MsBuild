@@ -91,12 +91,12 @@
                 TaskParameter="Path" />
         </GetToolFullPath>
         <Message
-            Condition="Exists('$(ToolsExternalNodeJsPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalNodeJsPath)') "
             Importance="low"
             Text="The node.js executable was found at: $(ToolsExternalNodeJsPath)" />
 
         <Error
-            Condition="!Exists('$(ToolsExternalNodeJsPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalNodeJsPath)') "
             Text="Could not locate the Node.js executable path. Cannot execute any of the node.js tools." />
 
         <NuGetInstall
@@ -122,12 +122,12 @@
                 TaskParameter="Path" />
         </GetToolFullPath>
         <Message
-            Condition="Exists('$(ToolsExternalPythonPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalPythonPath)') "
             Importance="low"
             Text="The python executable was found at: $(ToolsExternalPythonPath)" />
 
         <Warning
-            Condition="!Exists('$(ToolsExternalPythonPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalPythonPath)') "
             Text="Could not locate the python executable path. It is not possible to invoke python scripts. This may fail the NPM restore process." />
 
         <NuGetInstall
@@ -153,12 +153,12 @@
                 TaskParameter="Path" />
         </GetToolFullPath>
         <Message
-            Condition="Exists('$(ToolsExternalNpmPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalNpmPath)') "
             Importance="low"
             Text="The npm executable was found at: $(ToolsExternalNpmPath)" />
 
         <Error
-            Condition="!Exists('$(ToolsExternalNpmPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalNpmPath)') "
             Text="Could not locate the Npm executable path. Cannot restore the Node.js packages." />
     </Target>
 
@@ -166,7 +166,7 @@
         DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_DisplayInfo;_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths"
         Name="_nBuildKit_Shared_Prepare_Npm_Restore_Packages">
         <Error
-            Condition=" '$(ToolsExternalNpmPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalNpmPath)' == '' "
             Text="No NPM executable defined. Will not be able to restore the packages." />
 
         <Message

@@ -175,7 +175,6 @@
 
         <!-- Verify that we're on the branch!' -->
         <GitCurrentBranch
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             WorkingDirectory="$(DirRepositoryWorkspace)">
             <Output
@@ -209,14 +208,14 @@
                 TaskParameter="Include" />
         </CreateItem>
         <Error
-            Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(FilesToPush)' == '' "
             Text="There are no files to be pushed" />
 
         <PropertyGroup>
             <DirBuildTempCopy>$(DirBuildTemp)\copy</DirBuildTempCopy>
         </PropertyGroup>
         <MakeDir
-            Condition="!Exists('$(DirBuildTempCopy)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirBuildTempCopy)') "
             Directories="$(DirBuildTempCopy)" />
 
         <Copy

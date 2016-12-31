@@ -114,14 +114,13 @@
                 TaskParameter="Include" />
         </CreateItem>
         <Error
-            Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(FilesToPush)' == '' "
             Text="There are no files to be pushed" />
 
         <MakeDir
-            Condition="!Exists('$(DirPushToSpecs)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirPushToSpecs)') "
             Directories="$(DirPushToSpecs)" />
         <Copy
-            Condition=" '$(ShouldExecute)' == 'true' "
             DestinationFolder="$(DirPushToSpecs)"
             SourceFiles="@(FilesToPush)" />
     </Target>

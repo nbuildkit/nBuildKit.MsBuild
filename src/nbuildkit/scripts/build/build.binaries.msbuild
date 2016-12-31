@@ -91,10 +91,10 @@
         </TemplateText>
 
         <Error
-            Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalNuGetPath)' == '' "
             Text="No NuGet executable defined. Will not be able to restore the packages." />
         <Error
-            Condition="!Exists('$(FileSln)') AND  '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(FileSln)')"
             Text="Expected $(FileSln) to point to a valid path but it does not." />
 
         <Message
@@ -107,7 +107,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <NuGetRestore
-            Condition=" '$(FileExtension)' == '.sln' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(FileExtension)' == '.sln'"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageFile="$(FileSln)"
@@ -128,7 +128,6 @@
         </PropertyGroup>
 
         <InvokeStandaloneMsBuild
-            Condition=" '$(ShouldExecute)' == 'true' "
             Projects="$(FileSln)"
             Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=$(BuildPlatform);$(BuildProperties)"
             RunEachTargetSeparately="True"
@@ -146,7 +145,7 @@
         <!-- Move the code analysis logs -->
         <Message Text="Moving the code analysis logs for the build of $([System.IO.Path]::GetFileName('$(FileSln)')) (Configuration = %(SolutionsToBuild.Configuration), Platform = $(BuildPlatform)) to the logs directory" />
         <MakeDir
-            Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirBuildLogs)')"
             Directories="$(DirBuildLogs)" />
 
         <ItemGroup>
@@ -156,7 +155,6 @@
         </ItemGroup>
 
         <Move
-            Condition=" '$(ShouldExecute)' == 'true' "
             ContinueOnError="true"
             DestinationFolder="$(DirBuildLogs)"
             OverwriteReadOnlyFiles="true"

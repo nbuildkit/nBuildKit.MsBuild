@@ -17,7 +17,7 @@
 
     <Target Name="shared_generatetoken_versions">
         <GetSemanticVersionFromFile
-            Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(FileSemanticVersion)') "
             VersionFile="$(FileSemanticVersion)">
             <Output
                 PropertyName="VersionMajor"

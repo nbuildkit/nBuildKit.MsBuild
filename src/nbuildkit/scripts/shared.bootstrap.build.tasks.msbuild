@@ -75,10 +75,10 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <Error
-            Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalNuGetPath)' == '' "
             Text="No NuGet executable defined. Will not be able to restore the packages." />
         <Error
-            Condition="!Exists('$(FileMsBuildTasksProject)') AND  '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(FileMsBuildTasksProject)') "
             Text="Expected $(FileMsBuildTasksProject) to point to a valid path but it does not." />
 
         <Message
@@ -93,7 +93,7 @@
 
         <Exec
             Command="&quot;$(ToolsExternalNuGetPath)&quot; restore &quot;$(FilePackages)&quot; -OutputDirectory &quot;$(DirPackages)&quot; -NonInteractive -Verbosity detailed -NoCache @(NuGetSources-> '-Source &quot;%(Identity)&quot;', ' ')"
-            Condition="Exists('$(FilePackages)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(FilePackages)') "
             IgnoreStandardErrorWarningFormat="true" />
 
         <MSBuild
@@ -109,8 +109,7 @@
             Targets="%(MsBuildTasksProjectsToBuild.Targets)"
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
-            UseResultsCache="True"
-            Condition=" '$(ShouldExecute)' == 'true' ">
+            UseResultsCache="True">
             <Output
                 ItemName="GeneratedAssemblies"
                 TaskParameter="TargetOutputs" />

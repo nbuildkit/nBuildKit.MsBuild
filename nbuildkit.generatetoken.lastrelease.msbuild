@@ -43,7 +43,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)')"
             Directories="$(DirToCreate)" />
 
         <ItemGroup>
@@ -57,7 +57,7 @@
         </ItemGroup>
 
         <WriteLinesToFile
-            Condition="!Exists('$(FileNBuildKitLastRelease)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(FileNBuildKitLastRelease)')"
             File="$(FileNBuildKitLastRelease)"
             Lines="@(Items_ReleaseVersion)"
             Overwrite="true" />

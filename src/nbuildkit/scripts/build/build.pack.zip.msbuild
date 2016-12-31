@@ -68,7 +68,7 @@
             Text="Resolving build templates for: %(ArchivePackageSpecs.Identity)" />
 
         <MakeDir
-            Condition="!Exists('$(DirBuildDeploy)') AND  '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirBuildDeploy)')"
             Directories="$(DirBuildDeploy)" />
 
         <TemplateText
@@ -91,14 +91,12 @@
         </CreateProperty>
 
         <TemplateFile
-            Condition=" '$(ShouldExecute)' == 'true' "
             Encoding="UTF-8"
             OutputFileName="$(FileGeneratedArchiveSpec)"
             Template="$(FileArchiveSpec)"
             Tokens="@(TemplateTokens)" />
 
         <Zip
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileGeneratedArchiveSpec)"
             OutputDirectory="$(DirBuildDeploy)"
             OverwriteExistingFiles="true" />

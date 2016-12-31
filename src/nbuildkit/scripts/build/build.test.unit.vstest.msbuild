@@ -97,20 +97,20 @@
 
     <Target Name="_nBuildKit_Build_Test_Unit_VsTest_GetToolPaths">
         <Error
-            Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirPackages)') "
             Text="The packages directory does not exist. Cannot search for the unit test executables." />
         <Error
-            Condition="!Exists('$(ToolsExternalVsTestPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalVsTestPath)') "
             Text="Could not locate the VsTest executable path. Cannot execute unit tests." />
 
         <NuGetInstall
-            Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' "
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="nBuildKit.Tools.VsCoverageToReportGenerator"
             Sources="@(NuGetSources)" />
         <SearchPackagesDirectoryForToolPath
-            Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' "
             FileToLocate="VSCoverageToReportGenerator.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -125,22 +125,22 @@
                 TaskParameter="Path" />
         </GetToolFullPath>
         <Message
-            Condition="Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') "
             Importance="low"
             Text="The VSCoverageToReportGenerator executable was found at: $(ToolsExternalVSCoverageToReportGeneratorPath)" />
         <Warning
-            Condition="!Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') "
             Text="Could not locate the VSCoverageToReportGenerator executable path. Cannot convert the code coverage reports." />
 
         <NuGetInstall
-            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="ReportGenerator"
             PackageVersion="$(ToolsExternalReportGeneratorVersion)"
             Sources="@(NuGetSources)" />
         <SearchPackagesDirectoryForToolPath
-            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
             FileToLocate="ReportGenerator.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -155,22 +155,22 @@
                 TaskParameter="Path" />
         </GetToolFullPath>
         <Message
-            Condition="Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalReportGeneratorPath)') "
             Importance="low"
             Text="The ReportGenerator executable was found at: $(ToolsExternalReportGeneratorPath)" />
         <Warning
-            Condition="!Exists('$(ToolsExternalReportGeneratorPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalReportGeneratorPath)') "
             Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports." />
 
         <NuGetInstall
-            Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="OpenCoverToCoberturaConverter"
             PackageVersion="$(ToolsExternalOpenCoverToCoberturaConverterVersion)"
             Sources="@(NuGetSources)" />
         <SearchPackagesDirectoryForToolPath
-            Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
             FileToLocate="OpenCoverToCoberturaConverter.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -185,10 +185,10 @@
                 TaskParameter="Path" />
         </GetToolFullPath>
         <Message
-            Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') "
             Text="The OpenCoverToCoberturaConverter executable was found at: $(ToolsExternalOpenCoverToCoberturaConverterPath)" />
         <Warning
-            Condition="!Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') "
             Text="Could not locate the OpenCoverToCoberturaConverter executable path. Cannot convert code coverage reports." />
     </Target>
 
@@ -239,14 +239,14 @@
         DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates"
         Name="_nBuildKit_Build_Test_Unit_VsTest_RunTests">
         <Error
-            Condition="!Exists('$(DirPackages)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirPackages)') "
             Text="The packages directory does not exist. Cannot search for the unit test executables." />
         <Error
-            Condition="!Exists('$(ToolsExternalVsTestPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalVsTestPath)') "
             Text="Could not locate the VsTest executable path. Cannot execute unit tests." />
 
         <MakeDir
-            Condition="!Exists('$(DirReportVsTestExpanded)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirReportVsTestExpanded)') "
             Directories="$(DirReportVsTestExpanded)" />
 
         <!-- Create the run settings file for vstest -->
@@ -322,7 +322,7 @@
 
         <Exec
             Command="&quot;$(ToolsExternalVSCoverageToReportGeneratorPath)&quot; --InputFile=&quot;@(CoverageFilesToConvert)&quot; --OutputFile=&quot;%(RootDir)%(Directory)\%(FileName).xml&quot; --VisualStudioDirectory=&quot;$(ToolsExternalVisualStudioDir)&quot; $(CoverageBinDirectories)"
-            Condition=" Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '@(CoverageFilesToConvert)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" Exists('$(ToolsExternalVSCoverageToReportGeneratorPath)') AND '@(CoverageFilesToConvert)' != '' "
             IgnoreExitCode="False"
             IgnoreStandardErrorWarningFormat="False" />
 
@@ -331,13 +331,13 @@
         </ItemGroup>
 
         <ReportGenerator
-            Condition=" Exists('$(ToolsExternalReportGeneratorPath)') AND '@(ReportFilesToProcess)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" Exists('$(ToolsExternalReportGeneratorPath)') AND '@(ReportFilesToProcess)' != '' "
             OpenCoverOutputFiles="@(ReportFilesToProcess)"
             OutputDirectory="$(DirReportGeneratorOutput)"
             ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)" />
 
         <ReportGeneratorOutputToCsv
-            Condition="Exists('$(FileReportReportGeneratorXmlSummary)') AND Exists('$(FileReportReportGeneratorXmlSummary)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(FileReportReportGeneratorXmlSummary)') AND Exists('$(FileReportReportGeneratorXmlSummary)') "
             InputFile="$(FileReportReportGeneratorXmlSummary)"
             OutputFile="$(FileReportOpenCoverCsvExpanded)" />
     </Target>

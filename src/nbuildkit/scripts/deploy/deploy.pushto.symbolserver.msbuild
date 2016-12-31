@@ -89,7 +89,7 @@
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Deploy_PushTo_SymbolServer_NuGet">
         <Error
-            Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalNuGetPath)' == '' "
             Text="No NuGet executable defined. Will not be able to restore the packages." />
 
         <CreateProperty
@@ -101,7 +101,7 @@
         </CreateProperty>
 
         <TemplateText
-            Condition=" '@(SymbolPackagesToPush)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(SymbolPackagesToPush)' != '' "
             Template="@(SymbolPackagesToPush)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -130,14 +130,13 @@
             Text="@(NuGetPackagesToPushLocal)" />
 
         <Error
-            Condition=" '@(NuGetPackagesToPushLocal)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(NuGetPackagesToPushLocal)' == '' "
             Text="There are no symbol packages to be pushed to the symbol server" />
 
         <Message
             Importance="low"
             Text="Pushing: @(NuGetPackagesToPushLocal)" />
         <NuGetPush
-            Condition=" '$(ShouldExecute)' == 'true' "
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesToPush="@(NuGetPackagesToPushLocal)"
             Source="$(NuGetSymbolSourceUrl)" />
@@ -148,7 +147,7 @@
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Deploy_PushTo_SymbolServer_UncPath">
         <TemplateText
-            Condition=" '@(SymbolPackagesToPush)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(SymbolPackagesToPush)' != '' "
             Template="@(SymbolPackagesToPush)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -177,11 +176,10 @@
             Text="@(SymbolPackagesToPush)" />
 
         <Error
-            Condition=" '@(SymbolPackagesToPush)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(SymbolPackagesToPush)' == '' "
             Text="There are no files to be pushed to the symbol server" />
 
         <Copy
-            Condition=" '$(ShouldExecute)' == 'true' "
             DestinationFolder="$(SymbolServerUncPath)\"
             SourceFiles="@(SymbolPackagesToPush)" />
     </Target>
