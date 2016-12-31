@@ -21,7 +21,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// <returns>The path for the task item.</returns>
         public static string ToPath(this ITaskItem item)
         {
-            return item?.ItemSpec;
+            return item != null ? item.ItemSpec : null;
         }
     }
 }

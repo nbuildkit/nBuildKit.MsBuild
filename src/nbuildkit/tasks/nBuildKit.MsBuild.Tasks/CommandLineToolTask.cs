@@ -202,7 +202,7 @@ namespace NBuildKit.MsBuild.Tasks
                 return -1;
             }
 
-            var workingDirectoryAsString = workingDirectory?.ItemSpec;
+            var workingDirectoryAsString = workingDirectory != null ? workingDirectory.ItemSpec : null;
             if (string.IsNullOrEmpty(workingDirectoryAsString))
             {
                 workingDirectoryAsString = Directory.GetCurrentDirectory();

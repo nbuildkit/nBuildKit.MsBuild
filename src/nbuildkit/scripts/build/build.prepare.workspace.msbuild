@@ -12,10 +12,21 @@
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
+
+    <Import
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
+
     <Target
         DependsOnTargets="_nBuildKit_Build_Prepare_Workspace_DisplayInfo"
         Name="nBuildKit_Build_Prepare_Workspace_Run">
-        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean" />
+        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean_GeneratedFiles" />
+        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Delete_VisualStudioLocation" />
+        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean_VisualStudioLocation" />
+        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean_BuildDirectory" />
     </Target>
 
     <Target
@@ -66,7 +77,6 @@
             Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
     </Target>
 
-    <!-- Display info -->
     <Target
         DependsOnTargets="_nBuildKit_Build_Prepare_Workspace_DebugLog"
         Name="_nBuildKit_Build_Prepare_Workspace_DisplayInfo">
@@ -75,36 +85,9 @@
             Text="Preparing workspace ..." />
     </Target>
 
-    <!-- Clean -->
     <Target
-        Condition="$(ShouldClean)"
-        DependsOnTargets="_nBuildKit_Build_Prepare_Workspace_DisplayInfo"
-        Name="_nBuildKit_Build_Prepare_Workspace_Clean">
-        <!--
-            We'll try to delete the directory but that may fail randomly because
-            some file is being locked (by some other process). This could leads to a failing task, but ..
-            the next task is run and then the delete command still executes (delayed
-            by the OS).
-        -->
-        <!--
-            Also make sure not to kill the 'DirUserConfiguration' folder because that contains the settings.props files
-            that we are currently using.
-        -->
-        <ItemGroup>
-            <BuildFilesToDelete
-                Condition="Exists('$(DirBuild)')"
-                Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*"
-                Include="$(DirBuild)\**\*.*" />
-        </ItemGroup>
-        <Delete
-            Condition=" '@(BuildFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
-            ContinueOnError="True"
-            Files="@(BuildFilesToDelete)" />
-
-        <!--
-            Delete all the known generated files. These may be part of the batch of files we just deleted if the user left the default values
-            in place, otherwise they may be in different places in the system.
-        -->
+        Condition="'$(ShouldClean)' == 'true'"
+        Name="_nBuildKit_Build_Prepare_Workspace_Clean_GeneratedFiles">
         <ItemGroup>
             <GeneratedFilesToDelete
                 Condition="Exists('$(FileSemanticVersion)')"
@@ -141,6 +124,96 @@
             Condition=" '@(GeneratedFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
             ContinueOnError="True"
             Files="@(GeneratedFilesToDelete)" />
+    </Target>
+
+    <Target
+        Condition=" '@(SolutionsToBuild)' != '' AND '$(ShouldClean)' == 'true' AND '$(ShouldDeleteVisualStudioOutputs)' == 'true' "
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+        Name="_nBuildKit_Build_Prepare_Workspace_Delete_VisualStudioLocation"
+        Outputs="%(SolutionsToBuild.Identity)">
+        <TemplateText
+            Template="%(SolutionsToBuild.FullPath)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileSln"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <Message
+            Importance="normal"
+            Text="Deleting relevant 'bin' and 'obj' folders for all projects in $(FileSln) ..." />
+
+        <GetProjectsFromVisualStudioSolution
+            Condition="Exists('$(FileSln)')"
+            SolutionFile="$(FileSln)">
+            <Output ItemName="ProjectsForSolution" TaskParameter="Projects" />
+        </GetProjectsFromVisualStudioSolution>
+
+        <ItemGroup>
+            <VisualStudioProjectDirectoriesToDelete Include="@(ProjectsForSolution -> '%(RootDir)%(Directory)bin')" />
+            <VisualStudioProjectDirectoriesToDelete Include="@(ProjectsForSolution -> '%(RootDir)%(Directory)obj')" />
+        </ItemGroup>
+
+        <RemoveDir
+            Condition=" '@(VisualStudioProjectDirectoriesToDelete)' != '' "
+            ContinueOnError="True"
+            Directories="@(VisualStudioProjectDirectoriesToDelete)" />
+    </Target>
+
+    <Target
+        Condition=" '@(SolutionsToBuild)' != '' AND '$(ShouldClean)' == 'true' AND '$(ShouldCleanVisualStudioOutputs)' == 'true' AND '$(ShouldDeleteVisualStudioOutputs)' != 'true' "
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+        Name="_nBuildKit_Build_Prepare_Workspace_Clean_VisualStudioLocation"
+        Outputs="%(SolutionsToBuild.Identity)">
+        <TemplateText
+            Template="%(SolutionsToBuild.FullPath)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileSln"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <Message
+            Importance="normal"
+            Text="Cleaning $(FileSln) with: Configuration = %(SolutionsToBuild.Configuration) and Platform = %(SolutionsToBuild.Platform) ..." />
+
+        <InvokeStandaloneMsBuild
+            Condition="Exists('$(FileSln)')"
+            Projects="$(FileSln)"
+            Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=%(SolutionsToBuild.Platform)"
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="True"
+            StopOnFirstFailure="False"
+            Targets="Clean"
+            TemporaryDirectory="$(DirBuildTemp)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)">
+        </InvokeStandaloneMsBuild>
+    </Target>
+
+    <Target
+        Condition="'$(ShouldClean)' == 'true'"
+        Name="_nBuildKit_Build_Prepare_Workspace_Clean_BuildDirectory">
+        <!--
+            We'll try to delete the directory and files but that may fail randomly because
+            some file is being locked (by some other process). This could leads to a failing task, but ..
+            the next task is run and then the delete command still executes (delayed
+            by the OS).
+        -->
+        <!--
+            Also make sure not to kill the 'DirBuildBootstrap' and 'DirUserConfiguration' folders because those contains the
+            nBuildKit bootstrap and the settings.props files respectively. Both of which we are currently using.
+        -->
+        <ItemGroup>
+            <BuildFilesToDelete
+                Condition="Exists('$(DirBuild)')"
+                Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*"
+                Include="$(DirBuild)\**\*.*" />
+        </ItemGroup>
+        <Delete
+            Condition=" '@(BuildFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
+            ContinueOnError="True"
+            Files="@(BuildFilesToDelete)" />
 
         <ItemGroup>
             <BuildDirectoriesToDelete

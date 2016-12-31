@@ -80,7 +80,25 @@
             A flag that indicates whether or not the workspace should be cleaned before the build is started. If set to
             true then the 'DirBuild' directory will be removed as well as all known generated files.
         -->
-        <!--<ShouldClean Condition=" '$(ShouldClean)' == ''">true</ShouldClean>-->
+        <!--<ShouldClean Condition=" '$(ShouldClean)' == '' AND '$(IsOnBuildServer)' != 'true' ">true</ShouldClean>-->
+
+        <!--
+            A flag that indicates whether or not the Visual Studio temporary and output directories should be cleaned
+            before the build is started. If set to true then the 'bin' and 'obj' directories for each project in
+            the provided Visual Studio solutions is cleaned.
+        -->
+        <!--<ShouldCleanVisualStudioOutputs Condition=" '$(ShouldCleanVisualStudioOutputs)' == '' AND '$(IsOnBuildServer)' != 'true' ">true</ShouldCleanVisualStudioOutputs>-->
+
+        <!--
+            A flag that indicates whether or not the Visual Studio temporary and output directories should be deleted
+            before the build is started. If set to true then the 'bin' and 'obj' directories for each project in
+            the provided Visual Studio solutions are deleted.
+
+            Note: This is a more extensive clean than the standard clean in that the standard clean only cleans for the given
+            platforms and configurations. The delete version simply deletes the relevant 'bin' and 'obj' directories which
+            deletes outputs from all configurations.
+        -->
+        <!--<ShouldDeleteVisualStudioOutputs Condition=" '$(ShouldDeleteVisualStudioOutputs)' == '' AND '$(IsOnBuildServer)' != 'true' ">false</ShouldDeleteVisualStudioOutputs>-->
     </PropertyGroup>
 
     <!-- Overrides for the project specific properties -->
