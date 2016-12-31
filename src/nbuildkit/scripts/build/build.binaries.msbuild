@@ -73,11 +73,15 @@
             Text="Building the Visual Studio solutions ..." />
     </Target>
 
+    <!--
+        Note that MsBuild batches based on the Outputs value, if there are two instances of a single solution (but with different configuration and platform) in
+        the list we only run through it once if we don't filter the list down to one item. See here: http://sedodream.com/PermaLink,guid,cab57d7f-9d6e-4358-8491-dc033fb3bacc.aspx
+    -->
     <Target
         Condition=" '@(SolutionsToBuild)' != '' "
         DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Build_Binaries_Execute"
-        Outputs="%(SolutionsToBuild.Identity)">
+        Outputs="%(SolutionsToBuild.Identity)_%(SolutionsToBuild.Configuration)_%(SolutionsToBuild.Platform)">
         <TemplateText
             Template="%(SolutionsToBuild.FullPath)"
             Tokens="@(TemplateTokens)">
@@ -109,10 +113,24 @@
             PackageFile="$(FileSln)"
             Sources="@(NuGetSources)" />
 
+        <!-- Make sure we take all the non-essential whitespace and newlines out of the properties -->
+        <PropertyGroup>
+            <BuildProperties>%(SolutionsToBuild.Properties)</BuildProperties>
+            <BuildPlatform>%(SolutionsToBuild.Platform)</BuildPlatform>
+        </PropertyGroup>
+        <CreateItem Include="$(BuildProperties.Split(';'))">
+            <Output
+                ItemName="PropertyItems"
+                TaskParameter="Include" />
+        </CreateItem>
+        <PropertyGroup>
+            <BuildProperties>@(PropertyItems)</BuildProperties>
+        </PropertyGroup>
+
         <InvokeStandaloneMsBuild
             Condition=" '$(ShouldExecute)' == 'true' "
             Projects="$(FileSln)"
-            Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=%(SolutionsToBuild.Platform);%(SolutionsToBuild.Properties)"
+            Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=$(BuildPlatform);$(BuildProperties)"
             RunEachTargetSeparately="True"
             SkipNonexistentProjects="False"
             StopOnFirstFailure="False"
@@ -125,6 +143,8 @@
                 TaskParameter="TargetOutputs" />
         </InvokeStandaloneMsBuild>
 
+        <!-- Move the code analysis logs -->
+        <Message Text="Moving the code analysis logs for the build of $([System.IO.Path]::GetFileName('$(FileSln)')) (Configuration = %(SolutionsToBuild.Configuration), Platform = $(BuildPlatform)) to the logs directory" />
         <MakeDir
             Condition="!Exists('$(DirBuildLogs)') AND '$(ShouldExecute)' == 'true' "
             Directories="$(DirBuildLogs)" />
@@ -141,5 +161,43 @@
             DestinationFolder="$(DirBuildLogs)"
             OverwriteReadOnlyFiles="true"
             SourceFiles="@(LogFiles)" />
+
+        <!-- Store the results of the compilation -->
+        <PropertyGroup>
+            <FileGeneratedAssemblies>%(SolutionsToBuild.GeneratedAssembliesFile)</FileGeneratedAssemblies>
+        </PropertyGroup>
+        <Message
+            Condition=" '$(FileGeneratedAssemblies)' != '' "
+            Text="Storing the paths of the generated assemblies for the build of $([System.IO.Path]::GetFileName('$(FileSln)')) (Configuration = %(SolutionsToBuild.Configuration), Platform = $(BuildPlatform)) in '$(FileGeneratedAssemblies)'" />
+        <Message
+            Condition=" '$(FileGeneratedAssemblies)' == '' "
+            Text="Not storing the paths of the generated assemblies. No file path was provided." />
+
+        <ItemGroup Condition=" '$(FileGeneratedAssemblies)' != '' ">
+            <XmlHeader Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
+            <XmlHeader Include="&lt;Project xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot; &gt;" />
+            <XmlHeader Include="&lt;ItemGroup&gt;" />
+        </ItemGroup>
+        <WriteLinesToFile
+            Condition=" '$(FileGeneratedAssemblies)' != '' "
+            File="$(FileGeneratedAssemblies)"
+            Lines="@(XmlHeader)"
+            Overwrite="true" />
+
+        <WriteLinesToFile
+            Condition=" '$(FileGeneratedAssemblies)' != '' "
+            File="$(FileGeneratedAssemblies)"
+            Lines="@(GeneratedAssemblies -> '&lt;GeneratedAssembly Include=&quot;%(Identity)&quot; &gt; &#xD;&#xA; &lt;OriginatingProject&gt;%(MSBuildSourceProjectFile)&lt;/OriginatingProject&gt; &#xD;&#xA; &lt;InvokedTarget&gt;%(MSBuildSourceTargetName)&lt;/InvokedTarget&gt; &#xD;&#xA; &lt;/GeneratedAssembly&gt;', '&#xD;&#xA;')"
+            Overwrite="false" />
+
+        <ItemGroup Condition=" '$(FileGeneratedAssemblies)' != '' ">
+            <XmlFooter Include="&lt;/ItemGroup&gt;" />
+            <XmlFooter Include="&lt;/Project&gt;" />
+        </ItemGroup>
+        <WriteLinesToFile
+            Condition=" '$(FileGeneratedAssemblies)' != '' "
+            File="$(FileGeneratedAssemblies)"
+            Lines="@(XmlFooter)"
+            Overwrite="false" />
     </Target>
  </Project>
