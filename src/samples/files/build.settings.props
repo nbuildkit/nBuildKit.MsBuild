@@ -865,12 +865,12 @@
             The locations of the files that should be analyzed by FxCop.
         -->
         <!--
-        <FxCopFiles Include="$(DirSrc)\**\bin\**\*.dll"
-                    Exclude="$(DirSrc)\**\bin\**\Test.*.dll">
+        <FxCopFiles Include="$(DirSrc)\**\bin\$(Configuration)\*.dll"
+                    Exclude="$(DirSrc)\**\bin\$(Configuration)\Test.*.dll">
             <TargetFramework>4.5</TargetFramework>
             <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>
-        <FxCopFiles Include="$(DirSrc)\**\bin\**\*.exe">
+        <FxCopFiles Include="$(DirSrc)\**\bin\$(Configuration)\*.exe">
             <TargetFramework>2.0</TargetFramework>
             <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>

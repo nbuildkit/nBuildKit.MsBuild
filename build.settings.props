@@ -426,6 +426,7 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
+        -->
 
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
             <Properties>
@@ -440,7 +441,6 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
-        -->
 
         <BuildStepsToExecute Include="$(BuildStepsBuildILMerge)">
             <Properties>
@@ -844,32 +844,31 @@
         <!--
             The full path to the XML file that contains the custom dictionary for FxCop.
         -->
-        <!--<FxCopCustomDictionary Condition=" '$(FxCopCustomDictionary)' == '' ">$(DirWorkspace)\customdictionary.xml</FxCopCustomDictionary>-->
+        <FxCopCustomDictionary Condition=" '$(FxCopCustomDictionary)' == '' ">$(DirSrc)\nbuildkit\tasks\customdictionary.xml</FxCopCustomDictionary>
 
         <!--
             The culture that FxCop should use for the spelling rules.
         -->
-        <!--<FxCopCulture Condition=" '$(FxCopCulture)' == '' ">$(CodeAnalysisCulture)</FxCopCulture>-->
+        <FxCopCulture Condition=" '$(FxCopCulture)' == '' ">en-US</FxCopCulture>
 
         <!--
             A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
             errors are marked as errors then any analysis error will stop the build.
         -->
-        <!--<FxCopWarningsAsErrors Condition=" '$(FxCopWarningsAsErrors)' == '' ">false</FxCopWarningsAsErrors>-->
+        <FxCopWarningsAsErrors Condition=" '$(FxCopWarningsAsErrors)' == '' ">true</FxCopWarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
         <!--
             The locations of the files that should be analyzed by FxCop.
         -->
-        <!--
-        <FxCopFiles Include="$(DirSrc)\**\bin\**\*.dll"
-                    Exclude="$(DirSrc)\**\bin\**\Test.*.dll">
+        <FxCopFiles Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\nBuildKit*.dll">
             <TargetFramework>4.5</TargetFramework>
-            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
+            <RuleSet>$(DirSrc)\nbuildkit\tasks\default.ruleset</RuleSet>
         </FxCopFiles>
-        <FxCopFiles Include="$(DirSrc)\**\bin\**\*.exe">
-            <TargetFramework>2.0</TargetFramework>
-            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
+        <!--
+        <FxCopFiles Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\Test.*.dll">
+            <TargetFramework>4.5</TargetFramework>
+            <RuleSet>$(DirSrc)\nbuildkit\tasks\test.ruleset</RuleSet>
         </FxCopFiles>
         -->
     </ItemGroup>
