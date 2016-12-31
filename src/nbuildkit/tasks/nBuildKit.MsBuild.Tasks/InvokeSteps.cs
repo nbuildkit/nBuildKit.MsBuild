@@ -23,6 +23,36 @@ namespace NBuildKit.MsBuild.Tasks
     /// </summary>
     public sealed class InvokeSteps : NBuildKitMsBuildTask
     {
+        private static Hashtable GetStepMetadata(string stepPath, ITaskItem[] metadata)
+        {
+            const string MetadataTagDescription = "Description";
+            const string MetadataTagId = "Id";
+            const string MetadataTagName = "Name";
+
+            var stepFileName = Path.GetFileName(stepPath);
+            var stepMetadata = metadata.FirstOrDefault(t => string.Equals(stepFileName, t.ItemSpec, StringComparison.OrdinalIgnoreCase));
+            var result = new Hashtable(StringComparer.OrdinalIgnoreCase);
+
+            var description = stepMetadata != null
+                    ? stepMetadata.GetMetadata(MetadataTagDescription)
+                    : string.Empty;
+            result.Add("StepDescription", description);
+
+            var id = (stepMetadata != null) && !string.IsNullOrEmpty(stepMetadata.GetMetadata(MetadataTagId))
+                    ? stepMetadata.GetMetadata(MetadataTagId)
+                    : stepFileName;
+            result.Add("StepId", id);
+
+            var name = (stepMetadata != null) && !string.IsNullOrEmpty(stepMetadata.GetMetadata(MetadataTagName))
+                    ? stepMetadata.GetMetadata(MetadataTagName)
+                    : stepFileName;
+            result.Add("StepName", name);
+
+            result.Add("StepPath", stepPath);
+
+            return result;
+        }
+
         private static ITaskItem[] LocalPreSteps(ITaskItem step)
         {
             const string MetadataTag = "PreSteps";
@@ -342,36 +372,6 @@ namespace NBuildKit.MsBuild.Tasks
             set;
         }
 
-        private Hashtable GetStepMetadata(string stepPath, ITaskItem[] metadata)
-        {
-            const string MetadataTagDescription = "Description";
-            const string MetadataTagId = "Id";
-            const string MetadataTagName = "Name";
-
-            var stepFileName = Path.GetFileName(stepPath);
-            var stepMetadata = metadata.FirstOrDefault(t => string.Equals(stepFileName, t.ItemSpec, StringComparison.OrdinalIgnoreCase));
-            var result = new Hashtable(StringComparer.OrdinalIgnoreCase);
-
-            var description = stepMetadata != null
-                    ? stepMetadata.GetMetadata(MetadataTagDescription)
-                    : string.Empty;
-            result.Add("StepDescription", description);
-
-            var id = (stepMetadata != null) && !string.IsNullOrEmpty(stepMetadata.GetMetadata(MetadataTagId))
-                    ? stepMetadata.GetMetadata(MetadataTagId)
-                    : stepFileName;
-            result.Add("StepId", id);
-
-            var name = (stepMetadata != null) && !string.IsNullOrEmpty(stepMetadata.GetMetadata(MetadataTagName))
-                    ? stepMetadata.GetMetadata(MetadataTagName)
-                    : stepFileName;
-            result.Add("StepName", name);
-
-            result.Add("StepPath", stepPath);
-
-            return result;
-        }
-
         private IEnumerable<string> Groups()
         {
             return GroupsToExecute.Select(t => t.ItemSpec).ToList();
@@ -401,10 +401,6 @@ namespace NBuildKit.MsBuild.Tasks
                 var toolsVersion = ToolsVersion;
                 if (project != null)
                 {
-                    // Retrieve projectDirectory only the first time. It never changes anyway.
-                    var projectDirectory = Path.GetDirectoryName(projectPath);
-                    var projectName = project.ItemSpec;
-
                     // If the user specified additional properties then add those
                     var projectProperties = project.GetMetadata("Properties");
                     if (!string.IsNullOrEmpty(projectProperties))

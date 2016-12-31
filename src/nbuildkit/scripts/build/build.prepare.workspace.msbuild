@@ -24,6 +24,7 @@
         DependsOnTargets="_nBuildKit_Build_Prepare_Workspace_DisplayInfo"
         Name="nBuildKit_Build_Prepare_Workspace_Run">
         <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean_GeneratedFiles" />
+        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Delete_VisualStudioLocation" />
         <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean_VisualStudioLocation" />
         <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean_BuildDirectory" />
     </Target>
@@ -123,6 +124,40 @@
             Condition=" '@(GeneratedFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
             ContinueOnError="True"
             Files="@(GeneratedFilesToDelete)" />
+    </Target>
+
+    <Target
+        Condition=" '@(SolutionsToBuild)' != '' AND '$(ShouldClean)' == 'true' AND '$(ShouldDeleteVisualStudioOutputs)' == 'true' "
+        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
+        Name="_nBuildKit_Build_Prepare_Workspace_Delete_VisualStudioLocation"
+        Outputs="%(SolutionsToBuild.Identity)">
+        <TemplateText
+            Template="%(SolutionsToBuild.FullPath)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileSln"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <Message
+            Importance="normal"
+            Text="Deleting relevant 'bin' and 'obj' folders for all projects in $(FileSln) ..." />
+
+        <GetProjectsFromVisualStudioSolution
+            Condition="Exists('$(FileSln)')"
+            SolutionFile="$(FileSln)">
+            <Output ItemName="ProjectsForSolution" TaskParameter="Projects" />
+        </GetProjectsFromVisualStudioSolution>
+
+        <ItemGroup>
+            <VisualStudioProjectDirectoriesToDelete Include="@(ProjectsForSolution -> '%(RootDir)%(Directory)bin')" />
+            <VisualStudioProjectDirectoriesToDelete Include="@(ProjectsForSolution -> '%(RootDir)%(Directory)obj')" />
+        </ItemGroup>
+
+        <RemoveDir
+            Condition=" '@(VisualStudioProjectDirectoriesToDelete)' != '' "
+            ContinueOnError="True"
+            Directories="@(VisualStudioProjectDirectoriesToDelete)" />
     </Target>
 
     <Target
