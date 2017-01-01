@@ -16,14 +16,6 @@
         Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "
         Project="$(TemplateTokenGenerators)" />
 
-    <PropertyGroup>
-        <FileTemplateTokensPretranslatedTokens>$(DirGeneratedPropertiesFiles)\templatetokens.pretranslatedtokens.props</FileTemplateTokensPretranslatedTokens>
-    </PropertyGroup>
-    <ItemGroup>
-        <TokenFiles Include="$(DirNBuildKitMsBuild)\templatetokens.*.props" />
-        <TokenFiles Include="$(DirGeneratedPropertiesFiles)\templatetokens.*.props" />
-    </ItemGroup>
-
     <Target Name="nBuildKit_Shared_TemplateTokens_Generate">
         <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators" />
         <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Generate_SpecialVersionParameters" />
@@ -53,14 +45,25 @@
 
     <Target
         DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators"
-        Inputs="@(TokenFiles)"
         Name="_nBuildKit_Shared_TemplateTokens_Generate_SpecialVersionParameters"
         Outputs="$(FileTemplateTokensPretranslatedTokens)">
 
-        <GenerateSpecialParameterTemplateTokens
-            PropertyFile="$(FileTemplateTokensPretranslatedTokens)"
-            SystemParameters="@(SystemTemplateVersion)"
-            Tokens="@(TemplateTokens)"
-            UserParameters="@(TemplateVersion)" />
+        <PropertyGroup>
+            <DirectoriesForNBuildKit>
+                DirWorkspace=$(DirWorkspace);
+                DirUserSettings=$(DirUserSettings);
+            </DirectoriesForNBuildKit>
+        </PropertyGroup>
+
+        <InvokeStandaloneMsBuild
+            Projects="$(MSBuildThisFileDirectory)shared.templatetokens.pregenerate.msbuild"
+            Properties="$(DirectoriesForNBuildKit);$(DefaultPathProperties);NBuildKitVersion=$(NBuildKitVersion)"
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            Targets=""
+            TemporaryDirectory="$(DirBuildTemp)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)" />
     </Target>
 </Project>
