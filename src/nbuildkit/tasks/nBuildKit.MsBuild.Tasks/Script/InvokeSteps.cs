@@ -21,7 +21,7 @@ namespace NBuildKit.MsBuild.Tasks
     /// <summary>
     /// Defines a <see cref="ITask"/> that executes steps for nBuildKit.
     /// </summary>
-    public sealed class InvokeSteps : NBuildKitMsBuildTask
+    public sealed class InvokeSteps : MsBuildCommandLineToolTask
     {
         private static Hashtable GetStepMetadata(string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)
         {
@@ -71,11 +71,35 @@ namespace NBuildKit.MsBuild.Tasks
             return steps.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => new TaskItem(s)).ToArray();
         }
 
+        private static string MetadataTableToString(Hashtable metadataTable)
+        {
+            var builder = new StringBuilder();
+            foreach (DictionaryEntry entry in metadataTable)
+            {
+                builder.Append(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}={1};",
+                        entry.Key,
+                        EscapingUtilities.UnescapeAll(entry.Value as string)));
+            }
+
+            return builder.ToString();
+        }
+
         private static IEnumerable<string> StepGroups(ITaskItem step)
         {
             const string MetadataTag = "Groups";
             var groups = step.GetMetadata(MetadataTag);
             return groups.ToLower(CultureInfo.InvariantCulture).Split(';');
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvokeSteps"/> class.
+        /// </summary>
+        public InvokeSteps()
+        {
+            ShowDetailedSummary = false;
         }
 
         private void AddStepMetadata(ITaskItem subStep, string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)
@@ -102,19 +126,7 @@ namespace NBuildKit.MsBuild.Tasks
                 }
             }
 
-            // Turn the hashtable into a properties string again.
-            var builder = new StringBuilder();
-            foreach (DictionaryEntry entry in stepMetadata)
-            {
-                builder.Append(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0}={1};",
-                        entry.Key,
-                        EscapingUtilities.UnescapeAll(entry.Value as string)));
-            }
-
-            subStep.SetMetadata(MetadataTag, builder.ToString());
+            subStep.SetMetadata(MetadataTag, MetadataTableToString(stepMetadata));
         }
 
         /// <inheritdoc/>
@@ -124,7 +136,7 @@ namespace NBuildKit.MsBuild.Tasks
             Justification = "Catching, logging and letting MsBuild deal with the fall out")]
         public override bool Execute()
         {
-            if ((Steps == null) || (Steps.Length == 0))
+            if ((Projects == null) || (Projects.Length == 0))
             {
                 return true;
             }
@@ -134,7 +146,7 @@ namespace NBuildKit.MsBuild.Tasks
             var groups = Groups();
 
             var stepsToExecute = new List<ITaskItem>();
-            foreach (var step in Steps)
+            foreach (var step in Projects)
             {
                 var stepGroups = StepGroups(step);
                 if (!ShouldExecuteStep(groups, stepGroups))
@@ -162,6 +174,9 @@ namespace NBuildKit.MsBuild.Tasks
                         {
                             break;
                         }
+
+                        // Create some additional space in the logs between the stages.
+                        Log.LogMessage(string.Empty);
                     }
                 }
                 catch (Exception e)
@@ -227,6 +242,7 @@ namespace NBuildKit.MsBuild.Tasks
 
         private bool ExecuteStep(ITaskItem step, bool isFirst, bool isLast)
         {
+            var stepResult = true;
             var stepPath = GetAbsolutePath(step.ItemSpec);
             if (PreSteps != null)
             {
@@ -240,6 +256,7 @@ namespace NBuildKit.MsBuild.Tasks
                         {
                             if (FailOnPreStepFailure)
                             {
+                                stepResult = false;
                                 Log.LogError(
                                     "Failed while executing global pre-step action from '{0}'",
                                     globalPreStep.ItemSpec);
@@ -273,6 +290,7 @@ namespace NBuildKit.MsBuild.Tasks
                         {
                             if (FailOnPreStepFailure)
                             {
+                                stepResult = false;
                                 Log.LogError(
                                     "Failed while executing step specific pre-step action from '{0}'",
                                     localPreStep.ItemSpec);
@@ -294,7 +312,8 @@ namespace NBuildKit.MsBuild.Tasks
             }
 
             // Get the result but always try to excecute the post-step actions
-            var stepResult = InvokeBuildEngine(step);
+            var localStepResult = InvokeBuildEngine(step);
+            stepResult = stepResult && localStepResult;
 
             var localPostSteps = LocalPostSteps(step);
             if (localPostSteps != null)
@@ -309,6 +328,7 @@ namespace NBuildKit.MsBuild.Tasks
                         {
                             if (FailOnPostStepFailure)
                             {
+                                stepResult = false;
                                 Log.LogError(
                                     "Failed while executing step specific post-step action from '{0}'",
                                     localPostStep.ItemSpec);
@@ -341,6 +361,7 @@ namespace NBuildKit.MsBuild.Tasks
                         {
                             if (FailOnPostStepFailure)
                             {
+                                stepResult = false;
                                 Log.LogError(
                                     "Failed while executing global post-step action from '{0}'",
                                     globalPostStep.ItemSpec);
@@ -354,7 +375,7 @@ namespace NBuildKit.MsBuild.Tasks
 
                             if (StopOnPostStepFailure)
                             {
-                                return false;
+                                stepResult = false;
                             }
                         }
                     }
@@ -417,7 +438,6 @@ namespace NBuildKit.MsBuild.Tasks
             string projectPath = GetAbsolutePath(project.ItemSpec);
             if (File.Exists(projectPath))
             {
-                var toolsVersion = ToolsVersion;
                 if (project != null)
                 {
                     // If the user specified additional properties then add those
@@ -457,16 +477,34 @@ namespace NBuildKit.MsBuild.Tasks
                 // Send the project off to the build engine. By passing in null to the
                 // first param, we are indicating that the project to build is the same
                 // as the *calling* project file.
-                BuildEngineResult result =
-                    BuildEngine3.BuildProjectFilesInParallel(
-                        new[] { projectPath },
-                        null,
-                        new IDictionary[] { propertiesTable },
-                        new IList<string>[] { new List<string>() },
-                        new[] { toolsVersion },
-                        false);
+                var arguments = new List<string>();
+                {
+                    foreach (DictionaryEntry entry in propertiesTable)
+                    {
+                        arguments.Add(
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                "/P:{0}=\"{1}\"",
+                                entry.Key,
+                                EscapingUtilities.UnescapeAll(entry.Value as string).TrimEnd(new[] { '\\' })));
+                    }
 
-                return result.Result;
+                    arguments.Add(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "\"{0}\"",
+                            projectPath));
+                }
+
+                Log.LogMessage(
+                    "Building project at: {0}",
+                    projectPath);
+                var exitCode = InvokeMsBuild(arguments);
+
+                // Create some space in the logs between the invocations.
+                Log.LogMessage(string.Empty);
+
+                return exitCode == 0;
             }
             else
             {
@@ -490,15 +528,6 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the steps that should be executed after each step.
         /// </summary>
         public ITaskItem[] PostSteps
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the properties for the steps.
-        /// </summary>
-        public ITaskItem[] Properties
         {
             get;
             set;
@@ -540,26 +569,6 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <summary>
-        /// Gets or sets the steps that should be taken for the current process.
-        /// </summary>
-        [Required]
-        public ITaskItem[] Steps
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether or not the process should stop on the first error or continue.
-        /// Default is false.
-        /// </summary>
-        public bool StopOnFirstFailure
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the process should stop if a pre-step fails
         /// </summary>
         public bool StopOnPreStepFailure
@@ -572,15 +581,6 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets a value indicating whether the process should stop if a post-step fails
         /// </summary>
         public bool StopOnPostStepFailure
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the version of MsBuild and the build tools that should be used.
-        /// </summary>
-        public string ToolsVersion
         {
             get;
             set;

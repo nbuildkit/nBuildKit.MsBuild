@@ -148,6 +148,53 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <summary>
+        /// Gets the verbosity that the current MsBuild instance is running at.
+        /// </summary>
+        /// <returns>The verbosity of the MsBuild logger.</returns>
+        protected static string VerbosityForCurrentMsBuildInstance()
+        {
+            const string FullVerbositySwitch = "/verbosity:";
+            const string ShortVerbositySwitch = "/v:";
+
+            var commandLineArguments = Environment.GetCommandLineArgs();
+            for (int i = 0; i < commandLineArguments.Length; i++)
+            {
+                var argument = commandLineArguments[i];
+
+                var hasSwitch = false;
+                var remainder = string.Empty;
+                if (argument.Contains(FullVerbositySwitch))
+                {
+                    hasSwitch = true;
+                    remainder = argument.Substring(FullVerbositySwitch.Length).Trim();
+                }
+
+                if (argument.Contains(ShortVerbositySwitch))
+                {
+                    hasSwitch = true;
+                    remainder = argument.Substring(ShortVerbositySwitch.Length).Trim();
+                }
+
+                if (hasSwitch)
+                {
+                    if (!string.IsNullOrEmpty(remainder))
+                    {
+                        return remainder;
+                    }
+                    else
+                    {
+                        if (commandLineArguments.Length > i + 1)
+                        {
+                            return commandLineArguments[i + 1].Trim();
+                        }
+                    }
+                }
+            }
+
+            return "normal";
+        }
+
+        /// <summary>
         /// Returns the absolute path for the given path item.
         /// </summary>
         /// <param name="path">The path</param>
