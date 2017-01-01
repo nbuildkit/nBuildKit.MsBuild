@@ -16,11 +16,16 @@
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
+
     <Target
         Condition="!Exists('$(FileVcsInfo)')"
         DependsOnTargets="_nBuildKit_Shared_Prepare_VcsInfo_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_VcsInfo_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
     </Target>
 
     <!-- Display info -->

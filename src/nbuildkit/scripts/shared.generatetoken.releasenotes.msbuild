@@ -8,14 +8,22 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
-    <Target Name="shared_generatetoken_releasenotes">
+    <PropertyGroup>
+        <FileTemplateTokensReleaseNotes>$(DirGeneratedPropertiesFiles)\templatetokens.releasenotes.props</FileTemplateTokensReleaseNotes>
+    </PropertyGroup>
+    <Target
+        Inputs="$(FileReleaseNotes)"
+        Name="shared_generatetoken_releasenotes"
+        Outputs="$(FileTemplateTokensReleaseNotes)">
+        <CallTarget Targets="shared_generatetoken_releasenotes_writepropertyfile" />
+    </Target>
+
+    <Target
+        Condition="Exists('$(FileReleaseNotes)')"
+        Name="shared_generatetoken_releasenotes_writepropertyfile">
         <CreateProperty
             Condition="Exists('$(FileReleaseNotes)') "
             Value="$([System.IO.File]::ReadAllText('$(FileReleaseNotes)'))">
@@ -32,31 +40,48 @@
         </HtmlEncodeText>
 
         <ItemGroup>
+            <TemplateTokensReleaseNotes Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
+            <TemplateTokensReleaseNotes Include="&lt;Project xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot; &gt;" />
+            <TemplateTokensReleaseNotes Include="&lt;PropertyGroup&gt;" />
+            <TemplateTokensReleaseNotes Include="&lt;ExistsGeneratedTemplateTokensReleaseNotes&gt;true&lt;/ExistsGeneratedTemplateTokensReleaseNotes&gt;" />
+            <TemplateTokensReleaseNotes Include="&lt;/PropertyGroup&gt;" />
+            <TemplateTokensReleaseNotes Include="&lt;ItemGroup&gt;" />
+
             <!--
                 Define empty entries for the release notes in case there are none so that we can
                 still reference the template variable.
             -->
-            <TemplateTokens
+            <TemplateTokensReleaseNotes
                 Condition=" '$(ReleaseNotes)' != '' "
-                Include="ReleaseNotes">
-                <ReplacementValue>$(ReleaseNotes)</ReplacementValue>
-            </TemplateTokens>
-            <TemplateTokens
+                Include="&lt;TemplateTokens Include=&quot;ReleaseNotes&quot; &gt; &#xD;&#xA; &lt;ReplacementValue&gt;$(ReleaseNotes)&lt;/ReplacementValue&gt; &#xD;&#xA; &lt;/TemplateTokens&gt;" />
+            <TemplateTokensReleaseNotes
                 Condition=" '$(ReleaseNotes)' == '' "
-                Include="ReleaseNotes">
-                <ReplacementValue></ReplacementValue>
-            </TemplateTokens>
+                Include="&lt;TemplateTokens Include=&quot;ReleaseNotes&quot; &gt; &#xD;&#xA; &lt;ReplacementValue&gt;&lt;/ReplacementValue&gt; &#xD;&#xA; &lt;/TemplateTokens&gt;" />
 
-            <TemplateTokens
+            <TemplateTokensReleaseNotes
                 Condition=" '$(ReleaseNotesHtmlEncoded)' != '' "
-                Include="ReleaseNotesHtmlEncoded">
-                <ReplacementValue>$(ReleaseNotesHtmlEncoded)</ReplacementValue>
-            </TemplateTokens>
-            <TemplateTokens
+                Include="&lt;TemplateTokens Include=&quot;ReleaseNotesHtmlEncoded&quot; &gt; &#xD;&#xA; &lt;ReplacementValue&gt;$(ReleaseNotesHtmlEncoded)&lt;/ReplacementValue&gt; &#xD;&#xA; &lt;/TemplateTokens&gt;" />
+            <TemplateTokensReleaseNotes
                 Condition=" '$(ReleaseNotesHtmlEncoded)' == '' "
-                Include="ReleaseNotesHtmlEncoded">
-                <ReplacementValue></ReplacementValue>
-            </TemplateTokens>
+                Include="&lt;TemplateTokens Include=&quot;ReleaseNotesHtmlEncoded&quot; &gt; &#xD;&#xA; &lt;ReplacementValue&gt;&lt;/ReplacementValue&gt; &#xD;&#xA; &lt;/TemplateTokens&gt;" />
+
+
+            <TemplateTokensReleaseNotes Include="&lt;/ItemGroup&gt;" />
+            <TemplateTokensReleaseNotes Include="&lt;/Project&gt;" />
         </ItemGroup>
+
+        <CreateProperty
+            Value="$([System.IO.Path]::GetDirectoryName('$(FileTemplateTokensReleaseNotes)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)')"
+            Directories="$(DirToCreate)" />
+        <WriteLinesToFile
+            File="$(FileTemplateTokensReleaseNotes)"
+            Lines="@(TemplateTokensReleaseNotes)"
+            Overwrite="true" />
     </Target>
 </Project>

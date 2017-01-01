@@ -17,6 +17,10 @@
         Project="$(FileNBuildKitExtensionsImport)" />
 
     <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
+
+    <Import
         Condition=" '$(ScriptGetVersion)' != '' AND '$(ScriptGetVersion)' != 'UNDEFINED' AND Exists('$(ScriptGetVersion)')"
         Project="$(ScriptGetVersion)" />
     <Import
@@ -33,6 +37,7 @@
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionViaGitVersion" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_WriteVersionsToFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
     </Target>
 
     <Target
@@ -249,7 +254,8 @@
         </CalculateSemanticVersionWithGitVersion>
     </Target>
 
-    <Target Name="_nBuildKit_Shared_Prepare_GetVersion_WriteVersionsToFile">
+    <Target
+        Name="_nBuildKit_Shared_Prepare_GetVersion_WriteVersionsToFile">
         <Message
             Importance="low"
             Text="Writing the versions to file ..." />

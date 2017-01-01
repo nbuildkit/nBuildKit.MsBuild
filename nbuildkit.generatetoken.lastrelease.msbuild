@@ -14,16 +14,12 @@
         <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
 
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
-
     <PropertyGroup>
         <FileNBuildKitLastRelease>$(DirBuildTemp)\nbuildkit.lastrelease.json</FileNBuildKitLastRelease>
     </PropertyGroup>
 
     <Target
-        Condition="!Exists('$FileNBuildKitLastRelease')"
+        Condition="!Exists('$(FileNBuildKitLastRelease)')"
         Name="_NBuildKit_GenerateToken_LastRelease_FromNuGet">
         <GetLastRelease_LocalTask_GetLatestNBuildKitVersionFromNuGet NuGetPath="$(ToolsExternalNuGetPath)">
             <Output
@@ -63,9 +59,20 @@
             Overwrite="true" />
     </Target>
 
+    <PropertyGroup>
+        <TemplateTokensNBuildKitLastRelease>$(DirGeneratedPropertiesFiles)\templatetokens.nbuildkit.lastrelease.props</TemplateTokensNBuildKitLastRelease>
+    </PropertyGroup>
     <Target
         DependsOnTargets="_NBuildKit_GenerateToken_LastRelease_FromNuGet"
-        Name="nbuildkit_generatetoken_lastrelease">
+        Inputs="$(FileNBuildKitLastRelease)"
+        Name="nbuildkit_generatetoken_lastrelease"
+        Outputs="$(TemplateTokensNBuildKitLastRelease)">
+        <CallTarget Targets="nbuildkit_generatetoken_lastrelease_writepropertyfile" />
+    </Target>
+
+    <Target
+        Condition="Exists('$(FileNBuildKitLastRelease)')"
+        Name="nbuildkit_generatetoken_lastrelease_writepropertyfile">
         <GetLastRelease_LocalTask_GetLastReleaseVersionFromFile VersionFile="$(FileNBuildKitLastRelease)">
             <Output
                 PropertyName="NBuildKitLatestMajorVersion"
@@ -79,19 +86,38 @@
         </GetLastRelease_LocalTask_GetLastReleaseVersionFromFile>
 
         <ItemGroup>
-            <TemplateTokens Include="NBuildKitLatestMajorVersion">
-                <ReplacementValue>$(NBuildKitLatestMajorVersion)</ReplacementValue>
-            </TemplateTokens>
-            <TemplateTokens Include="NBuildKitLatestMinorVersion">
-                <ReplacementValue>$(NBuildKitLatestMinorVersion)</ReplacementValue>
-            </TemplateTokens>
-            <TemplateTokens Include="NBuildKitLatestPatchVersion">
-                <ReplacementValue>$(NBuildKitLatestPatchVersion)</ReplacementValue>
-            </TemplateTokens>
-            <TemplateTokens Include="VersionNBuildKitLastRelease">
-                <ReplacementValue>$(NBuildKitLatestMajorVersion).$(NBuildKitLatestMinorVersion).$(NBuildKitLatestPatchVersion)</ReplacementValue>
-            </TemplateTokens>
+            <TemplateTokensNBuildKitLastRelease Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
+            <TemplateTokensNBuildKitLastRelease Include="&lt;Project xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot; &gt;" />
+            <TemplateTokensNBuildKitLastRelease Include="&lt;PropertyGroup&gt;" />
+            <TemplateTokensNBuildKitLastRelease Include="&lt;ExistsGeneratedTemplateTokensNBuildKitLastVersion&gt;true&lt;/ExistsGeneratedTemplateTokensNBuildKitLastVersion&gt;" />
+            <TemplateTokensNBuildKitLastRelease Include="&lt;/PropertyGroup&gt;" />
+            <TemplateTokensNBuildKitLastRelease Include="&lt;ItemGroup&gt;" />
+
+            <TemplateTokensNBuildKitLastRelease Include="&lt;TemplateTokens Include=&quot;NBuildKitLatestMajorVersion&quot; &gt; &#xD;&#xA; &lt;ReplacementValue&gt;$(NBuildKitLatestMajorVersion)&lt;/ReplacementValue&gt; &#xD;&#xA; &lt;/TemplateTokens&gt;" />
+
+            <TemplateTokensNBuildKitLastRelease Include="&lt;TemplateTokens Include=&quot;NBuildKitLatestMinorVersion&quot; &gt; &#xD;&#xA; &lt;ReplacementValue&gt;$(NBuildKitLatestMinorVersion)&lt;/ReplacementValue&gt; &#xD;&#xA; &lt;/TemplateTokens&gt;" />
+
+            <TemplateTokensNBuildKitLastRelease Include="&lt;TemplateTokens Include=&quot;NBuildKitLatestPatchVersion&quot; &gt; &#xD;&#xA; &lt;ReplacementValue&gt;$(NBuildKitLatestPatchVersion)&lt;/ReplacementValue&gt; &#xD;&#xA; &lt;/TemplateTokens&gt;" />
+
+            <TemplateTokensNBuildKitLastRelease Include="&lt;TemplateTokens Include=&quot;VersionNBuildKitLastRelease&quot; &gt; &#xD;&#xA; &lt;ReplacementValue&gt;$(NBuildKitLatestMajorVersion).$(NBuildKitLatestMinorVersion).$(NBuildKitLatestPatchVersion)&lt;/ReplacementValue&gt; &#xD;&#xA; &lt;/TemplateTokens&gt;" />
+
+            <TemplateTokensNBuildKitLastRelease Include="&lt;/ItemGroup&gt;" />
+            <TemplateTokensNBuildKitLastRelease Include="&lt;/Project&gt;" />
         </ItemGroup>
+
+        <CreateProperty
+            Value="$([System.IO.Path]::GetDirectoryName('$(TemplateTokensNBuildKitLastRelease)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)')"
+            Directories="$(DirToCreate)" />
+        <WriteLinesToFile
+            File="$(TemplateTokensNBuildKitLastRelease)"
+            Lines="@(TemplateTokensNBuildKitLastRelease)"
+            Overwrite="true" />
     </Target>
 
     <UsingTask
