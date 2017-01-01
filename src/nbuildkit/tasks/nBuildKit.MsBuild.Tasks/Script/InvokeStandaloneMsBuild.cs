@@ -27,6 +27,29 @@ namespace NBuildKit.MsBuild.Tasks.Script
     {
         private static IEnumerable<string> _potentialMsBuildPaths = GetPotentialMsBuildPaths();
 
+        private static bool CurrentInstanceHasDetailedSummary()
+        {
+            const string FullVerbositySwitch = "/detailedsummary:";
+            const string ShortVerbositySwitch = "/ds:";
+
+            var commandLineArguments = Environment.GetCommandLineArgs();
+            for (int i = 0; i < commandLineArguments.Length; i++)
+            {
+                var argument = commandLineArguments[i];
+                if (argument.Contains(FullVerbositySwitch))
+                {
+                    return true;
+                }
+
+                if (argument.Contains(ShortVerbositySwitch))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static string GetOutputPath(XmlElement element)
         {
             var node = element.SelectSingleNode("path") as XmlElement;
@@ -140,6 +163,11 @@ namespace NBuildKit.MsBuild.Tasks.Script
             {
                 arguments.Add("/nodeReuse:false");
                 arguments.Add("/nologo");
+
+                if (CurrentInstanceHasDetailedSummary())
+                {
+                    arguments.Add("/detailedsummary");
+                }
 
                 if (!string.IsNullOrEmpty(ToolsVersion))
                 {

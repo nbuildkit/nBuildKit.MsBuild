@@ -23,7 +23,7 @@ namespace NBuildKit.MsBuild.Tasks
     /// </summary>
     public sealed class InvokeSteps : NBuildKitMsBuildTask
     {
-        private static Hashtable GetStepMetadata(string stepPath, ITaskItem[] metadata)
+        private static Hashtable GetStepMetadata(string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)
         {
             const string MetadataTagDescription = "Description";
             const string MetadataTagId = "Id";
@@ -50,6 +50,10 @@ namespace NBuildKit.MsBuild.Tasks
 
             result.Add("StepPath", stepPath);
 
+            result.Add("IsFirstStep", isFirst.ToString().ToLower(CultureInfo.InvariantCulture));
+
+            result.Add("IsLastStep", isLast.ToString().ToLower(CultureInfo.InvariantCulture));
+
             return result;
         }
 
@@ -74,11 +78,11 @@ namespace NBuildKit.MsBuild.Tasks
             return groups.ToLower(CultureInfo.InvariantCulture).Split(';');
         }
 
-        private void AddStepMetadata(ITaskItem subStep, string stepPath, ITaskItem[] metadata)
+        private void AddStepMetadata(ITaskItem subStep, string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)
         {
             const string MetadataTag = "Properties";
 
-            var stepMetadata = GetStepMetadata(stepPath, metadata);
+            var stepMetadata = GetStepMetadata(stepPath, metadata, isFirst, isLast);
 
             var stepProperties = subStep.GetMetadata(MetadataTag);
             if (!string.IsNullOrEmpty(stepProperties))
@@ -128,11 +132,30 @@ namespace NBuildKit.MsBuild.Tasks
             // Get groups and determine which steps should be executed
             var hasFailed = false;
             var groups = Groups();
+
+            var stepsToExecute = new List<ITaskItem>();
             foreach (var step in Steps)
             {
+                var stepGroups = StepGroups(step);
+                if (!ShouldExecuteStep(groups, stepGroups))
+                {
+                    Log.LogMessage(
+                        MessageImportance.Low,
+                        "Step {0} not included in execution list of {1}.",
+                        step.ItemSpec,
+                        string.Join(", ", groups));
+                    continue;
+                }
+
+                stepsToExecute.Add(step);
+            }
+
+            for (int i = 0; i < stepsToExecute.Count; i++)
+            {
+                var step = stepsToExecute[i];
                 try
                 {
-                    if (!ExecuteStep(step, groups))
+                    if (!ExecuteStep(step, i == 0, i == stepsToExecute.Count - 1))
                     {
                         hasFailed = true;
                         if (StopOnFirstFailure)
@@ -154,16 +177,34 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 if (FailureSteps != null)
                 {
+                    var failureStepsToExecute = new List<ITaskItem>();
                     foreach (var step in FailureSteps)
                     {
                         if (!string.IsNullOrEmpty(step.ItemSpec))
                         {
-                            if (!ExecuteFailureStep(step, groups))
+                            var stepGroups = StepGroups(step);
+                            if (!ShouldExecuteStep(groups, stepGroups))
                             {
-                                if (StopOnFirstFailure)
-                                {
-                                    break;
-                                }
+                                Log.LogMessage(
+                                    MessageImportance.Low,
+                                    "Step {0} not included in execution list of {1}.",
+                                    step.ItemSpec,
+                                    string.Join(", ", groups));
+                                continue;
+                            }
+
+                            failureStepsToExecute.Add(step);
+                        }
+                    }
+
+                    for (int i = 0; i < failureStepsToExecute.Count; i++)
+                    {
+                        var step = failureStepsToExecute[i];
+                        if (!ExecuteFailureStep(step))
+                        {
+                            if (StopOnFirstFailure)
+                            {
+                                break;
                             }
                         }
                     }
@@ -173,19 +214,8 @@ namespace NBuildKit.MsBuild.Tasks
             return !Log.HasLoggedErrors && !hasFailed;
         }
 
-        private bool ExecuteFailureStep(ITaskItem step, IEnumerable<string> groups)
+        private bool ExecuteFailureStep(ITaskItem step)
         {
-            var stepGroups = StepGroups(step);
-            if (!ShouldExecuteStep(groups, stepGroups))
-            {
-                Log.LogMessage(
-                    MessageImportance.Low,
-                    "Step {0} not included in execution list of {1}.",
-                    step.ItemSpec,
-                    string.Join(", ", groups));
-                return true;
-            }
-
             var result = InvokeBuildEngine(step);
             if (!result && StopOnFirstFailure)
             {
@@ -195,19 +225,8 @@ namespace NBuildKit.MsBuild.Tasks
             return true;
         }
 
-        private bool ExecuteStep(ITaskItem step, IEnumerable<string> groups)
+        private bool ExecuteStep(ITaskItem step, bool isFirst, bool isLast)
         {
-            var stepGroups = StepGroups(step);
-            if (!ShouldExecuteStep(groups, stepGroups))
-            {
-                Log.LogMessage(
-                    MessageImportance.Low,
-                    "Step {0} not included in execution list of {1}.",
-                    step.ItemSpec,
-                    string.Join(", ", groups));
-                return true;
-            }
-
             var stepPath = GetAbsolutePath(step.ItemSpec);
             if (PreSteps != null)
             {
@@ -215,7 +234,7 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!string.IsNullOrEmpty(globalPreStep.ItemSpec))
                     {
-                        AddStepMetadata(globalPreStep, stepPath, StepMetadata);
+                        AddStepMetadata(globalPreStep, stepPath, StepMetadata, isFirst, isLast);
                         var result = InvokeBuildEngine(globalPreStep);
                         if (!result)
                         {
@@ -248,7 +267,7 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!string.IsNullOrEmpty(localPreStep.ItemSpec))
                     {
-                        AddStepMetadata(localPreStep, stepPath, StepMetadata);
+                        AddStepMetadata(localPreStep, stepPath, StepMetadata, isFirst, isLast);
                         var result = InvokeBuildEngine(localPreStep);
                         if (!result)
                         {
@@ -284,7 +303,7 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!string.IsNullOrEmpty(localPostStep.ItemSpec))
                     {
-                        AddStepMetadata(localPostStep, stepPath, StepMetadata);
+                        AddStepMetadata(localPostStep, stepPath, StepMetadata, isFirst, isLast || !stepResult);
                         var result = InvokeBuildEngine(localPostStep);
                         if (!result)
                         {
@@ -316,7 +335,7 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     if (!string.IsNullOrEmpty(globalPostStep.ItemSpec))
                     {
-                        AddStepMetadata(globalPostStep, stepPath, StepMetadata);
+                        AddStepMetadata(globalPostStep, stepPath, StepMetadata, isFirst, isLast || !stepResult);
                         var result = InvokeBuildEngine(globalPostStep);
                         if (!result && StopOnFirstFailure)
                         {
@@ -440,7 +459,7 @@ namespace NBuildKit.MsBuild.Tasks
                 // as the *calling* project file.
                 BuildEngineResult result =
                     BuildEngine3.BuildProjectFilesInParallel(
-                        new[] { project.ItemSpec },
+                        new[] { projectPath },
                         null,
                         new IDictionary[] { propertiesTable },
                         new IList<string>[] { new List<string>() },
