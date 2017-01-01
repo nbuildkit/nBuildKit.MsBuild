@@ -16,7 +16,7 @@
         Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
-        Condition="!Exists('$(FileVcsInfo)')"
+        Condition=" '$(IsGitWorkspace)' == 'true' "
         DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_VcsSetBranch_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch" />
@@ -55,13 +55,6 @@
         <Message
             Importance="low"
             Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="The VCS info file is located at:                                   $(FileVcsInfo)" />
         <Message
             Importance="low"
             Text=" " />
