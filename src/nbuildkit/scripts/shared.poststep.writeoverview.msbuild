@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Shared_PostStep_WriteOverview_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedPostStepWriteOverview>true</ExistsSharedPostStepWriteOverview>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
+
+    <Import
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
+
+    <Target
+        Name="nBuildKit_Shared_PostStep_WriteOverview_Run">
+        <CallTarget Targets="_nBuildKit_Shared_PostStep_WriteOverview_Execute" />
+    </Target>
+
+    <ItemGroup>
+        <ExtensionHighLevelOverview Include="md" />
+        <ExtensionHighLevelOverview Include="xml" />
+    </ItemGroup>
+    <Target
+        Condition=" '$(DirHighLevelOverview)' != '' and '$(DirHighLevelOverview)' != 'UNDEFINED' "
+        Name="_nBuildKit_Shared_PostStep_WriteOverview_Execute"
+        Outputs="%(ExtensionHighLevelOverview.Identity)">
+
+        <PropertyGroup>
+            <FileHighLevelOverview>$(DirHighLevelOverview)\$(FileNameHighLevelOverview).%(ExtensionHighLevelOverview.Identity)</FileHighLevelOverview>
+
+            <FileFooterContent>$(MSBuildThisFileDirectory)template.overview.footer.%(ExtensionHighLevelOverview.Identity)</FileFooterContent>
+            <FileStepContent>$(MSBuildThisFileDirectory)template.overview.step.finish.%(ExtensionHighLevelOverview.Identity)</FileStepContent>
+
+            <ContentFooter>$([System.IO.File]::ReadAllText($(FileFooterContent)))</ContentFooter>
+            <ContentStep>$([System.IO.File]::ReadAllText($(FileStepContent)))</ContentStep>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <TemplateTokens Include="StepDescription">
+                <ReplacementValue>$(StepDescription)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="StepId">
+                <ReplacementValue>$(StepId)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="StepName">
+                <ReplacementValue>$(StepName)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="StepPath">
+                <ReplacementValue>$(StepPath)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+
+        <TemplateText
+            Template="$(ContentStep)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="TextOverviewStep"
+                TaskParameter="Result" />
+        </TemplateText>
+        <TemplateText
+            Condition=" '$(IsLastStep)' == 'true' "
+            Template="$(ContentFooter)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="TextOverviewFooter"
+                TaskParameter="Result" />
+        </TemplateText>
+
+
+        <ItemGroup>
+            <StepInfo Include="$(TextOverviewStep)" />
+            <StepInfo
+                Condition=" '$(IsLastStep)' == 'true' "
+                Include="$(TextOverviewFooter)" />
+        </ItemGroup>
+
+        <CreateProperty
+            Condition="!Exists('$(FileHighLevelOverview)')"
+            Value="$([System.IO.Path]::GetDirectoryName('$(FileHighLevelOverview)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)')"
+            Directories="$(DirToCreate)" />
+        <WriteLinesToFile
+            File="$(FileHighLevelOverview)"
+            Lines="@(StepInfo)"
+            Overwrite="false" />
+    </Target>
+ </Project>
