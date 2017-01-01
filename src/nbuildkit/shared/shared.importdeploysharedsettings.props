@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props" />
 
     <PropertyGroup>
         <DeployPropertyFile>$(DirUserSettings)\deploy.settings.props</DeployPropertyFile>
@@ -29,4 +29,15 @@
     <Import
         Condition="Exists('$(DirNBuildKitMsBuild)\deploy\deploy.shared.props') AND '$(ExistsDeploySharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuild)\deploy\deploy.shared.props" />
+
+    <!-- Import the standard template token files -->
+    <PropertyGroup>
+        <LoadTemplateTokens Condition=" '$(LoadTemplateTokens)' == '' ">true</LoadTemplateTokens>
+    </PropertyGroup>
+    <Import
+        Condition=" '$(LoadTemplateTokens)' == 'true' "
+        Project="$(DirNBuildKitMsBuild)\templatetokens.*.props" />
+    <Import
+        Condition=" '$(LoadTemplateTokens)' == 'true' "
+        Project="$(DirGeneratedPropertiesFiles)\templatetokens.*.props" />
 </Project>
