@@ -36,21 +36,21 @@
         <!-- Indicate if an error in the post-step actions should immediately stop the build -->
         <StopBuildOnPostStepFailure Condition=" '$(StopBuildOnPostStepFailure)' == '' ">false</StopBuildOnPostStepFailure>
     </PropertyGroup>
-    <ItemGroup Condition=" '@(BuildPreStepsToExecute)' == '' ">
-        <!--
-        <BuildPreStepsToExecute Include="">
+    <ItemGroup>
+        <BuildPreStepsToExecute
+            Condition=" '$(DirHighLevelOverview)' != '' and '$(DirHighLevelOverview)' != 'UNDEFINED' AND '$(FileNameHighLevelOverview)' != '' and '$(FileNameHighLevelOverview)' != 'UNDEFINED' "
+            Include="$(SharedPreStepsWriteOverview)">
             <Properties>
             </Properties>
         </BuildPreStepsToExecute>
-        -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(BuildPostStepsToExecute)' == '' ">
-        <!--
-        <BuildPostStepsToExecute Include="">
+    <ItemGroup>
+        <BuildPostStepsToExecute
+            Condition=" '$(DirHighLevelOverview)' != '' and '$(DirHighLevelOverview)' != 'UNDEFINED' AND '$(FileNameHighLevelOverview)' != '' and '$(FileNameHighLevelOverview)' != 'UNDEFINED' "
+            Include="$(SharedPostStepsWriteOverview)">
             <Properties>
             </Properties>
         </BuildPostStepsToExecute>
-        -->
     </ItemGroup>
 
     <ItemGroup Condition=" '@(BuildStepsToExecute)' == '' ">

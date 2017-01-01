@@ -313,6 +313,9 @@
         <!-- The directory that will contain all the test files generated during the test process -->
         <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
 
+        <!-- The directory into which the generated properties files are placed -->
+        <DirGeneratedPropertiesFiles Condition=" '$(DirGeneratedPropertiesFiles)' == '' ">$(DirBuildTemp)</DirGeneratedPropertiesFiles>
+
         <!-- The directory that contains all the NuGet packages for the project -->
         <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages>
 
@@ -327,6 +330,17 @@
 
         <!-- The directory in which the transformed user configuration files will be stored while running nBuildKit. -->
         <DirUserConfiguration Condition=" '$(DirUserConfiguration)' == '' ">$(DirWorkspace)\build\configurations</DirUserConfiguration>
+    </PropertyGroup>
+
+    <!--
+        Global files
+    -->
+    <PropertyGroup>
+        <!-- Defines the directory into which the workflow high level overview files are written -->
+        <DirHighLevelOverview Condition=" '$(DirHighLevelOverview)' == '' ">UNDEFINED</DirHighLevelOverview>
+
+        <!-- Defines the name of the file in which the high level overview of the build is written to -->
+        <FileNameHighLevelOverview Condition= " '$(FileNameHighLevelOverview)' == '' ">UNDEFINED</FileNameHighLevelOverview>
     </PropertyGroup>
 
     <!--
