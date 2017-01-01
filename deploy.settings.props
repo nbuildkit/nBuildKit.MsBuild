@@ -140,20 +140,6 @@
         $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
     -->
     <ItemGroup>
-        <DeployStepsToExecute
-            Condition="!Exists('$(FileNBuildKitExtensionsImport)')"
-            Include="$(DeployStepsGenerateTargetsFile)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Bootstrap;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
-        </DeployStepsToExecute>
-
         <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
             <Properties>
                 StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\deploy\packages.config

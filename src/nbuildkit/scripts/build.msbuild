@@ -124,6 +124,22 @@
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True">
         </MSBuild>
+
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(MSBuildThisFileDirectory)shared.bootstrap.generate.targetsfile.msbuild"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
     </Target>
 
     <UsingTask TaskName="NBuildKit.MsBuild.Tasks.InvokeSteps" AssemblyFile="$(FileNBuildKitExtensionsAssembly)" />

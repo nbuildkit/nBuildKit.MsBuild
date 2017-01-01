@@ -106,14 +106,21 @@
             UseResultsCache="True" >
         </MSBuild>
 
-        <!--
-            The compile process also drops the MsBuild binaries. We don't really want those because they
-            may cause DLL loading issues, so we'll nuke em
-        -->
-        <ItemGroup>
-            <BootstrapFilesToDelete Include="$(DirBuildBootstrapInternal)\Microsoft.Build.*.dll" />
-        </ItemGroup>
-        <Delete Files="@(BootstrapFilesToDelete)" />
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(MSBuildThisFileDirectory)shared.bootstrap.generate.targetsfile.msbuild"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
     </Target>
 
     <UsingTask TaskName="NBuildKit.MsBuild.Tasks.InvokeSteps" AssemblyFile="$(FileNBuildKitExtensionsAssembly)" />
