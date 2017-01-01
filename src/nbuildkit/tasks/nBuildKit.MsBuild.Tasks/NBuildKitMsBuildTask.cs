@@ -21,6 +21,7 @@ namespace NBuildKit.MsBuild.Tasks
         private static string AppendDirectorySeparatorChar(string path)
         {
             // Append a slash only if the path is a directory and does not have a slash.
+            path = path.Trim();
             if (!Path.HasExtension(path) &&
                 !path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
             {
@@ -44,19 +45,19 @@ namespace NBuildKit.MsBuild.Tasks
         /// </exception>
         protected static string GetRelativeDirectoryPath(string fromPath, string toPath)
         {
-            if (string.IsNullOrEmpty(fromPath))
+            if (string.IsNullOrWhiteSpace(fromPath))
             {
                 throw new ArgumentNullException("fromPath");
             }
 
-            if (string.IsNullOrEmpty(toPath))
+            if (string.IsNullOrWhiteSpace(toPath))
             {
                 throw new ArgumentNullException("toPath");
             }
 
             // The Uri class treats paths that are directories but don't end in a directory separator as files.
-            Uri fromUri = new Uri(AppendDirectorySeparatorChar(fromPath));
-            Uri toUri = new Uri(AppendDirectorySeparatorChar(toPath));
+            Uri fromUri = new Uri(AppendDirectorySeparatorChar(fromPath.Trim()));
+            Uri toUri = new Uri(AppendDirectorySeparatorChar(toPath.Trim()));
 
             if (fromUri.Scheme != toUri.Scheme)
             {
@@ -88,19 +89,19 @@ namespace NBuildKit.MsBuild.Tasks
         /// </exception>
         protected static string GetRelativeFilePath(string fromPath, string toPath)
         {
-            if (string.IsNullOrEmpty(fromPath))
+            if (string.IsNullOrWhiteSpace(fromPath))
             {
                 throw new ArgumentNullException("fromPath");
             }
 
-            if (string.IsNullOrEmpty(toPath))
+            if (string.IsNullOrWhiteSpace(toPath))
             {
                 throw new ArgumentNullException("toPath");
             }
 
             // The Uri class treats paths that are directories but don't end in a directory separator as files.
-            Uri fromUri = new Uri(fromPath);
-            Uri toUri = new Uri(toPath);
+            Uri fromUri = new Uri(fromPath.Trim());
+            Uri toUri = new Uri(toPath.Trim());
 
             if (fromUri.Scheme != toUri.Scheme)
             {
@@ -124,9 +125,23 @@ namespace NBuildKit.MsBuild.Tasks
         /// <param name="fromPath">Contains the file path that defines the start of the relative path.</param>
         /// <param name="directoryPath">The path of the base directory.</param>
         /// <returns>The relative path from the start file to the directory.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="fromPath"/> or <paramref name="directoryPath"/> is <c>null</c>.
+        /// </exception>
         protected static string GetFilePathRelativeToDirectory(string fromPath, string directoryPath)
         {
-            var relativeDirectoryPath = GetRelativeDirectoryPath(Path.GetDirectoryName(fromPath), directoryPath);
+            if (string.IsNullOrWhiteSpace(fromPath))
+            {
+                throw new ArgumentNullException("fromPath");
+            }
+
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
+                throw new ArgumentNullException("directoryPath");
+            }
+
+            fromPath = fromPath.Trim();
+            var relativeDirectoryPath = GetRelativeDirectoryPath(Path.GetDirectoryName(fromPath), directoryPath.Trim());
             return Path.Combine(
                 relativeDirectoryPath,
                 Path.GetFileName(fromPath));
@@ -157,11 +172,12 @@ namespace NBuildKit.MsBuild.Tasks
                     path));
 
             var result = path;
-            if (string.IsNullOrEmpty(result))
+            if (string.IsNullOrWhiteSpace(result))
             {
                 return string.Empty;
             }
 
+            result = result.Trim();
             if (!Path.IsPathRooted(result))
             {
                 result = Path.GetFullPath(result);

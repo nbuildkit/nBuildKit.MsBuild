@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Templating
@@ -19,19 +20,19 @@ namespace NBuildKit.MsBuild.Tasks.Templating
         /// <inheritdoc/>
         public override bool Execute()
         {
-            const string MetadataValueTag = "ReplacementValue";
+            const string MetadataReplacmentValueTag = "ReplacementValue";
 
             if (string.IsNullOrWhiteSpace(SearchExpression))
             {
                 SearchExpression = "(?<token>\\$\\{(?<identifier>\\w*)\\})";
             }
 
-            var regex = new System.Text.RegularExpressions.Regex(
+            var regex = new Regex(
                 SearchExpression,
-                System.Text.RegularExpressions.RegexOptions.IgnoreCase
-                | System.Text.RegularExpressions.RegexOptions.Multiline
-                | System.Text.RegularExpressions.RegexOptions.Compiled
-                | System.Text.RegularExpressions.RegexOptions.Singleline);
+                RegexOptions.IgnoreCase
+                | RegexOptions.Multiline
+                | RegexOptions.Compiled
+                | RegexOptions.Singleline);
 
             var tokenPairs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (Tokens != null)
@@ -42,7 +43,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
                     ITaskItem taskItem = processedTokens[i];
                     if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                     {
-                        tokenPairs.Add(taskItem.ItemSpec, taskItem.GetMetadata(MetadataValueTag));
+                        tokenPairs.Add(taskItem.ItemSpec, taskItem.GetMetadata(MetadataReplacmentValueTag));
                     }
                 }
             }
