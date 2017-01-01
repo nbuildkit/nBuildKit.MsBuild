@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -86,7 +82,6 @@
 
     <Target
         Condition=" '$(NuGetSymbolSourceUrl)' != '' AND '$(NuGetSymbolSourceUrl)' != 'UNDEFINED' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Deploy_PushTo_SymbolServer_NuGet">
         <Error
             Condition=" '$(ToolsExternalNuGetPath)' == '' "
@@ -144,7 +139,6 @@
 
     <Target
         Condition=" '$(SymbolServerUncPath)' != '' AND '$(SymbolServerUncPath)' != 'UNDEFINED' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Deploy_PushTo_SymbolServer_UncPath">
         <TemplateText
             Condition=" '@(SymbolPackagesToPush)' != '' "

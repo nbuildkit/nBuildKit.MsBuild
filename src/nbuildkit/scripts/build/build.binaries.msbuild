@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -79,7 +75,6 @@
     -->
     <Target
         Condition=" '@(SolutionsToBuild)' != '' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Build_Binaries_Execute"
         Outputs="%(SolutionsToBuild.Identity)_%(SolutionsToBuild.Configuration)_%(SolutionsToBuild.Platform)">
         <TemplateText

@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -88,7 +84,6 @@
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Build_Analyze_Binaries_FxCop_ReplaceBuildTemplates">
         <Message Text="Resolving build templates for: $(FileReportFxCop)" />
 
@@ -113,9 +108,6 @@
         <Error
             Condition="!Exists('$(FileProjectFxCop)')"
             Text="The FxCop project file does not exist. Cannot execute analysis of binaries." />
-
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)')" />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
             <Output

@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -24,7 +20,6 @@
         DependsOnTargets="_nBuildKit_Deploy_PushTo_GitHubRelease_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_GitHubRelease_Run">
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion" />
-        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Initialize" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_Push" />
     </Target>
 

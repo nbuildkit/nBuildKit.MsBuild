@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -111,7 +107,7 @@
 
     <Target
         Condition=" '@(AssembliesToMerge)' != '' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_ILRepack_GetToolPaths"
+        DependsOnTargets="_nBuildKit_Build_ILRepack_GetToolPaths"
         Name="_nBuildKit_Build_ILRepack_Execute"
         Outputs="%(AssembliesToMerge.Destination)">
 
