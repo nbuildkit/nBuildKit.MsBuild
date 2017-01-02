@@ -131,13 +131,13 @@ Describe 'For the VB.NET test' {
             $workflowMarkdown = Join-Path $logDirectory 'workflow_overview.md'
             It 'created the Markdown workflow document' {
                 $workflowMarkdown | Should Exist
-                (Get-Content $workflowMarkdown) | Should Not BeNullOrEmpty
+                (Get-Item $workflowMarkdown).Length | Should BeGreaterThan 0
             }
 
             $workflowXml = Join-Path $logDirectory 'workflow_overview.xml'
             It 'created the Xml workflow document' {
                 $workflowXml | Should Exist
-                (Get-Content $workflowXml) | Should Not BeNullOrEmpty
+                (Get-Item $workflowXml).Length | Should BeGreaterThan 0
             }
         }
     }
