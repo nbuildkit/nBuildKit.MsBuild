@@ -119,6 +119,29 @@ Describe 'For the VB.NET test' {
         }
     }
 
+    Context 'the build produces workflow documents' {
+        $logDirectory = Join-Path $workspaceLocation 'build\logs'
+
+        It 'created the log directory' {
+            $logDirectory | Should Exist
+        }
+
+        if (Test-Path $logDirectory)
+        {
+            $workflowMarkdown = Join-Path $logDirectory 'workflow_overview.md'
+            It 'created the Markdown workflow document' {
+                $workflowMarkdown | Should Exist
+                (Get-Content $workflowMarkdown) | Should Not BeNullOrEmpty
+            }
+
+            $workflowXml = Join-Path $logDirectory 'workflow_overview.xml'
+            It 'created the Xml workflow document' {
+                $workflowXml | Should Exist
+                (Get-Content $workflowXml) | Should Not BeNullOrEmpty
+            }
+        }
+    }
+
     Context 'the build produces a NuGet package' {
         $nugetPackage = Join-Path $workspaceLocation 'build\deploy\nBuildKit.Test.VbNet.Library.1.2.3.nupkg'
 
