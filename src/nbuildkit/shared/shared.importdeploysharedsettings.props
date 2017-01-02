@@ -24,11 +24,14 @@
         Condition="Exists('$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' "
         Project="$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild" />
     <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\deploy\deploy.shared.preuser.props') AND '$(ExistsDeployPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\deploy\deploy.shared.preuser.props" />
+    <Import
         Condition="Exists('$(DeployPropertyFile)') AND '$(ExistsDeploySettings)' != 'true' "
         Project="$(DeployPropertyFile)" />
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\deploy\deploy.shared.props') AND '$(ExistsDeploySharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\deploy\deploy.shared.props" />
+        Condition="Exists('$(DirNBuildKitMsBuild)\deploy\deploy.shared.postuser.props') AND '$(ExistsDeployPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\deploy\deploy.shared.postuser.props" />
 
     <!-- Import the standard template token files -->
     <PropertyGroup>

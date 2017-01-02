@@ -25,11 +25,14 @@
         Condition="Exists('$(DirNBuildKitMsBuild)\build\shared.buildsteps.msbuild') AND '$(ExistsBuildSteps)' != 'true' "
         Project="$(DirNBuildKitMsBuild)\build\shared.buildsteps.msbuild" />
     <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\build\build.shared.preuser.props') AND '$(ExistsBuildPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\build\build.shared.preuser.props" />
+    <Import
         Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsBuildSettings)' != 'true' "
         Project="$(BuildPropertyFile)" />
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\build\build.shared.props') AND '$(ExistsBuildSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\build\build.shared.props" />
+        Condition="Exists('$(DirNBuildKitMsBuild)\build\build.shared.postuser.props') AND '$(ExistsBuildPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\build\build.shared.postuser.props" />
 
     <!-- Import the standard template token files -->
     <PropertyGroup>

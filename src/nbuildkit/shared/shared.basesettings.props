@@ -122,17 +122,24 @@
         <ArtefactPropertyFile>$(DirUserSettings)\artefacts.settings.props</ArtefactPropertyFile>
     </PropertyGroup>
     <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.preuser.props') AND '$(ExistsPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.preuser.props" />
+    <Import
         Condition="Exists('$(SharedPropertyFile)') AND '$(ExistsSettings)' != 'true' "
         Project="$(SharedPropertyFile)" />
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.props') AND '$(ExistsSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.props" />
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.postuser.props') AND '$(ExistsPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.postuser.props" />
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\artefacts.shared.preuser.props') AND '$(ExistsArtefactPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\artefacts.shared.preuser.props" />
     <Import
         Condition="Exists('$(ArtefactPropertyFile)') AND '$(ExistsArtefactSettings)' != 'true' "
         Project="$(ArtefactPropertyFile)" />
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\artefacts.shared.props') AND '$(ExistsSharedArtefactSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\artefacts.shared.props" />
+        Condition="Exists('$(DirNBuildKitMsBuild)\artefacts.shared.postuser.props') AND '$(ExistsArtefactPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\artefacts.shared.postuser.props" />
 
     <!-- Import the shared steps file which contains standard pre- and post-step actions -->
     <Import

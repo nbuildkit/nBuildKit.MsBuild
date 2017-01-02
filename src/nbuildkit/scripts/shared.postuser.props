@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        Defines the custom version numbers that should be available for template replacement.
+        The template consists of a name and a version number string. The name will be used as the
+        name of the template, i.e. 'VersionAssembly' will be available in the collection of template
+        parameters available for replacement.
+
+        Each version number may consist of zero or more template parameters. Template parameters
+        must be enclosed in '${}', e.g. ${VersionMajor} will be replaced by the major version number
+        as indicated at the top of the file.
+
+        Note that custom version number templates may not reference other custom version number templates.
+    -->
+    <!--
+        Implementation note:
+        The overriding of the items in the TemplateVersion item group needs to be handled in a
+        'special' way in that we can't conditionally load individual items because MsBuild doesn't
+        allow that for global ItemGroups. So we first add the user defined items and then add the
+        system defined ones if no value for that specific item exists.
+    -->
+    <ItemGroup>
+        <!--
+            The template for the version number that will be used in the 'AssemblyVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <SystemTemplateVersion Include="VersionAssembly">
+            <Template>${VersionMajor}.${VersionMinor}.0.0</Template>
+        </SystemTemplateVersion>
+        <!--
+            The template for the version number that will be used in the 'AssemblyFileVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <SystemTemplateVersion Include="VersionAssemblyFile">
+            <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}.${VersionBuild}</Template>
+        </SystemTemplateVersion>
+        <!--
+            The template for the version number that will be used in the 'AssemblyInformationalVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+
+            Also used as the 'ApplicationVersion' in the 'VersionNumber.wxi' file.
+        -->
+        <SystemTemplateVersion Include="VersionProduct">
+            <Template>${VersionSemanticFull}</Template>
+        </SystemTemplateVersion>
+        <!--
+            The template for the version number that will be used as the 'InstallVersion' in the
+            'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <SystemTemplateVersion Include="VersionInstall">
+            <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}</Template>
+        </SystemTemplateVersion>
+        <!--
+            The template for the version number that will be used as the 'ProductVersionFolder' in the
+            'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <SystemTemplateVersion Include="VersionInstallFilePath">
+            <Template>${VersionMajor}.${VersionMinor}</Template>
+        </SystemTemplateVersion>
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - NUGET RESTORE ****
+    -->
+    <ItemGroup Condition=" '@(NuGetPackageFiles)' == '' ">
+        <NuGetPackageFiles
+            Condition="Exists('$(DirWorkspace)\packages.config')"
+            Include="$(DirWorkspace)\packages.config" />
+        <NuGetPackageFiles
+            Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config"
+            Include="$(DirSrc)\**\packages.config" />
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - NPM RESTORE ****
+    -->
+    <ItemGroup Condition=" '@(NpmPackageFiles)' == '' ">
+        <NpmPackageFiles
+            Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json"
+            Include="$(DirWorkspace)\**\package.json" />
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - MERGE ****
+    -->
+    <!--
+        The collection of branches that the changes should be merged to. The build will be executed on the last
+        merged branch, e.g. if the list is:
+
+            branch_1
+            branch_2
+            branch_3
+
+        Then the build process will merge to the branches in the given order and will finally execute the following
+        build steps on 'branch_3'.
+        If the branch should be tagged then that can be done as a separate build step.
+        Finally if the zip packaging step is included in the build process it will automatically zip the .git folder
+        so that other builds can reproduce the current workspace exactly.
+
+        Any failure during the branching process will stop the build process.
+    -->
+    <ItemGroup Condition=" '@(BranchMergeTarget)' == '' ">
+        <!-- GITFLOW: If the input branch (GitBranchExpected) is a feature branch then we merge to develop -->
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsFeatureBranch)' == 'true' "
+            Include="develop" />
+
+        <!-- GITFLOW: If the input branch (GitBranchExpected) is a release branch then we merge to develop and master -->
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' "
+            Include="develop" />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' "
+            Include="master" />
+
+        <!-- GITFLOW: If the input branch (GitBranchExpected) is a hotfix branch then we merge to develop and master -->
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' "
+            Include="develop" />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' "
+            Include="master" />
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!--
+        Additional items that should be available for the template replacement.
+        The default template parameters, as indicated at the top of this file, are always available.
+    -->
+    <ItemGroup>
+        <TemplateTokens
+            Condition=" '$(GitRevNoExpected)' != '' AND '$(GitRevNoExpected)' != 'UNDEFINED' "
+            Include="GitRevNo">
+            <ReplacementValue>$(GitRevNoExpected)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens
+            Condition=" '$(GitBranchExpected)' != '' AND '$(GitBranchExpected)' != 'UNDEFINED' "
+            Include="GitBranch">
+            <ReplacementValue>$(GitBranchExpected.Replace('/','_').Replace('\', '_'))</ReplacementValue>
+        </TemplateTokens>
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsPostUserSharedSettings>true</ExistsPostUserSharedSettings>
+    </PropertyGroup>
+
+    <!-- nBuildKit internals -->
+    <PropertyGroup>
+        <FileNBuildKitExtensionsAssembly>$(DirNBuildKitMsBuildExtensions)\nBuildKit.MsBuild.Tasks.dll</FileNBuildKitExtensionsAssembly>
+    </PropertyGroup>
+</Project>
