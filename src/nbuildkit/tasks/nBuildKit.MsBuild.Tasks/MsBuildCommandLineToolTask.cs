@@ -6,11 +6,13 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -59,6 +61,38 @@ namespace NBuildKit.MsBuild.Tasks
                 .ToList();
         }
 
+        private Hashtable GetCommandLineProperties()
+        {
+            var regex = new Regex(
+                @"(\/)(p|property)(:)(.*)",
+                RegexOptions.IgnoreCase
+                | RegexOptions.Multiline
+                | RegexOptions.Compiled
+                | RegexOptions.Singleline);
+
+            var propertyArguments = new List<string>();
+            var commandLineArguments = Environment.GetCommandLineArgs();
+            for (int i = 0; i < commandLineArguments.Length; i++)
+            {
+                var argument = commandLineArguments[i];
+
+                var propertyMatch = regex.Match(argument);
+                if (propertyMatch.Success)
+                {
+                    var property = propertyMatch.Groups[4].Value;
+                    propertyArguments.Add(property);
+                }
+            }
+
+            Hashtable result;
+            if (!PropertyParser.GetTableWithEscaping(Log, "GlobalProperties", "Properties", propertyArguments.ToArray(), out result))
+            {
+                return new Hashtable();
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Invokes MsBuild with the given additional arguments.
         /// </summary>
@@ -66,6 +100,7 @@ namespace NBuildKit.MsBuild.Tasks
         /// <returns>The exit code of the process.</returns>
         protected int InvokeMsBuild(IEnumerable<string> instanceArguments)
         {
+            var commandLineProperties = GetCommandLineProperties();
             var arguments = new List<string>();
             {
                 arguments.Add("/nodeReuse:false");
@@ -93,6 +128,16 @@ namespace NBuildKit.MsBuild.Tasks
                             CultureInfo.InvariantCulture,
                             "/verbosity:{0}",
                             verbosity));
+                }
+
+                foreach (DictionaryEntry pair in commandLineProperties)
+                {
+                    arguments.Add(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "/P:{0}=\"{1}\"",
+                            pair.Key,
+                            EscapingUtilities.UnescapeAll(pair.Value as string).TrimEnd(new[] { '\\' })));
                 }
 
                 arguments.AddRange(instanceArguments);
