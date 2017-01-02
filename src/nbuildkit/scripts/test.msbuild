@@ -142,12 +142,13 @@
             GroupsToExecute="@(ExecutionGroupsFromUser)"
             PreSteps="@(TestPreStepsToExecute)"
             PostSteps="@(TestPostStepsToExecute)"
+            Projects="@(TestStepsToExecute)"
             Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
-            Steps="@(TestStepsToExecute)"
             StepMetadata="@(AvailableStepMetadata)"
             StopOnFirstFailure="true"
             StopOnPreStepFailure="$(StopTestOnPreStepFailure)"
             StopOnPostStepFailure="$(StopTestOnPostStepFailure)"
-            ToolsVersion="$(MSBuildToolsVersion)" />
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)" />
     </Target>
 </Project>
