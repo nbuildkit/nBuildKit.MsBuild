@@ -74,8 +74,7 @@ Describe 'For the VB.NET test' {
             -activeBranch $activeBranch `
             -repositoryLocation $repositoryLocation `
             -workspaceLocation $workspaceLocation `
-            -tempLocation $tempLocation `
-            -Verbose
+            -tempLocation $tempLocation
 
         It 'has created the local repository' {
             $repositoryLocation | Should Exist
@@ -112,8 +111,7 @@ Describe 'For the VB.NET test' {
             -scriptToExecute (Join-Path $workspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
             -properties $msBuildProperties `
-            -logPath (Join-Path $logLocation 'test.oldest.vbnet.build.log') `
-            -Verbose
+            -logPath (Join-Path $logLocation 'test.oldest.vbnet.build.log')
 
         $hasBuild = ($exitCode -eq 0)
         It 'and completes with a zero exit code' {
@@ -295,8 +293,7 @@ Describe 'For the VB.NET test' {
             -scriptToExecute (Join-Path $workspaceLocation 'entrypoint.msbuild') `
             -target 'deploy' `
             -properties $msBuildProperties `
-            -logPath (Join-Path $logLocation 'test.oldest.vbnet.deploy.log') `
-            -Verbose
+            -logPath (Join-Path $logLocation 'test.oldest.vbnet.deploy.log')
 
         $hasBuild = ($exitCode -eq 0)
         It 'and completes with a zero exit code' {
