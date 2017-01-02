@@ -78,7 +78,7 @@
         DependsOnTargets="_nBuildKit_Shared_Prepare_NuGet_Restore_DisplayInfo"
         Name="_nBuildKit_Shared_Prepare_NuGet_Restore_Packages">
         <Error
-            Condition=" '$(ToolsExternalNuGetPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalNuGetPath)' == '' "
             Text="No NuGet executable defined. Will not be able to restore the packages." />
 
         <ItemGroup>
@@ -95,7 +95,7 @@
             Importance="low"
             Text="No NuGet package configuration files found to restore packages from." />
         <NuGetRestore
-            Condition=" '@(NuGetPackageFiles)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(NuGetPackageFiles)' != '' "
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageFile="%(NuGetPackageFiles.FullPath)"
@@ -114,7 +114,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)') "
             Directories="$(DirToCreate)" />
 
         <ItemGroup>
@@ -124,7 +124,6 @@
         </ItemGroup>
 
         <WriteLinesToFile
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileNuGetRestoreComplete)"
             Lines="@(Items_NuGetRestore)"
             Overwrite="true" />

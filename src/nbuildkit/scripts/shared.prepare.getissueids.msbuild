@@ -123,7 +123,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)') "
             Directories="$(DirToCreate)" />
 
         <CreateProperty Value="@(IssueIds->'&quot;%(Identity)&quot;', ',')">
@@ -138,7 +138,6 @@
         </ItemGroup>
 
         <WriteLinesToFile
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileIssueIds)"
             Lines="@(Items_IssueIds)"
             Overwrite="true" />

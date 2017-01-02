@@ -74,8 +74,7 @@ Describe 'For the VB.NET test' {
             -activeBranch $activeBranch `
             -repositoryLocation $repositoryLocation `
             -workspaceLocation $workspaceLocation `
-            -tempLocation $tempLocation `
-            -Verbose
+            -tempLocation $tempLocation
 
         It 'has created the local repository' {
             $repositoryLocation | Should Exist
@@ -112,12 +111,34 @@ Describe 'For the VB.NET test' {
             -scriptToExecute (Join-Path $workspaceLocation 'entrypoint.msbuild') `
             -target 'build' `
             -properties $msBuildProperties `
-            -logPath (Join-Path $logLocation 'test.oldest.vbnet.build.log') `
-            -Verbose
+            -logPath (Join-Path $logLocation 'test.oldest.vbnet.build.log')
 
         $hasBuild = ($exitCode -eq 0)
         It 'and completes with a zero exit code' {
             $exitCode | Should Be 0
+        }
+    }
+
+    Context 'the build produces workflow documents' {
+        $logDirectory = Join-Path $workspaceLocation 'build\logs'
+
+        It 'created the log directory' {
+            $logDirectory | Should Exist
+        }
+
+        if (Test-Path $logDirectory)
+        {
+            $workflowMarkdown = Join-Path $logDirectory 'workflow_overview.md'
+            It 'created the Markdown workflow document' {
+                $workflowMarkdown | Should Exist
+                (Get-Item $workflowMarkdown).Length | Should BeGreaterThan 0
+            }
+
+            $workflowXml = Join-Path $logDirectory 'workflow_overview.xml'
+            It 'created the Xml workflow document' {
+                $workflowXml | Should Exist
+                (Get-Item $workflowXml).Length | Should BeGreaterThan 0
+            }
         }
     }
 
@@ -295,8 +316,7 @@ Describe 'For the VB.NET test' {
             -scriptToExecute (Join-Path $workspaceLocation 'entrypoint.msbuild') `
             -target 'deploy' `
             -properties $msBuildProperties `
-            -logPath (Join-Path $logLocation 'test.oldest.vbnet.deploy.log') `
-            -Verbose
+            -logPath (Join-Path $logLocation 'test.oldest.vbnet.deploy.log')
 
         $hasBuild = ($exitCode -eq 0)
         It 'and completes with a zero exit code' {

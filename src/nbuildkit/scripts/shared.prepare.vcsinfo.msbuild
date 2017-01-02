@@ -16,11 +16,16 @@
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
+
     <Target
         Condition="!Exists('$(FileVcsInfo)')"
         DependsOnTargets="_nBuildKit_Shared_Prepare_VcsInfo_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_VcsInfo_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
     </Target>
 
     <!-- Display info -->
@@ -84,7 +89,7 @@
         Condition="$(IsGitWorkspace)"
         Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo">
         <Error
-            Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalGitPath)' == '' "
             Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsInfo)'))">
@@ -93,11 +98,10 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)') "
             Directories="$(DirToCreate)" />
 
         <GitCurrentBranch
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -105,7 +109,6 @@
                 TaskParameter="CurrentBranch" />
         </GitCurrentBranch>
         <GitCurrentRevision
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -121,7 +124,6 @@
         </ItemGroup>
 
         <WriteLinesToFile
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileVcsInfo)"
             Lines="@(GitInfoItems)"
             Overwrite="true" />

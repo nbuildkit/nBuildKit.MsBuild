@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -88,7 +84,6 @@
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Build_Analyze_Binaries_FxCop_ReplaceBuildTemplates">
         <Message Text="Resolving build templates for: $(FileReportFxCop)" />
 
@@ -108,14 +103,11 @@
         DependsOnTargets="_nBuildKit_Build_Analyze_Binaries_FxCop_ReplaceBuildTemplates"
         Name="_nBuildKit_Build_Analyze_Binaries_FxCop_Analyze_WithProject">
         <Error
-            Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == 'UNDEFINED' "
             Text="The packages directory does not exist. Cannot search for the FxCop executable." />
         <Error
-            Condition="!Exists('$(FileProjectFxCop)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(FileProjectFxCop)')"
             Text="The FxCop project file does not exist. Cannot execute analysis of binaries." />
-
-        <MakeDir Directories="$(DirToCreate)"
-                 Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' " />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
             <Output
@@ -123,11 +115,11 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)')"
             Directories="$(DirToCreate)" />
 
         <SearchPackagesDirectoryForToolDirectory
-            Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' "
             FileToLocate="$(FileFxCopCmdExe)"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -135,14 +127,13 @@
                 TaskParameter="Path" />
         </SearchPackagesDirectoryForToolDirectory>
         <Message
-            Condition="Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalFxCopDir)')"
             Text="The FxCop directory was found at: $(ToolsExternalFxCopDir)" />
         <Error
-            Condition="!Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalFxCopDir)')"
             Text="Could not locate the FxCop executable path. Cannot execute analysis of binaries." />
 
         <FxCopViaProject
-            Condition=" '$(ShouldExecute)' == 'true' "
             FxCopDirectory="$(ToolsExternalFxCopDir)"
             OutputFile="$(FileReportFxCopExpanded)"
             ProjectFile="$(FileProjectFxCop)"
@@ -153,10 +144,10 @@
         DependsOnTargets="_nBuildKit_Build_Analyze_Binaries_FxCop_ReplaceBuildTemplates"
         Name="_nBuildKit_Build_Analyze_Binaries_FxCop_Analyze_WithAssemblies">
         <Error
-            Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == 'UNDEFINED' "
             Text="The packages directory does not exist. Cannot search for the FxCop executable." />
         <Error
-            Condition=" '@(FxCopFiles)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(FxCopFiles)' == '' "
             Text="There are no assemblies defined. Cannot execute analysis of binaries." />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
@@ -165,11 +156,11 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)')"
             Directories="$(DirToCreate)" />
 
         <SearchPackagesDirectoryForToolDirectory
-            Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' "
             FileToLocate="$(FileFxCopCmdExe)"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -177,16 +168,15 @@
                 TaskParameter="Path" />
         </SearchPackagesDirectoryForToolDirectory>
         <Message
-            Condition="Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalFxCopDir)')"
             Importance="low"
             Text="The FxCop directory was found at: $(ToolsExternalFxCopDir)" />
         <Error
-            Condition="!Exists('$(ToolsExternalFxCopDir)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalFxCopDir)')"
             Text="Could not locate the FxCop executable path. Cannot execute analysis of binaries." />
 
         <FxCopViaAssemblies
             Assemblies="@(FxCopFiles)"
-            Condition=" '$(ShouldExecute)' == 'true' "
             Culture="$(FxCopCulture)"
             Dictionary="$(FxCopCustomDictionary)"
             FxCopDirectory="$(ToolsExternalFxCopDir)"

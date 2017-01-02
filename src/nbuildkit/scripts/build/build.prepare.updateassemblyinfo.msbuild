@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -73,7 +69,7 @@
 
     <Target
         Condition=" '@(AssemblyInfoFilesToUpdate)' != '' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
+        DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
         Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update"
         Outputs="%(AssemblyInfoFilesToUpdate.Identity)">
         <AddOrUpdateAttributeInCode
@@ -130,7 +126,7 @@
             Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "
             Encoding="UTF-8"
             InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
-            Value="buildNumber: $(VersionBuild), versionControlInformation: &quot;${VcsRevision}&quot;" />
+            Value="buildNumber: ${VersionBuild}, versionControlInformation: &quot;${VcsRevision}&quot;" />
 
         <TemplateFile
             Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)') AND '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "
@@ -142,7 +138,7 @@
 
     <Target
         Condition="  '@(AssemblyInfoFilesToUpdate)' != '' AND '@(InternalsVisibleTo)' != '' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
+        DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
         Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_InternalsVisibleTo"
         Outputs="%(AssemblyInfoFilesToUpdate.Identity)">
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('%(AssemblyInfoFilesToUpdate.Identity)'))">

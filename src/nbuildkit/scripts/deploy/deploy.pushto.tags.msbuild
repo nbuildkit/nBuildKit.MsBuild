@@ -80,7 +80,7 @@
         Condition=" '$(IsGitWorkspace)' == 'true' "
         Name="_nBuildKit_Deploy_PushTo_Tag_Vcs_Git">
         <Error
-            Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalGitPath)' == '' "
             Text="The git executable does not exist. Cannot push tags." />
 
         <!--
@@ -89,7 +89,6 @@
         -->
         <Exec
             Command="&quot;$(ToolsExternalGitPath)&quot; push --tags --repo $(GitRemoteRepository) &gt;nul 2&gt;&amp;1"
-            Condition=" '$(ShouldExecute)' == 'true' "
             WorkingDirectory="$(DirWorkspace)" />
     </Target>
  </Project>

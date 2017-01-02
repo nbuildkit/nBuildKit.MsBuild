@@ -35,6 +35,7 @@
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToConsole" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToCustomFile" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
     </Target>
 
     <!-- Display info -->
@@ -107,7 +108,7 @@
 
     <Target
         Condition="!Exists('$(ScriptGatherIssues)') AND '$(GitHubUserName)' != 'UNDEFINED' AND '$(GitHubRepositoryName)' != 'UNDEFINED' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
+        DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites"
         Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone">
         <Message
             Importance="low"
@@ -151,7 +152,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)') "
             Directories="$(DirToCreate)" />
 
         <ItemGroup>
@@ -161,7 +162,6 @@
         </ItemGroup>
 
         <WriteLinesToFile
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileReleaseNotes)"
             Lines="@(ReleaseNoteLines)"
             Overwrite="true" />

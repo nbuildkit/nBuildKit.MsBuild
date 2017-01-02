@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** DEPLOY STEPS ****
+    -->
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the deploy -->
+        <FailDeployOnPreStepFailure Condition=" '$(FailDeployOnPreStepFailure)' == '' ">false</FailDeployOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should fail the deploy -->
+        <FailDeployOnPostStepFailure Condition=" '$(FailDeployOnPostStepFailure)' == '' ">false</FailDeployOnPostStepFailure>
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the deploy -->
+        <StopDeployOnPreStepFailure Condition=" '$(StopDeployOnPreStepFailure)' == '' ">false</StopDeployOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the deploy -->
+        <StopDeployOnPostStepFailure Condition=" '$(StopDeployOnPostStepFailure)' == '' ">false</StopDeployOnPostStepFailure>
+    </PropertyGroup>
+
+
+    <!--
+        **** PUSHTO - NUGET ****
+    -->
+    <PropertyGroup>
+        <!--
+            The URL to which all NuGet packages should be pushed. By default it pushes to nuget.org.
+            If the repository needs authentication then the API key should be defined via an environment variable:
+            NuGetApiKey - The NuGet API key for the NuGet feed
+        -->
+        <NuGetSourceUrl Condition=" '$(NuGetSourceUrl)' == '' "></NuGetSourceUrl>
+    </PropertyGroup>
+
+
+    <!--
+        **** PUSHTO - SYMBOL SERVER ****
+    -->
+    <!--
+        The ItemGroup defining which symbol packages should be pushed up to the symbol server.
+        Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.symbols.nupkg.
+    -->
+    <PropertyGroup>
+        <!--
+            The URL to which all NuGet symbol packages should be pushed. If the repository needs authentication then
+            the API key should be defined via an environment variable:
+            NuGetApiKey - The NuGet API key for the NuGet feed
+        -->
+        <NuGetSymbolSourceUrl Condition=" '$(NuGetSymbolSourceUrl)' == '' "></NuGetSymbolSourceUrl>
+
+        <!--
+            The URL / UNC path to which all the symbol packages should be pushed.
+        -->
+        <SymbolServerUncPath Condition=" '$(SymbolServerUncPath)' == '' "></SymbolServerUncPath>
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
+        *     SHARED TOOLS                  *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the tools paths -->
+    <PropertyGroup>
+        <!--
+            The full path to the github-release command line executable.
+        -->
+        <ToolsExternalGitHubReleasePath Condition=" '$(ToolsExternalGitHubReleasePath)' == '' ">github-release.exe</ToolsExternalGitHubReleasePath>
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsDeployPreUserSharedSettings>true</ExistsDeployPreUserSharedSettings>
+    </PropertyGroup>
+</Project>

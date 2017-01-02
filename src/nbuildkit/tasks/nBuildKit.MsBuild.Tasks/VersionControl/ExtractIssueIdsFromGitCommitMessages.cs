@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -35,7 +36,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             }
 
             var list = new SortedList<string, ITaskItem>();
-            var regex = new System.Text.RegularExpressions.Regex(!string.IsNullOrEmpty(IssueIdRegex) ? IssueIdRegex : DefaultIssueIdRegex);
+            var regex = new Regex(!string.IsNullOrEmpty(IssueIdRegex) ? IssueIdRegex : DefaultIssueIdRegex);
             foreach (var commit in unmergedCommits)
             {
                 var logMessage = GetGitOutput(

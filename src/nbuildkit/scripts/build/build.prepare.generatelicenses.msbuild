@@ -83,14 +83,14 @@
         DependsOnTargets="_nBuildKit_Build_Prepare_GenerateLicenses_DisplayInfo"
         Name="_nBuildKit_Build_Prepare_GenerateLicenses_Generate">
         <NuGetInstall
-            Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED' "
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="NTreva"
             PackageVersion="$(ToolsExternalNTrevaVersion)"
             Sources="@(NuGetSources)" />
         <SearchPackagesDirectoryForToolPath
-            Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED'  AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalNTrevaPath)' == 'UNDEFINED' "
             FileToLocate="NTreva.exe"
             PackagesDirectory="$(DirPackages)">
             <Output

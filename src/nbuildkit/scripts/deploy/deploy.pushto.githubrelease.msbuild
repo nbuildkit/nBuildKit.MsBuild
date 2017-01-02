@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -24,7 +20,6 @@
         DependsOnTargets="_nBuildKit_Deploy_PushTo_GitHubRelease_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_GitHubRelease_Run">
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion" />
-        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Initialize" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_Push" />
     </Target>
 
@@ -81,7 +76,7 @@
 
     <Target Name="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion">
         <GetSemanticVersionFromFile
-            Condition="Exists('$(FileSemanticVersion)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(FileSemanticVersion)') "
             VersionFile="$(FileSemanticVersion)">
             <Output
                 PropertyName="VersionSemantic"
@@ -94,10 +89,10 @@
         Name="_nBuildKit_Deploy_PushTo_GitHubRelease_Push"
         Outputs="%(PushToGitHubReleaseSpecs.Identity)">
         <Error
-            Condition=" ('$(ToolsExternalGitHubReleasePath)' == '' OR '$(ToolsExternalGitHubReleasePath)' == 'UNDEFINED') AND '$(ShouldExecute)' == 'true' "
+            Condition=" ('$(ToolsExternalGitHubReleasePath)' == '' OR '$(ToolsExternalGitHubReleasePath)' == 'UNDEFINED') "
             Text="No GitHub-Release executable defined. Will not be able to push a release to GitHub." />
         <Error
-            Condition=" ('$(GitHubUserName)' == '' OR '$(GitHubUserName)' == 'UNDEFINED' ) AND '$(ShouldExecute)' == 'true' "
+            Condition=" ('$(GitHubUserName)' == '' OR '$(GitHubUserName)' == 'UNDEFINED' ) "
             Text="No GitHub user name specified. Will not be able to push a release to GitHub." />
 
         <!-- Process the build templates in the name -->
@@ -152,7 +147,7 @@
                 TaskParameter="Result" />
         </TemplateText>
         <Error
-            Condition=" '$(GitHubReleaseDescription)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(GitHubReleaseDescription)' == '' "
             Text="No release description specified. Will not be able to push a release to GitHub." />
 
         <!--
@@ -173,7 +168,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <Error
-            Condition=" '$(GitHubReleaseRepository)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(GitHubReleaseRepository)' == '' "
             Text="No GitHub repository specified. Will not be able to push a release to GitHub." />
 
         <!-- Create the release -->
@@ -193,7 +188,6 @@
             Importance="low"
             Text="Description: $(GitHubReleaseDescription)" />
         <GitHubReleaseCreate
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitHubReleasePath="$(ToolsExternalGitHubReleasePath)"
             ReleaseDescription="$(GitHubReleaseDescription)"
             ReleaseName="$(GitHubReleaseName)"
@@ -210,7 +204,7 @@
             Importance="low"
             Text="%(GitHubReleaseFiles.FullPath)" />
         <GitHubReleaseUpload
-            Condition=" '@(GitHubReleaseFiles)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(GitHubReleaseFiles)' != '' "
             FileName="%(GitHubReleaseFiles.Filename)%(GitHubReleaseFiles.Extension)"
             FilePath="%(GitHubReleaseFiles.FullPath)"
             GitHubReleasePath="$(ToolsExternalGitHubReleasePath)"

@@ -5,16 +5,16 @@
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Indicate if an error in the pre-step actions should fail the deploy -->
-        <!-- <FailDeployOnPreStepFailure Condition=" '$(FailDeployOnPreStepFailure)' == '' ">false</FailDeployOnPreStepFailure> -->
+        <!-- <FailDeployOnPreStepFailure>false</FailDeployOnPreStepFailure> -->
 
         <!-- Indicate if an error in the post-step actions should fail the deploy -->
-        <!-- <FailDeployOnPostStepFailure Condition=" '$(FailDeployOnPostStepFailure)' == '' ">false</FailDeployOnPostStepFailure> -->
+        <!-- <FailDeployOnPostStepFailure>false</FailDeployOnPostStepFailure> -->
 
         <!-- Indicate if an error in the pre-step actions should immediately stop the deploy -->
-        <!-- <StopDeployOnPreStepFailure Condition=" '$(StopDeployOnPreStepFailure)' == '' ">false</StopDeployOnPreStepFailure> -->
+        <!-- <StopDeployOnPreStepFailure>false</StopDeployOnPreStepFailure> -->
 
         <!-- Indicate if an error in the post-step actions should immediately stop the deploy -->
-        <!-- <StopDeployOnPostStepFailure Condition=" '$(StopDeployOnPostStepFailure)' == '' ">false</StopDeployOnPostStepFailure> -->
+        <!-- <StopDeployOnPostStepFailure>false</StopDeployOnPostStepFailure> -->
     </PropertyGroup>
 
     <!--
@@ -140,20 +140,6 @@
         $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
     -->
     <ItemGroup>
-        <DeployStepsToExecute
-            Condition="!Exists('$(FileNBuildKitExtensionsImport)')"
-            Include="$(DeployStepsGenerateTargetsFile)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Bootstrap;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
-        </DeployStepsToExecute>
-
         <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
             <Properties>
                 StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\deploy\packages.config
@@ -395,7 +381,7 @@
             If the repository needs authentication then the API key should be defined via an environment variable:
             NuGetApiKey - The NuGet API key for the NuGet feed
         -->
-        <!--<NuGetSourceUrl Condition=" '$(NuGetSourceUrl)' == '' ">UNDEFINED</NuGetSourceUrl>-->
+        <!--<NuGetSourceUrl>UNDEFINED</NuGetSourceUrl>-->
     </PropertyGroup>
     <!--
         The ItemGroup defining which packages should be pushed up to the NuGet package source.
@@ -420,12 +406,12 @@
             the API key should be defined via an environment variable:
             NuGetApiKey - The NuGet API key for the NuGet feed
         -->
-        <!--<NuGetSymbolSourceUrl Condition=" '$(NuGetSymbolSourceUrl)' == '' ">UNDEFINED</NuGetSymbolSourceUrl>-->
+        <!--<NuGetSymbolSourceUrl>UNDEFINED</NuGetSymbolSourceUrl>-->
 
         <!--
             The URL / UNC path to which all the symbol packages should be pushed.
         -->
-        <!--<SymbolServerUncPath Condition=" '$(SymbolServerUncPath)' == '' ">UNDEFINED</SymbolServerUncPath>-->
+        <!--<SymbolServerUncPath>UNDEFINED</SymbolServerUncPath>-->
     </PropertyGroup>
     <ItemGroup>
         <!--<SymbolPackagesToPush Include="$(DirBuildDeploy)\*.symbols.nupkg" />-->

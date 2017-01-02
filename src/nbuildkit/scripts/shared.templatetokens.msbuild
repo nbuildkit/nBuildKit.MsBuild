@@ -8,54 +8,20 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
-
-    <PropertyGroup>
-        <!-- Build flags -->
-        <ShouldExecute Condition=" '$(ShouldExecute)' == '' ">true</ShouldExecute>
-
-        <!-- Build configuration -->
-        <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
-        <PlatformWithoutSpaces Condition=" '$(PlatformWithoutSpaces)' == '' ">$(Platform.Replace(" ",""))</PlatformWithoutSpaces>
-
-        <!-- Directories -->
-        <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild>
-        <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
-        <DirNBuildKitMsBuildExtensions Condition=" '$(DirNBuildKitMsBuildExtensions)' == '' ">$(MSBuildProjectDirectory)\extensions</DirNBuildKitMsBuildExtensions>
-
-        <!-- Files -->
-        <FileSemanticVersion Condition=" '$(FileSemanticVersion)' == '' ">$(DirBuildTemp)\semantic_version.json</FileSemanticVersion>
-        <FileReleaseNotes Condition=" '$(FileReleaseNotes)' == '' ">$(DirBuildTemp)\releasenotes_short.md</FileReleaseNotes>
-        <FileVcsInfo Condition=" '$(FileVcsInfo)' == '' ">$(DirBuildTemp)\vcs.info.json</FileVcsInfo>
-    </PropertyGroup>
-
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild') AND '$(ExistsExtensionsGetSemanticVersionFromFile)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GetSemanticVersionFromFile.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\GetVcsInfoFromFile.msbuild') AND '$(ExistsExtensionsGetVcsInfoFromFile)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\GetVcsInfoFromFile.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\IsInCollection.msbuild') AND '$(ExistsExtensionsIsInCollection)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\IsInCollection.msbuild" />
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild') AND '$(ExistsExtensionsTemplateText)' != 'true' "
-        Project="$(DirNBuildKitMsBuildExtensions)\TemplateText.msbuild" />
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
 
     <Import Project="$(SystemTemplateTokenGenerators)" />
     <Import
         Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "
         Project="$(TemplateTokenGenerators)" />
 
-    <Target Name="nBuildKit_Shared_TemplateTokens_Initialize">
-        <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators" />
-        <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Initialize_SpecialVersionParameters_UserDefined" />
-        <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Initialize_SpecialVersionParameters_SystemDefined" />
+    <Target Name="nBuildKit_Shared_TemplateTokens_Generate">
+        <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators" />
+        <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Generate_SpecialVersionParameters" />
     </Target>
 
-    <Target Name="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators_Prepare">
+    <Target Name="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators_Prepare">
         <ItemGroup>
             <GeneratorTargetsToInvoke Include="$(SystemTemplateTokenGenerators)" />
             <GeneratorTargetsToInvoke
@@ -65,8 +31,8 @@
     </Target>
 
     <Target
-        DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators_Prepare"
-        Name="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators"
+        DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators_Prepare"
+        Name="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators"
         Outputs="%(GeneratorTargetsToInvoke.Identity)">
         <CreateProperty Value="%(GeneratorTargetsToInvoke.Filename)">
             <Output
@@ -78,80 +44,26 @@
     </Target>
 
     <Target
-        Condition=" '@(TemplateVersion)' != '' "
-        DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators"
-        Name="_nBuildKit_Shared_TemplateTokens_Initialize_SpecialVersionParameters_UserDefined"
-        Outputs="%(TemplateVersion.Identity)">
-        <!--
-            Transform the template text in the version number into a string without template parameters
-            in it and assign it to the requested property.
-        -->
-        <TemplateText
-            Template="%(TemplateVersion.Template)"
-            Tokens="@(TemplateTokens)">
-            <Output
-                PropertyName="TemplateVersionWithReplacedParameters"
-                TaskParameter="Result" />
-        </TemplateText>
+        DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators"
+        Name="_nBuildKit_Shared_TemplateTokens_Generate_SpecialVersionParameters"
+        Outputs="$(FileTemplateTokensPretranslatedTokens)">
 
-        <!--
-            Add the new value to the list of template tokens under the given name.
-        -->
-        <!--
-            Implementation note:
-            Because of the overriding approach used for the TemplateVersion ItemGroup there may be duplicates
-            in the list so we have to filter those out by throwing away values that already exist in the new list.
-        -->
-        <CreateItem
-            AdditionalMetadata="ReplacementValue=$(TemplateVersionWithReplacedParameters)"
-            Condition="!$([System.String]::new('@(TemplateTokens)').Contains('%(TemplateVersion.Identity)'))"
-            Include="%(TemplateVersion.Identity)">
-            <Output
-                ItemName="TemplateTokens"
-                TaskParameter="Include" />
-        </CreateItem>
-    </Target>
+        <PropertyGroup>
+            <DirectoriesForNBuildKit>
+                DirWorkspace=$(DirWorkspace);
+                DirUserSettings=$(DirUserSettings);
+            </DirectoriesForNBuildKit>
+        </PropertyGroup>
 
-    <Target
-        DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Initialize_RunGenerators;_nBuildKit_Shared_TemplateTokens_Initialize_SpecialVersionParameters_UserDefined"
-        Name="_nBuildKit_Shared_TemplateTokens_Initialize_SpecialVersionParameters_SystemDefined"
-        Outputs="%(SystemTemplateVersion.Identity)">
-        <IsInCollection
-            Collection="@(TemplateTokens)"
-            Item="%(SystemTemplateVersion.Identity)">
-            <Output
-                PropertyName="HasBeenAddedToTemplateTokens"
-                TaskParameter="IsInList" />
-        </IsInCollection>
-
-        <!--
-            Transform the template text in the version number into a string without template parameters
-            in it and assign it to the requested property.
-        -->
-        <TemplateText
-            Condition=" '$(HasBeenAddedToTemplateTokens)' != 'true' "
-            Template="%(SystemTemplateVersion.Template)"
-            Tokens="@(TemplateTokens)">
-            <Output
-                PropertyName="SystemTemplateVersionWithReplacedParameters"
-                TaskParameter="Result" />
-        </TemplateText>
-
-        <!--
-            Add the new value to the list of template tokens under the given name.
-        -->
-        <!--
-            Implementation note:
-            Because of the overriding approach used for the TemplateVersion ItemGroup there may be duplicates
-            in the list so we have to filter those out by throwing away values that already exist in the new list.
-        -->
-        <CreateItem
-            AdditionalMetadata="ReplacementValue=$(SystemTemplateVersionWithReplacedParameters)"
-            Condition=" '$(HasBeenAddedToTemplateTokens)' != 'true' "
-            Include="%(SystemTemplateVersion.Identity)">
-            <Output
-                ItemName="TemplateTokens"
-                TaskParameter="Include" />
-        </CreateItem>
+        <InvokeStandaloneMsBuild
+            Projects="$(MSBuildThisFileDirectory)shared.templatetokens.pregenerate.msbuild"
+            Properties="$(DirectoriesForNBuildKit);$(DefaultPathProperties);NBuildKitVersion=$(NBuildKitVersion)"
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            Targets=""
+            TemporaryDirectory="$(DirBuildTemp)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)" />
     </Target>
 </Project>

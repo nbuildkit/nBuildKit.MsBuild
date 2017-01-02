@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -49,16 +45,6 @@
         <Message
             Importance="low"
             Text=" " />
-
-        <Message
-            Importance="low"
-            Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
-        <Message
-            Importance="low"
-            Text="The VCS info file is located at:                                   $(FileVcsInfo)" />
-        <Message
-            Importance="low"
-            Text=" " />
     </Target>
 
     <!-- Display info -->
@@ -73,7 +59,6 @@
     <!-- Generate the required files -->
     <Target
         Condition=" '@(BuildFilesToGenerate)' != '' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Build_Prepare_GenerateFiles_GenerateFiles"
         Outputs="%(BuildFilesToGenerate.Identity)">
         <Message

@@ -36,7 +36,12 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 arguments.Add("/union ");
                 arguments.Add("/internalize ");
                 arguments.Add("/wildcards ");
-                arguments.Add("/verbose ");
+
+                var verbosity = MsBuildLog.ToVerbosity(VerbosityForCurrentMsBuildInstance());
+                if (verbosity > MsBuildLog.Verbosity.Normal)
+                {
+                    arguments.Add("/verbose ");
+                }
 
                 arguments.Add(
                     string.Format(

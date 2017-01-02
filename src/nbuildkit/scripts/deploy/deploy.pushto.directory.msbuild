@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -66,7 +62,6 @@
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Deploy_PushTo_Directory_Push"
         Outputs="%(PushToDirectorySpecs.Identity)">
         <Message
@@ -114,14 +109,13 @@
                 TaskParameter="Include" />
         </CreateItem>
         <Error
-            Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(FilesToPush)' == '' "
             Text="There are no files to be pushed" />
 
         <MakeDir
-            Condition="!Exists('$(DirPushToSpecs)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirPushToSpecs)') "
             Directories="$(DirPushToSpecs)" />
         <Copy
-            Condition=" '$(ShouldExecute)' == 'true' "
             DestinationFolder="$(DirPushToSpecs)"
             SourceFiles="@(FilesToPush)" />
     </Target>

@@ -90,7 +90,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirToCreate)') "
             Directories="$(DirToCreate)" />
 
         <ItemGroup>
@@ -106,7 +106,7 @@
         Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge"
         Outputs="%(BranchMergeTarget.Identity)">
         <Error
-            Condition=" '$(ToolsExternalGitPath)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalGitPath)' == '' "
             Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
         <Message Text="Checking out merge target branch: %(BranchMergeTarget.Identity) ..." />
@@ -116,7 +116,6 @@
             Workspace="$(DirWorkspace)" />
 
         <GitCurrentBranch
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -124,7 +123,6 @@
                 TaskParameter="CurrentBranch" />
         </GitCurrentBranch>
         <GitCurrentRevision
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -146,7 +144,6 @@
         </ItemGroup>
 
         <GitCurrentBranch
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -154,7 +151,6 @@
                 TaskParameter="CurrentBranch" />
         </GitCurrentBranch>
         <GitCurrentRevision
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -175,19 +171,16 @@
         </ItemGroup>
 
         <WriteLinesToFile
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileVcsMergeInfo)"
             Lines="@(GitMergeItemsPrepare)"
             Overwrite="true" />
 
         <WriteLinesToFile
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileVcsMergeInfo)"
             Lines="@(GitMergeItems)"
             Overwrite="false" />
 
         <WriteLinesToFile
-            Condition=" '$(ShouldExecute)' == 'true' "
             File="$(FileVcsMergeInfo)"
             Lines="@(GitMergeItemsFinalize)"
             Overwrite="false" />

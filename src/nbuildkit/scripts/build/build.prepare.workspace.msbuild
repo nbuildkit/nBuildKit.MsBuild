@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -121,14 +117,13 @@
                 Include="%(BuildFilesToGenerate.FullPath)" />
         </ItemGroup>
         <Delete
-            Condition=" '@(GeneratedFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(GeneratedFilesToDelete)' != '' "
             ContinueOnError="True"
             Files="@(GeneratedFilesToDelete)" />
     </Target>
 
     <Target
         Condition=" '@(SolutionsToBuild)' != '' AND '$(ShouldClean)' == 'true' AND '$(ShouldDeleteVisualStudioOutputs)' == 'true' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Build_Prepare_Workspace_Delete_VisualStudioLocation"
         Outputs="%(SolutionsToBuild.Identity)">
         <TemplateText
@@ -162,7 +157,6 @@
 
     <Target
         Condition=" '@(SolutionsToBuild)' != '' AND '$(ShouldClean)' == 'true' AND '$(ShouldCleanVisualStudioOutputs)' == 'true' AND '$(ShouldDeleteVisualStudioOutputs)' != 'true' "
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Build_Prepare_Workspace_Clean_VisualStudioLocation"
         Outputs="%(SolutionsToBuild.Identity)">
         <TemplateText
@@ -207,22 +201,22 @@
         <ItemGroup>
             <BuildFilesToDelete
                 Condition="Exists('$(DirBuild)')"
-                Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*"
+                Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*;$(DirHighLevelOverview)\$(FileNameHighLevelOverview).*"
                 Include="$(DirBuild)\**\*.*" />
         </ItemGroup>
         <Delete
-            Condition=" '@(BuildFilesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(BuildFilesToDelete)' != '' "
             ContinueOnError="True"
             Files="@(BuildFilesToDelete)" />
 
         <ItemGroup>
             <BuildDirectoriesToDelete
                 Condition="Exists('$(DirBuild)')"
-                Exclude="$(DirBuild);$(DirBuildBootstrap);$(DirUserConfiguration)"
+                Exclude="$(DirBuild);$(DirBuildBootstrap);$(DirUserConfiguration);$(DirHighLevelOverview)"
                 Include="$([System.IO.Directory]::GetDirectories('$(DirBuild)', '*', System.IO.SearchOption.TopDirectoryOnly))" />
         </ItemGroup>
         <RemoveDir
-            Condition=" '@(BuildDirectoriesToDelete)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(BuildDirectoriesToDelete)' != '' "
             ContinueOnError="True"
             Directories="@(BuildDirectoriesToDelete)" />
     </Target>

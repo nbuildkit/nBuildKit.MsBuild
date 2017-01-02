@@ -9,16 +9,16 @@
 
     <PropertyGroup>
         <!-- Indicate if an error in the pre-step actions should fail the deploy -->
-        <!-- <FailTestOnPreStepFailure Condition=" '$(FailTestOnPreStepFailure)' == '' ">false</FailTestOnPreStepFailure> -->
+        <!-- <FailTestOnPreStepFailure>false</FailTestOnPreStepFailure> -->
 
         <!-- Indicate if an error in the post-step actions should fail the deploy -->
-        <!-- <FailTestOnPostStepFailure Condition=" '$(FailTestOnPostStepFailure)' == '' ">false</FailTestOnPostStepFailure> -->
+        <!-- <FailTestOnPostStepFailure>false</FailTestOnPostStepFailure> -->
 
         <!-- Indicate if an error in the pre-step actions should immediately stop the deploy -->
-        <!-- <StopTestOnPreStepFailure Condition=" '$(StopTestOnPreStepFailure)' == '' ">false</StopTestOnPreStepFailure> -->
+        <!-- <StopTestOnPreStepFailure>false</StopTestOnPreStepFailure> -->
 
         <!-- Indicate if an error in the post-step actions should immediately stop the deploy -->
-        <!-- <StopTestOnPostStepFailure Condition=" '$(StopTestOnPostStepFailure)' == '' ">false</StopTestOnPostStepFailure> -->
+        <!-- <StopTestOnPostStepFailure>false</StopTestOnPostStepFailure> -->
     </PropertyGroup>
 
     <!--
@@ -444,12 +444,12 @@
         <!--
             The full path to the file into which Pester will write the test results.
         -->
-        <FileTestReport Condition=" '$(FileTestReport)' == '' ">$(DirBuildLogs)\$(NameTestRepository).xml</FileTestReport>
+        <FileTestReport>$(DirBuildLogs)\$(NameTestRepository).xml</FileTestReport>
 
         <!--
             Defines the active branch in the remote repository on which the test will be executed.
         -->
-        <BranchActiveTest Condition=" '$(BranchActiveTest)' == '' ">feature/nbuildkit_${VersionSemantic}</BranchActiveTest>
+        <BranchActiveTest>feature/nbuildkit_${VersionSemantic}</BranchActiveTest>
 
         <!--
              The full path to the directory into which the bare repository will be cloned. $(DirTestLocal) will be

@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -85,14 +81,14 @@
 
     <Target Name="_nBuildKit_Test_Integration_Pester_GetToolPaths">
         <NuGetInstall
-            Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND   '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' "
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="Pester"
             PackageVersion="$(ToolsExternalPesterVersion)"
             Sources="@(NuGetSources)" />
         <SearchPackagesDirectoryForToolDirectory
-            Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' AND  '$(ShouldExecute)' == 'true' "
+            Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' "
             FileToLocate="Pester.psm1"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -100,20 +96,19 @@
                 TaskParameter="Path" />
         </SearchPackagesDirectoryForToolDirectory>
         <Message
-            Condition="Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="Exists('$(ToolsExternalPesterPath)') "
             Text="The Pester module was found at: $(ToolsExternalPesterPath)" />
         <Error
-            Condition="!Exists('$(ToolsExternalPesterPath)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(ToolsExternalPesterPath)') "
             Text="Could not locate the Pester module path. Cannot execute pester tests." />
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Test_Integration_Pester_ExpandTemplates"
         Outputs="%(PesterTestArguments.Identity)">
 
         <TemplateText
-            Condition=" '%(PesterTestArguments.Value)' != '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '%(PesterTestArguments.Value)' != '' "
             Template="%(PesterTestArguments.Value)"
             Tokens="@(TemplateTokens)">
             <Output

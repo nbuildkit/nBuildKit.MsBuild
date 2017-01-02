@@ -13,10 +13,6 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
-
-    <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
 
@@ -66,7 +62,6 @@
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Deploy_PushTo_GitBranch_Push"
         Outputs="%(PushToGitBranchSpecs.Identity)">
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates" />
@@ -77,7 +72,6 @@
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize"
         Name="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
         Outputs="%(PushToGitBranchSpecs.Identity)">
         <Message
@@ -146,7 +140,7 @@
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
+        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
         Name="_nBuildKit_Deploy_PushTo_GitBranch_Clone"
         Outputs="%(PushToGitBranchSpecs.Identity)">
         <Message
@@ -175,7 +169,6 @@
 
         <!-- Verify that we're on the branch!' -->
         <GitCurrentBranch
-            Condition=" '$(ShouldExecute)' == 'true' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             WorkingDirectory="$(DirRepositoryWorkspace)">
             <Output
@@ -196,7 +189,7 @@
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
+        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
         Name="_nBuildKit_Deploy_PushTo_GitBranch_CopyFiles"
         Outputs="%(PushToGitBranchSpecs.Identity)">
         <!--
@@ -209,14 +202,14 @@
                 TaskParameter="Include" />
         </CreateItem>
         <Error
-            Condition=" '@(FilesToPush)' == '' AND '$(ShouldExecute)' == 'true' "
+            Condition=" '@(FilesToPush)' == '' "
             Text="There are no files to be pushed" />
 
         <PropertyGroup>
             <DirBuildTempCopy>$(DirBuildTemp)\copy</DirBuildTempCopy>
         </PropertyGroup>
         <MakeDir
-            Condition="!Exists('$(DirBuildTempCopy)') AND '$(ShouldExecute)' == 'true' "
+            Condition="!Exists('$(DirBuildTempCopy)') "
             Directories="$(DirBuildTempCopy)" />
 
         <Copy
@@ -252,7 +245,7 @@
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
+        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
         Name="_nBuildKit_Deploy_PushTo_GitBranch_Commit"
         Outputs="%(PushToGitBranchSpecs.Identity)">
         <Message Text="Adding new files to list of changes to commit on branch $(BranchToPushTo) ..." />
@@ -279,7 +272,7 @@
     </Target>
 
     <Target
-        DependsOnTargets="nBuildKit_Shared_TemplateTokens_Initialize;_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
+        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitBranch_ReplaceBuildTemplates"
         Name="_nBuildKit_Deploy_PushTo_GitBranch_PushToRepository"
         Outputs="%(PushToGitBranchSpecs.Identity)">
         <Message Text="Pushing changes on branch $(BranchToPushTo) back to repository $(RepositoryToPushTo) ..." />
