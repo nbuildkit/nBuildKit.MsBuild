@@ -8,6 +8,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -153,8 +154,12 @@ namespace NBuildKit.MsBuild.Tasks
         /// <returns>The verbosity of the MsBuild logger.</returns>
         protected static string VerbosityForCurrentMsBuildInstance()
         {
-            const string FullVerbositySwitch = "/verbosity:";
-            const string ShortVerbositySwitch = "/v:";
+            var regex = new Regex(
+                @"(\/|:|;)(v|verbosity)(:|=)(\w*)",
+                RegexOptions.IgnoreCase
+                | RegexOptions.Multiline
+                | RegexOptions.Compiled
+                | RegexOptions.Singleline);
 
             var commandLineArguments = Environment.GetCommandLineArgs();
             for (int i = 0; i < commandLineArguments.Length; i++)
@@ -163,16 +168,11 @@ namespace NBuildKit.MsBuild.Tasks
 
                 var hasSwitch = false;
                 var remainder = string.Empty;
-                if (argument.Contains(FullVerbositySwitch))
+                var verbosityMatch = regex.Match(argument);
+                if (verbosityMatch.Success)
                 {
                     hasSwitch = true;
-                    remainder = argument.Substring(FullVerbositySwitch.Length).Trim();
-                }
-
-                if (argument.Contains(ShortVerbositySwitch))
-                {
-                    hasSwitch = true;
-                    remainder = argument.Substring(ShortVerbositySwitch.Length).Trim();
+                    remainder = verbosityMatch.Groups[4].Value;
                 }
 
                 if (hasSwitch)
