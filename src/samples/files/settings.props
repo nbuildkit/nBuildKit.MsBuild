@@ -74,20 +74,20 @@
     <!-- Overrides for the global properties -->
     <PropertyGroup>
         <!-- A flag indicating whether or not to display debug log information, usually at the start of the script execution. -->
-        <!--<ShouldDisplayDebugLog Condition=" '$(ShouldDisplayDebugLog)' == '' ">true</ShouldDisplayDebugLog>-->
+        <!--<ShouldDisplayDebugLog>true</ShouldDisplayDebugLog>-->
 
         <!--
             A flag that indicates whether or not the workspace should be cleaned before the build is started. If set to
             true then the 'DirBuild' directory will be removed as well as all known generated files.
         -->
-        <!--<ShouldClean Condition=" '$(ShouldClean)' == '' AND '$(IsOnBuildServer)' != 'true' ">true</ShouldClean>-->
+        <!--<ShouldClean Condition=" '$(IsOnBuildServer)' != 'true' ">true</ShouldClean>-->
 
         <!--
             A flag that indicates whether or not the Visual Studio temporary and output directories should be cleaned
             before the build is started. If set to true then the 'bin' and 'obj' directories for each project in
             the provided Visual Studio solutions is cleaned.
         -->
-        <!--<ShouldCleanVisualStudioOutputs Condition=" '$(ShouldCleanVisualStudioOutputs)' == '' AND '$(IsOnBuildServer)' != 'true' ">true</ShouldCleanVisualStudioOutputs>-->
+        <!--<ShouldCleanVisualStudioOutputs Condition=" '$(IsOnBuildServer)' != 'true' ">true</ShouldCleanVisualStudioOutputs>-->
 
         <!--
             A flag that indicates whether or not the Visual Studio temporary and output directories should be deleted
@@ -98,7 +98,7 @@
             platforms and configurations. The delete version simply deletes the relevant 'bin' and 'obj' directories which
             deletes outputs from all configurations.
         -->
-        <!--<ShouldDeleteVisualStudioOutputs Condition=" '$(ShouldDeleteVisualStudioOutputs)' == '' AND '$(IsOnBuildServer)' != 'true' ">false</ShouldDeleteVisualStudioOutputs>-->
+        <!--<ShouldDeleteVisualStudioOutputs Condition=" '$(IsOnBuildServer)' != 'true' ">false</ShouldDeleteVisualStudioOutputs>-->
     </PropertyGroup>
 
     <!-- Overrides for the project specific properties -->
@@ -108,13 +108,13 @@
             * Copyrights
             * API documentation
         -->
-        <ProductName Condition=" '$(ProductName)' == '' ">My Product</ProductName>
+        <ProductName>My Product</ProductName>
 
         <!--
             The name of the product that can be used as part of a file path. This is for instance used for:
             * Deployment directory naming
         -->
-        <ProductNameInFilePath Condition=" '$(ProductNameInFilePath)' == '' ">MyProduct</ProductNameInFilePath>
+        <ProductNameInFilePath>MyProduct</ProductNameInFilePath>
 
         <!--
             The description of the product. This is for instance used for:
@@ -129,44 +129,44 @@
             * Finding the correct assemblies and namespaces for unit testing and coverage reporting
             * Generated code files that contain namespaces
         -->
-        <ProductNamespace Condition=" '$(ProductNamespace)' == '' ">MyProduct</ProductNamespace>
+        <ProductNamespace>MyProduct</ProductNamespace>
 
         <!--
             The URL of the product website. This is for instance used for:
             * nuspec files
         -->
-        <ProductUrl Condition=" '$(ProductUrl)' == '' ">UNDEFINED</ProductUrl>
+        <ProductUrl>UNDEFINED</ProductUrl>
 
         <!--
             The first year the product was available / created. This is for instance used for:
             * Copyrights
         -->
-        <ProductStartingYear Condition=" '$(ProductStartingYear)' == '' ">UNDEFINED</ProductStartingYear>
+        <ProductStartingYear>UNDEFINED</ProductStartingYear>
 
         <!--
             The name of the company. This is for instance used for:
             * Copyrights
             * API documentation
         -->
-        <CompanyName Condition=" '$(CompanyName)' == '' ">UNDEFINED</CompanyName>
+        <CompanyName>UNDEFINED</CompanyName>
 
         <!--
             The name of the company that can be used as a part of a file path. This is for instance used for:
             * Installer file paths
         -->
-        <CompanyNameInFilePath Condition=" '$(CompanyNameInFilePath)' == '' ">UNDEFINED</CompanyNameInFilePath>
+        <CompanyNameInFilePath>UNDEFINED</CompanyNameInFilePath>
 
         <!--
             The URL of the company website. This is for instance used for:
             * nuspec files
         -->
-        <CompanyUrl Condition=" '$(CompanyUrl)' == '' ">UNDEFINED</CompanyUrl>
+        <CompanyUrl>UNDEFINED</CompanyUrl>
 
         <!--
             The email address that is specified in the documentation. This is for instance used for:
             * API documentation
         -->
-        <EmailDocumentation Condition=" '$(EmailDocumentation)' == '' ">UNDEFINED</EmailDocumentation>
+        <EmailDocumentation>UNDEFINED</EmailDocumentation>
 
         <!--
             The short form of the  copyright text. This is for instance used for:
@@ -187,19 +187,19 @@
     -->
     <PropertyGroup>
         <!-- The user name of the user who owns the repository on GitHub -->
-        <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName>
+        <GitHubUserName>UNDEFINED</GitHubUserName>
 
         <!--
             The github repository that contains the source code for the current product. Used when getting the release notes
             from the github issues, e.g. nbuildkit.
         -->
-        <GitHubRepositoryName Condition=" '$(GitHubRepositoryName)' == '' ">UNDEFINED</GitHubRepositoryName>
+        <GitHubRepositoryName>UNDEFINED</GitHubRepositoryName>
 
         <!--
             The full URL to the GIT repository. Can include the '%GitHubToken%' environment variable for authenticated
             connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
         -->
-        <GitRemoteRepository Condition=" '$(GitRemoteRepository)' == '' ">origin</GitRemoteRepository>
+        <GitRemoteRepository>origin</GitRemoteRepository>
     </PropertyGroup>
 
     <!--
@@ -279,50 +279,50 @@
         -->
 
         <!-- The directory that will contain all the files generated during the build process -->
-        <!-- <DirBuild Condition=" '$(DirBuild)' == '' ">$(DirWorkspace)\build</DirBuild> -->
+        <!-- <DirBuild>$(DirWorkspace)\build</DirBuild> -->
 
         <!--
             The directory that will contain all the binaries generated during the build process.
             Note that there may be configuration and platform specific sub-directories.
         -->
-        <!-- <DirBuildBin Condition=" '$(DirBuildBin)' == '' ">$(DirBuild)\bin</DirBuildBin> -->
+        <!-- <DirBuildBin>$(DirBuild)\bin</DirBuildBin> -->
 
         <!--
             The directory where the current binaries are placed after being generated.
             Note that $(Platform) and $(Configuration) do not have to be defined in this settings file. They may be provided
             externally as long as they are provided before the settings file is loaded!
         -->
-        <!-- <DirBuildBinPlatformConfig Condition=" '$(DirBuildBinPlatformConfig)' == '' ">$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig> -->
+        <!-- <DirBuildBinPlatformConfig>$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig> -->
 
         <!-- The directory that will contain all the generated artifacts during the build process -->
-        <!-- <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy> -->
+        <!-- <DirBuildDeploy>$(DirBuild)\deploy</DirBuildDeploy> -->
 
         <!-- The directory that will contain all the documentation files which are generated during the build process -->
-        <!-- <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc> -->
+        <!-- <DirBuildDoc>$(DirBuildDeploy)\doc</DirBuildDoc> -->
 
         <!-- The directory that will contain all the generated build logs during the build process -->
-        <!-- <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs> -->
+        <!-- <DirBuildLogs>$(DirBuild)\logs</DirBuildLogs> -->
 
         <!-- The directory that will contain the reports generated by OpenCover and ReportGenerator describing the coverage of the unit tests. -->
-        <!-- <DirReportGeneratorOutput Condition=" '$(DirReportGeneratorOutput)' == '' ">$(DirBuildLogs)\coverage</DirReportGeneratorOutput> -->
+        <!-- <DirReportGeneratorOutput>$(DirBuildLogs)\coverage</DirReportGeneratorOutput> -->
 
         <!-- The directory that will contain all the temporary files needed during the build process -->
-        <!-- <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp> -->
+        <!-- <DirBuildTemp>$(DirBuild)\temp</DirBuildTemp> -->
 
         <!-- The directory that will contain all the test files generated during the test process -->
-        <!-- <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest> -->
+        <!-- <DirBuildTest>$(DirBuild)\tests</DirBuildTest> -->
 
         <!-- The directory that contains all the NuGet packages for the project -->
-        <!-- <DirPackages Condition=" '$(DirPackages)' == '' ">$(DirWorkspace)\packages</DirPackages> -->
+        <!-- <DirPackages>$(DirWorkspace)\packages</DirPackages> -->
 
         <!-- The directory that contains the source files for the project -->
-        <!-- <DirSrc Condition=" '$(DirSrc)' == '' ">$(DirWorkspace)\src</DirSrc> -->
+        <!-- <DirSrc>$(DirWorkspace)\src</DirSrc> -->
 
         <!-- The directory that contains the template files for the project -->
-        <!-- <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates> -->
+        <!-- <DirTemplates>$(DirWorkspace)\templates</DirTemplates> -->
 
         <!-- The directory that contains all the test files for the project -->
-        <!-- <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest> -->
+        <!-- <DirTest>$(DirWorkspace)\tests</DirTest> -->
     </PropertyGroup>
 
     <!--
@@ -330,10 +330,10 @@
     -->
     <PropertyGroup>
         <!-- Defines the directory into which the workflow high level overview files are written -->
-        <!-- <DirHighLevelOverview Condition=" '$(DirHighLevelOverview)' == '' ">UNDEFINED</DirHighLevelOverview> -->
+        <!-- <DirHighLevelOverview>UNDEFINED</DirHighLevelOverview> -->
 
         <!-- Defines the name of the file in which the high level overview of the build is written to -->
-        <!-- <FileNameHighLevelOverview Condition= " '$(FileNameHighLevelOverview)' == '' ">UNDEFINED</FileNameHighLevelOverview> -->
+        <!-- <FileNameHighLevelOverview>UNDEFINED</FileNameHighLevelOverview> -->
     </PropertyGroup>
 
     <!--
@@ -344,7 +344,7 @@
             A flag that indicates whether or not the current build should assume that the GitFlow (http://nvie.com/posts/a-successful-git-branching-model/)
             workflow is being used.
         -->
-        <!-- <IsGitFlow Condition=" '$(IsGitFlow)' == '' ">UNDEFINED</IsGitFlow> -->
+        <!-- <IsGitFlow>UNDEFINED</IsGitFlow> -->
     </PropertyGroup>
 
 
@@ -382,17 +382,17 @@
         <!--
             The flag that indicates if the input branch is a GitFlow feature branch.
         -->
-        <!-- <IsFeatureBranch Condition=" '$(IsFeatureBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(feature\/).*'))</IsFeatureBranch> -->
+        <!-- <IsFeatureBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(feature\/).*'))</IsFeatureBranch> -->
 
         <!--
             The flag that indicates if the input branch is a GitFlow release branch.
         -->
-        <!-- <IsReleaseBranch Condition=" '$(IsReleaseBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(release\/).*'))</IsReleaseBranch> -->
+        <!-- <IsReleaseBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(release\/).*'))</IsReleaseBranch> -->
 
         <!--
             The flag that indicates if the input branch is a GitFlow hotfix branch.
         -->
-        <!-- <IsHotfixBranch Condition=" '$(IsHotfixBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(hotfix\/).*'))</IsHotfixBranch> -->
+        <!-- <IsHotfixBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(hotfix\/).*'))</IsHotfixBranch> -->
     </PropertyGroup>
     <!--
         The collection of branches that the changes should be merged to. The build will be executed on the last
@@ -459,7 +459,7 @@
                 </PropertyGroup>
             </Project>
         -->
-        <!-- <FileVersionMsBuild Condition=" '$(FileVersionMsBuild)' == '' ">$(DirWorkspace)\version.xml</FileVersionMsBuild> -->
+        <!-- <FileVersionMsBuild>$(DirWorkspace)\version.xml</FileVersionMsBuild> -->
 
         <!--
             When using GitVersion with a git repository that needs authentication the following properties
@@ -474,7 +474,7 @@
             the authentication is done through the user account, i.e. via Active Directory, then
             the user name should be left empty.
         -->
-        <!-- <GitUserName Condition=" '$(GitUserName)' == '' "></GitUserName> -->
+        <!-- <GitUserName></GitUserName> -->
 
         <!--
             The full file path to the script that handles custom generation of the version numbers.
@@ -494,7 +494,7 @@
                 VersionSemanticNuget - The NuGet compatible semantic version, normally made up of
                                        <MAJOR>.<MINOR>.<PATCH>-<PRERELEASE><BUILD>, e.g. 1.2.3-unstable4
         -->
-        <ScriptGetVersion Condition=" '$(ScriptGetVersion)' == '' ">UNDEFINED</ScriptGetVersion>
+        <!-- <ScriptGetVersion>UNDEFINED</ScriptGetVersion> -->
     </PropertyGroup>
 
 
@@ -506,10 +506,10 @@
             The template for the Github milestone name that will be used to get the closed work items for the
             release note
         -->
-        <!-- <GitHubMilestoneName Condition=" '$(GitHubMilestoneName)' == '' ">${VersionMajor}.${VersionMinor}.${VersionPatch}</GitHubMilestoneName> -->
+        <!-- <GitHubMilestoneName>${VersionMajor}.${VersionMinor}.${VersionPatch}</GitHubMilestoneName> -->
 
         <!-- The user name of the user who owns the GitHub repository -->
-        <!-- <GitHubUserName Condition=" '$(GitHubUserName)' == '' ">UNDEFINED</GitHubUserName> -->
+        <!-- <GitHubUserName>UNDEFINED</GitHubUserName> -->
 
         <!--
             The full file path to the script that handles custom collection of the issue information for the current
@@ -544,7 +544,7 @@
                 ISSUE_USERURL  - The URL for the user, if it exists.
                 ISSUE_LABELS   - The labels / type for the issue.
         -->
-        <ScriptGatherIssues Condition=" '$(ScriptGatherIssues)' == '' ">UNDEFINED</ScriptGatherIssues>
+        <!-- <ScriptGatherIssues>UNDEFINED</ScriptGatherIssues> -->
 
         <!--
             The full file path to the script that handles the custom formatting of the release notes for
@@ -577,12 +577,12 @@
                 ISSUE_USERURL  - The URL for the user, if it exists.
                 ISSUE_LABELS   - The labels / type for the issue.
         -->
-        <!-- <ScriptWriteReleaseNotes Condition=" '$(ScriptWriteReleaseNotes)' == '' ">UNDEFINED</ScriptWriteReleaseNotes> -->
+        <!-- <ScriptWriteReleaseNotes>UNDEFINED</ScriptWriteReleaseNotes> -->
 
         <!--
             A flag that indicates whether or not the build should fail if there is a failure to gather the release notes.
         -->
-        <!-- <ContinueBuildIfReleaseNoteGatheringFails Condition=" '$(ContinueBuildIfReleaseNoteGatheringFails)' == '' ">true</ContinueBuildIfReleaseNoteGatheringFails> -->
+        <!-- <ContinueBuildIfReleaseNoteGatheringFails>true</ContinueBuildIfReleaseNoteGatheringFails> -->
     </PropertyGroup>
 
 
@@ -596,7 +596,7 @@
 
             Each script should have a task with the same name as the file.
         -->
-        <!-- <TemplateTokenGenerators Condition=" '$(TemplateTokenGenerators)' == '' ">UNDEFINED</TemplateTokenGenerators> -->
+        <!-- <TemplateTokenGenerators>UNDEFINED</TemplateTokenGenerators> -->
     </PropertyGroup>
 
     <!--
@@ -627,7 +627,7 @@
             The tag 'all' is a special tag that will lead to the invocation of all steps that are registered for the
             selected stage.
         -->
-        <!-- <GroupsToExecute Condition=" '$(GroupsToExecute)' == '' ">All</GroupsToExecute> -->
+        <!-- <GroupsToExecute>All</GroupsToExecute> -->
     </PropertyGroup>
 
 
@@ -647,64 +647,64 @@
         <!--
             The full path and version of the Bower command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalBowerPath Condition=" '$(ToolsExternalBowerPath)' == '' ">bower</ToolsExternalBowerPath>
-        <ToolsExternalBowerVersion Condition=" '$(ToolsExternalBowerVersion)' == '' ">1.3.11</ToolsExternalBowerVersion> -->
+        <!-- <ToolsExternalBowerPath>bower</ToolsExternalBowerPath>
+        <ToolsExternalBowerVersion>1.3.11</ToolsExternalBowerVersion> -->
 
         <!--
             The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
         -->
-        <!-- <ToolsExternalGitPath Condition=" '$(ToolsExternalGitPath)' == '' ">git.exe</ToolsExternalGitPath> -->
+        <!-- <ToolsExternalGitPath>git.exe</ToolsExternalGitPath> -->
 
         <!--
             The full path and version of the GitVersion command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath>
-        <ToolsExternalGitVersionVersion Condition=" '$(ToolsExternalGitVersionVersion)' == '' ">3.6.4</ToolsExternalGitVersionVersion> -->
+        <!-- <ToolsExternalGitVersionPath>UNDEFINED</ToolsExternalGitVersionPath>
+        <ToolsExternalGitVersionVersion>3.6.4</ToolsExternalGitVersionVersion> -->
 
         <!--
             The full path and version of the Node.js command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalNodeJsPath Condition=" '$(ToolsExternalNodeJsPath)' == '' ">node</ToolsExternalNodeJsPath>
-        <ToolsExternalNodeJsVersion Condition=" '$(ToolsExternalNodeJsVersion)' == '' ">4.2.3</ToolsExternalNodeJsVersion> -->
+        <!-- <ToolsExternalNodeJsPath>node</ToolsExternalNodeJsPath>
+        <ToolsExternalNodeJsVersion>4.2.3</ToolsExternalNodeJsVersion> -->
 
         <!--
             The full path and version of the NPM command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalNpmPath Condition=" '$(ToolsExternalNpmPath)' == '' ">npm</ToolsExternalNpmPath>
-        <ToolsExternalNpmVersion Condition=" '$(ToolsExternalNpmVersion)' == '' ">3.5.2</ToolsExternalNpmVersion> -->
+        <!-- <ToolsExternalNpmPath>npm</ToolsExternalNpmPath>
+        <ToolsExternalNpmVersion>3.5.2</ToolsExternalNpmVersion> -->
 
         <!--
             The full path and version of the NTreva command line executable. IF not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalNTrevaPath Condition=" '$(ToolsExternalNTrevaPath)' == '' ">UNDEFINED</ToolsExternalNTrevaPath>
-        <ToolsExternalNTrevaVersion Condition=" '$(ToolsExternalNTrevaVersion)' == '' ">0.4.0</ToolsExternalNTrevaVersion> -->
+        <!-- <ToolsExternalNTrevaPath>UNDEFINED</ToolsExternalNTrevaPath>
+        <ToolsExternalNTrevaVersion>0.4.0</ToolsExternalNTrevaVersion> -->
 
         <!--
             The full path to the NuGet command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">nuget.exe</ToolsExternalNuGetPath> -->
+        <!-- <ToolsExternalNuGetPath>nuget.exe</ToolsExternalNuGetPath> -->
 
         <!--
             The full path to the Pester module. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalPesterPath Condition=" '$(ToolsExternalPesterPath)' == '' ">UNDEFINED</ToolsExternalPesterPath>
-        <ToolsExternalPesterVersion Condition=" '$(ToolsExternalPesterVersion)' == '' ">3.4.3</ToolsExternalPesterVersion> -->
+        <!-- <ToolsExternalPesterPath>UNDEFINED</ToolsExternalPesterPath>
+        <ToolsExternalPesterVersion>3.4.3</ToolsExternalPesterVersion> -->
 
         <!--
             The full path to the Powershell command line executable.
         -->
-        <!-- <ToolsExternalPowershellPath Condition=" '$(ToolsExternalPowershellPath)' == '' ">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</ToolsExternalPowershellPath> -->
+        <!-- <ToolsExternalPowershellPath>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</ToolsExternalPowershellPath> -->
 
         <!--
             The full path and version of the python command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalPythonPath Condition=" '$(ToolsExternalPythonPath)' == '' ">UNDEFINED</ToolsExternalPythonPath>
-        <ToolsExternalPythonVersion Condition=" '$(ToolsExternalPythonVersion)' == '' ">2.7.9</ToolsExternalPythonVersion> -->
+        <!-- <ToolsExternalPythonPath>UNDEFINED</ToolsExternalPythonPath>
+        <ToolsExternalPythonVersion>2.7.9</ToolsExternalPythonVersion> -->
 
         <!--
             The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable.
         -->
-        <!-- <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath> -->
+        <!-- <ToolsExternalTfsPath>tf.exe</ToolsExternalTfsPath> -->
     </PropertyGroup>
 
 
