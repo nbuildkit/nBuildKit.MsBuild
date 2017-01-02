@@ -3,6 +3,21 @@
     DefaultTargets="Run"
     ToolsVersion="11.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Overrides for the project specific properties -->
+    <PropertyGroup>
+        <!--
+            The short form of the  copyright text. This is for instance used for:
+            * Documentation copyrights
+            * Generated file copyrights
+        -->
+        <CopyrightShort Condition=" '$(CopyrightShort)' == '' ">Copyright (c) - $(CompanyName). All rights reserved.</CopyrightShort>
+
+        <!--
+            The long form of the  copyright text. This is for instance used for:
+            * Assembly copyrights
+        -->
+        <CopyrightLong Condition=" '$(CopyrightLong)' == '' ">Copyright (c) - $(CompanyName) $(ProductStartingYear) - $([System.DateTime]::Now.ToString("yyyy")). All rights reserved.</CopyrightLong>
+    </PropertyGroup>
     <!--
         Defines the custom version numbers that should be available for template replacement.
         The template consists of a name and a version number string. The name will be used as the
