@@ -21,8 +21,12 @@
         <CallTarget Targets="shared_generatetoken_releasenotes_writepropertyfile" />
     </Target>
 
+    <!--
+        Always execute this target because we need to have the release note templates generated with
+        empty entries if they don't exist. That way the user can always include the release notes
+        even if there aren't any. If we don't specify them some tools have a bad day (e.g. nuget).
+    -->
     <Target
-        Condition="Exists('$(FileReleaseNotes)')"
         Name="shared_generatetoken_releasenotes_writepropertyfile">
         <CreateProperty
             Condition="Exists('$(FileReleaseNotes)') "
