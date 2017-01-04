@@ -149,7 +149,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
             text = text.Replace("${TOOLS_VERSION}$", ToolsVersion);
             text = text.Replace("${OUTPUT_PATH}$", targetOutputPath);
             text = text.Replace("${PROJECTS}$", string.Join(";", Projects.Select(p => GetAbsolutePath(p))));
-            text = text.Replace("${PROPERTIES}$", (Properties != null) ? string.Join(";", Properties.Select(p => p.ItemSpec)) : string.Empty);
             text = text.Replace("${TARGETS}$", !string.IsNullOrEmpty(Targets) ? Targets : string.Empty);
             text = text.Replace("${RUN_TARGETS_SEPARATELY}$", RunEachTargetSeparately.ToString());
             text = text.Replace("${SKIP_NONEXISTANT_PROJECTS}$", SkipNonexistentProjects.ToString());
