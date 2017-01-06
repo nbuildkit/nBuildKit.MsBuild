@@ -91,7 +91,7 @@ namespace NBuildKit.MsBuild.Tasks
         {
             const string MetadataTag = "Groups";
             var groups = step.GetMetadata(MetadataTag);
-            return groups.ToLower(CultureInfo.InvariantCulture).Split(';');
+            return groups.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => s.Trim());
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace NBuildKit.MsBuild.Tasks
 
             // Get groups and determine which steps should be executed
             var hasFailed = false;
-            var groups = Groups();
+            var groups = Groups().Select(s => s.ToLower(CultureInfo.InvariantCulture).Trim());
 
             var stepsToExecute = new List<ITaskItem>();
             foreach (var step in Projects)
@@ -153,8 +153,9 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     Log.LogMessage(
                         MessageImportance.Low,
-                        "Step {0} not included in execution list of {1}.",
+                        "Step {0} has tags {1} none of which are included in execution list of {2}.",
                         step.ItemSpec,
+                        string.Join(", ", stepGroups),
                         string.Join(", ", groups));
                     continue;
                 }
@@ -202,8 +203,9 @@ namespace NBuildKit.MsBuild.Tasks
                             {
                                 Log.LogMessage(
                                     MessageImportance.Low,
-                                    "Step {0} not included in execution list of {1}.",
+                                    "Step {0} has tags {1} none of which are included in execution list of {2}.",
                                     step.ItemSpec,
+                                    string.Join(", ", stepGroups),
                                     string.Join(", ", groups));
                                 continue;
                             }
