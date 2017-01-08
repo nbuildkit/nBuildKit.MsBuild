@@ -80,6 +80,7 @@
             true then the 'DirBuild' directory will be removed as well as all known generated files.
         -->
         <ShouldClean Condition=" '$(ShouldClean)' == '' AND '$(IsOnBuildServer)' != 'true' ">true</ShouldClean>
+        <ShouldClean Condition=" '$(ShouldClean)' == '' AND '$(IsOnBuildServer)' == 'true' ">false</ShouldClean>
 
         <!--
             A flag that indicates whether or not the Visual Studio temporary and output directories should be cleaned
