@@ -13,67 +13,8 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Deploy_PushTo_Tag_Vcs_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_Tag_Vcs_Run">
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_Tag_Vcs_Git" />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Deploy_PushTo_Tag_Vcs_DebugLog"
-        Name="_nBuildKit_Deploy_PushTo_Tag_Vcs_DisplayInfo">
-        <Message
-            Importance="low"
-            Text="Pushing tags to remote ..." />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Deploy_PushTo_Tag_Vcs_DebugLog">
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="Git command line executable is located at:                         $(ToolsExternalGitPath)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Condition=" '$(IsGitWorkspace)' == 'true' "
-            Importance="low"
-            Text="The current workspace is a GIT workspace" />
-        <Warning
-            Condition=" '$(IsGitWorkspace)' != 'true' "
-            Text="The current workspace does not have any identifying VCS information. No tags will be pushed" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Condition="Exists('$(DirWorkspace)\.git')"
-            Importance="low"
-            Text="Pushing GIT tags to:                                               $(GitRemoteRepository)" />
-        <Message
-            Importance="low"
-            Text=" " />
     </Target>
 
     <Target

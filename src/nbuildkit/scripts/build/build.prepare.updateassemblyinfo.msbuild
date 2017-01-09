@@ -17,59 +17,13 @@
         Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
         Name="nBuildKit_Build_Prepare_UpdateAssemblyInfo_Run">
         <CallTarget Targets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update" />
         <CallTarget Targets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_InternalsVisibleTo" />
     </Target>
 
     <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DebugLog">
-        <Message
-            Importance="low"
-            Text="Configuration values:" />
-        <Message
-            Importance="low"
-            Text="ShouldClean:             $(ShouldClean)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the source code is located at:            $(DirSrc)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-    </Target>
-
-    <Target
-        DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DebugLog"
-        Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo">
-        <Message
-            Importance="normal"
-            Text="Updating AssemblyInfo files ..." />
-    </Target>
-
-    <Target
         Condition=" '@(AssemblyInfoFilesToUpdate)' != '' "
-        DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
         Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_Update"
         Outputs="%(AssemblyInfoFilesToUpdate.Identity)">
         <AddOrUpdateAttributeInCode
@@ -138,7 +92,6 @@
 
     <Target
         Condition="  '@(AssemblyInfoFilesToUpdate)' != '' AND '@(InternalsVisibleTo)' != '' "
-        DependsOnTargets="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_DisplayInfo"
         Name="_nBuildKit_Build_Prepare_UpdateAssemblyInfo_InternalsVisibleTo"
         Outputs="%(AssemblyInfoFilesToUpdate.Identity)">
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('%(AssemblyInfoFilesToUpdate.Identity)'))">

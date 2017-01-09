@@ -72,14 +72,42 @@ namespace NBuildKit.MsBuild.Tasks
 
             var propertyArguments = new List<string>();
             var commandLineArguments = Environment.GetCommandLineArgs();
+
+            Log.LogMessage(
+                MessageImportance.Low,
+                "Searching for additional properties provided to current MsBuild instance ...");
             for (int i = 0; i < commandLineArguments.Length; i++)
             {
                 var argument = commandLineArguments[i];
+                Log.LogMessage(
+                    MessageImportance.Low,
+                    "Searching: {0}",
+                    argument);
 
                 var propertyMatch = regex.Match(argument);
                 if (propertyMatch.Success)
                 {
                     var property = propertyMatch.Groups[4].Value;
+
+                    Log.LogMessage(
+                        MessageImportance.Low,
+                        "Adding command line property key-value pair: {0}",
+                        property);
+                    propertyArguments.Add(property);
+                }
+            }
+
+            // Add the user provided properties
+            if (Properties != null)
+            {
+                foreach (var propertyPair in Properties)
+                {
+                    var property = propertyPair.ItemSpec;
+                    Log.LogMessage(
+                        MessageImportance.Low,
+                        "Adding user provided property key-value pair: {0}",
+                        property);
+
                     propertyArguments.Add(property);
                 }
             }

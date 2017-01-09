@@ -17,7 +17,6 @@
         Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Deploy_PushTo_SymbolServer_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_SymbolServer_Run">
         <CallTarget
             Condition=" '$(NuGetSymbolSourceUrl)' != '' AND '$(NuGetSymbolSourceUrl)' != 'UNDEFINED' "
@@ -29,55 +28,6 @@
         <Error
             Condition=" ('$(NuGetSymbolSourceUrl)' == '' OR '$(NuGetSymbolSourceUrl)' == 'UNDEFINED') AND ('$(SymbolServerUncPath)' == '' OR '$(SymbolServerUncPath)' == 'UNDEFINED') "
             Text="No symbol server path defined! Unable to push symbols." />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Deploy_PushTo_SymbolServer_DebugLog"
-        Name="_nBuildKit_Deploy_PushTo_SymbolServer_DisplayInfo">
-        <Message
-            Condition=" '$(NuGetSymbolSourceUrl)' == '' AND '$(NuGetSymbolSourceUrl)' != 'UNDEFINED' "
-            Importance="low"
-            Text="Pushing NuGet symbol packages to the specified NuGet symbol server ..." />
-        <Message
-            Condition=" '$(SymbolServerUncPath)' == '' AND '$(SymbolServerUncPath)' != 'UNDEFINED' "
-            Importance="low"
-            Text="Pushing NuGet symbol packages to the specified UNC path ..." />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Deploy_PushTo_SymbolServer_DebugLog">
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Condition=" '$(NuGetSymbolSourceUrl)' == '' AND '$(NuGetSymbolSourceUrl)' != 'UNDEFINED' "
-            Importance="low"
-            Text="Pushing symbol packages to:                                        $(NuGetSymbolSourceUrl)" />
-        <Message
-            Condition=" '$(SymbolServerUncPath)' == '' AND '$(SymbolServerUncPath)' != 'UNDEFINED' "
-            Importance="low"
-            Text="Pushing symbol packages to:                                        $(SymbolServerUncPath)" />
-        <Message
-            Importance="low"
-            Text=" " />
     </Target>
 
     <Target

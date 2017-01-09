@@ -17,57 +17,8 @@
         Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Build_Pack_NuGet_DisplayInfo"
         Name="nBuildKit_Build_Pack_NuGet_Run">
         <CallTarget Targets="_nBuildKit_Build_Pack_NuGet_Pack" />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Build_Pack_NuGet_DebugLog"
-        Name="_nBuildKit_Build_Pack_NuGet_DisplayInfo">
-        <Message
-            Importance="normal"
-            Text="Creating NuGet package..." />
-
-        <Error
-            Condition=" '@(NuGetPackageSpecs)' == '' "
-            Text="No NuGet spec files are specified!" />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Build_Pack_NuGet_DebugLog">
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Condition=" '@(NuGetPackageSpecs)' != '' "
-            Importance="low"
-            Text="The NuGet spec files are:" />
-        <Message
-            Condition=" '@(NuGetPackageSpecs)' != '' "
-            Importance="low"
-            Text="Template: %(NuGetPackageSpecs.Template) - Output: %(NuGetPackageSpecs.Identity)" />
     </Target>
 
     <!--

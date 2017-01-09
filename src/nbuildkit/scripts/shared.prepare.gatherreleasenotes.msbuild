@@ -28,7 +28,6 @@
         Project="$(ScriptWriteReleaseNotes)" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_GatherReleaseNotes_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromCustomAlgorithm"/>
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_IssuesFromGitHubMilestone" />
@@ -36,51 +35,6 @@
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToConsole" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToCustomFile" />
         <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DebugLog"
-        Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DisplayInfo">
-        <Message
-            Importance="normal"
-            Text="Gathering release notes ..." />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_DebugLog">
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                                      $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the NuGet packages is located at:                        $(DirPackages)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:                       $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:                     $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:                   $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="The semantic version file is located at:                                          $(FileSemanticVersion)" />
-        <Message
-            Importance="low"
-            Text="The text file containing the release notes for the current release is located at: $(FileReleaseNotes)" />
-        <Message
-            Importance="low"
-            Text=" " />
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites">

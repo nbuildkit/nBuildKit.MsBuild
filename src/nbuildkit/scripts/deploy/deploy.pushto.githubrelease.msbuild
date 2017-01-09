@@ -17,61 +17,9 @@
         Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitHubRelease_DisplayInfo"
         Name="nBuildKit_Deploy_PushTo_GitHubRelease_Run">
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion" />
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_Push" />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitHubRelease_DebugLog"
-        Name="_nBuildKit_Deploy_PushTo_GitHubRelease_DisplayInfo">
-        <Message
-            Condition=" '@(PushToGitHubReleaseSpecs)' != '' "
-            Importance="normal"
-            Text="Pushing artifacts to the GitHub release ..." />
-        <Message
-            Condition=" '@(PushToGitHubReleaseSpecs)' == '' "
-            Importance="normal"
-            Text="No releases defined!" />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Deploy_PushTo_GitHubRelease_DebugLog">
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="GitHub-Release command line executable is located at:              $(ToolsExternalGitHubReleasePath)" />
-        <Message
-            Importance="low"
-            Text=" " />
     </Target>
 
     <Target Name="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion">

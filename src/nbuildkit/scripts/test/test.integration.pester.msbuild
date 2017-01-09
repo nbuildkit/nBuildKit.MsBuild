@@ -17,66 +17,8 @@
         Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Test_Integration_Pester_DisplayInfo"
         Name="nBuildKit_Test_Integration_Pester_Run">
         <CallTarget Targets="nBuildKit_Test_Integration_Pester_Run" />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Test_Integration_Pester_DebugLog">
-        <Message
-            Importance="low"
-            Text="Configuration values:" />
-        <Message
-            Importance="low"
-            Text="ShouldClean:             $(ShouldClean)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the build output is located at:           $(DirBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the deliverables is located at:           $(DirBuildDeploy)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the build logs is located at:             $(DirBuildLogs)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the test files is located at:             $(DirTestLocal)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Test_Integration_Pester_DebugLog"
-        Name="_nBuildKit_Test_Integration_Pester_DisplayInfo">
-        <Message
-            Importance="normal"
-            Text="Executing pester tests ..." />
     </Target>
 
     <Target Name="_nBuildKit_Test_Integration_Pester_GetToolPaths">
