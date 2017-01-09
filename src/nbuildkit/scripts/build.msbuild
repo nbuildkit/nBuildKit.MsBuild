@@ -34,56 +34,9 @@
     </PropertyGroup>
 
     <Target
-        DependsOnTargets="_nBuildKit_Build_DisplayInfo"
         Name="nBuildKit_Build_Run">
         <!-- Execute all the build tasks in the given order -->
         <CallTarget Targets="_nBuildKit_Build_Execute" />
-    </Target>
-
-    <Target
-        DependsOnTargets="_nBuildKit_Build_DebugLog"
-        Name="_nBuildKit_Build_DisplayInfo">
-        <Message
-            Importance="normal"
-            Text="Building ..." />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Build_DebugLog">
-        <!-- Display the targets that will be executed -->
-        <Message
-            Condition=" '@(BuildStepsToExecute)' != ''"
-            Importance="low"
-            Text="Executing targets: @(BuildStepsToExecute->'%(identity)', '; ')" />
-        <Message
-            Condition=" '@(BuildStepsToExecute)' == ''"
-            Importance="low"
-            Text="Executing targets: NONE" />
-
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <!-- Display the known directories -->
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
     </Target>
 
     <Target

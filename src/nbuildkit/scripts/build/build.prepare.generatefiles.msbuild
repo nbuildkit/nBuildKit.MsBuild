@@ -18,42 +18,9 @@
 
     <Target
         Condition=" '@(BuildFilesToGenerate)' != '' "
-        DependsOnTargets="_nBuildKit_Build_Prepare_GenerateFiles_DisplayInfo"
         Name="nBuildKit_Build_Prepare_GenerateFiles_Run"
         Outputs="%(BuildFilesToGenerate.Identity)">
         <CallTarget Targets="_nBuildKit_Build_Prepare_GenerateFiles_GenerateFiles" />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Build_Prepare_GenerateFiles_DebugLog">
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Build_Prepare_GenerateFiles_DebugLog"
-        Name="_nBuildKit_Build_Prepare_GenerateFiles_DisplayInfo">
-        <Message
-            Importance="normal"
-            Text="Generating files ..." />
     </Target>
 
     <!-- Generate the required files -->

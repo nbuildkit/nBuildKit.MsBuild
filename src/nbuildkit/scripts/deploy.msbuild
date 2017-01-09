@@ -34,50 +34,8 @@
     </PropertyGroup>
 
     <Target
-        DependsOnTargets="_nBuildKit_Deploy_DisplayInfo;_nBuildKit_Deploy_Execute"
+        DependsOnTargets="_nBuildKit_Deploy_Execute"
         Name="nBuildKit_Deploy_Run">
-    </Target>
-
-    <Target
-        DependsOnTargets="_nBuildKit_Deploy_DebugLog"
-        Name="_nBuildKit_Deploy_DisplayInfo">
-        <Message
-            Importance="normal"
-            Text="Deploying ..." />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Deploy_DebugLog">
-        <!-- Display the targets that will be executed -->
-        <Message
-            Condition=" '@(DeployTasksToExecute)' != ''"
-            Importance="low"
-            Text="Executing targets: @(BuildTasksToExecute->'%(identity)', '; ')" />
-        <Message
-            Condition=" '@(DeployTasksToExecute)' == '' "
-            Importance="low"
-            Text="Executing targets: NONE" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <!-- Display the known directories -->
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The directory containing the local template files is located at:   $(DirTemplates)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
     </Target>
 
     <Target

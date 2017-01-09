@@ -17,78 +17,12 @@
         Project="$(FileNBuildKitExtensionsImport)" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_DisplayInfo"
         Name="nBuildKit_Build_Test_Unit_NUnit_Run">
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_Execute" />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_DebugLog"
-        Name="_nBuildKit_Build_Test_Unit_NUnit_DisplayInfo">
-        <Message
-            Importance="low"
-            Text="Running unit tests with NUnit ..." />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates"
-        Name="_nBuildKit_Build_Test_Unit_NUnit_DebugLog">
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                                     $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the OpenCover unit test coverage reports is located at: $(DirReportGeneratorOutput)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the NuGet packages is located at:                       $(DirPackages)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:                      $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:                    $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:                  $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="The OpenCover XML report will be located at:                                     $(FileReportOpenCoverXmlExpanded)" />
-        <Message
-            Importance="low"
-            Text="The OpenCover CSV report will be located at:                                     $(FileReportOpenCoverCsvExpanded)" />
-        <Message
-            Importance="low"
-            Text="The ReportGenerator XML summary report will be located at:                       $(FileReportReportGeneratorXmlSummary)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="nUnit command line executable is located at:                                     $(ToolsExternalNUnitConsolePath)" />
-        <Message
-            Importance="low"
-            Text="OpenCover command line executable is located at:                                 $(ToolsExternalOpenCoverPath)" />
-        <Message
-            Importance="low"
-            Text="ReportGenerator command line executable is located at:                           $(ToolsExternalReportGeneratorPath)" />
-        <Message
-            Importance="low"
-            Text=" " />
     </Target>
 
     <Target Name="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths">

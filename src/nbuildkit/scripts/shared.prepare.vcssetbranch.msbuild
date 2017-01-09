@@ -17,65 +17,8 @@
 
     <Target
         Condition=" '$(IsGitWorkspace)' == 'true' "
-        DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_VcsSetBranch_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch" />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog"
-        Name="_nBuildKit_Shared_Prepare_VcsSetBranch_DisplayInfo">
-        <Message
-            Importance="normal"
-            Text="Ensuring that the build is executed on the correct branch ..." />
-        <Message
-            Importance="normal"
-            Text="Expected branch: $(GitBranchExpected)" />
-        <Message
-            Importance="normal"
-            Text="Expected revision: $(GitRevNoExpected)" />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Shared_Prepare_VcsSetBranch_DebugLog">
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="GIT command line executable is located at:                         $(ToolsExternalGitPath)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Condition=" '$(IsGitWorkspace)' == 'true' "
-            Importance="low"
-            Text="The current workspace is a GIT workspace" />
-        <Warning
-            Condition=" '$(IsGitWorkspace)' != 'true' "
-            Text="The current workspace does not have any identifying VCS information. No VCS info file will be created" />
-        <Message
-            Importance="low"
-            Text=" " />
     </Target>
 
     <Target

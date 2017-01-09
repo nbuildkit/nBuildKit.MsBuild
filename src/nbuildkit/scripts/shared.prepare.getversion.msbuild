@@ -29,7 +29,6 @@
 
     <Target
         Condition="!Exists('$(FileSemanticVersion)')"
-        DependsOnTargets="_nBuildKit_Shared_Prepare_GetVersion_DisplayInfo"
         Name="nBuildKit_Shared_Prepare_GetVersion_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromCustomAlgorithm" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionFromMsBuildFile" />
@@ -38,65 +37,6 @@
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_WriteVersionsToFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals" />
         <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
-    </Target>
-
-    <Target
-        Condition="$(ShouldDisplayDebugLog)"
-        Name="_nBuildKit_Shared_Prepare_GetVersion_DebugLog">
-        <Message
-            Importance="low"
-            Text="Project directory structure:" />
-        <Message
-            Importance="low"
-            Text="The workspace is located at:                                       $(DirWorkspace)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the temporary build files is located at:  $(DirBuildTemp)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the NuGet packages is located at:         $(DirPackages)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit files is located at:        $(DirNBuildKitMsBuild)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit scripts is located at:      $(DirNBuildKitMsBuildExtensions)" />
-        <Message
-            Importance="low"
-            Text="The directory containing the nBuildKit templates is located at:    $(DirNBuildKitMsBuildTemplates)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="The semantic version file is located at:                           $(FileSemanticVersion)" />
-        <Message
-            Condition="Exists('$(FileVersionMsBuild)')"
-            Importance="low"
-            Text="The MsBuild XML version file is located at:                        $(FileVersionMsBuild)" />
-        <Message
-            Importance="low"
-            Text=" " />
-
-        <Message
-            Importance="low"
-            Text="GitHubFlowVersion command line executable is located at:           $(ToolsExternalGitHubFlowVersionPath)" />
-        <Message
-            Importance="low"
-            Text="GitVersion command line executable is located at:                  $(ToolsExternalGitVersionPath)" />
-        <Message
-            Importance="low"
-            Text=" " />
-    </Target>
-
-    <!-- Display info -->
-    <Target
-        DependsOnTargets="_nBuildKit_Shared_Prepare_GetVersion_DebugLog"
-        Name="_nBuildKit_Shared_Prepare_GetVersion_DisplayInfo">
-        <Message
-            Importance="normal"
-            Text="Getting version ..." />
     </Target>
 
     <Target
