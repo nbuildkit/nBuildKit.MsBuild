@@ -119,10 +119,12 @@
                 PropertyName="FilesAssembliesExcluded"
                 TaskParameter="Result" />
         </TemplateText>
+        <CreateProperty Value="$(FilesAssembliesExcluded);$(FilePrimaryAssembly)">
+            <Output
+                PropertyName="FilesAssembliesExcluded"
+                TaskParameter="Value" />
+        </CreateProperty>
 
-        <Message
-            Importance="low"
-            Text="Creating NuGet package from: $(FileNuGetNuSpec)" />
         <MakeDir
             Condition="!Exists('$(DirBuildDeploy)')"
             Directories="$(DirBuildDeploy)" />
