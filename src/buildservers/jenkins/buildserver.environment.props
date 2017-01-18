@@ -20,71 +20,19 @@
         <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND '$(IsOnJenkinsBuildServer)' == 'true'">true</IsOnBuildServer>
 
         <!-- Git parameters -->
-        <JenkinsGitBranchExpectedHeader>origin/</JenkinsGitBranchExpectedHeader>
-
         <GitBranchExpected>UNDEFINED</GitBranchExpected>
-        <GitBranchExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' AND '$(GIT_BRANCH)' != '' " >$(GIT_BRANCH.SubString($(JenkinsGitBranchExpectedHeader.Length)))</GitBranchExpected>
+        <GitBranchExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' ">$(GIT_LOCAL_BRANCH)</GitBranchExpected>
 
         <GitRevNoExpected>UNDEFINED</GitRevNoExpected>
         <GitRevNoExpected Condition=" '$(IsOnJenkinsBuildServer)' == 'True' ">$(GIT_COMMIT)</GitRevNoExpected>
     </PropertyGroup>
 
-
-    <!--
-        **** BUILD STEPS ****
-    -->
-    <!--
-        The following ItemGroup prepends build steps to the list of build steps to be taken. This way it is possible to execute
-        additional steps on the build server on top of what is happening on a developer machine.
-    -->
-    <ItemGroup>
-        <!--
-        <BuildStepsToExecute Include="$(MSBuildThisFileDirectory)shared.prepare.tfs2013.msbuild">
-            <Properties>
-            </Properties>
-            <Groups>
-            </Groups>
-        </BuildStepsToExecute>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** TEST STEPS ****
-    -->
-    <!--
-        The following ItemGroup prepends build steps to the list of test steps to be taken. This way it is possible to execute
-        additional steps on the build server on top of what is happening on a developer machine.
-    -->
-    <ItemGroup>
-        <!--
-        <TestStepsToExecute Include="$(MSBuildThisFileDirectory)shared.prepare.tfs2013.msbuild">
-            <Properties>
-            </Properties>
-            <Groups>
-            </Groups>
-        </TestStepsToExecute>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** DEPLOY STEPS ****
-    -->
-    <!--
-        The following ItemGroup prepends build steps to the list of deploy steps to be taken. This way it is possible to execute
-        additional steps on the build server on top of what is happening on a developer machine.
-    -->
-    <ItemGroup>
-        <!--
-        <DeployStepsToExecute Include="$(MSBuildThisFileDirectory)shared.prepare.tfs2013.msbuild">
-            <Properties>
-            </Properties>
-            <Groups>
-            </Groups>
-        </DeployStepsToExecute>
-        -->
-    </ItemGroup>
+    <PropertyGroup>
+        <FileBuildServerEnvironmentShared>$(MSBuildThisFileDirectory)buildserver.environment.shared.props</FileBuildServerEnvironmentShared>
+    </PropertyGroup>
+    <Import
+        Condition="Exists('$(FileBuildServerEnvironmentShared)') AND '$(ExistsBuildServerEnvironmentSharedSettings)' != 'true' "
+        Project="$(FileBuildServerEnvironmentShared)" />
 
 
 

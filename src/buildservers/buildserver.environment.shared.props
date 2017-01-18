@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** BUILD STEPS ****
+    -->
+    <!--
+        The following ItemGroup prepends build steps to the list of build steps to be taken. This way it is possible to execute
+        additional steps on the build server on top of what is happening on a developer machine.
+    -->
+    <ItemGroup>
+        <!--
+        <BuildStepsToExecute Include="$(MSBuildThisFileDirectory)shared.prepare.tfs2013.msbuild">
+            <Properties>
+            </Properties>
+            <Groups>
+            </Groups>
+        </BuildStepsToExecute>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** TEST STEPS ****
+    -->
+    <!--
+        The following ItemGroup prepends build steps to the list of test steps to be taken. This way it is possible to execute
+        additional steps on the build server on top of what is happening on a developer machine.
+    -->
+    <ItemGroup>
+        <!--
+        <TestStepsToExecute Include="$(MSBuildThisFileDirectory)shared.prepare.tfs2013.msbuild">
+            <Properties>
+            </Properties>
+            <Groups>
+            </Groups>
+        </TestStepsToExecute>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** DEPLOY STEPS ****
+    -->
+    <!--
+        The following ItemGroup prepends build steps to the list of deploy steps to be taken. This way it is possible to execute
+        additional steps on the build server on top of what is happening on a developer machine.
+    -->
+    <ItemGroup>
+        <!--
+        <DeployStepsToExecute Include="$(MSBuildThisFileDirectory)shared.prepare.tfs2013.msbuild">
+            <Properties>
+            </Properties>
+            <Groups>
+            </Groups>
+        </DeployStepsToExecute>
+        -->
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildServerEnvironmentSharedSettings>true</ExistsBuildServerEnvironmentSharedSettings>
+        <VersionBuildServerEnvironmentSettings>1.0.0</VersionBuildServerEnvironmentSettings>
+    </PropertyGroup>
+</Project>
