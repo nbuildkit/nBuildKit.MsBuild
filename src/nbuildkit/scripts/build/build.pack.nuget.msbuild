@@ -81,7 +81,13 @@
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
         <CreateItem
-            Exclude="$(FilesNuGetDependenciesExcluded.Split(';'))"
+            Include="$(FilesNuGetDependenciesExcluded.Split(';'))">
+            <Output
+                ItemName="ExcludedPackageDependencies"
+                TaskParameter="Include" />
+        </CreateItem>
+        <CreateItem
+            Exclude="@(ExcludedPackageDependencies -> '%(FullPath)')"
             Include="$(FilesNuGetDependenciesIncluded.Split(';'))">
             <Output
                 ItemName="PackageDependencies"

@@ -103,7 +103,13 @@
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
         <CreateItem
-            Exclude="$(GitHubReleaseExcludedFiles.Split(';'))"
+            Include="$(GitHubReleaseExcludedFiles.Split(';'))">
+            <Output
+                ItemName="FilesToExcludeFromGitHubRelease"
+                TaskParameter="Include" />
+        </CreateItem>
+        <CreateItem
+            Exclude="@(FilesToExcludeFromGitHubRelease -> '%(FullPath)')"
             Include="$(GitHubReleaseIncludedFiles.Split(';'))">
             <Output
                 ItemName="GitHubReleaseFiles"

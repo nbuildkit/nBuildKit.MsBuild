@@ -139,19 +139,25 @@
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
         <CreateItem
-            Exclude="$(FilesAssembliesExcluded.Split(';'))"
+            Include="$(FilesAssembliesExcluded.Split(';'))">
+            <Output
+                ItemName="AssembliesToExcludeFromMerging"
+                TaskParameter="Include" />
+        </CreateItem>
+        <CreateItem
+            Exclude="@(AssembliesToExcludeFromMerging -> '%(FullPath)')"
             Include="$(FilesAssembliesIncluded.Split(';'))">
             <Output
-                ItemName="AssembliesToMerge"
+                ItemName="AssembliesToMergeIntoThePrimaryAssembly"
                 TaskParameter="Include" />
         </CreateItem>
 
         <Message
             Importance="normal"
-            Text="Merging $(FilePrimaryAssembly) and @(AssembliesToMerge) into $(FileMergedAssembly) ..." />
+            Text="Merging $(FilePrimaryAssembly) and @(AssembliesToMergeIntoThePrimaryAssembly) into $(FileMergedAssembly) ..." />
 
         <ILRepack
-            AssembliesToMerge="@(AssembliesToMerge)"
+            AssembliesToMerge="@(AssembliesToMergeIntoThePrimaryAssembly)"
             ILRepackExe="$(ToolsExternalILRepackPath)"
             KeyFile="$(ILRepackStrongNameFile)"
             LogFile="$(DirBuildLogs)\$([System.IO.Path]::GetFileNameWithoutExtension('$(FilePrimaryAssembly)')).ilrepack.log"

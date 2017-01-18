@@ -62,7 +62,13 @@
             created properties doesn't work because the wildcards are not always expanded for some reason.
         -->
         <CreateItem
-            Exclude="$(FilesPushToExcluded.Split(';'))"
+            Include="$(FilesPushToExcluded.Split(';'))">
+            <Output
+                ItemName="FilesToExcludeFromPush"
+                TaskParameter="Include" />
+        </CreateItem>
+        <CreateItem
+            Exclude="@(FilesToExcludeFromPush -> '%(FullPath)')"
             Include="$(FilesPushToIncluded.Split(';'))">
             <Output
                 ItemName="FilesToPush"
