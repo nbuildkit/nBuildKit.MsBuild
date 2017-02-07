@@ -55,21 +55,21 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// Append the escaped version of the given string to a <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="sb">The <see cref="StringBuilder"/> to which to append.</param>
-        /// <param name="unescapedString">The unescaped string.</param>
-        private static void AppendEscapedString(StringBuilder sb, string unescapedString)
+        /// <param name="text">The unescaped string.</param>
+        private static void AppendEscapedString(StringBuilder sb, string text)
         {
             // Replace each unescaped special character with an escape sequence one
             for (int idx = 0; ;)
             {
-                int nextIdx = unescapedString.IndexOfAny(_charsToEscape, idx);
+                int nextIdx = text.IndexOfAny(_charsToEscape, idx);
                 if (nextIdx == -1)
                 {
-                    sb.Append(unescapedString, idx, unescapedString.Length - idx);
+                    sb.Append(text, idx, text.Length - idx);
                     break;
                 }
 
-                sb.Append(unescapedString, idx, nextIdx - idx);
-                AppendEscapedChar(sb, unescapedString[nextIdx]);
+                sb.Append(text, idx, nextIdx - idx);
+                AppendEscapedChar(sb, text[nextIdx]);
                 idx = nextIdx + 1;
             }
         }
@@ -79,41 +79,41 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// if escaping is necessary at all.  This can save lots of calls to copy around item metadata
         /// that is really the same whether escaped or not.
         /// </summary>
-        /// <param name="unescapedString">The unescaped string</param>
+        /// <param name="text">The unescaped string</param>
         /// <returns>true if the string contains any of the characters that need to be escaped, otherwise false.</returns>
-        private static bool ContainsReservedCharacters(string unescapedString)
+        private static bool ContainsReservedCharacters(string text)
         {
-            return unescapedString.IndexOfAny(_charsToEscape) != -1;
+            return text.IndexOfAny(_charsToEscape) != -1;
         }
 
         /// <summary>
         /// Adds instances of %XX in the input string where the char to be escaped appears
         /// XX is the hex value of the ASCII code for the char.
         /// </summary>
-        /// <param name="unescapedString">The string to escape.</param>
+        /// <param name="text">The string to escape.</param>
         /// <returns>escaped string</returns>
-        internal static string Escape(string unescapedString)
+        public static string Escape(string text)
         {
-            return EscapeWithOptionalCaching(unescapedString, cache: false);
+            return EscapeWithOptionalCaching(text, cache: false);
         }
 
         /// <summary>
         /// Adds instances of %XX in the input string where the char char to be escaped appears
         /// XX is the hex value of the ASCII code for the char.  Caches if requested.
         /// </summary>
-        /// <param name="unescapedString">The string to escape.</param>
+        /// <param name="text">The string to escape.</param>
         /// <param name="cache">
         /// True if the cache should be checked, and if the resultant string
         /// should be cached.
         /// </param>
         /// <returns>The escaped string.</returns>
-        private static string EscapeWithOptionalCaching(string unescapedString, bool cache)
+        private static string EscapeWithOptionalCaching(string text, bool cache)
         {
             // If there are no special chars, just return the original string immediately.
             // Don't even instantiate the StringBuilder.
-            if (string.IsNullOrEmpty(unescapedString) || !ContainsReservedCharacters(unescapedString))
+            if (string.IsNullOrEmpty(text) || !ContainsReservedCharacters(text))
             {
-                return unescapedString;
+                return text;
             }
 
             // next, if we're caching, check to see if it's already there.
@@ -122,7 +122,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 string cachedEscapedString = null;
                 lock (_unescapedToEscapedStrings)
                 {
-                    if (_unescapedToEscapedStrings.TryGetValue(unescapedString, out cachedEscapedString))
+                    if (_unescapedToEscapedStrings.TryGetValue(text, out cachedEscapedString))
                     {
                         return cachedEscapedString;
                     }
@@ -130,9 +130,9 @@ namespace NBuildKit.MsBuild.Tasks.Core
             }
 
             // This is where we're going to build up the final string to return to the caller.
-            StringBuilder escapedStringBuilder = new StringBuilder(unescapedString.Length * 2);
+            StringBuilder escapedStringBuilder = new StringBuilder(text.Length * 2);
 
-            AppendEscapedString(escapedStringBuilder, unescapedString);
+            AppendEscapedString(escapedStringBuilder, text);
 
             if (!cache)
             {
@@ -142,7 +142,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
             string escapedString = escapedStringBuilder.ToString();
             lock (_unescapedToEscapedStrings)
             {
-                _unescapedToEscapedStrings[unescapedString] = escapedString;
+                _unescapedToEscapedStrings[text] = escapedString;
             }
 
             return escapedString;
@@ -169,42 +169,42 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// Replaces all instances of %XX in the input string with the character represented
         /// by the hexadecimal number XX.
         /// </summary>
-        /// <param name="escapedString">The string to unescape.</param>
+        /// <param name="text">The string to unescape.</param>
         /// <returns>unescaped string</returns>
-        internal static string UnescapeAll(string escapedString)
+        public static string UnescapeAll(string text)
         {
             bool throwAwayBool;
-            return UnescapeAll(escapedString, out throwAwayBool);
+            return UnescapeAll(text, out throwAwayBool);
         }
 
         /// <summary>
         /// Replaces all instances of %XX in the input string with the character represented
         /// by the hexadecimal number XX.
         /// </summary>
-        /// <param name="escapedString">The string to unescape.</param>
+        /// <param name="text">The string to unescape.</param>
         /// <param name="escapingWasNecessary">Whether any replacements were made.</param>
         /// <returns>unescaped string</returns>
-        internal static string UnescapeAll(string escapedString, out bool escapingWasNecessary)
+        public static string UnescapeAll(string text, out bool escapingWasNecessary)
         {
             escapingWasNecessary = false;
 
             // If the string doesn't contain anything, then by definition it doesn't
             // need unescaping.
-            if (string.IsNullOrEmpty(escapedString))
+            if (string.IsNullOrEmpty(text))
             {
-                return escapedString;
+                return text;
             }
 
             // If there are no percent signs, just return the original string immediately.
             // Don't even instantiate the StringBuilder.
-            int indexOfPercent = escapedString.IndexOf('%');
+            int indexOfPercent = text.IndexOf('%');
             if (indexOfPercent == -1)
             {
-                return escapedString;
+                return text;
             }
 
             // This is where we're going to build up the final string to return to the caller.
-            StringBuilder unescapedString = new StringBuilder(escapedString.Length);
+            StringBuilder unescapedString = new StringBuilder(text.Length);
 
             int currentPosition = 0;
 
@@ -213,14 +213,14 @@ namespace NBuildKit.MsBuild.Tasks.Core
             {
                 // There must be two hex characters following the percent sign
                 // for us to even consider doing anything with this.
-                if ((indexOfPercent <= (escapedString.Length - 3)) && IsHexDigit(escapedString[indexOfPercent + 1]) && IsHexDigit(escapedString[indexOfPercent + 2]))
+                if ((indexOfPercent <= (text.Length - 3)) && IsHexDigit(text[indexOfPercent + 1]) && IsHexDigit(text[indexOfPercent + 2]))
                 {
                     // First copy all the characters up to the current percent sign into
                     // the destination.
-                    unescapedString.Append(escapedString, currentPosition, indexOfPercent - currentPosition);
+                    unescapedString.Append(text, currentPosition, indexOfPercent - currentPosition);
 
                     // Convert the %XX to an actual real character.
-                    string hexString = escapedString.Substring(indexOfPercent + 1, 2);
+                    string hexString = text.Substring(indexOfPercent + 1, 2);
                     char unescapedCharacter = (char)int.Parse(
                         hexString,
                         NumberStyles.HexNumber,
@@ -237,12 +237,12 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 }
 
                 // Find the next percent sign.
-                indexOfPercent = escapedString.IndexOf('%', indexOfPercent + 1);
+                indexOfPercent = text.IndexOf('%', indexOfPercent + 1);
             }
 
             // Okay, there are no more percent signs in the input string, so just copy the remaining
             // characters into the destination.
-            unescapedString.Append(escapedString, currentPosition, escapedString.Length - currentPosition);
+            unescapedString.Append(text, currentPosition, text.Length - currentPosition);
 
             return unescapedString.ToString();
         }

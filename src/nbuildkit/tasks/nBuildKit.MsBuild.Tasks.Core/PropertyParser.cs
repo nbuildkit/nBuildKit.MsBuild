@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using Microsoft.Build.Framework;
@@ -34,26 +35,31 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <param name="log">The logger.</param>
         /// <param name="parameterName">The name of the parameter.</param>
         /// <param name="syntaxName">The name of the syntax element.</param>
-        /// <param name="propertyNameValueStrings">The list of properties.</param>
+        /// <param name="propertyNameValues">The list of properties.</param>
         /// <param name="finalPropertiesTable">The resulting hashtable containing the properties and their values.</param>
         /// <returns>true on success, false on failure.</returns>
-        internal static bool GetTableWithEscaping(
+        [SuppressMessage(
+            "Microsoft.Design",
+            "CA1062:Validate arguments of public methods",
+            MessageId = "4",
+            Justification = "finalPropertiesTable is not an argument, it's an out variable that is initialized.")]
+        public static bool GetTableWithEscaping(
             TaskLoggingHelper log,
             string parameterName,
             string syntaxName,
-            string[] propertyNameValueStrings,
+            string[] propertyNameValues,
             out Hashtable finalPropertiesTable)
         {
             finalPropertiesTable = null;
 
-            if (propertyNameValueStrings != null)
+            if (propertyNameValues != null)
             {
                 finalPropertiesTable = new Hashtable(StringComparer.OrdinalIgnoreCase);
                 List<PropertyNameValuePair> finalPropertiesList = new List<PropertyNameValuePair>();
 
                 // Loop through the array.  Each string in the array should be of the form:
                 //          MyPropName=MyPropValue
-                foreach (string propertyNameValueString in propertyNameValueStrings)
+                foreach (string propertyNameValueString in propertyNameValues)
                 {
                     // Find the first '=' sign in the string.
                     int indexOfEqualsSign = propertyNameValueString.IndexOf('=');
