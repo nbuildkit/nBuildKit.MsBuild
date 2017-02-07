@@ -65,18 +65,15 @@
     <Compile Include="Code\AddOrUpdateAttributeInCode.cs" />
     <Compile Include="Code\GetProjectsFromVisualStudioSolution.cs" />
     <Compile Include="Code\ILRepack.cs" />
-    <Compile Include="EscapingUtilities.cs" />
     <Compile Include="MsBuildCommandLineToolTask.cs" />
     <Compile Include="MsBuildLog.cs" />
     <Compile Include="Script\InvokeSteps.cs" />
     <Compile Include="PowershellCommandLineToolTask.cs" />
-    <Compile Include="PropertyParser.cs" />
     <Compile Include="Script\InvokePowershellCommand.cs" />
     <Compile Include="Script\InvokePowershellFile.cs" />
     <Compile Include="Script\InvokeStandaloneMsBuild.cs" />
     <Compile Include="Templating\GenerateSpecialParameterTemplateTokens.cs" />
     <Compile Include="Versions\CalculateSemanticVersionWithGitVersion.cs" />
-    <Compile Include="CommandLineToolTask.cs" />
     <Compile Include="VersionControl\ExtractIssueIdsFromGitCommitMessages.cs" />
     <Compile Include="Templating\FindAndReplaceInFile.cs" />
     <Compile Include="Templating\FindAndReplaceInText.cs" />
@@ -111,7 +108,6 @@
     <Compile Include="Testing\InvokePesterOnFile.cs" />
     <Compile Include="Groups\IsInCollection.cs" />
     <Compile Include="Groups\LastItemInGroup.cs" />
-    <Compile Include="NBuildKitMsBuildTask.cs" />
     <Compile Include="Nuclei\AppDomains\AppDomainBuilder.cs" />
     <Compile Include="Nuclei\AppDomains\AppDomainBuilder.DirectoryBasedResolver.cs" />
     <Compile Include="Nuclei\AppDomains\AppDomainBuilder.FileBasedResolver.cs" />
@@ -142,7 +138,6 @@
     <Compile Include="SetEnvironmentVariable.cs" />
     <Compile Include="FileSystem\SortFilesByDirectory.cs" />
     <Compile Include="FileSystem\SortItemGroupByKey.cs" />
-    <Compile Include="TaskItemExtensions.cs" />
     <Compile Include="Templating\TemplateFile.cs" />
     <Compile Include="Templating\TemplateText.cs" />
     <Compile Include="Packaging\Unzip.cs" />
@@ -160,6 +155,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Script\MsBuildTemplate.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\nBuildKit.MsBuild.Tasks.Core\nBuildKit.MsBuild.Tasks.Core.csproj">
+      <Project>{419a1a8e-f3cc-4ce1-9294-6b7fbb7ee96d}</Project>
+      <Name>nBuildKit.MsBuild.Tasks.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

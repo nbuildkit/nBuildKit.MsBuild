@@ -7,6 +7,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using NBuildKit.MsBuild.Tasks.Tests;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Script

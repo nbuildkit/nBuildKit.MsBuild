@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace NBuildKit.MsBuild.Tasks
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// This class implements static methods to assist with unescaping of %XX codes
@@ -20,7 +20,7 @@ namespace NBuildKit.MsBuild.Tasks
     /// Taken from here: https://github.com/Microsoft/msbuild/blob/master/src/Shared/EscapingUtilities.cs
     /// because it is internal so we can't get to it.
     /// </remarks>
-    internal static class EscapingUtilities
+    public static class EscapingUtilities
     {
         /// <summary>
         /// Special characters that need escaping.

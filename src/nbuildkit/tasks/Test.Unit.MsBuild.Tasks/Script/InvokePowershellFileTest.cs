@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Tests;
 using Nuclei;
 using NUnit.Framework;
 

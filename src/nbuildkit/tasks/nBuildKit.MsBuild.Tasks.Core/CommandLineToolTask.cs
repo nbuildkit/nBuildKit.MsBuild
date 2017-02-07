@@ -15,7 +15,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
 
-namespace NBuildKit.MsBuild.Tasks
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that invoke a command line tool.

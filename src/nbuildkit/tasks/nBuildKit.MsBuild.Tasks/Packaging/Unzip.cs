@@ -7,6 +7,7 @@
 
 using System.IO.Compression;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Packaging
 {

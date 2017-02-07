@@ -11,8 +11,11 @@ using System.Globalization;
 using Microsoft.Build.Framework;
 using Moq;
 
-namespace NBuildKit.MsBuild.Tasks
+namespace NBuildKit.MsBuild.Tasks.Tests
 {
+    /// <summary>
+    /// Defines a set of default methods and properties helpful when testing MsBuild <see cref="ITask"/> implementations.
+    /// </summary>
     public abstract class TaskTest
     {
         private readonly List<string> _errorMessages = new List<string>();
@@ -21,6 +24,9 @@ namespace NBuildKit.MsBuild.Tasks
 
         private Mock<IBuildEngine> _buildEngine;
 
+        /// <summary>
+        /// Gets the <see cref="IBuildEngine"/> instance that can be used as a mock MsBuild build engine.
+        /// </summary>
         protected Mock<IBuildEngine> BuildEngine
         {
             get
@@ -29,6 +35,9 @@ namespace NBuildKit.MsBuild.Tasks
             }
         }
 
+        /// <summary>
+        /// Initializes the build engine.
+        /// </summary>
         public void InitializeBuildEngine()
         {
             _errorMessages.Clear();
@@ -49,6 +58,12 @@ namespace NBuildKit.MsBuild.Tasks
             }
         }
 
+        /// <summary>
+        /// Verifies the number of log messages that should have been recorded.
+        /// </summary>
+        /// <param name="numberOfErrorMessages">The number of error messages that should have been recorded.</param>
+        /// <param name="numberOfWarningMessages">The number of warning messages that should have been recorded.</param>
+        /// <param name="numberOfNormalMessages">The number of log messages that should have been recorded.</param>
         public void VerifyNumberOfLogMessages(int numberOfErrorMessages = -1, int numberOfWarningMessages = -1, int numberOfNormalMessages = -1)
         {
             if (numberOfErrorMessages > -1)

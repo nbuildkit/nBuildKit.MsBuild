@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 using NuGet.Versioning;
 
 namespace NBuildKit.MsBuild.Tasks.Packaging

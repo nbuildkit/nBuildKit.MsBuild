@@ -7,7 +7,7 @@
 
 using Microsoft.Build.Framework;
 
-namespace NBuildKit.MsBuild.Tasks
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines extension methods for the <see cref="ITaskItem"/> instances.

@@ -13,7 +13,7 @@ using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace NBuildKit.MsBuild.Tasks
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines helper methods for parsing properties from strings.
@@ -22,7 +22,7 @@ namespace NBuildKit.MsBuild.Tasks
     /// Taken from here: https://github.com/Microsoft/msbuild/blob/master/src/Shared/PropertyParser.cs because it is not
     /// available in MsBuild due to it being internal.
     /// </remarks>
-    internal static class PropertyParser
+    public static class PropertyParser
     {
         /// <summary>
         /// Given a string of semi-colon delimited name=value pairs, this method parses it and creates

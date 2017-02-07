@@ -13,6 +13,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Xml;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Packaging
 {
