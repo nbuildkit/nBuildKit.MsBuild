@@ -232,5 +232,45 @@ namespace NBuildKit.MsBuild.Tasks.Core
 
             return result;
         }
+
+        /// <summary>
+        /// Returns the absolute path for the given path item.
+        /// </summary>
+        /// <param name="path">The path</param>
+        /// <param name="basePath">The full path to the base directory.</param>
+        /// <returns>The absolute path.</returns>
+        protected string GetAbsolutePath(ITaskItem path, ITaskItem basePath)
+        {
+            return GetAbsolutePath(path?.ItemSpec, basePath?.ItemSpec);
+        }
+
+        /// <summary>
+        /// Returns the absolute path for the given path item.
+        /// </summary>
+        /// <param name="path">The path</param>
+        /// <param name="basePath">The full path to the base directory.</param>
+        /// <returns>The absolute path.</returns>
+        protected string GetAbsolutePath(string path, string basePath)
+        {
+            Log.LogMessage(
+                MessageImportance.Low,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "Searching for full path of {0}",
+                    path));
+
+            var result = path;
+            if (string.IsNullOrEmpty(result))
+            {
+                return string.Empty;
+            }
+
+            if (!Path.IsPathRooted(result))
+            {
+                result = Path.GetFullPath(Path.Combine(basePath, result));
+            }
+
+            return result;
+        }
     }
 }
