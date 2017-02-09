@@ -12,10 +12,18 @@
         Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props" />
 
-    <!-- Import the standard template token files -->
     <PropertyGroup>
         <LoadTemplateTokens Condition=" '$(LoadTemplateTokens)' == '' ">true</LoadTemplateTokens>
     </PropertyGroup>
+
+    <!--
+        Load the user defined shared settings file
+    -->
+    <Import
+        Condition="Exists('$(DirUserShared)\shared.importsharedsettings.props') AND '$(ExistsSharedUserImportSharedSettings)' != 'true' "
+        Project="$(DirUserShared)\shared.importsharedsettings.props" />
+
+    <!-- Import the standard template token files -->
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
         Project="$(DirNBuildKitMsBuild)\templatetokens.*.props" />

@@ -13,16 +13,25 @@
         Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props" />
 
     <PropertyGroup>
-        <DeployPropertyFile>$(DirUserSettings)\deploy.settings.props</DeployPropertyFile>
+        <LoadTemplateTokens Condition=" '$(LoadTemplateTokens)' == '' ">true</LoadTemplateTokens>
     </PropertyGroup>
 
-    <!-- Import the settings files that has all the overriden settings -->
     <!--
-        Note that we rely on loading the user settings file first so that the 'TemplateVersion' items created by the user are first in their list.
+        Load the user defined shared settings file
     -->
+    <Import
+        Condition="Exists('$(DirUserShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedUserImportDeploySharedSettings)' != 'true' "
+        Project="$(DirUserShared)\shared.importdeploysharedsettings.props" />
+
+    <!-- Import the steps -->
     <Import
         Condition="Exists('$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' "
         Project="$(DirNBuildKitMsBuild)\deploy\shared.deploysteps.msbuild" />
+
+    <!-- Import the settings files -->
+    <PropertyGroup>
+        <DeployPropertyFile>$(DirUserSettings)\deploy.settings.props</DeployPropertyFile>
+    </PropertyGroup>
     <Import
         Condition="Exists('$(DirNBuildKitMsBuild)\deploy\deploy.shared.preuser.props') AND '$(ExistsDeployPreUserSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuild)\deploy\deploy.shared.preuser.props" />
@@ -34,9 +43,6 @@
         Project="$(DirNBuildKitMsBuild)\deploy\deploy.shared.postuser.props" />
 
     <!-- Import the standard template token files -->
-    <PropertyGroup>
-        <LoadTemplateTokens Condition=" '$(LoadTemplateTokens)' == '' ">true</LoadTemplateTokens>
-    </PropertyGroup>
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
         Project="$(DirNBuildKitMsBuild)\templatetokens.*.props" />
