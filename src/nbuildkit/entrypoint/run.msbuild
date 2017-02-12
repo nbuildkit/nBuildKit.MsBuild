@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Directories -->
+        <!--
+            The workspace directory is defined as the directory that is the top-level directory in which all the
+            files for the build, test, deploy stage can be found. During the process there should never be a need
+            to go any futher up the directory hierarchy to find files.
+
+            Note: Do NOT include a trailing backslash in this property
+        -->
+        <DirWorkspace Condition=" '$(DirWorkspace)' == '' ">UNDEFINED</DirWorkspace>
+
+        <FileSharedImports>$(MSBuildThisFileDirectory)import.shared.props</FileSharedImports>
+        <FileBuildImports>$(MSBuildThisFileDirectory)import.build.props</FileBuildImports>
+        <FileTestImports>$(MSBuildThisFileDirectory)import.test.props</FileTestImports>
+        <FileDeployImports>$(MSBuildThisFileDirectory)import.deploy.props</FileDeployImports>
+    </PropertyGroup>
+
+    <!--
+        Invoke the build steps as defined by the 'build.settings.props' file by invoking the 'build' target
+        on the 'build.msbuild' script in the 'nBuildKit.MsBuild' NuGet package
+        and passing the path to the workspace directory and the configuration files. Parameters provided by the
+        user are passed through by default.
+    -->
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_Run_SetNBuildKitPhaseFileName_Build;_nBuildKit_EntryPoint_Run_Execute"
+        Name="Build">
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_Run_SetNBuildKitPhaseFileName_Build">
+        <PropertyGroup>
+            <TargetToExecute>build</TargetToExecute>
+            <FileImportProperties>
+                FileSharedImports=$(FileSharedImports);
+                FileBuildImports=$(FileBuildImports);
+            </FileImportProperties>
+        </PropertyGroup>
+    </Target>
+
+    <!--
+        Invoke the test steps as defined by the 'test.settings.props' file by invoking the 'test' target
+        on the 'test.msbuild' script in the 'nBuildKit.MsBuild' NuGet package
+        and passing the path to the workspace directory and the configuration files. Parameters provided by the
+        user are passed through by default.
+    -->
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_Run_SetNBuildKitPhaseFileName_Test;_nBuildKit_EntryPoint_Run_Execute"
+        Name="Test">
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_Run_SetNBuildKitPhaseFileName_Test">
+        <PropertyGroup>
+            <TargetToExecute>test</TargetToExecute>
+            <FileImportProperties>
+                FileSharedImports=$(FileSharedImports);
+                FileTestImports=$(FileTestImports);
+            </FileImportProperties>
+        </PropertyGroup>
+    </Target>
+
+    <!--
+        Invoke the deploy steps as defined by the 'deploy.settings.props' file by invoking the 'deploy' target
+        on the 'deploy.msbuild' script in the 'nBuildKit.MsBuild' NuGet package
+        and passing the path to the workspace directory and the configuration files. Parameters provided by the
+        user are passed through by default.
+    -->
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_Run_SetNBuildKitPhaseFileName_Deploy;_nBuildKit_EntryPoint_Run_Execute"
+        Name="Deploy">
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_Run_SetNBuildKitPhaseFileName_Deploy">
+        <PropertyGroup>
+            <TargetToExecute>deploy</TargetToExecute>
+            <FileImportProperties>
+                FileSharedImports=$(FileSharedImports);
+                FileDeployImports=$(FileDeployImports);
+            </FileImportProperties>
+        </PropertyGroup>
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_Run_ValidateDirectories;_nBuildKit_EntryPoint_Run_InvokeCustomTransformation;_nBuildKit_EntryPoint_Run_PrepareUserConfiguration"
+        Name="_nBuildKit_EntryPoint_Run_Execute">
+
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirExecutors)\configureandexecute.msbuild"
+            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserConfiguration);$(FileImportProperties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets="$(TargetToExecute)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+</Project>

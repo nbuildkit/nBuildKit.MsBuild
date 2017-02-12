@@ -5,7 +5,7 @@
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsSharedBaseSettings>true</ExistsSharedBaseSettings>
+        <ExistsBaseImports>true</ExistsBaseImports>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(DirPackages)' == '' ">
@@ -133,24 +133,24 @@
         <ArtefactPropertyFile>$(DirUserSettings)\artefacts.settings.props</ArtefactPropertyFile>
     </PropertyGroup>
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.preuser.props') AND '$(ExistsPreUserSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.preuser.props" />
+        Condition="Exists('$(DirActions)\shared.preuser.props') AND '$(ExistsPreUserSharedSettings)' != 'true' "
+        Project="$(DirActions)\shared.preuser.props" />
     <Import
         Condition="Exists('$(SharedPropertyFile)') AND '$(ExistsSettings)' != 'true' "
         Project="$(SharedPropertyFile)" />
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.postuser.props') AND '$(ExistsPostUserSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.postuser.props" />
+        Condition="Exists('$(DirActions)\shared.postuser.props') AND '$(ExistsPostUserSharedSettings)' != 'true' "
+        Project="$(DirActions)\shared.postuser.props" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\artefacts.shared.preuser.props') AND '$(ExistsArtefactPreUserSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\artefacts.shared.preuser.props" />
+        Condition="Exists('$(DirActions)\artefacts.shared.preuser.props') AND '$(ExistsArtefactPreUserSharedSettings)' != 'true' "
+        Project="$(DirActions)\artefacts.shared.preuser.props" />
     <Import
         Condition="Exists('$(ArtefactPropertyFile)') AND '$(ExistsArtefactSettings)' != 'true' "
         Project="$(ArtefactPropertyFile)" />
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\artefacts.shared.postuser.props') AND '$(ExistsArtefactPostUserSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\artefacts.shared.postuser.props" />
+        Condition="Exists('$(DirActions)\artefacts.shared.postuser.props') AND '$(ExistsArtefactPostUserSharedSettings)' != 'true' "
+        Project="$(DirActions)\artefacts.shared.postuser.props" />
 
     <!--
         Define the location of the nBuildKit.MsBuild targets file.

@@ -54,11 +54,11 @@
         user are passed through by default.
     -->
     <Target
-        DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Build;_Run_Execute"
+        DependsOnTargets="_nBuildKit_Executors_ConfigureAndExecute_SetNBuildKitPhaseFileName_Build;_Run_Execute"
         Name="Build">
     </Target>
 
-    <Target Name="_nBuildKit_Run_SetNBuildKitPhaseFileName_Build">
+    <Target Name="_nBuildKit_Executors_ConfigureAndExecute_SetNBuildKitPhaseFileName_Build">
         <PropertyGroup>
             <FileNBuildKitPhase>build.msbuild</FileNBuildKitPhase>
         </PropertyGroup>
@@ -71,11 +71,11 @@
         user are passed through by default.
     -->
     <Target
-        DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Test;_Run_Execute"
+        DependsOnTargets="_nBuildKit_Executors_ConfigureAndExecute_SetNBuildKitPhaseFileName_Test;_Run_Execute"
         Name="Test">
     </Target>
 
-    <Target Name="_nBuildKit_Run_SetNBuildKitPhaseFileName_Test">
+    <Target Name="_nBuildKit_Executors_ConfigureAndExecute_SetNBuildKitPhaseFileName_Test">
         <PropertyGroup>
             <FileNBuildKitPhase>test.msbuild</FileNBuildKitPhase>
         </PropertyGroup>
@@ -88,23 +88,23 @@
         user are passed through by default.
     -->
     <Target
-        DependsOnTargets="_nBuildKit_Run_SetNBuildKitPhaseFileName_Deploy;_Run_Execute"
+        DependsOnTargets="_nBuildKit_Executors_ConfigureAndExecute_SetNBuildKitPhaseFileName_Deploy;_Run_Execute"
         Name="Deploy">
     </Target>
 
-    <Target Name="_nBuildKit_Run_SetNBuildKitPhaseFileName_Deploy">
+    <Target Name="_nBuildKit_Executors_ConfigureAndExecute_SetNBuildKitPhaseFileName_Deploy">
         <PropertyGroup>
             <FileNBuildKitPhase>deploy.msbuild</FileNBuildKitPhase>
         </PropertyGroup>
     </Target>
 
     <Target
-        DependsOnTargets="_nBuildKit_Run_ValidateDirectories;_nBuildKit_Run_InvokeCustomTransformation;_nBuildKit_Run_PrepareUserConfiguration"
+        DependsOnTargets="_nBuildKit_Executors_ConfigureAndExecute_ValidateDirectories;_nBuildKit_Executors_ConfigureAndExecute_InvokeCustomTransformation;_nBuildKit_Executors_ConfigureAndExecute_PrepareUserConfiguration"
         Name="_Run_Execute">
         <MSBuild
             BuildInParallel="False"
             Projects="$(MSBuildThisFileDirectory)$(FileNBuildKitPhase)"
-            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserConfiguration);NBuildKitVersion=$(NBuildKitVersion)"
+            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserConfiguration)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -118,7 +118,7 @@
         </MSBuild>
     </Target>
 
-    <Target Name="_nBuildKit_Run_ValidateDirectories">
+    <Target Name="_nBuildKit_Executors_ConfigureAndExecute_ValidateDirectories">
         <Error
             Condition="!Exists('$(DirWorkspace)')"
             Text="The provided workspace directory is not valid. The provided value was: '$(DirWorkspace)'. Please provide a valid workspace directory." />
@@ -161,14 +161,14 @@
     -->
     <Target
         Condition="Exists('$(ScriptTransformConfigurations)')"
-        Name="_nBuildKit_Run_InvokeCustomTransformation">
+        Name="_nBuildKit_Executors_ConfigureAndExecute_InvokeCustomTransformation">
         <Message
             Importance="low"
             Text="Transforming settings files via custom task ..." />
         <CallTarget Targets="_Custom_TransformConfigurations" />
     </Target>
 
-    <Target Name="_nBuildKit_Run_PrepareUserConfiguration"
+    <Target Name="_nBuildKit_Executors_ConfigureAndExecute_PrepareUserConfiguration"
             Condition=" '@(UserSettingsFiles)' != '' ">
         <!--
             Only copy the settings files if the originals are newer than the ones in the 'DirUserConfiguration'

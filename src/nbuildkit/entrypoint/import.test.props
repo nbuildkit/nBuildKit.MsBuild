@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsTestImports>true</ExistsTestImports>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(MSBuildThisFileDirectory)import.base.props') AND '$(ExistsBaseImports)' != 'true' "
+        Project="$(MSBuildThisFileDirectory)import.base.props" />
+
+    <PropertyGroup>
+        <LoadTemplateTokens Condition=" '$(LoadTemplateTokens)' == '' ">true</LoadTemplateTokens>
+    </PropertyGroup>
+
+    <!-- Import the steps -->
+    <Import
+        Condition="Exists('$(DirActions)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' "
+        Project="$(DirActions)\test\shared.teststeps.msbuild" />
+
+    <!-- Import the settings files -->
+    <PropertyGroup>
+        <TestPropertyFile>$(DirUserSettings)\test.settings.props</TestPropertyFile>
+    </PropertyGroup>
+    <Import
+        Condition="Exists('$(DirActions)\test\test.shared.preuser.props') AND '$(ExistsTestPreUserSharedSettings)' != 'true' "
+        Project="$(DirActions)\test\test.shared.preuser.props" />
+    <Import
+        Condition="Exists('$(TestPropertyFile)') AND '$(ExistsTestSettings)' != 'true' "
+        Project="$(TestPropertyFile)" />
+    <Import
+        Condition="Exists('$(DirActions)\test\test.shared.postuser.props') AND '$(ExistsTestPostUserSharedSettings)' != 'true' "
+        Project="$(DirActions)\test\test.shared.postuser.props" />
+
+    <!-- Import the standard template token files -->
+    <Import
+        Condition=" '$(LoadTemplateTokens)' == 'true' "
+        Project="$(DirActions)\templatetokens.*.props" />
+    <Import
+        Condition=" '$(LoadTemplateTokens)' == 'true' "
+        Project="$(DirGeneratedPropertiesFiles)\templatetokens.*.props" />
+</Project>

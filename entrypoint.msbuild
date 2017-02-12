@@ -25,9 +25,13 @@
             Hard-code the paths to the different directories because we're dog-fooding here because we know exactly
             where all the files are.
         -->
-        <DirNBuildKit>$(MSBuildProjectDirectory)\src\nbuildkit\scripts</DirNBuildKit>
-        <DirNBuildKitMsBuildExtensions>$(DirWorkspace)\build\bootstrap</DirNBuildKitMsBuildExtensions>
-        <DirNBuildKitMsBuildShared>$(DirWorkspace)\src\nbuildkit\shared</DirNBuildKitMsBuildShared>
+        <DirNBuildKit>$(MSBuildProjectDirectory)\src\nbuildkit</DirNBuildKit>
+
+        <DirNBuildKitMsBuildActions>$(DirNBuildKit)\actions</DirNBuildKitMsBuildActions>
+        <DirNBuildKitMsBuildEntryPoint>$(DirNBuildKit)\entrypoint</DirNBuildKitMsBuildEntryPoint>
+        <DirBuildKitMsBuildExecutors>$(DirNBuildKit)\executors</DirBuildKitMsBuildExecutors>
+
+        <DirNBuildKitMsBuildTasks>$(DirWorkspace)\build\bootstrap</DirNBuildKitMsBuildTasks>
     </PropertyGroup>
 
     <!--
@@ -166,11 +170,75 @@
         </PropertyGroup>
     </Target>
 
-    <Target Name="_nBuildKit_EntryPoint_Execute">
+    <Target
+        Condition="!Exists('$(FileNBuildKitExtensionsAssembly)') OR '$([System.IO.Path]::GetDirectoryName($(FileNBuildKitExtensionsAssembly)))' == '$(DirBuildBootstrap)' "
+        Name="_nBuildKit_EntryPoint_Bootstrap">
+
+        <ProperyGroup>
+            <DirNBuildKitExtensionsAssembly>$([System.IO.Path]::GetDirectoryName($(FileNBuildKitExtensionsAssembly)))</DirNBuildKitExtensionsAssembly>
+        </PropertyGroup>
+        <ItemGroup>
+            <BootstrapFilesToDelete Include="$(DirNBuildKitExtensionsAssembly)\**\*.*" />
+            <BootstrapFilesToDelete Include="$(DirWorkspace)\build\**\*.*" />
+        </ItemGroup>
+        <Delete
+            Condition=" '@(BootstrapFilesToDelete)' != ''"
+            ContinueOnError="True"
+            Files="@(BootstrapFilesToDelete)" />
+
+        <RemoveDir
+            Condition=" '$(DirNBuildKitExtensionsAssembly)' != '' "
+            ContinueOnError="True"
+            Directories="$(DirNBuildKitExtensionsAssembly)" />
+
         <MSBuild
             BuildInParallel="False"
-            Projects="$(DirNBuildKit)\run.msbuild"
-            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserSettings);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared)"
+            Projects="$(MSBuildThisFileDirectory)shared.bootstrap.build.tasks.msbuild"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(MSBuildThisFileDirectory)shared.bootstrap.generate.targetsfile.msbuild"
+            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_Bootstrap"
+        Name="_nBuildKit_EntryPoint_Execute">
+        <PropertyGroup>
+            <Locations>
+                DirUserSettings=$(DirUserSettings);
+                DirActions=$(DirNBuildKitMsBuildActions);
+                DirExecutors=$(DirBuildKitMsBuildExecutors);
+                DirTasks=$(DirNBuildKitMsBuildTasks)
+            </Locations>
+        </PropertyGroup>
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKitMsBuildEntryPoint)\run.msbuild"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

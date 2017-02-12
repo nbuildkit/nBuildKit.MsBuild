@@ -5,28 +5,21 @@
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsSharedImportSharedSettings>true</ExistsSharedImportSharedSettings>
+        <ExistsSharedImports>true</ExistsSharedImports>
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.basesettings.props') AND '$(ExistsSharedBaseSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.basesettings.props" />
+        Condition="Exists('$(MSBuildThisFileDirectory)import.base.props') AND '$(ExistsBaseImports)' != 'true' "
+        Project="$(MSBuildThisFileDirectory)import.base.props" />
 
     <PropertyGroup>
         <LoadTemplateTokens Condition=" '$(LoadTemplateTokens)' == '' ">true</LoadTemplateTokens>
     </PropertyGroup>
 
-    <!--
-        Load the user defined shared settings file
-    -->
-    <Import
-        Condition="Exists('$(DirUserShared)\shared.importsharedsettings.props') AND '$(ExistsSharedUserImportSharedSettings)' != 'true' "
-        Project="$(DirUserShared)\shared.importsharedsettings.props" />
-
     <!-- Import the standard template token files -->
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
-        Project="$(DirNBuildKitMsBuild)\templatetokens.*.props" />
+        Project="$(DirActions)\templatetokens.*.props" />
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
         Project="$(DirGeneratedPropertiesFiles)\templatetokens.*.props" />
