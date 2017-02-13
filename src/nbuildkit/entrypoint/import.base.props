@@ -109,20 +109,13 @@
         Always load the default environment settings.
     -->
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.environment.props" />
-
-    <!--
-        Load the user defined shared base settings file
-    -->
-    <Import
-        Condition="Exists('$(DirUserShared)\shared.basesettings.props') AND '$(ExistsSharedUserBaseSettings)' != 'true' "
-        Project="$(DirUserShared)\shared.basesettings.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.environment.props') AND '$(ExistsSharedEnvironmentSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\shared.environment.props" />
 
     <!-- Import the shared steps file which contains standard pre- and post-step actions -->
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.steps.msbuild') AND '$(ExistsSharedSteps)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.steps.msbuild" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.steps.msbuild') AND '$(ExistsSharedSteps)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\shared.steps.msbuild" />
 
     <!-- Import the settings files that has all the overriden settings -->
     <!--
@@ -133,29 +126,30 @@
         <ArtefactPropertyFile>$(DirUserSettings)\artefacts.settings.props</ArtefactPropertyFile>
     </PropertyGroup>
     <Import
-        Condition="Exists('$(DirActions)\shared.preuser.props') AND '$(ExistsPreUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\shared.preuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.preuser.props') AND '$(ExistsPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\shared.preuser.props" />
     <Import
         Condition="Exists('$(SharedPropertyFile)') AND '$(ExistsSettings)' != 'true' "
         Project="$(SharedPropertyFile)" />
     <Import
-        Condition="Exists('$(DirActions)\shared.postuser.props') AND '$(ExistsPostUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\shared.postuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.postuser.props') AND '$(ExistsPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\shared.postuser.props" />
 
     <Import
-        Condition="Exists('$(DirActions)\artefacts.shared.preuser.props') AND '$(ExistsArtefactPreUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\artefacts.shared.preuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\artefacts.shared.preuser.props') AND '$(ExistsArtefactPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\artefacts.shared.preuser.props" />
     <Import
         Condition="Exists('$(ArtefactPropertyFile)') AND '$(ExistsArtefactSettings)' != 'true' "
         Project="$(ArtefactPropertyFile)" />
     <Import
-        Condition="Exists('$(DirActions)\artefacts.shared.postuser.props') AND '$(ExistsArtefactPostUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\artefacts.shared.postuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\artefacts.shared.postuser.props') AND '$(ExistsArtefactPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\artefacts.shared.postuser.props" />
 
     <!--
         Define the location of the nBuildKit.MsBuild targets file.
     -->
     <PropertyGroup>
-        <FileNBuildKitExtensionsImport>$(DirNBuildKitMsBuildExtensions)\nBuildKit.MsBuild.Tasks.targets</FileNBuildKitExtensionsImport>
+        <FileNBuildKitExtensionsAssembly>$(DirNBuildKitMsBuildTasks)\build\extensions\nBuildKit.MsBuild.Tasks.dll</FileNBuildKitExtensionsAssembly>
+        <FileNBuildKitExtensionsImport>$(DirNBuildKitMsBuildTasks)\build\extensions\nBuildKit.MsBuild.Tasks.targets</FileNBuildKitExtensionsImport>
     </PropertyGroup>
 </Project>

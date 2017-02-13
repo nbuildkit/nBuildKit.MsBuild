@@ -22,7 +22,7 @@
         -->
         <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
         <!--
-            Hard-code the paths to the different directories because we're dog-fooding here because we know exactly
+            Hard-code the paths to the different directories because we're dog-fooding here we know exactly
             where all the files are.
         -->
         <DirNBuildKit>$(MSBuildProjectDirectory)\src\nbuildkit</DirNBuildKit>
@@ -32,6 +32,28 @@
         <DirBuildKitMsBuildExecutors>$(DirNBuildKit)\executors</DirBuildKitMsBuildExecutors>
 
         <DirNBuildKitMsBuildTasks>$(DirWorkspace)\build\bootstrap</DirNBuildKitMsBuildTasks>
+
+        <!--
+            Hard-code the path to the extensions assembly. If it doesn't exist, it will be build.
+        -->
+        <FileNBuildKitExtensionsAssembly>$(DirWorkspace)\build\bootstrap\nBuildKit.MsBuild.Tasks.dll</FileNBuildKitExtensionsAssembly>
+        <FileNBuildKitExtensionsImport>$(DirWorkspace)\build\bootstrap\nBuildKit.MsBuild.Tasks.targets</FileNBuildKitExtensionsImport>
+    </PropertyGroup>
+
+    <!--
+        Collect the standard paths for injection into nBuildKit.
+    -->
+    <PropertyGroup>
+        <Locations>
+            DirUserSettings=$(DirUserSettings);
+            DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+            DirExecutors=$(DirBuildKitMsBuildExecutors);
+            DirNBuildKitMsBuildTasks=$(DirNBuildKitMsBuildTasks);
+        </Locations>
+        <Files>
+            FileNBuildKitExtensionsAssembly=$(FileNBuildKitExtensionsAssembly);
+            FileNBuildKitExtensionsImport=$(FileNBuildKitExtensionsImport);
+        </Files>
     </PropertyGroup>
 
     <!--
@@ -171,7 +193,7 @@
     </Target>
 
     <Target
-        Condition="!Exists('$(FileNBuildKitExtensionsAssembly)') OR '$([System.IO.Path]::GetDirectoryName($(FileNBuildKitExtensionsAssembly)))' == '$(DirBuildBootstrap)' "
+        Condition="!Exists('$(FileNBuildKitExtensionsAssembly)')"
         Name="_nBuildKit_EntryPoint_Bootstrap">
 
         <ProperyGroup>
@@ -193,8 +215,8 @@
 
         <MSBuild
             BuildInParallel="False"
-            Projects="$(MSBuildThisFileDirectory)shared.bootstrap.build.tasks.msbuild"
-            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
+            Projects="$(DirNBuildKitMsBuildActions)\shared.bootstrap.build.tasks.msbuild"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -209,8 +231,8 @@
 
         <MSBuild
             BuildInParallel="False"
-            Projects="$(MSBuildThisFileDirectory)shared.bootstrap.generate.targetsfile.msbuild"
-            Properties="$(DefaultPropertyDirectories);$(DefaultProperties);$(DefaultPathProperties)"
+            Projects="$(DirNBuildKitMsBuildActions)\shared.bootstrap.generate.targetsfile.msbuild"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -227,18 +249,10 @@
     <Target
         DependsOnTargets="_nBuildKit_EntryPoint_Bootstrap"
         Name="_nBuildKit_EntryPoint_Execute">
-        <PropertyGroup>
-            <Locations>
-                DirUserSettings=$(DirUserSettings);
-                DirActions=$(DirNBuildKitMsBuildActions);
-                DirExecutors=$(DirBuildKitMsBuildExecutors);
-                DirTasks=$(DirNBuildKitMsBuildTasks)
-            </Locations>
-        </PropertyGroup>
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKitMsBuildEntryPoint)\run.msbuild"
-            Properties="DirWorkspace=$(DirWorkspace);$(Locations)"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

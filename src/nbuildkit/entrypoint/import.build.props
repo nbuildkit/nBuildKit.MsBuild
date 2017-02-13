@@ -19,27 +19,27 @@
 
     <!-- Import the steps -->
     <Import
-        Condition="Exists('$(DirActions)\build\shared.buildsteps.msbuild') AND '$(ExistsBuildSteps)' != 'true' "
-        Project="$(DirActions)\build\shared.buildsteps.msbuild" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\build\shared.buildsteps.msbuild') AND '$(ExistsBuildSteps)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\build\shared.buildsteps.msbuild" />
 
     <!-- Import the settings files -->
     <PropertyGroup>
         <BuildPropertyFile>$(DirUserSettings)\build.settings.props</BuildPropertyFile>
      </PropertyGroup>
     <Import
-        Condition="Exists('$(DirActions)\build\build.shared.preuser.props') AND '$(ExistsBuildPreUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\build\build.shared.preuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\build\build.shared.preuser.props') AND '$(ExistsBuildPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\build\build.shared.preuser.props" />
     <Import
         Condition="Exists('$(BuildPropertyFile)') AND '$(ExistsBuildSettings)' != 'true' "
         Project="$(BuildPropertyFile)" />
     <Import
-        Condition="Exists('$(DirActions)\build\build.shared.postuser.props') AND '$(ExistsBuildPostUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\build\build.shared.postuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\build\build.shared.postuser.props') AND '$(ExistsBuildPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\build\build.shared.postuser.props" />
 
     <!-- Import the standard template token files -->
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
-        Project="$(DirActions)\templatetokens.*.props" />
+        Project="$(DirNBuildKitMsBuildActions)\templatetokens.*.props" />
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
         Project="$(DirGeneratedPropertiesFiles)\templatetokens.*.props" />

@@ -18,27 +18,27 @@
 
     <!-- Import the steps -->
     <Import
-        Condition="Exists('$(DirActions)\deploy\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' "
-        Project="$(DirActions)\deploy\shared.deploysteps.msbuild" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\deploy\shared.deploysteps.msbuild" />
 
     <!-- Import the settings files -->
     <PropertyGroup>
         <DeployPropertyFile>$(DirUserSettings)\deploy.settings.props</DeployPropertyFile>
     </PropertyGroup>
     <Import
-        Condition="Exists('$(DirActions)\deploy\deploy.shared.preuser.props') AND '$(ExistsDeployPreUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\deploy\deploy.shared.preuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.preuser.props') AND '$(ExistsDeployPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.preuser.props" />
     <Import
         Condition="Exists('$(DeployPropertyFile)') AND '$(ExistsDeploySettings)' != 'true' "
         Project="$(DeployPropertyFile)" />
     <Import
-        Condition="Exists('$(DirActions)\deploy\deploy.shared.postuser.props') AND '$(ExistsDeployPostUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\deploy\deploy.shared.postuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.postuser.props') AND '$(ExistsDeployPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.postuser.props" />
 
     <!-- Import the standard template token files -->
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
-        Project="$(DirActions)\templatetokens.*.props" />
+        Project="$(DirNBuildKitMsBuildActions)\templatetokens.*.props" />
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
         Project="$(DirGeneratedPropertiesFiles)\templatetokens.*.props" />

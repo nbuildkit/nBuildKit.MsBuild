@@ -18,27 +18,27 @@
 
     <!-- Import the steps -->
     <Import
-        Condition="Exists('$(DirActions)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' "
-        Project="$(DirActions)\test\shared.teststeps.msbuild" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\test\shared.teststeps.msbuild" />
 
     <!-- Import the settings files -->
     <PropertyGroup>
         <TestPropertyFile>$(DirUserSettings)\test.settings.props</TestPropertyFile>
     </PropertyGroup>
     <Import
-        Condition="Exists('$(DirActions)\test\test.shared.preuser.props') AND '$(ExistsTestPreUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\test\test.shared.preuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\test\test.shared.preuser.props') AND '$(ExistsTestPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\test\test.shared.preuser.props" />
     <Import
         Condition="Exists('$(TestPropertyFile)') AND '$(ExistsTestSettings)' != 'true' "
         Project="$(TestPropertyFile)" />
     <Import
-        Condition="Exists('$(DirActions)\test\test.shared.postuser.props') AND '$(ExistsTestPostUserSharedSettings)' != 'true' "
-        Project="$(DirActions)\test\test.shared.postuser.props" />
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\test\test.shared.postuser.props') AND '$(ExistsTestPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\test\test.shared.postuser.props" />
 
     <!-- Import the standard template token files -->
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
-        Project="$(DirActions)\templatetokens.*.props" />
+        Project="$(DirNBuildKitMsBuildActions)\templatetokens.*.props" />
     <Import
         Condition=" '$(LoadTemplateTokens)' == 'true' "
         Project="$(DirGeneratedPropertiesFiles)\templatetokens.*.props" />
