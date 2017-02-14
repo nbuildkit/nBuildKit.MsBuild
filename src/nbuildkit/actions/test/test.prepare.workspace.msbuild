@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props') AND '$(ExistsSharedImportTestSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props" />
+        Condition="Exists('$(FileTestImports)') AND '$(ExistsTestImports)' != 'true' "
+        Project="$(FileTestImports)" />
 
     <Target
         Name="nBuildKit_Test_Prepare_Workspace_Run">

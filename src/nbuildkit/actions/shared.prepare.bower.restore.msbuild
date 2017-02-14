@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
+        Condition="Exists('$(FileSharedImports)') AND '$(ExistsSharedImports)' != 'true' "
+        Project="$(FileSharedImports)" />
 
     <Target
         DependsOnTargets="_nBuildKit_Shared_Prepare_Bower_Restore_Packages"

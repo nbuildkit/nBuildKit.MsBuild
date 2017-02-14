@@ -131,10 +131,7 @@
         for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
-        Each script has the following properties passed to it:
-        $(DirNBuildKitMsBuild)            - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)      - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
+        Any properties defined by the 'Properties' section are pushed up.
     -->
     <ItemGroup>
         <DeployStepsToExecute Include="$(DeployStepsBuildTargetsAssembly)">
@@ -162,7 +159,7 @@
 
         <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
             <Properties>
-                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\deploy\packages.config
+                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuildActions)\deploy\packages.config
             </Properties>
             <Groups>
                 NuGet;
@@ -338,12 +335,7 @@
         for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
-        Each script has the following properties passed to it:
-        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
-
-        Additionally any properties defined by the 'Properties' section are also pushed up.
+        Any properties defined by the 'Properties' section are pushed up.
     -->
     <ItemGroup>
         <!--

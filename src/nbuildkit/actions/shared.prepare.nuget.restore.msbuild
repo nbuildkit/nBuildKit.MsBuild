@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props') AND '$(ExistsSharedImportSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importsharedsettings.props" />
+        Condition="Exists('$(FileSharedImports)') AND '$(ExistsSharedImports)' != 'true' "
+        Project="$(FileSharedImports)" />
 
     <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
@@ -36,8 +36,8 @@
 
         <ItemGroup>
             <NuGetPackageFiles
-                Condition="Exists('$(DirNBuildKitMsBuild)\packages.config')"
-                Include="$(DirNBuildKitMsBuild)\packages.config" />
+                Condition="Exists('$(MSBuildThisFileDirectory)packages.config')"
+                Include="$(MSBuildThisFileDirectory)packages.config" />
             <NuGetPackageFiles
                 Condition=" '$(StageSpecificNuGetPackageFilesToRestore)' != '' "
                 Include="$(StageSpecificNuGetPackageFilesToRestore)" />

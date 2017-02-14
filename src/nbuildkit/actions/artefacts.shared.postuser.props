@@ -100,7 +100,7 @@
             Include="$(DirWorkspace)\**\*.zipspec" />
         <ArchivePackageSpecs
             Condition=" '$(IsGitWorkspace)' == 'true' AND '$(IsOnBuildServer)' == 'true' AND Exists('$(FileVcsMergeInfo)') "
-            Include="$(DirNBuildKitMsBuild)\build\gitmerge.zipspec" />
+            Include="$(MSBuildThisFileDirectory)build\gitmerge.zipspec" />
     </ItemGroup>
 
 

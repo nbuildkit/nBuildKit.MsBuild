@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
+        Condition="Exists('$(FileDeployImports)') AND '$(ExistsDeployImports)' != 'true' "
+        Project="$(FileDeployImports)" />
 
     <Target
         Name="nBuildKit_Deploy_PushTo_Tag_Vcs_Run">

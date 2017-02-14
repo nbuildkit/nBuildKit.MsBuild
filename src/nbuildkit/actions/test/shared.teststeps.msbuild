@@ -8,22 +8,22 @@
         <ExistsTestSteps>true</ExistsTestSteps>
     </PropertyGroup>
     <PropertyGroup>
-        <TestStepsShowHelp>$(DirNBuildKitMsBuild)\shared.show.help.msbuild</TestStepsShowHelp>
+        <TestStepsShowHelp>$(MSBuildThisFileDirectory)..\shared.show.help.msbuild</TestStepsShowHelp>
 
-        <TestStepsPrepareWorkspace>$(DirNBuildKitMsBuild)\test\test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
+        <TestStepsPrepareWorkspace>$(MSBuildThisFileDirectory)test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
 
-        <TestStepsBuildTargetsAssembly>$(DirNBuildKitMsBuild)\shared.bootstrap.build.tasks.msbuild</TestStepsBuildTargetsAssembly>
-        <TestStepsGenerateTargetsFile>$(DirNBuildKitMsBuild)\shared.bootstrap.generate.targetsfile.msbuild</TestStepsGenerateTargetsFile>
+        <TestStepsBuildTargetsAssembly>$(MSBuildThisFileDirectory)..\shared.bootstrap.build.tasks.msbuild</TestStepsBuildTargetsAssembly>
+        <TestStepsGenerateTargetsFile>$(MSBuildThisFileDirectory)..\shared.bootstrap.generate.targetsfile.msbuild</TestStepsGenerateTargetsFile>
 
-        <TestStepsPrepareGetIssueIds>$(DirNBuildKitMsBuild)\shared.prepare.getissueids.msbuild</TestStepsPrepareGetIssueIds>
-        <TestStepsPrepareVcsBranch>$(DirNBuildKitMsBuild)\shared.prepare.vcssetbranch.msbuild</TestStepsPrepareVcsBranch>
-        <TestStepsPrepareRestoreNuGet>$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild</TestStepsPrepareRestoreNuGet>
-        <TestStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</TestStepsPrepareGetVersion>
-        <TestStepsPrepareReleaseNotes>$(DirNBuildKitMsBuild)\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
-        <TestStepsPrepareVcsInfo>$(DirNBuildKitMsBuild)\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
-        <TestStepsPrepareGenerateFiles>$(DirNBuildKitMsBuild)\test\test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
+        <TestStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</TestStepsPrepareGetIssueIds>
+        <TestStepsPrepareVcsBranch>$(MSBuildThisFileDirectory)..\shared.prepare.vcssetbranch.msbuild</TestStepsPrepareVcsBranch>
+        <TestStepsPrepareRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</TestStepsPrepareRestoreNuGet>
+        <TestStepsPrepareGetVersion>$(MSBuildThisFileDirectory)..\shared.prepare.getversion.msbuild</TestStepsPrepareGetVersion>
+        <TestStepsPrepareReleaseNotes>$(MSBuildThisFileDirectory)..\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
+        <TestStepsPrepareVcsInfo>$(MSBuildThisFileDirectory)..\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
+        <TestStepsPrepareGenerateFiles>$(MSBuildThisFileDirectory)test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
 
-        <TestStepsIntegrationPester>$(DirNBuildKitMsBuild)\test\test.integration.pester.msbuild</TestStepsIntegrationPester>
+        <TestStepsIntegrationPester>$(MSBuildThisFileDirectory)test.integration.pester.msbuild</TestStepsIntegrationPester>
     </PropertyGroup>
     <ItemGroup>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareWorkspace)'))">

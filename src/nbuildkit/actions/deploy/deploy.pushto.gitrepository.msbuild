@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props') AND '$(ExistsSharedImportDeploySharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importdeploysharedsettings.props" />
+        Condition="Exists('$(FileDeployImports)') AND '$(ExistsDeployImports)' != 'true' "
+        Project="$(FileDeployImports)" />
 
     <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "

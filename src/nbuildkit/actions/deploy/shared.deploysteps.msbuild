@@ -9,25 +9,25 @@
         <ExistsDeploySteps>true</ExistsDeploySteps>
     </PropertyGroup>
     <PropertyGroup>
-        <DeployStepsShowHelp>$(DirNBuildKitMsBuild)\shared.show.help.msbuild</DeployStepsShowHelp>
+        <DeployStepsShowHelp>$(MSBuildThisFileDirectory)..\shared.show.help.msbuild</DeployStepsShowHelp>
 
-        <DeployStepsBuildTargetsAssembly>$(DirNBuildKitMsBuild)\shared.bootstrap.build.tasks.msbuild</DeployStepsBuildTargetsAssembly>
-        <DeployStepsGenerateTargetsFile>$(DirNBuildKitMsBuild)\shared.bootstrap.generate.targetsfile.msbuild</DeployStepsGenerateTargetsFile>
+        <DeployStepsBuildTargetsAssembly>$(MSBuildThisFileDirectory)..\shared.bootstrap.build.tasks.msbuild</DeployStepsBuildTargetsAssembly>
+        <DeployStepsGenerateTargetsFile>$(MSBuildThisFileDirectory)..\shared.bootstrap.generate.targetsfile.msbuild</DeployStepsGenerateTargetsFile>
 
-        <DeployStepsPrepareVcsBranch>$(DirNBuildKitMsBuild)\shared.prepare.vcssetbranch.msbuild</DeployStepsPrepareVcsBranch>
-        <DeployStepsPrepareGetVersion>$(DirNBuildKitMsBuild)\shared.prepare.getversion.msbuild</DeployStepsPrepareGetVersion>
-        <DeployStepsPrepareTagVcs>$(DirNBuildKitMsBuild)\shared.prepare.tag.vcs.msbuild</DeployStepsPrepareTagVcs>
+        <DeployStepsPrepareVcsBranch>$(MSBuildThisFileDirectory)..\shared.prepare.vcssetbranch.msbuild</DeployStepsPrepareVcsBranch>
+        <DeployStepsPrepareGetVersion>$(MSBuildThisFileDirectory)..\shared.prepare.getversion.msbuild</DeployStepsPrepareGetVersion>
+        <DeployStepsPrepareTagVcs>$(MSBuildThisFileDirectory)..\shared.prepare.tag.vcs.msbuild</DeployStepsPrepareTagVcs>
 
-        <DeployStepsPrepareGetIssueIds>$(DirNBuildKitMsBuild)\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
-        <DeployStepsRestoreNuGet>$(DirNBuildKitMsBuild)\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
+        <DeployStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
+        <DeployStepsRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
 
-        <DeployStepsPushToTags>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.tags.msbuild</DeployStepsPushToTags>
-        <DeployStepsPushToNuget>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
-        <DeployStepsPushToDirectory>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.directory.msbuild</DeployStepsPushToDirectory>
-        <DeployStepsPushToSymbolServer>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
-        <DeployStepsPushToGitHubRelease>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
-        <DeployStepsPushToGitBranch>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
-        <DeployStepsPushToGitRepository>$(DirNBuildKitMsBuild)\deploy\deploy.pushto.gitrepository.msbuild</DeployStepsPushToGitRepository>
+        <DeployStepsPushToTags>$(MSBuildThisFileDirectory)deploy.pushto.tags.msbuild</DeployStepsPushToTags>
+        <DeployStepsPushToNuget>$(MSBuildThisFileDirectory)deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
+        <DeployStepsPushToDirectory>$(MSBuildThisFileDirectory)deploy.pushto.directory.msbuild</DeployStepsPushToDirectory>
+        <DeployStepsPushToSymbolServer>$(MSBuildThisFileDirectory)deploy.pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
+        <DeployStepsPushToGitHubRelease>$(MSBuildThisFileDirectory)deploy.pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
+        <DeployStepsPushToGitBranch>$(MSBuildThisFileDirectory)deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
+        <DeployStepsPushToGitRepository>$(MSBuildThisFileDirectory)deploy.pushto.gitrepository.msbuild</DeployStepsPushToGitRepository>
     </PropertyGroup>
     <ItemGroup>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsBuildTargetsAssembly)'))">

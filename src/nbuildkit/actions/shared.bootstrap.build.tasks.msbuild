@@ -12,8 +12,8 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
+        Condition="Exists('$(FileSharedImports)') AND '$(ExistsSharedImports)' != 'true' "
+        Project="$(FileSharedImports)" />
 
     <Target
         Name="nBuildKit_Shared_Bootstrap_Build_Tasks_Run">

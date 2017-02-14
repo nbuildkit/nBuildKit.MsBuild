@@ -9,12 +9,12 @@
     </PropertyGroup>
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props') AND '$(ExistsSharedImportBuildSharedSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildShared)\shared.importbuildsharedsettings.props" />
+        Condition="Exists('$(FileDeployImports)') AND '$(ExistsDeployImports)' != 'true' "
+        Project="$(FileDeployImports)" />
 
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(DirNBuildKitMsBuild)\shared.templatetokens.msbuild" />
+        Condition="Exists('$(MSBuildThisFileDirectory)..\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(MSBuildThisFileDirectory)..\shared.templatetokens.msbuild" />
 
     <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "

@@ -20,6 +20,20 @@
     </PropertyGroup>
 
     <!--
+        Collect the standard paths for injection into nBuildKit.
+    -->
+    <PropertyGroup>
+        <Locations>
+            DirUserSettings=$(DirUserSettings);
+            DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+        </Locations>
+        <Files>
+            FileNBuildKitExtensionsAssembly=$(FileNBuildKitExtensionsAssembly);
+            FileNBuildKitExtensionsImport=$(FileNBuildKitExtensionsImport);
+        </Files>
+    </PropertyGroup>
+
+    <!--
         Invoke the build steps as defined by the 'build.settings.props' file by invoking the 'build' target
         on the 'build.msbuild' script in the 'nBuildKit.MsBuild' NuGet package
         and passing the path to the workspace directory and the configuration files. Parameters provided by the
@@ -33,10 +47,11 @@
     <Target Name="_nBuildKit_EntryPoint_Run_SetNBuildKitPhaseFileName_Build">
         <PropertyGroup>
             <TargetToExecute>build</TargetToExecute>
-            <FileImportProperties>
+            <Files>
+                $(Files);
                 FileSharedImports=$(FileSharedImports);
                 FileBuildImports=$(FileBuildImports);
-            </FileImportProperties>
+            </Files>
         </PropertyGroup>
     </Target>
 
@@ -54,10 +69,11 @@
     <Target Name="_nBuildKit_EntryPoint_Run_SetNBuildKitPhaseFileName_Test">
         <PropertyGroup>
             <TargetToExecute>test</TargetToExecute>
-            <FileImportProperties>
+            <Files>
+                $(Files);
                 FileSharedImports=$(FileSharedImports);
                 FileTestImports=$(FileTestImports);
-            </FileImportProperties>
+            </Files>
         </PropertyGroup>
     </Target>
 
@@ -75,10 +91,11 @@
     <Target Name="_nBuildKit_EntryPoint_Run_SetNBuildKitPhaseFileName_Deploy">
         <PropertyGroup>
             <TargetToExecute>deploy</TargetToExecute>
-            <FileImportProperties>
+            <Files>
+                $(Files);
                 FileSharedImports=$(FileSharedImports);
                 FileDeployImports=$(FileDeployImports);
-            </FileImportProperties>
+            </Files>
         </PropertyGroup>
     </Target>
 
@@ -89,7 +106,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirExecutors)\configureandexecute.msbuild"
-            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserConfiguration);$(FileImportProperties)"
+            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserConfiguration);$(Locations);$(Files)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

@@ -31,6 +31,23 @@
     </PropertyGroup>
 
     <!--
+        Collect the standard paths for injection into nBuildKit.
+    -->
+    <PropertyGroup>
+        <Locations>
+            DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+        </Locations>
+        <Files>
+            FileNBuildKitExtensionsAssembly=$(FileNBuildKitExtensionsAssembly);
+            FileNBuildKitExtensionsImport=$(FileNBuildKitExtensionsImport);
+            FileSharedImports=$(FileSharedImports);
+            FileBuildImports=$(FileBuildImports);
+            FileTestImports=$(FileTestImports);
+            FileDeployImports=$(FileDeployImports);
+        </Files>
+    </PropertyGroup>
+
+    <!--
         Define the expected locations of the settings files so that we can copy / transform them later on.
     -->
     <ItemGroup>
@@ -104,7 +121,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(MSBuildThisFileDirectory)$(FileNBuildKitPhase)"
-            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserConfiguration)"
+            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserConfiguration);$(Locations);$(Files)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

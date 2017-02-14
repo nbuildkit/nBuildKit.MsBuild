@@ -16,14 +16,27 @@
         Condition="Exists('$(FileTestImports)') AND '$(ExistsTestImports)' != 'true' "
         Project="$(FileTestImports)" />
 
-    <!-- Default values for all the properties in case they were not overriden -->
+    <Import
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
+
+    <!--
+        Collect the standard paths for injection into nBuildKit.
+    -->
     <PropertyGroup>
-        <DefaultDirectoryProperties>
+        <Locations>
+            DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
             DirWorkspace=$(DirWorkspace);
             DirUserSettings=$(DirUserSettings);
-        </DefaultDirectoryProperties>
-        <DefaultPathProperties>
-        </DefaultPathProperties>
+        </Locations>
+        <Files>
+            FileNBuildKitExtensionsAssembly=$(FileNBuildKitExtensionsAssembly);
+            FileNBuildKitExtensionsImport=$(FileNBuildKitExtensionsImport);
+            FileSharedImports=$(FileSharedImports);
+            FileBuildImports=$(FileBuildImports);
+            FileTestImports=$(FileTestImports);
+            FileDeployImports=$(FileDeployImports);
+        </Files>
         <DefaultProperties>
         </DefaultProperties>
     </PropertyGroup>
@@ -47,7 +60,7 @@
             PreSteps="@(TestPreStepsToExecute)"
             PostSteps="@(TestPostStepsToExecute)"
             Projects="@(TestStepsToExecute)"
-            Properties="$(DefaultPropertyDirectories);$(DefaultPathProperties);$(DefaultProperties)"
+            Properties="$(Locations);$(Files);$(DefaultProperties)"
             StepMetadata="@(AvailableStepMetadata)"
             StopOnFirstFailure="true"
             StopOnPreStepFailure="$(StopTestOnPreStepFailure)"

@@ -25,7 +25,7 @@
     <ItemGroup Condition=" '@(TestStepsToExecute)' == '' ">
         <TestStepsToExecute Include="$(TestStepsShowHelp)">
            <Properties>
-                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildShared)\shared.importtestsharedsettings.props;
+                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importtestsharedsettings.props;
                 HelpFileSettings=test.settings.props;
                 HelpProcess=test;
                 HelpStepGroup=TestStepsToExecute;
@@ -47,12 +47,7 @@
         for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
-        Each script has the following properties passed to it:
-        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
-
-        Additionally any properties defined by the 'Properties' section are also pushed up.
+        Any properties defined by the 'Properties' section are pushed up.
     -->
     <ItemGroup Condition=" '@(TestFailureStepsToExecute)' == '' ">
         <!--
