@@ -231,7 +231,7 @@
     </Target>
 
     <Target
-        DependsOnTargets="_nBuildKit_EntryPoint_RestoreGlobalNugetPackages;_nBuildKit_EntryPoint_LocateNBuildKit"
+        DependsOnTargets="_nBuildKit_EntryPoint_LocateNBuildKit"
         Name="_nBuildKit_EntryPoint_Execute">
         <Error
             Condition=" '$(NBuildKitVersion)' == '' "
@@ -258,21 +258,6 @@
     </Target>
 
     <!--
-        Restore all the packages that are used by the non-compilation part of the build and deploy process. This is required
-        so that we can be sure that the nBuildKit main package is extacted to the package directory.
-    -->
-    <Target
-        DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir"
-        Name="_nBuildKit_EntryPoint_RestoreGlobalNugetPackages">
-        <EntryPoint_LocalTask_NuGetRestore
-            Condition="Exists('$(NuGetPackageFile)')"
-            NuGetPath="$(ToolsExternalNuGetPath)"
-            PackageDirectory="$(DirPackages)"
-            PackageFile="$(NuGetPackageFile)"
-            Sources="@(NuGetSources)" />
-    </Target>
-
-    <!--
         Get the full path to the nBuildkit package directory so that we can invoked the build scripts from there.
     -->
     <Target
@@ -284,6 +269,17 @@
             Condition="!Exists('$(DirNBuildKit)')"
             Text="Unable to find the nBuildKit directory." />
     </Target>
+
+
+
+
+
+
+
+
+
+
+
 
     <Target
         Condition="Exists('$(DirPackages)')"
@@ -319,8 +315,24 @@
                 TaskParameter="Value" />
         </CreateProperty>
 
+
+        <!-- RESTORE FROM PACKAGES.CONFIG IF THERE WAS SOMETHING IN THERE -->
+
+
+
         <Message Text="DirNBuildKit after searching packages.config: $(DirNBuildKit)" />
     </Target>
+
+
+
+
+
+
+
+
+
+
+
 
     <Target
         Condition="!Exists('$(DirNBuildKit)')"
@@ -399,6 +411,49 @@
 
         <Message Text="DirNBuildKit after getting highest allowed version: $(DirNBuildKit)" />
     </Target>
+
+
+
+
+
+
+
+
+
+
+
+    <!--
+        Restore all the packages that are used by the non-compilation part of the build and deploy process. This is required
+        so that we can be sure that the nBuildKit main package is extacted to the package directory.
+    -->
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir"
+        Name="_nBuildKit_EntryPoint_RestoreGlobalNugetPackages">
+        <EntryPoint_LocalTask_NuGetRestore
+            Condition="Exists('$(NuGetPackageFile)')"
+            NuGetPath="$(ToolsExternalNuGetPath)"
+            PackageDirectory="$(DirPackages)"
+            PackageFile="$(NuGetPackageFile)"
+            Sources="@(NuGetSources)" />
+    </Target>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!--
         Get the full path to the packages directory.

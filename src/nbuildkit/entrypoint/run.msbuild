@@ -17,7 +17,23 @@
         <FileBuildImports>$(MSBuildThisFileDirectory)import.build.props</FileBuildImports>
         <FileTestImports>$(MSBuildThisFileDirectory)import.test.props</FileTestImports>
         <FileDeployImports>$(MSBuildThisFileDirectory)import.deploy.props</FileDeployImports>
+
+        <DirNBuildKitMsBuildActions Condition=" '$(DirNBuildKitMsBuildActions)' == '' ">UNDEFINED</DirNBuildKitMsBuildActions>
+        <DirBuildKitMsBuildExecutors Condition=" '$(DirBuildKitMsBuildExecutors)' == '' ">UNDEFINED</DirBuildKitMsBuildExecutors>
+        <DirNBuildKitMsBuildTasks Condition=" '$(DirNBuildKitMsBuildTasks)' == '' ">UNDEFINED</DirNBuildKitMsBuildTasks>
     </PropertyGroup>
+
+
+
+    <!--
+        LOCATE THE ACTIONS, EXECUTORS AND TASKS PACKAGES. THEY SHOULD BE RESTORED BECAUSE THE ENTRYPOINT PACKAGE DEPENDS ON THEM
+    -->
+
+
+
+
+
+
 
     <!--
         Collect the standard paths for injection into nBuildKit.
@@ -28,8 +44,8 @@
             DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
         </Locations>
         <Files>
-            FileNBuildKitExtensionsAssembly=$(FileNBuildKitExtensionsAssembly);
-            FileNBuildKitExtensionsImport=$(FileNBuildKitExtensionsImport);
+            FileNBuildKitExtensionsAssembly=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll;
+            FileNBuildKitExtensionsImport=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.targets;
         </Files>
     </PropertyGroup>
 
