@@ -48,6 +48,8 @@
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
 
         <!-- nBuildKit -->
+        <PackageNameEntryPoint>nBuildKit.MsBuild.EntryPoint</PackageNameEntryPoint>
+
         <!--
             Defines the version number of the entrypoint file
         -->
@@ -289,7 +291,7 @@
         <!-- Get the version of nBuildKit that is expected from the global packages file -->
         <XmlPeek
             Condition="Exists('$(NuGetPackageFile)')"
-            Query="//package[@id='nBuildKit.MsBuild']/@version"
+            Query="//package[@id='$(PackageNameEntryPoint)']/@version"
             XmlInputPath="$(NuGetPackageFile)">
             <Output
                 ItemName="VersionNBuildKit"
@@ -311,7 +313,7 @@
         -->
         <CreateProperty
             Condition="Exists('$(DirPackages)')"
-            Value="$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build">
+            Value="$(DirPackages)\$(PackageNameEntryPoint).$(NBuildKitVersion)\build">
             <Output
                 PropertyName="DirNBuildKit"
                 TaskParameter="Value" />
@@ -383,12 +385,13 @@
         <EntryPoint_LocalTask_InstallNBuildKitFromNuGet
             NuGetPath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
-            Sources="@(NuGetSources)"
-            Version="$(NBuildKitVersion)" />
+            PackageName="$(PackageNameEntryPoint)"
+            PackageVersion="$(NBuildKitVersion)"
+            Sources="@(NuGetSources)" />
 
         <CreateProperty
             Condition="Exists('$(DirPackages)')"
-            Value="$(DirPackages)\nBuildKit.MsBuild.$(NBuildKitVersion)\build">
+            Value="$(DirPackages)\$(PackageNameEntryPoint).$(NBuildKitVersion)\build">
             <Output
                 PropertyName="DirNBuildKit"
                 TaskParameter="Value" />
@@ -576,10 +579,13 @@
             <NuGetPath
                 ParameterType="System.String"
                 Required="true" />
+            <MaximumVersion
+                ParameterType="System.String"
+                Required="true" />
             <MinimumVersion
                 ParameterType="System.String"
                 Required="true" />
-            <MaximumVersion
+            <PackageName
                 ParameterType="System.String"
                 Required="true" />
             <Version
@@ -598,7 +604,10 @@
                         try
                         {
                             var webClient = new System.Net.WebClient();
-                            var response = webClient.DownloadString("https://api.nuget.org/v3-flatcontainer/nbuildkit.msbuild/index.json");
+                            var response = webClient.DownloadString(
+                                string.Format(
+                                    "https://api.nuget.org/v3-flatcontainer/{0}/index.json",
+                                    PackageName.ToLowerInvariant()));
                             var subResponse = response
                                 .Replace(" ", "")
                                 .Replace(System.Environment.NewLine, "");
@@ -645,10 +654,13 @@
             <NuGetPath
                 ParameterType="System.String"
                 Required="true" />
-            <Version
+            <PackageDirectory
                 ParameterType="System.String"
                 Required="true" />
-            <PackageDirectory
+            <PackageName
+                ParameterType="System.String"
+                Required="true" />
+            <PackageVersion
                 ParameterType="System.String"
                 Required="true" />
             <Sources
@@ -664,8 +676,8 @@
                     {
                         var builder = new System.Text.StringBuilder();
                         {
-                            builder.Append(string.Format("install \"{0}\" ", "nBuildKit.MsBuild"));
-                            builder.Append(string.Format("-Version \"{0}\" ", Version));
+                            builder.Append(string.Format("install \"{0}\" ", PackageName));
+                            builder.Append(string.Format("-Version \"{0}\" ", PackageVersion));
 
                             builder.Append("-NonInteractive -Verbosity detailed -NoCache ");
 
