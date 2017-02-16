@@ -36,6 +36,14 @@
             The name of the package that contains the tasks for the current build.
         -->
         <PackageNameTasks Condition=" '$(PackageNameTasks)' == '' ">nBuildKit.MsBuild.Tasks</PackageNameTasks>
+
+        <!-- MsBuild -->
+        <!--
+            For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
+            However starting with version 14 that is no longer the case so have to differentiate between these cases.
+        -->
+        <MsBuildTasksAssembly>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MsBuildTasksAssembly>
+        <MsBuildTasksAssembly Condition="!Exists('$(MsBuildTasksAssembly)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MsBuildTasksAssembly>
     </PropertyGroup>
 
     <!--
@@ -117,6 +125,7 @@
                 DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
             </Locations>
             <Files>
+                $(Files);
                 FileNBuildKitExtensionsAssembly=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll;
                 FileNBuildKitExtensionsImport=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.targets;
             </Files>
@@ -224,16 +233,14 @@
                             var regex = new System.Text.RegularExpressions.Regex(
                                 string.Format(
                                     System.Globalization.CultureInfo.InvariantCulture,
-                                    "({0})\.\d*.*",
-                                    PackageName.Replace(".", "\.")),
+                                    @"({0})\.\d*.*",
+                                    PackageName.Replace(".", @"\.")),
                                 System.Text.RegularExpressions.RegexOptions.IgnoreCase
                                 | System.Text.RegularExpressions.RegexOptions.Multiline
                                 | System.Text.RegularExpressions.RegexOptions.Compiled
                                 | System.Text.RegularExpressions.RegexOptions.Singleline);
 
-                            var directories = System.IO.Directory.GetDirectories(
-                                PackagesDirectory,
-                                System.IO.SearchOption.TopDirectoryOnly);
+                            var directories = System.IO.Directory.GetDirectories(PackagesDirectory);
 
                             var matches = new System.Collections.Generic.List<string>();
                             foreach(var directory in directories)

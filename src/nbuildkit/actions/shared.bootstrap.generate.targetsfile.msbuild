@@ -18,10 +18,9 @@
     <Import
         Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         Project="$(FileNBuildKitExtensionsImport)" />
-
     <UsingTask
-        AssemblyFile="$(FileNBuildKitExtensionsAssembly)"
-        Condition="!Exists('$(FileNBuildKitExtensionsImport)') AND Exists('$(FileNBuildKitExtensionsAssembly)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        AssemblyFile="$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll"
+        Condition="!Exists('$(FileNBuildKitExtensionsImport)') AND Exists('$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll') AND '$(ExistsNBuildKitExtensions)' != 'true' "
         TaskName="NBuildKit.MsBuild.Tasks.GenerateTargetsFile" />
 
     <Target

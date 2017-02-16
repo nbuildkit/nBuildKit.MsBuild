@@ -47,11 +47,10 @@
         <Locations>
             DirUserSettings=$(DirUserSettings);
             DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+            DirNBuildKitMsBuildTasks=$(DirNBuildKitMsBuildTasks);
             DirExecutors=$(DirBuildKitMsBuildExecutors);
         </Locations>
         <Files>
-            FileNBuildKitExtensionsAssembly=$(FileNBuildKitExtensionsAssembly);
-            FileNBuildKitExtensionsImport=$(FileNBuildKitExtensionsImport);
             FileSharedImports=$(DirNBuildKitMsBuildEntryPoint)\import.shared.props;
             SharedPropertyFile=$(DirWorkspace)\settings.props;
             ArtefactPropertyFile=$(DirWorkspace)\artefacts.settings.props;
@@ -194,9 +193,7 @@
         </PropertyGroup>
     </Target>
 
-    <Target
-        Condition="!Exists('$(FileNBuildKitExtensionsAssembly)')"
-        Name="_nBuildKit_EntryPoint_Bootstrap">
+    <Target Name="_nBuildKit_EntryPoint_Bootstrap">
 
         <PropertyGroup>
             <DirNBuildKitExtensionsAssembly>$([System.IO.Path]::GetDirectoryName($(FileNBuildKitExtensionsAssembly)))</DirNBuildKitExtensionsAssembly>
