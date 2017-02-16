@@ -379,7 +379,8 @@
         <EntryPoint_LocalTask_GetHighestSuitableNBuildKitVersionFromNuGet
             MaximumVersion="$(VersionNBuildKitMaximum)"
             MinimumVersion="$(VersionNBuildKitMinimum)"
-            NuGetPath="$(ToolsExternalNuGetPath)">
+            NuGetPath="$(ToolsExternalNuGetPath)"
+            PackageName="$(PackageNameEntryPoint)">
             <Output
                 PropertyName="NBuildKitVersion"
                 TaskParameter="Version" />
@@ -631,7 +632,7 @@
                         }
                         catch(Exception e)
                         {
-                            Log.LogError(e.ToString());
+                            Version = MinimumVersion;
                         }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
