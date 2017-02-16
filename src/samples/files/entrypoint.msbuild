@@ -47,11 +47,13 @@
         -->
         <ToolsExternalNuGetPath Condition=" '$(ToolsExternalNuGetPath)' == '' ">NuGet.exe</ToolsExternalNuGetPath>
 
-        <!-- nBuildKit -->
-        <PackageNameEntryPoint>nBuildKit.MsBuild.EntryPoint</PackageNameEntryPoint>
+        <!--
+            The name of the package that contains the entry point for the current build.
+        -->
+        <PackageNameEntryPoint Condition=" '$(PackageNameEntryPoint)' == '' ">nBuildKit.MsBuild.EntryPoint</PackageNameEntryPoint>
 
         <!--
-            Defines the version number of the entrypoint file
+            Defines the version number of the configuration file
         -->
         <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
 
@@ -243,7 +245,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKit)\run.msbuild"
-            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserSettings);NBuildKitVersion=$(NBuildKitVersion)"
+            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserSettings);DirPackages=$(DirPackages)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -261,7 +263,7 @@
         Get the full path to the nBuildkit package directory so that we can invoked the build scripts from there.
     -->
     <Target
-        DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir;_nBuildKit_EntryPoint_LocateNBuildKitViaPackagesConfig;_nBuildKit_EntryPoint_LocateNBuildKitViaHighestAvailableVersion"
+        DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir;_nBuildKit_EntryPoint_RestoreGlobalNugetPackages;_nBuildKit_EntryPoint_LocateNBuildKitViaPackagesConfig;_nBuildKit_EntryPoint_LocateNBuildKitViaHighestAvailableVersion"
         Name="_nBuildKit_EntryPoint_LocateNBuildKit">
         <Message Text="DirNBuildKit after search: $(DirNBuildKit)" />
 
@@ -270,16 +272,20 @@
             Text="Unable to find the nBuildKit directory." />
     </Target>
 
-
-
-
-
-
-
-
-
-
-
+    <!--
+        Restore all the packages that are used by the non-compilation part of the build and deploy process. This is required
+        so that we can be sure that the nBuildKit main package is extacted to the package directory.
+    -->
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir"
+        Name="_nBuildKit_EntryPoint_RestoreGlobalNugetPackages">
+        <EntryPoint_LocalTask_NuGetRestore
+            Condition="Exists('$(NuGetPackageFile)')"
+            NuGetPath="$(ToolsExternalNuGetPath)"
+            PackageDirectory="$(DirPackages)"
+            PackageFile="$(NuGetPackageFile)"
+            Sources="@(NuGetSources)" />
+    </Target>
 
     <Target
         Condition="Exists('$(DirPackages)')"
@@ -315,24 +321,8 @@
                 TaskParameter="Value" />
         </CreateProperty>
 
-
-        <!-- RESTORE FROM PACKAGES.CONFIG IF THERE WAS SOMETHING IN THERE -->
-
-
-
         <Message Text="DirNBuildKit after searching packages.config: $(DirNBuildKit)" />
     </Target>
-
-
-
-
-
-
-
-
-
-
-
 
     <Target
         Condition="!Exists('$(DirNBuildKit)')"
@@ -411,49 +401,6 @@
 
         <Message Text="DirNBuildKit after getting highest allowed version: $(DirNBuildKit)" />
     </Target>
-
-
-
-
-
-
-
-
-
-
-
-    <!--
-        Restore all the packages that are used by the non-compilation part of the build and deploy process. This is required
-        so that we can be sure that the nBuildKit main package is extacted to the package directory.
-    -->
-    <Target
-        DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir"
-        Name="_nBuildKit_EntryPoint_RestoreGlobalNugetPackages">
-        <EntryPoint_LocalTask_NuGetRestore
-            Condition="Exists('$(NuGetPackageFile)')"
-            NuGetPath="$(ToolsExternalNuGetPath)"
-            PackageDirectory="$(DirPackages)"
-            PackageFile="$(NuGetPackageFile)"
-            Sources="@(NuGetSources)" />
-    </Target>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     <!--
         Get the full path to the packages directory.

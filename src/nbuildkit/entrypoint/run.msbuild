@@ -21,32 +21,21 @@
         <DirNBuildKitMsBuildActions Condition=" '$(DirNBuildKitMsBuildActions)' == '' ">UNDEFINED</DirNBuildKitMsBuildActions>
         <DirBuildKitMsBuildExecutors Condition=" '$(DirBuildKitMsBuildExecutors)' == '' ">UNDEFINED</DirBuildKitMsBuildExecutors>
         <DirNBuildKitMsBuildTasks Condition=" '$(DirNBuildKitMsBuildTasks)' == '' ">UNDEFINED</DirNBuildKitMsBuildTasks>
-    </PropertyGroup>
 
+        <!--
+            The name of the package that contains the action scripts for the current build.
+        -->
+        <PackageNameActions Condition=" '$(PackageNameActions)' == '' ">nBuildKit.MsBuild.Actions</PackageNameActions>
 
+        <!--
+            The name of the package that contains the executor scripts for the current build.
+        -->
+        <PackageNameExecutors Condition=" '$(PackageNameExecutors)' == '' ">nBuildKit.MsBuild.Executors</PackageNameExecutors>
 
-    <!--
-        LOCATE THE ACTIONS, EXECUTORS AND TASKS PACKAGES. THEY SHOULD BE RESTORED BECAUSE THE ENTRYPOINT PACKAGE DEPENDS ON THEM
-    -->
-
-
-
-
-
-
-
-    <!--
-        Collect the standard paths for injection into nBuildKit.
-    -->
-    <PropertyGroup>
-        <Locations>
-            DirUserSettings=$(DirUserSettings);
-            DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
-        </Locations>
-        <Files>
-            FileNBuildKitExtensionsAssembly=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll;
-            FileNBuildKitExtensionsImport=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.targets;
-        </Files>
+        <!--
+            The name of the package that contains the tasks for the current build.
+        -->
+        <PackageNameTasks Condition=" '$(PackageNameTasks)' == '' ">nBuildKit.MsBuild.Tasks</PackageNameTasks>
     </PropertyGroup>
 
     <!--
@@ -116,7 +105,22 @@
     </Target>
 
     <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_Run_LocatePackages"
         Name="_nBuildKit_EntryPoint_Run_Execute">
+
+        <!--
+            Collect the standard paths for injection into nBuildKit.
+        -->
+        <PropertyGroup>
+            <Locations>
+                DirUserSettings=$(DirUserSettings);
+                DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+            </Locations>
+            <Files>
+                FileNBuildKitExtensionsAssembly=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll;
+                FileNBuildKitExtensionsImport=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.targets;
+            </Files>
+        </PropertyGroup>
 
         <MSBuild
             BuildInParallel="False"
@@ -134,4 +138,134 @@
             UseResultsCache="True">
         </MSBuild>
     </Target>
+
+    <Target
+        Name="_nBuildKit_EntryPoint_Run_LocatePackages">
+        <NBuildKit_EntryPoint_Run_LocalTask_FindHighestVersionOfPackage
+            Condition="!Exists('$(DirNBuildKitMsBuildActions)')"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="$(PackageNameActions)">
+            <Output
+                PropertyName="DirPackagesActions"
+                TaskParameter="Path" />
+        </NBuildKit_EntryPoint_Run_LocalTask_FindHighestVersionOfPackage>
+        <CreateProperty
+            Condition="Exists('$(DirPackagesActions)')"
+            Value="$(DirPackagesActions)\build">
+            <Output
+                PropertyName="DirNBuildKitMsBuildActions"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <NBuildKit_EntryPoint_Run_LocalTask_FindHighestVersionOfPackage
+            Condition="!Exists('$(DirExecutors)')"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="$(PackageNameExecutors)">
+            <Output
+                PropertyName="DirPackagesExecutors"
+                TaskParameter="Path" />
+        </NBuildKit_EntryPoint_Run_LocalTask_FindHighestVersionOfPackage>
+        <CreateProperty
+            Condition="Exists('$(DirPackagesExecutors)')"
+            Value="$(DirPackagesExecutors)\build">
+            <Output
+                PropertyName="DirExecutors"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <NBuildKit_EntryPoint_Run_LocalTask_FindHighestVersionOfPackage
+            Condition="!Exists('$(DirNBuildKitMsBuildTasks)')"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="$(PackageNameTasks)">
+            <Output
+                PropertyName="DirPackagesTasks"
+                TaskParameter="Path" />
+        </NBuildKit_EntryPoint_Run_LocalTask_FindHighestVersionOfPackage>
+        <CreateProperty
+            Condition="Exists('$(DirPackagesTasks)')"
+            Value="$(DirPackagesTasks)\build">
+            <Output
+                PropertyName="DirNBuildKitMsBuildTasks"
+                TaskParameter="Value" />
+        </CreateProperty>
+    </Target>
+
+    <!--
+        Ideally we'd use the NuGetRestore task from nBuildKit, however this task is used to potentially restore the nBuildKit
+        NuGet package so that we can use the tasks and scripts from nBuildKit ...
+
+        In order to prevent it from ever colliding with any of the inline tasks defined elsewhere we'll give it
+        a name that is unlikely ever to be used elsewhere (yay poor-mans namespaces?).
+    -->
+    <UsingTask
+        AssemblyFile="$(MsBuildTasksAssembly)"
+        TaskFactory="CodeTaskFactory"
+        TaskName="NBuildKit_EntryPoint_Run_LocalTask_FindHighestVersionOfPackage">
+        <ParameterGroup>
+            <PackageName
+                ParameterType="System.String"
+                Required="true" />
+            <PackagesDirectory
+                ParameterType="System.String"
+                Required="true" />
+            <Path
+                ParameterType="System.String"
+                Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code
+                Language="cs"
+                Type="Method">
+                <![CDATA[
+                    public override bool Execute()
+                    {
+                        try
+                        {
+                            var regex = new System.Text.RegularExpressions.Regex(
+                                string.Format(
+                                    System.Globalization.CultureInfo.InvariantCulture,
+                                    "({0})\.\d*.*",
+                                    PackageName.Replace(".", "\.")),
+                                System.Text.RegularExpressions.RegexOptions.IgnoreCase
+                                | System.Text.RegularExpressions.RegexOptions.Multiline
+                                | System.Text.RegularExpressions.RegexOptions.Compiled
+                                | System.Text.RegularExpressions.RegexOptions.Singleline);
+
+                            var directories = System.IO.Directory.GetDirectories(
+                                PackagesDirectory,
+                                System.IO.SearchOption.TopDirectoryOnly);
+
+                            var matches = new System.Collections.Generic.List<string>();
+                            foreach(var directory in directories)
+                            {
+                                var name = System.IO.Path.GetDirectoryName(directory);
+                                if (regex.IsMatch(name))
+                                {
+                                    matches.Add(directory);
+                                }
+                            }
+
+                            Path = matches.OrderBy(p => p).FirstOrDefault();
+                            if (string.IsNullOrWhiteSpace(Path))
+                            {
+                                Log.LogError(
+                                    "Could not locate the '{0}' package in the '{0}' directory.",
+                                    PackageName,
+                                    PackagesDirectory);
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            Log.LogErrorFromException(e);
+                        }
+
+                        // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                        // from a task's constructor or property setter. As long as this task is written to always log an error
+                        // when it fails, we can reliably return HasLoggedErrors.
+                        return !Log.HasLoggedErrors;
+                    }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
 </Project>
