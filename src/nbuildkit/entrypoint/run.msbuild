@@ -245,9 +245,21 @@
                             var matches = new System.Collections.Generic.List<string>();
                             foreach(var directory in directories)
                             {
-                                var name = System.IO.Path.GetDirectoryName(directory);
-                                if (regex.IsMatch(name))
+                                Log.LogMessage(
+                                    MessageImportance.Low,
+                                    "Searching for '{0}' in '{1}' ...",
+                                    PackageName,
+                                    directory);
+
+                                var name = new System.IO.DirectoryInfo(directory).Name;
+                                var match = regex.IsMatch(name);
+                                if (match)
                                 {
+                                    Log.LogMessage(
+                                        MessageImportance.Low,
+                                        "Found '{0}'.",
+                                        directory);
+
                                     matches.Add(directory);
                                 }
                             }
@@ -259,6 +271,14 @@
                                     "Could not locate the '{0}' package in the '{0}' directory.",
                                     PackageName,
                                     PackagesDirectory);
+                            }
+                            else
+                            {
+                                Log.LogMessage(
+                                    MessageImportance.Normal,
+                                    "Located '{0}' in '{1}'.",
+                                    PackageName,
+                                    Path);
                             }
                         }
                         catch(Exception e)
