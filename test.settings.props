@@ -150,20 +150,6 @@
             </PostSteps>
         </TestStepsToExecute>
 
-        <TestStepsToExecute
-            Condition="!Exists('$(FileNBuildKitExtensionsImport)')"
-            Include="$(TestStepsGenerateTargetsFile)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Bootstrap;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
-        </TestStepsToExecute>
-
         <TestStepsToExecute Include="$(TestStepsPrepareRestoreNuGet)">
             <Properties>
                 StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuildActions)\test\packages.config

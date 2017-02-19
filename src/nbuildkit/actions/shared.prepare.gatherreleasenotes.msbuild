@@ -17,10 +17,6 @@
         Project="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild" />
 
     <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
-    <Import
         Condition=" '$(ScriptGatherIssues)' != '' AND '$(ScriptGatherIssues)' != 'UNDEFINED' AND Exists('$(ScriptGatherIssues)')"
         Project="$(ScriptGatherIssues)" />
     <Import

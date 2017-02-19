@@ -16,10 +16,6 @@
         <FileRunSettings>$(DirBuildTemp)\vstest.runsettings</FileRunSettings>
     </PropertyGroup>
 
-    <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
     <Target
         Name="nBuildKit_Build_Test_Unit_VsTest_Run">
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_GetToolPaths" />

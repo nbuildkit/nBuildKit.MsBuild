@@ -236,15 +236,15 @@
         DependsOnTargets="_nBuildKit_EntryPoint_LocateNBuildKit"
         Name="_nBuildKit_EntryPoint_Execute">
         <Error
-            Condition=" '$(NBuildKitVersion)' == '' "
-            Text="Could not determine the correct version of the $(NuGetPackageNBuildKit) NuGet package. Without the correct version of this package it is not possible to start the build." />
+            Condition=" '$(PackageVersion)' == '' "
+            Text="Could not determine the correct version of the $(PackageNameEntryPoint) NuGet package. Without the correct version of this package it is not possible to start the build." />
         <Error
-            Condition=" '$(DirNBuildKit)' == '' OR !Exists('$(DirNBuildKit)')"
-            Text="Could not determine the location of the $(NuGetPackageNBuildKit) NuGet package. The file was expected to be in '$(DirPackages)\$(NuGetPackageNBuildKit).&lt;VERSION&gt;' directory, but that directory does not exist. Cannot start build." />
+            Condition=" '$(DirEntryPointPackage)' == '' OR !Exists('$(DirEntryPointPackage)')"
+            Text="Could not determine the location of the $(PackageNameEntryPoint) NuGet package. The file was expected to be in '$(DirPackages)\$(PackageNameEntryPoint).&lt;VERSION&gt;' directory, but that directory does not exist. Cannot start build." />
 
         <MSBuild
             BuildInParallel="False"
-            Projects="$(DirNBuildKit)\run.msbuild"
+            Projects="$(DirEntryPointPackage)\run.msbuild"
             Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserSettings);DirPackages=$(DirPackages)"
             RebaseOutputs="False"
             RemoveProperties=""
@@ -263,12 +263,12 @@
         Get the full path to the nBuildkit package directory so that we can invoked the build scripts from there.
     -->
     <Target
-        DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir;_nBuildKit_EntryPoint_RestoreGlobalNugetPackages;_nBuildKit_EntryPoint_LocateNBuildKitViaPackagesConfig;_nBuildKit_EntryPoint_LocateNBuildKitViaHighestAvailableVersion"
+        DependsOnTargets="_nBuildKit_EntryPoint_LocatePackagesDir;_nBuildKit_EntryPoint_RestoreGlobalNugetPackages;_nBuildKit_EntryPoint_LocateNBuildKitViaPackagesConfig;_nBuildKit_EntryPoint_LocatePackageViaHighestAvailableVersion"
         Name="_nBuildKit_EntryPoint_LocateNBuildKit">
-        <Message Text="DirNBuildKit after search: $(DirNBuildKit)" />
+        <Message Text="DirEntryPointPackage after search: $(DirEntryPointPackage)" />
 
         <Error
-            Condition="!Exists('$(DirNBuildKit)')"
+            Condition="!Exists('$(DirEntryPointPackage)')"
             Text="Unable to find the nBuildKit directory." />
     </Target>
 
@@ -305,7 +305,7 @@
             Condition=" '@(VersionNBuildKit)' != '' "
             Value="%(VersionNBuildKit.Identity)">
             <Output
-                PropertyName="NBuildKitVersion"
+                PropertyName="PackageVersion"
                 TaskParameter="Value" />
         </CreateProperty>
 
@@ -315,18 +315,18 @@
         -->
         <CreateProperty
             Condition="Exists('$(DirPackages)')"
-            Value="$(DirPackages)\$(PackageNameEntryPoint).$(NBuildKitVersion)\build">
+            Value="$(DirPackages)\$(PackageNameEntryPoint).$(PackageVersion)\build">
             <Output
-                PropertyName="DirNBuildKit"
+                PropertyName="DirEntryPointPackage"
                 TaskParameter="Value" />
         </CreateProperty>
 
-        <Message Text="DirNBuildKit after searching packages.config: $(DirNBuildKit)" />
+        <Message Text="DirEntryPointPackage after searching packages.config: $(DirEntryPointPackage)" />
     </Target>
 
     <Target
-        Condition="!Exists('$(DirNBuildKit)')"
-        Name="_nBuildKit_EntryPoint_LocateNBuildKitViaHighestAvailableVersion">
+        Condition="!Exists('$(DirEntryPointPackage)')"
+        Name="_nBuildKit_EntryPoint_LocatePackageViaHighestAvailableVersion">
         <CreateProperty
             Condition=" '$(NBuildKitMinimumVersion)' != '' "
             Value="$(NBuildKitMinimumVersion)">
@@ -376,31 +376,31 @@
                 TaskParameter="Value" />
         </CreateProperty>
 
-        <EntryPoint_LocalTask_GetHighestSuitableNBuildKitVersionFromNuGet
+        <EntryPoint_LocalTask_GetHighestSuitablePackageVersionFromNuGet
             MaximumVersion="$(VersionNBuildKitMaximum)"
             MinimumVersion="$(VersionNBuildKitMinimum)"
             NuGetPath="$(ToolsExternalNuGetPath)"
             PackageName="$(PackageNameEntryPoint)">
             <Output
-                PropertyName="NBuildKitVersion"
+                PropertyName="PackageVersion"
                 TaskParameter="Version" />
-        </EntryPoint_LocalTask_GetHighestSuitableNBuildKitVersionFromNuGet>
+        </EntryPoint_LocalTask_GetHighestSuitablePackageVersionFromNuGet>
         <EntryPoint_LocalTask_InstallNBuildKitFromNuGet
             NuGetPath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageName="$(PackageNameEntryPoint)"
-            PackageVersion="$(NBuildKitVersion)"
+            PackageVersion="$(PackageVersion)"
             Sources="@(NuGetSources)" />
 
         <CreateProperty
             Condition="Exists('$(DirPackages)')"
-            Value="$(DirPackages)\$(PackageNameEntryPoint).$(NBuildKitVersion)\build">
+            Value="$(DirPackages)\$(PackageNameEntryPoint).$(PackageVersion)\build">
             <Output
-                PropertyName="DirNBuildKit"
+                PropertyName="DirEntryPointPackage"
                 TaskParameter="Value" />
         </CreateProperty>
 
-        <Message Text="DirNBuildKit after getting highest allowed version: $(DirNBuildKit)" />
+        <Message Text="DirEntryPointPackage after getting highest allowed version: $(DirEntryPointPackage)" />
     </Target>
 
     <!--
@@ -577,7 +577,7 @@
     <UsingTask
         AssemblyFile="$(MsBuildTasksAssembly)"
         TaskFactory="CodeTaskFactory"
-        TaskName="EntryPoint_LocalTask_GetHighestSuitableNBuildKitVersionFromNuGet">
+        TaskName="EntryPoint_LocalTask_GetHighestSuitablePackageVersionFromNuGet">
         <ParameterGroup>
             <NuGetPath
                 ParameterType="System.String"

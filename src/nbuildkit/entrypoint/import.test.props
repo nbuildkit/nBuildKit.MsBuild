@@ -18,7 +18,7 @@
 
     <!-- Import the steps -->
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildActions)\test\shared.teststeps.msbuild') AND '$(ExistsTestSteps)' != 'true' "
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\test\shared.teststeps.msbuild') AND '$(ExistsNBuildKitTestSteps)' != 'true' "
         Project="$(DirNBuildKitMsBuildActions)\test\shared.teststeps.msbuild" />
 
     <!-- Import the settings files -->
@@ -26,13 +26,13 @@
         <TestPropertyFile>$(DirUserSettings)\test.settings.props</TestPropertyFile>
     </PropertyGroup>
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildActions)\test\test.shared.preuser.props') AND '$(ExistsTestPreUserSharedSettings)' != 'true' "
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\test\test.shared.preuser.props') AND '$(ExistsNBuildKitTestPreUserSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildActions)\test\test.shared.preuser.props" />
     <Import
         Condition="Exists('$(TestPropertyFile)') AND '$(ExistsTestSettings)' != 'true' "
         Project="$(TestPropertyFile)" />
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildActions)\test\test.shared.postuser.props') AND '$(ExistsTestPostUserSharedSettings)' != 'true' "
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\test\test.shared.postuser.props') AND '$(ExistsNBuildKitTestPostUserSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildActions)\test\test.shared.postuser.props" />
 
     <!-- Import the standard template token files -->

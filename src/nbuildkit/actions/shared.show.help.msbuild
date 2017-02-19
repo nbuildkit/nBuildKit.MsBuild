@@ -12,10 +12,6 @@
         Condition="Exists('$(HelpFilePathSharedSettings)')"
         Project="$(HelpFilePathSharedSettings)" />
 
-    <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
     <Target
         DependsOnTargets="_nBuildKit_Shared_Show_Help_Prepare"
         Name="nBuildKit_Shared_Show_Help_Run">

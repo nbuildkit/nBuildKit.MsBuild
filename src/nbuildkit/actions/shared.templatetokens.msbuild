@@ -7,10 +7,6 @@
         <ExistsSharedTemplateTokens>true</ExistsSharedTemplateTokens>
     </PropertyGroup>
 
-    <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
     <Import Project="$(SystemTemplateTokenGenerators)" />
     <Import
         Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "

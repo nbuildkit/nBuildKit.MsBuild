@@ -12,10 +12,6 @@
         Condition="Exists('$(FileTestImports)') AND '$(ExistsTestImports)' != 'true' "
         Project="$(FileTestImports)" />
 
-    <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
     <Target
         Name="nBuildKit_Test_Integration_Pester_Run">
         <CallTarget Targets="nBuildKit_Test_Integration_Pester_Run" />

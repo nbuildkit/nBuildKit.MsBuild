@@ -12,10 +12,6 @@
         Condition="Exists('$(FileTestImports)') AND '$(ExistsTestImports)' != 'true' "
         Project="$(FileTestImports)" />
 
-    <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
     <Target
         Condition=" '@(TestFilesToGenerate)' != '' "
         Name="nBuildKit_Test_Prepare_GenerateFiles_Run"

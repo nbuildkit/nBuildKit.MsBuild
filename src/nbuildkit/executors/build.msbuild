@@ -16,22 +16,17 @@
         Condition="Exists('$(FileBuildImports)') AND '$(ExistsBuildImports)' != 'true' "
         Project="$(FileBuildImports)" />
 
-    <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
     <!--
         Collect the standard paths for injection into nBuildKit.
     -->
     <PropertyGroup>
         <Locations>
             DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+            DirNBuildKitMsBuildTasks=$(DirNBuildKitMsBuildTasks);
             DirWorkspace=$(DirWorkspace);
             DirUserSettings=$(DirUserSettings);
         </Locations>
         <Files>
-            FileNBuildKitExtensionsAssembly=$(FileNBuildKitExtensionsAssembly);
-            FileNBuildKitExtensionsImport=$(FileNBuildKitExtensionsImport);
             FileSharedImports=$(FileSharedImports);
             FileBuildImports=$(FileBuildImports);
             FileTestImports=$(FileTestImports);
@@ -41,7 +36,6 @@
         </DefaultProperties>
     </PropertyGroup>
 
-    <UsingTask TaskName="NBuildKit.MsBuild.Tasks.InvokeSteps" AssemblyFile="$(FileNBuildKitExtensionsAssembly)" />
     <Target
         Condition=" '@(BuildStepsToExecute)' != ''"
         Name="_nBuildKit_Executors_Build_Execute">

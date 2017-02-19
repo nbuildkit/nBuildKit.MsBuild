@@ -11,10 +11,6 @@
         Condition="Exists('$(FileSharedImports)') AND '$(ExistsSharedImports)' != 'true' "
         Project="$(FileSharedImports)" />
 
-    <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
     <Target
         Condition="!Exists('$(FileWorkItems)') AND '@(BranchMergeTarget)' != '' "
         Name="nBuildKit_Shared_Prepare_GetIssueIds_Run">

@@ -37,7 +37,6 @@
             Hard-code the path to the extensions assembly. If it doesn't exist, it will be build.
         -->
         <FileNBuildKitExtensionsAssembly>$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll</FileNBuildKitExtensionsAssembly>
-        <FileNBuildKitExtensionsImport>$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.targets</FileNBuildKitExtensionsImport>
     </PropertyGroup>
 
     <!--
@@ -61,7 +60,7 @@
         Display the help text for the current script and then exit.
     -->
     <Target Name="Help">
-        <Message Text="nBuildKit - Build system" />
+        <Message Text="nBuildKit (bootstrap edition) - Build system" />
         <Message Text="Copyright 2014 nBuildKit. Apache License, Version 2.0" />
         <Message Text="" />
         <Message Text="The following targets exist:" />
@@ -194,7 +193,6 @@
     </Target>
 
     <Target Name="_nBuildKit_EntryPoint_Bootstrap">
-
         <PropertyGroup>
             <DirNBuildKitExtensionsAssembly>$([System.IO.Path]::GetDirectoryName($(FileNBuildKitExtensionsAssembly)))</DirNBuildKitExtensionsAssembly>
         </PropertyGroup>

@@ -12,10 +12,6 @@
         Condition="Exists('$(FileDeployImports)') AND '$(ExistsDeployImports)' != 'true' "
         Project="$(FileDeployImports)" />
 
-    <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
     <Target
         Name="nBuildKit_Deploy_PushTo_GitHubRelease_Run">
         <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion" />

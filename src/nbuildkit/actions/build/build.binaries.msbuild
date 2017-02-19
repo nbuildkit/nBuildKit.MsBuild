@@ -12,10 +12,6 @@
         Condition="Exists('$(FileBuildImports)') AND '$(ExistsBuildImports)' != 'true' "
         Project="$(FileBuildImports)" />
 
-    <Import
-        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
-        Project="$(FileNBuildKitExtensionsImport)" />
-
     <Target
         Name="nBuildKit_Build_Binaries_Run">
         <CallTarget Targets="_nBuildKit_Build_Binaries_Execute" />

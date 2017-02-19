@@ -18,7 +18,7 @@
 
     <!-- Import the steps -->
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\shared.deploysteps.msbuild') AND '$(ExistsDeploySteps)' != 'true' "
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\shared.deploysteps.msbuild') AND '$(ExistsNBuildKitDeploySteps)' != 'true' "
         Project="$(DirNBuildKitMsBuildActions)\deploy\shared.deploysteps.msbuild" />
 
     <!-- Import the settings files -->
@@ -26,13 +26,13 @@
         <DeployPropertyFile>$(DirUserSettings)\deploy.settings.props</DeployPropertyFile>
     </PropertyGroup>
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.preuser.props') AND '$(ExistsDeployPreUserSharedSettings)' != 'true' "
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.preuser.props') AND '$(ExistsNBuildKitDeployPreUserSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.preuser.props" />
     <Import
         Condition="Exists('$(DeployPropertyFile)') AND '$(ExistsDeploySettings)' != 'true' "
         Project="$(DeployPropertyFile)" />
     <Import
-        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.postuser.props') AND '$(ExistsDeployPostUserSharedSettings)' != 'true' "
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.postuser.props') AND '$(ExistsNBuildKitDeployPostUserSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.postuser.props" />
 
     <!-- Import the standard template token files -->

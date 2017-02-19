@@ -18,10 +18,6 @@
         <FileTestImports>$(MSBuildThisFileDirectory)import.test.props</FileTestImports>
         <FileDeployImports>$(MSBuildThisFileDirectory)import.deploy.props</FileDeployImports>
 
-        <DirNBuildKitMsBuildActions Condition=" '$(DirNBuildKitMsBuildActions)' == '' ">UNDEFINED</DirNBuildKitMsBuildActions>
-        <DirBuildKitMsBuildExecutors Condition=" '$(DirBuildKitMsBuildExecutors)' == '' ">UNDEFINED</DirBuildKitMsBuildExecutors>
-        <DirNBuildKitMsBuildTasks Condition=" '$(DirNBuildKitMsBuildTasks)' == '' ">UNDEFINED</DirNBuildKitMsBuildTasks>
-
         <!--
             The name of the package that contains the action scripts for the current build.
         -->
@@ -62,7 +58,6 @@
             <TargetToExecute>build</TargetToExecute>
             <Files>
                 $(Files);
-                FileSharedImports=$(FileSharedImports);
                 FileBuildImports=$(FileBuildImports);
             </Files>
         </PropertyGroup>
@@ -84,7 +79,6 @@
             <TargetToExecute>test</TargetToExecute>
             <Files>
                 $(Files);
-                FileSharedImports=$(FileSharedImports);
                 FileTestImports=$(FileTestImports);
             </Files>
         </PropertyGroup>
@@ -106,7 +100,6 @@
             <TargetToExecute>deploy</TargetToExecute>
             <Files>
                 $(Files);
-                FileSharedImports=$(FileSharedImports);
                 FileDeployImports=$(FileDeployImports);
             </Files>
         </PropertyGroup>
@@ -123,18 +116,18 @@
             <Locations>
                 DirUserSettings=$(DirUserSettings);
                 DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+                DirNBuildKitMsBuildTasks=$(DirNBuildKitMsBuildTasks);
             </Locations>
             <Files>
+                FileSharedImports=$(FileSharedImports);
                 $(Files);
-                FileNBuildKitExtensionsAssembly=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll;
-                FileNBuildKitExtensionsImport=$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.targets;
             </Files>
         </PropertyGroup>
 
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirExecutors)\configureandexecute.msbuild"
-            Properties="DirWorkspace=$(DirWorkspace);DirUserSettings=$(DirUserConfiguration);$(Locations);$(Files)"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -200,9 +193,6 @@
     </Target>
 
     <!--
-        Ideally we'd use the NuGetRestore task from nBuildKit, however this task is used to potentially restore the nBuildKit
-        NuGet package so that we can use the tasks and scripts from nBuildKit ...
-
         In order to prevent it from ever colliding with any of the inline tasks defined elsewhere we'll give it
         a name that is unlikely ever to be used elsewhere (yay poor-mans namespaces?).
     -->
