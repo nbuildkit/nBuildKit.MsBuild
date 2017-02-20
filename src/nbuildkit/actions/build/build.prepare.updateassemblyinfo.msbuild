@@ -79,7 +79,7 @@
             Value="buildNumber: ${VersionBuild}, versionControlInformation: &quot;${VcsRevision}&quot;" />
 
         <TemplateFile
-            Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)') AND '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "
+            Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)') AND ('$(ShouldGenerateAssemblyVersionInfo)' == 'true' OR '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' OR '$(ShouldGenerateAssemblyBuildInfo)' == 'true') "
             Encoding="UTF-8"
             OutputFileName="%(AssemblyInfoFilesToUpdate.Identity)"
             Template="%(AssemblyInfoFilesToUpdate.Identity)"
