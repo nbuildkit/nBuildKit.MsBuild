@@ -99,8 +99,18 @@ namespace NBuildKit.MsBuild.Tasks
         /// Initializes a new instance of the <see cref="InvokeSteps"/> class.
         /// </summary>
         public InvokeSteps()
+            : this(null)
         {
-            ShowDetailedSummary = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvokeSteps"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public InvokeSteps(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+            ShowDetailedSummary = true;
         }
 
         private void AddStepMetadata(ITaskItem subStep, string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)

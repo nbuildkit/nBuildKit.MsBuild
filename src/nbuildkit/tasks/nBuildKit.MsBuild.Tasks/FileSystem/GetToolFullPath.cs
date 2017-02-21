@@ -16,6 +16,23 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
     /// </summary>
     public sealed class GetToolFullPath : CommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetToolFullPath"/> class.
+        /// </summary>
+        public GetToolFullPath()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetToolFullPath"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public GetToolFullPath(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {

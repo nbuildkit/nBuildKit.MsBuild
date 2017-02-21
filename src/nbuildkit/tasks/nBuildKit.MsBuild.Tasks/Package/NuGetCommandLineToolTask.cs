@@ -19,6 +19,15 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
     public abstract class NuGetCommandLineToolTask : CommandLineToolTask
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="NuGetCommandLineToolTask"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        protected NuGetCommandLineToolTask(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
+        /// <summary>
         /// Invokes the GIT command line tool with the given arguments in the provided workspace directory.
         /// </summary>
         /// <param name="arguments">The collection of arguments.</param>

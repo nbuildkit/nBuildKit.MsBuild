@@ -17,7 +17,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
     /// <summary>
     /// Defines the base class for implementations of an MsBuild task.
     /// </summary>
-    public abstract class NBuildKitMsBuildTask : Task
+    public abstract class BaseTask : Task
     {
         private static string AppendDirectorySeparatorChar(string path)
         {

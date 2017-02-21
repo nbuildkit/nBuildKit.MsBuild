@@ -20,7 +20,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
     /// <summary>
     /// Defines a <see cref="ITask"/> that calculates the dependencies for a NuGet package specification.
     /// </summary>
-    public sealed class GatherNuGetDependenciesForProject : NBuildKitMsBuildTask
+    public sealed class GatherNuGetDependenciesForProject : BaseTask
     {
         /// <summary>
         /// Gets or sets the string containing the dependency XML for the nuspec.

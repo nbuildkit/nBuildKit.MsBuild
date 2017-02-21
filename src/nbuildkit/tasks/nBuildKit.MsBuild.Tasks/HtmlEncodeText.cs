@@ -14,7 +14,7 @@ namespace NBuildKit.MsBuild.Tasks
     /// <summary>
     /// Defines a <see cref="ITask"/> that HTML encodes text.
     /// </summary>
-    public sealed class HtmlEncodeText : NBuildKitMsBuildTask
+    public sealed class HtmlEncodeText : BaseTask
     {
         /// <summary>
         /// Gets or sets the HTML encoded text.

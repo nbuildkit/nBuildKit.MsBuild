@@ -20,7 +20,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
     /// Defines a <see cref="ITask"/> which takes user and system defined template tokens that consist of template tokens themselves
     /// and creates a property file for them.
     /// </summary>
-    public sealed class GenerateSpecialParameterTemplateTokens : NBuildKitMsBuildTask
+    public sealed class GenerateSpecialParameterTemplateTokens : BaseTask
     {
         private static void GeneratePropertyFile(string path, IDictionary<string, string> tokens)
         {

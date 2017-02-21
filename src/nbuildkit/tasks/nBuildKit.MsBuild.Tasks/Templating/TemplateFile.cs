@@ -16,7 +16,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
     /// <summary>
     /// Defines a <see cref="ITask"/> that performs a replacement of template variables in a given file.
     /// </summary>
-    public sealed class TemplateFile : NBuildKitMsBuildTask
+    public sealed class TemplateFile : BaseTask
     {
         /// <summary>
         /// Gets or sets the encoding of the file.

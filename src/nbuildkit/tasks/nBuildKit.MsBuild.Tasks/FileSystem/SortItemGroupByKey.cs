@@ -16,7 +16,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
     /// <summary>
     /// Defines a <see cref="ITask"/> that sort a set of items by a given key.
     /// </summary>
-    public sealed class SortItemGroupByKey : NBuildKitMsBuildTask
+    public sealed class SortItemGroupByKey : BaseTask
     {
         /// <summary>
         /// Gets or sets the collection of items.

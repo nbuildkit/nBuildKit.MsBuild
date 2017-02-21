@@ -20,7 +20,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
     /// <summary>
     /// Defines a <see cref="ITask"/> that reads a 'zipspec' file and creates the associated ZIP archive.
     /// </summary>
-    public sealed class Zip : NBuildKitMsBuildTask
+    public sealed class Zip : BaseTask
     {
         private static IEnumerable<FileInfo> GetFilteredFilePaths(string baseDirectory, string fileFilter, bool recurse)
         {

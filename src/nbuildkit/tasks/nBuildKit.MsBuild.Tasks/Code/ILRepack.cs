@@ -20,6 +20,23 @@ namespace NBuildKit.MsBuild.Tasks.Code
     public sealed class ILRepack : CommandLineToolTask
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ILRepack"/> class.
+        /// </summary>
+        public ILRepack()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ILRepack"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public ILRepack(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the collection of assemblies that should be merged into the primary assembly.
         /// </summary>
         [Required]

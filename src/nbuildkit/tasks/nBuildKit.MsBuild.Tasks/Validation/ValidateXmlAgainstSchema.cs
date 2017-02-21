@@ -16,7 +16,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
     /// <summary>
     /// Defines a <see cref="ITask"/> that validates an XML file against an XSD schema file.
     /// </summary>
-    public sealed class ValidateXmlAgainstSchema : NBuildKitMsBuildTask
+    public sealed class ValidateXmlAgainstSchema : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

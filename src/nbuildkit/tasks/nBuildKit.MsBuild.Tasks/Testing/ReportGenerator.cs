@@ -19,6 +19,23 @@ namespace NBuildKit.MsBuild.Tasks.Testing
     /// </summary>
     public sealed class ReportGenerator : CommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReportGenerator"/> class.
+        /// </summary>
+        public ReportGenerator()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReportGenerator"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public ReportGenerator(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {

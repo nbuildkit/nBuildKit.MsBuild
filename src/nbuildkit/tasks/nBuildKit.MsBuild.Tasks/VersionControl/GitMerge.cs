@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.VersionControl
 {
@@ -15,6 +16,23 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
     /// </summary>
     public sealed class GitMerge : GitCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitMerge"/> class.
+        /// </summary>
+        public GitMerge()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitMerge"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public GitMerge(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the branch that should be merged into the current branch.
         /// </summary>

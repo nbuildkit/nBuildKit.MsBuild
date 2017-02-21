@@ -25,7 +25,7 @@ namespace NBuildKit.MsBuild.Tasks
     /// Defines a <see cref="Task"/> that generates a targets file from a given <see cref="Assembly"/> that
     /// contains one or more <see cref="ITask"/> implementations.
     /// </summary>
-    public sealed class GenerateTargetsFile : NBuildKitMsBuildTask
+    public sealed class GenerateTargetsFile : BaseTask
     {
         private const string DefaultNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 

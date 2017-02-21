@@ -20,6 +20,15 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
     public abstract class GitCommandLineToolTask : CommandLineToolTask
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="GitCommandLineToolTask"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        protected GitCommandLineToolTask(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
+        /// <summary>
         /// Invokes the GIT command line tool with the given arguments in the provided workspace directory.
         /// </summary>
         /// <param name="arguments">The collection of arguments.</param>

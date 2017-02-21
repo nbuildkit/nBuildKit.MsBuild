@@ -23,6 +23,15 @@ namespace NBuildKit.MsBuild.Tasks
         private ITaskItem _powershellExePath = new TaskItem(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe");
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="PowershellCommandLineToolTask"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        protected PowershellCommandLineToolTask(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
+        /// <summary>
         /// Gets the event handler that processes data from the data stream, or standard output stream, of
         /// the command line application.By default logs a message for each output.
         /// </summary>

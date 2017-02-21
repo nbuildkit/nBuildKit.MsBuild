@@ -21,6 +21,23 @@ namespace NBuildKit.MsBuild.Tasks.Script
     public sealed class InvokeNodeTool : CommandLineToolTask
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="InvokeNodeTool"/> class.
+        /// </summary>
+        public InvokeNodeTool()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvokeNodeTool"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public InvokeNodeTool(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the paths that should be added to the PATH environment variable.
         /// </summary>
         public ITaskItem[] AdditionalEnvironmentPaths

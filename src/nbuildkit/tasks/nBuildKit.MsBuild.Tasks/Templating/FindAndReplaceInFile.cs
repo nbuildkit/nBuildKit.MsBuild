@@ -15,7 +15,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
     /// <summary>
     /// Defines a <see cref="ITask"/> that replaces tokens in a file with values from a token collection.
     /// </summary>
-    public sealed class FindAndReplaceInFile : NBuildKitMsBuildTask
+    public sealed class FindAndReplaceInFile : BaseTask
     {
         private const string MetadataValueTag = "ReplacementValue";
 

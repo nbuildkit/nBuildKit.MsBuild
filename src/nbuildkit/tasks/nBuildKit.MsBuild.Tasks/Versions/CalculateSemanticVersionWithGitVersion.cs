@@ -25,6 +25,23 @@ namespace NBuildKit.MsBuild.Tasks.Versions
     /// </summary>
     public sealed class CalculateSemanticVersionWithGitVersion : CommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CalculateSemanticVersionWithGitVersion"/> class.
+        /// </summary>
+        public CalculateSemanticVersionWithGitVersion()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CalculateSemanticVersionWithGitVersion"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public CalculateSemanticVersionWithGitVersion(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         [SuppressMessage(
             "Microsoft.Design",

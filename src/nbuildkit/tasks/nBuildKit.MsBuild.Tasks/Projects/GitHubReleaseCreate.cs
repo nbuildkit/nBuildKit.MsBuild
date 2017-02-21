@@ -20,6 +20,23 @@ namespace NBuildKit.MsBuild.Tasks.Projects
     /// </summary>
     public sealed class GitHubReleaseCreate : CommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitHubReleaseCreate"/> class.
+        /// </summary>
+        public GitHubReleaseCreate()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitHubReleaseCreate"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public GitHubReleaseCreate(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {

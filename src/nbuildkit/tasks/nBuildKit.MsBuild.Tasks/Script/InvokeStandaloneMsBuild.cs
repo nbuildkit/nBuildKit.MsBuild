@@ -15,6 +15,7 @@ using System.Text;
 using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Core;
 using Nuclei;
 
 namespace NBuildKit.MsBuild.Tasks.Script
@@ -61,6 +62,16 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// Initializes a new instance of the <see cref="InvokeStandaloneMsBuild"/> class.
         /// </summary>
         public InvokeStandaloneMsBuild()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvokeStandaloneMsBuild"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public InvokeStandaloneMsBuild(IApplicationInvoker invoker)
+            : base(invoker)
         {
             ShowDetailedSummary = true;
         }

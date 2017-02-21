@@ -21,7 +21,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
     /// <summary>
     /// Defines a <see cref="ITask"/> that extracts the projects from a given Visual Studio solution file.
     /// </summary>
-    public sealed class GetProjectsFromVisualStudioSolution : NBuildKitMsBuildTask
+    public sealed class GetProjectsFromVisualStudioSolution : BaseTask
     {
         private static IEnumerable<ITaskItem> GetProjects(string path)
         {

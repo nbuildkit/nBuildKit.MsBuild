@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Validation
 {
@@ -16,6 +17,23 @@ namespace NBuildKit.MsBuild.Tasks.Validation
     /// </summary>
     public sealed class FxCopViaProject : FxCopCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FxCopViaProject"/> class.
+        /// </summary>
+        public FxCopViaProject()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FxCopViaProject"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public FxCopViaProject(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {

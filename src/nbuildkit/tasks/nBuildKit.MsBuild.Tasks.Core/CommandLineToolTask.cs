@@ -6,7 +6,6 @@
 //-----------------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -14,14 +13,35 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
+using Nuclei.Diagnostics;
 
 namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that invoke a command line tool.
     /// </summary>
-    public abstract class CommandLineToolTask : NBuildKitMsBuildTask
+    public abstract class CommandLineToolTask : BaseTask
     {
+        private readonly IApplicationInvoker _invoker;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandLineToolTask"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        protected CommandLineToolTask(IApplicationInvoker invoker)
+        {
+            _invoker = invoker ?? new ApplicationInvoker(new SystemDiagnostics(new MsBuildLogger(Log), null));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandLineToolTask"/> class.
+        /// </summary>
+        /// <param name="diagnostics">The object that provides the diagnostics for the application.</param>
+        protected CommandLineToolTask(SystemDiagnostics diagnostics)
+            : this(new ApplicationInvoker(diagnostics))
+        {
+        }
+
         /// <summary>
         /// Gets the event handler that processes data from the data stream, or standard output stream, of
         /// the command line application.By default logs a message for each output.
@@ -238,80 +258,17 @@ namespace NBuildKit.MsBuild.Tasks.Core
             DataReceivedEventHandler standardOutputHandler = null,
             DataReceivedEventHandler standardErrorHandler = null)
         {
-            if (arguments == null)
-            {
-                Log.LogError("The arguments collection is null.");
-                return -1;
-            }
-
-            if (workingDirectory == null)
-            {
-                workingDirectory = Directory.GetCurrentDirectory();
-            }
-
-            var filePath = GetFullToolPath(exePath);
-            var absoluteWorkingDirectory = GetAbsolutePath(workingDirectory);
-
-            var builder = new StringBuilder();
-            {
-                foreach (var argument in arguments)
-                {
-                    builder.Append(argument);
-                    builder.Append(" ");
-                }
-            }
-
-            var argumentsAsText = builder.ToString();
-            var info = new ProcessStartInfo
-            {
-                FileName = filePath,
-                Arguments = Environment.ExpandEnvironmentVariables(argumentsAsText),
-                WorkingDirectory = absoluteWorkingDirectory,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-            };
-
-            UpdateEnvironmentVariables(info.EnvironmentVariables);
-
-            Log.LogMessage(
-                MessageImportance.Low,
-                "Executing {0} in {1} with arguments: {2}",
-                filePath,
-                absoluteWorkingDirectory,
-                argumentsAsText);
-            if (LogEnvironmentVariables)
-            {
-                Log.LogMessage(MessageImportance.Low, "Environment variables for the process are: ");
-                foreach (DictionaryEntry pair in info.EnvironmentVariables)
-                {
-                    Log.LogMessage(
-                        MessageImportance.Low,
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "{0}: {1}",
-                            pair.Key,
-                            pair.Value));
-                }
-            }
-
-            var process = new Process();
-            process.StartInfo = info;
-
-            var dataHandler = standardOutputHandler ?? DefaultDataHandler;
-            process.OutputDataReceived += dataHandler;
-
+            var outputHandler = standardOutputHandler ?? DefaultDataHandler;
             var errorHandler = standardErrorHandler ?? DefaultErrorHandler;
-            process.ErrorDataReceived += errorHandler;
 
-            process.Start();
-
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
-
-            var exitCode = process.ExitCode;
-            return exitCode;
+            return _invoker.Invoke(
+                exePath,
+                arguments,
+                workingDirectory,
+                UpdateEnvironmentVariables,
+                outputHandler,
+                errorHandler,
+                LogEnvironmentVariables);
         }
 
         /// <summary>

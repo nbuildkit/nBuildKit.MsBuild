@@ -21,6 +21,23 @@ namespace NBuildKit.MsBuild.Tasks.Testing
     public sealed class OpenCover : CommandLineToolTask
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="OpenCover"/> class.
+        /// </summary>
+        public OpenCover()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenCover"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public OpenCover(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the full path to the directory containing the binaries.
         /// </summary>
         [Required]

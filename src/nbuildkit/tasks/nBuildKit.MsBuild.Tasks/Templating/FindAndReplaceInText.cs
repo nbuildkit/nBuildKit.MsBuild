@@ -15,7 +15,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
     /// <summary>
     /// Defines a <see cref="ITask"/> that replaces tokens in a string with values from a token collection.
     /// </summary>
-    public sealed class FindAndReplaceInText : NBuildKitMsBuildTask
+    public sealed class FindAndReplaceInText : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

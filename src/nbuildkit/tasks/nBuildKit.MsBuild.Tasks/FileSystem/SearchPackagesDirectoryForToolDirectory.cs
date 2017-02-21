@@ -16,7 +16,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
     /// <summary>
     /// Defines a <see cref="ITask"/> that searches a given directory for a specific tool and returns the full path to the directory containing the tool.
     /// </summary>
-    public sealed class SearchPackagesDirectoryForToolDirectory : NBuildKitMsBuildTask
+    public sealed class SearchPackagesDirectoryForToolDirectory : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

@@ -18,7 +18,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
     /// <summary>
     /// Defines a <see cref="Task"/> that adds or updates an <see cref="Attribute"/> in a code file.
     /// </summary>
-    public sealed class AddOrUpdateAttributeInCode : NBuildKitMsBuildTask
+    public sealed class AddOrUpdateAttributeInCode : BaseTask
     {
         /// <summary>
         /// Gets or sets the name of the attribute that should be updated.

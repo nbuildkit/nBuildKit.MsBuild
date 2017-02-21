@@ -14,7 +14,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
     /// <summary>
     /// Defines a <see cref="ITask"/> that extracts a ZIP archive to a given directory.
     /// </summary>
-    public sealed class Unzip : NBuildKitMsBuildTask
+    public sealed class Unzip : BaseTask
     {
         /// <summary>
         /// Gets or sets the full path to the directory into which the ZIP archive should be expanded.

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Packaging
 {
@@ -17,6 +18,23 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
     /// </summary>
     public sealed class NuGetInstall : NuGetCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NuGetInstall"/> class.
+        /// </summary>
+        public NuGetInstall()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NuGetInstall"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public NuGetInstall(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {

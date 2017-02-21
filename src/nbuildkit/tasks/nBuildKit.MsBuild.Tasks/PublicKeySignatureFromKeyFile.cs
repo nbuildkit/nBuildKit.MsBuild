@@ -20,6 +20,23 @@ namespace NBuildKit.MsBuild.Tasks
     /// </summary>
     public sealed class PublicKeySignatureFromKeyFile : CommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PublicKeySignatureFromKeyFile"/> class.
+        /// </summary>
+        public PublicKeySignatureFromKeyFile()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PublicKeySignatureFromKeyFile"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public PublicKeySignatureFromKeyFile(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {

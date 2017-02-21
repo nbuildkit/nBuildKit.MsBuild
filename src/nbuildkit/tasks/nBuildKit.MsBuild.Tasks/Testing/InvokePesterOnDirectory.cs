@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Testing
 {
@@ -18,6 +19,23 @@ namespace NBuildKit.MsBuild.Tasks.Testing
     /// </summary>
     public sealed class InvokePesterOnDirectory : PowershellCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvokePesterOnDirectory"/> class.
+        /// </summary>
+        public InvokePesterOnDirectory()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvokePesterOnDirectory"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public InvokePesterOnDirectory(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {

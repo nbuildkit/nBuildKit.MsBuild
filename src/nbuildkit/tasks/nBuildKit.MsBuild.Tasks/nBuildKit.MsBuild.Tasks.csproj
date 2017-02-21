@@ -33,6 +33,10 @@
   </PropertyGroup>
   <Import Project="$(SolutionDir)/base.props" />
   <ItemGroup>
+    <Reference Include="Consul, Version=0.6.4.7, Culture=neutral, PublicKeyToken=20a6ad9a81df1d95, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Consul.0.6.4.7\lib\net45\Consul.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -42,6 +46,14 @@
     </Reference>
     <Reference Include="Nuclei.Build, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\Nuclei.Build.0.9.0\lib\net40\Nuclei.Build.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nuclei.Configuration, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.Configuration.0.9.0\lib\net452\Nuclei.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nuclei.Diagnostics, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.Diagnostics.0.9.0\lib\net452\Nuclei.Diagnostics.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Versioning, Version=3.4.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -80,7 +92,7 @@
     <Compile Include="Validation\FxCopCommandLineToolTask.cs" />
     <Compile Include="Validation\FxCopViaAssemblies.cs" />
     <Compile Include="Validation\FxCopViaProject.cs" />
-    <Compile Include="Packaging\GatherNuGetDependenciesForProject.cs" />
+    <Compile Include="Package\GatherNuGetDependenciesForProject.cs" />
     <Compile Include="Code\GenerateInternalsVisibleToAttributes.cs" />
     <Compile Include="GenerateTargetsFile.cs" />
     <Compile Include="Versions\GetFileVersion.cs" />
@@ -123,11 +135,11 @@
     <Compile Include="Nuclei\ExceptionHandling\TopLevelExceptionGuard.cs" />
     <Compile Include="Nuclei\Fusion\AssemblyNameElements.cs" />
     <Compile Include="Nuclei\Fusion\FusionHelper.cs" />
-    <Compile Include="Packaging\NuGetCommandLineToolTask.cs" />
-    <Compile Include="Packaging\NuGetInstall.cs" />
-    <Compile Include="Packaging\NuGetPack.cs" />
-    <Compile Include="Packaging\NuGetPush.cs" />
-    <Compile Include="Packaging\NuGetRestore.cs" />
+    <Compile Include="Package\NuGetCommandLineToolTask.cs" />
+    <Compile Include="Package\NuGetInstall.cs" />
+    <Compile Include="Package\NuGetPack.cs" />
+    <Compile Include="Package\NuGetPush.cs" />
+    <Compile Include="Package\NuGetRestore.cs" />
     <Compile Include="Testing\OpenCover.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicKeySignatureFromKeyFile.cs" />
@@ -140,10 +152,10 @@
     <Compile Include="FileSystem\SortItemGroupByKey.cs" />
     <Compile Include="Templating\TemplateFile.cs" />
     <Compile Include="Templating\TemplateText.cs" />
-    <Compile Include="Packaging\Unzip.cs" />
+    <Compile Include="Package\Unzip.cs" />
     <Compile Include="Code\UpdateAttributeInCode.cs" />
     <Compile Include="Validation\ValidateXmlAgainstSchema.cs" />
-    <Compile Include="Packaging\Zip.cs" />
+    <Compile Include="Package\Zip.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

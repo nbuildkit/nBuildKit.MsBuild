@@ -16,7 +16,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
     /// <summary>
     /// Defines a <see cref="ITask"/> that performs a replacement of template variables in a given string.
     /// </summary>
-    public sealed class TemplateText : NBuildKitMsBuildTask
+    public sealed class TemplateText : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

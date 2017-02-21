@@ -16,7 +16,7 @@ namespace NBuildKit.MsBuild.Tasks.Versions
     /// <summary>
     /// Defines a <see cref="ITask"/> that extracts version numbers from a version file written by the <see cref="CalculateSemanticVersionWithGitVersion"/> task.
     /// </summary>
-    public sealed class GetSemanticVersionFromFile : NBuildKitMsBuildTask
+    public sealed class GetSemanticVersionFromFile : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()
