@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_Copy_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ExistsSharedPrepareCopy>true</ExistsSharedPrepareCopy>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Copy_FromFileSystem;_nBuildKit_Shared_Prepare_Copy_FromNuGetPackage"
+        Name="nBuildKit_Shared_Prepare_Copy_Run">
+    </Target>
+
+    <Target
+        Condition=" '@(FilesToCopy)' != '' "
+        Name="_nBuildKit_Shared_Prepare_Copy_FromFileSystem">
+        <!--
+            MsBuild can't seem to handle using item metadata (FilesToCopy.FullPath) inside a property function
+            inside the Exists() function, so we'll split the process and do the transfer separately.
+        -->
+        <ItemGroup>
+            <DirFilesToCopyTemp Include="$([System.IO.Path]::GetFullPath('%(FilesToCopy.Destination)'))" />
+        </ItemGroup>
+
+        <MakeDir
+            Condition="!Exists('%(DirFilesToCopyTemp.Identity)')"
+            Directories="%(DirFilesToCopyTemp.Identity)" />
+
+        <Copy
+            SourceFiles="@(FilesToCopy)"
+            DestinationFiles="@(FilesToCopy->'%(Destination)\%(RecursiveDir)%(Filename)%(Extension)')"
+            OverwriteReadOnlyFiles="True"
+            Retries="5"
+            RetryDelayMilliseconds="1000"
+            SkipUnchangedFiles="False"
+            UseHardlinksIfPossible="False" />
+    </Target>
+
+    <Target
+        Condition=" '@(NuGetFilesToCopy)' != '' "
+        Name="_nBuildKit_Shared_Prepare_Copy_FromNuGetPackage"
+        Outputs="%(NuGetFilesToCopy.Identity)">
+        <SearchPackagesDirectoryForNuGetPackage
+            PackagesDirectory="$(DirPackages)"
+            PackageToLocate="%(NuGetFilesToCopy.Identity)">
+            <Output
+                PropertyName="NuGetFilesToCopyDir"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForNuGetPackage>
+
+        <!--
+            This is where it gets nasty. The Include list contains relative file paths to the nuget package directory,
+            which means in order to create an absolute file path that an item group can resolve we need to prefix all
+            the items in the include list with the file path. So we replace the semi-colon separating the relative file
+            paths with a semi-colon and the path to the nuget package. Not pretty but it works.
+        -->
+        <CreateProperty Value="%(NuGetFilesToCopy.Include)">
+            <Output
+                PropertyName="RelativeFilePaths"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <CreateProperty Value="$(NuGetFilesToCopyDir)\$(RelativeFilePaths.Replace(';', ';$(NuGetFilesToCopyDir)\'))">
+            <Output
+                PropertyName="AbsoluteFilePaths"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <!--
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(AbsoluteFilePaths.Split(';'))">
+            <Output
+                ItemName="NuGetPackageFilesToCopy"
+                TaskParameter="Include" />
+        </CreateItem>
+
+        <Copy
+            SourceFiles="@(NuGetPackageFilesToCopy)"
+            DestinationFiles="@(NuGetPackageFilesToCopy->'%(NuGetFilesToCopy.Destination)\%(RecursiveDir)%(Filename)%(Extension)')"
+            OverwriteReadOnlyFiles="True"
+            Retries="5"
+            RetryDelayMilliseconds="1000"
+            SkipUnchangedFiles="False"
+            UseHardlinksIfPossible="False" />
+    </Target>
+ </Project>

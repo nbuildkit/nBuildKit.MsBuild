@@ -10,7 +10,7 @@
     <PropertyGroup>
         <BuildStepsShowHelp>$(MSBuildThisFileDirectory)..\shared.show.help.msbuild</BuildStepsShowHelp>
 
-        <BuildStepsPrepareWorkspace>$(MSBuildThisFileDirectory)\build.prepare.workspace.msbuild</BuildStepsPrepareWorkspace>
+        <BuildStepsPrepareWorkspace>$(MSBuildThisFileDirectory)..\sahred.prepare.workspace.msbuild</BuildStepsPrepareWorkspace>
         <BuildStepsPrepareRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</BuildStepsPrepareRestoreNuGet>
 
         <BuildStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</BuildStepsPrepareGetIssueIds>
@@ -24,6 +24,8 @@
 
         <BuildStepsPrepareRestoreNpm>$(MSBuildThisFileDirectory)..\shared.prepare.npm.restore.msbuild</BuildStepsPrepareRestoreNpm>
         <BuildStepsPrepareRestoreBower>$(MSBuildThisFileDirectory)..\shared.prepare.bower.restore.msbuild</BuildStepsPrepareRestoreBower>
+
+        <BuildStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.msbuild</BuildStepsPrepareCopyFiles>
 
         <BuildStepsPrepareAssemblyInfo>$(MSBuildThisFileDirectory)build.prepare.updateassemblyinfo.msbuild</BuildStepsPrepareAssemblyInfo>
         <BuildStepsPrepareGenerateLicenses>$(MSBuildThisFileDirectory)build.prepare.generatelicenses.msbuild</BuildStepsPrepareGenerateLicenses>
@@ -133,6 +135,14 @@
             <Id>BuildStepsPrepareRestoreBower</Id>
             <Name>Build - restore Bower packages</Name>
             <Path>$(BuildStepsPrepareRestoreBower)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareCopyFiles)'))">
+            <Description>
+                Copies one or more files from the file system or from a NuGet package.
+            </Description>
+            <Id>BuildStepsPrepareCopyFiles</Id>
+            <Name>Build - copy files</Name>
+            <Path>$(BuildStepsPrepareCopyFiles)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareAssemblyInfo)'))">
             <Description>

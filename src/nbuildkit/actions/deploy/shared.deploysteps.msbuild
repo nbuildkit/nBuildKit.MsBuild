@@ -11,15 +11,14 @@
     <PropertyGroup>
         <DeployStepsShowHelp>$(MSBuildThisFileDirectory)..\shared.show.help.msbuild</DeployStepsShowHelp>
 
-        <DeployStepsBuildTargetsAssembly>$(MSBuildThisFileDirectory)..\shared.bootstrap.build.tasks.msbuild</DeployStepsBuildTargetsAssembly>
-        <DeployStepsGenerateTargetsFile>$(MSBuildThisFileDirectory)..\shared.bootstrap.generate.targetsfile.msbuild</DeployStepsGenerateTargetsFile>
-
         <DeployStepsPrepareVcsBranch>$(MSBuildThisFileDirectory)..\shared.prepare.vcssetbranch.msbuild</DeployStepsPrepareVcsBranch>
         <DeployStepsPrepareGetVersion>$(MSBuildThisFileDirectory)..\shared.prepare.getversion.msbuild</DeployStepsPrepareGetVersion>
         <DeployStepsPrepareTagVcs>$(MSBuildThisFileDirectory)..\shared.prepare.tag.vcs.msbuild</DeployStepsPrepareTagVcs>
 
         <DeployStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
         <DeployStepsRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
+
+        <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.msbuild</DeployStepsPrepareCopyFiles>
 
         <DeployStepsPushToTags>$(MSBuildThisFileDirectory)deploy.pushto.tags.msbuild</DeployStepsPushToTags>
         <DeployStepsPushToNuget>$(MSBuildThisFileDirectory)deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
@@ -85,6 +84,14 @@
             <Id>DeployStepsRestoreNuGet</Id>
             <Name>Deploy - restore NuGet packages</Name>
             <Path>$(DeployStepsRestoreNuGet)</Path>
+        </AvailableStepMetadata>
+         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyFiles)'))">
+            <Description>
+                Copies one or more files from the file system or from a NuGet package.
+            </Description>
+            <Id>DeployStepsPrepareCopyFiles</Id>
+            <Name>Deploy - copy files</Name>
+            <Path>$(DeployStepsPrepareCopyFiles)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToTags)'))">
             <Description>

@@ -10,10 +10,7 @@
     <PropertyGroup>
         <TestStepsShowHelp>$(MSBuildThisFileDirectory)..\shared.show.help.msbuild</TestStepsShowHelp>
 
-        <TestStepsPrepareWorkspace>$(MSBuildThisFileDirectory)test.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
-
-        <TestStepsBuildTargetsAssembly>$(MSBuildThisFileDirectory)..\shared.bootstrap.build.tasks.msbuild</TestStepsBuildTargetsAssembly>
-        <TestStepsGenerateTargetsFile>$(MSBuildThisFileDirectory)..\shared.bootstrap.generate.targetsfile.msbuild</TestStepsGenerateTargetsFile>
+        <TestStepsPrepareWorkspace>$(MSBuildThisFileDirectory)..\shared.prepare.workspace.msbuild</TestStepsPrepareWorkspace>
 
         <TestStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</TestStepsPrepareGetIssueIds>
         <TestStepsPrepareVcsBranch>$(MSBuildThisFileDirectory)..\shared.prepare.vcssetbranch.msbuild</TestStepsPrepareVcsBranch>
@@ -21,6 +18,9 @@
         <TestStepsPrepareGetVersion>$(MSBuildThisFileDirectory)..\shared.prepare.getversion.msbuild</TestStepsPrepareGetVersion>
         <TestStepsPrepareReleaseNotes>$(MSBuildThisFileDirectory)..\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
         <TestStepsPrepareVcsInfo>$(MSBuildThisFileDirectory)..\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
+
+        <TestStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.msbuild</uildStepsPrepareCopyFiles>
+
         <TestStepsPrepareGenerateFiles>$(MSBuildThisFileDirectory)test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
 
         <TestStepsIntegrationPester>$(MSBuildThisFileDirectory)test.integration.pester.msbuild</TestStepsIntegrationPester>
@@ -97,6 +97,14 @@
             <Id>TestStepsPrepareVcsInfo</Id>
             <Name>Test - gather VCS information</Name>
             <Path>$(TestStepsPrepareVcsInfo)</Path>
+        </AvailableStepMetadata>
+         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyFiles)'))">
+            <Description>
+                Copies one or more files from the file system or from a NuGet package.
+            </Description>
+            <Id>TestStepsPrepareCopyFiles</Id>
+            <Name>Test - copy files</Name>
+            <Path>$(TestStepsPrepareCopyFiles)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareGenerateFiles)'))">
             <Description>
