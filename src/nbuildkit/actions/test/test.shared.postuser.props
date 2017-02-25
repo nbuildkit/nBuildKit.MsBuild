@@ -67,10 +67,8 @@
 
         If the deletion process fails the test will continue and a warning will be printed.
     -->
-    <ItemGroup Condition=" '@(TestFilesToDelete)' == '' ">
-        <!--
-        <TestFilesToDelete Include="" />
-        -->
+    <ItemGroup>
+        <FilesToDelete Include="$(DirBuildTest)\**\*.*"/>
     </ItemGroup>
 
     <!--
@@ -79,20 +77,31 @@
 
         If the deletion process fails the test will continue and a warning will be printed.
     -->
-    <ItemGroup Condition=" '@(TestDirectoriesToDelete)' == '' ">
-        <!--
-        <TestDirectoriesToDelete Include="" />
-        -->
+    <ItemGroup>
+        <DirectoriesToDelete Include="$(DirBuildTest)" />
+        <DirectoriesToDelete Include="$(DirBuildTemp)" />
     </ItemGroup>
 
+
     <!--
-        The list of all files that should be copied prior to starting the tests.
+        **** PREPARE - COPY FILES ****
     -->
-    <ItemGroup Condition=" '@(TestFilesToCopy)' == '' ">
+    <!--
+        Files that should be copied, either from the file system or from a NuGet package.
+    -->
+    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
         <!--
-        <TestFilesToCopy Include="$(DirTest)\**\*.*" Condition="Exists('$(DirTest)')">
-            <TargetDirectory>$(DirBuildTest)</TargetDirectory>
-        </TestFilesToCopy>
+        <FilesToCopy Include="">
+            <Destination></Destination>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destination>$(DirBuildTemp)</Destination>
+        </NuGetFilesToCopy>
         -->
     </ItemGroup>
 

@@ -5,7 +5,7 @@
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsBuildPrepareWorkspace>true</ExistsBuildPrepareWorkspace>
+        <ExistsPrepareWorkspace>true</ExistsPrepareWorkspace>
     </PropertyGroup>
 
     <Import
@@ -14,56 +14,14 @@
 
     <Target
         Name="nBuildKit_Build_Prepare_Workspace_Run">
-        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean_GeneratedFiles" />
-        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Delete_VisualStudioLocation" />
-        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean_VisualStudioLocation" />
-        <CallTarget Targets="_nBuildKit_Build_Prepare_Workspace_Clean_BuildDirectory" />
-    </Target>
-
-    <Target
-        Condition=" '$(ShouldClean)' == 'true' "
-        Name="_nBuildKit_Build_Prepare_Workspace_Clean_GeneratedFiles">
-        <ItemGroup>
-            <GeneratedFilesToDelete
-                Condition="Exists('$(FileSemanticVersion)')"
-                Include="$(FileSemanticVersion)" />
-            <GeneratedFilesToDelete
-                Condition="Exists('$(FileReleaseNotesShort)')"
-                Include="$(FileReleaseNotesShort)" />
-            <GeneratedFilesToDelete
-                Condition="Exists('$(FileReleaseNotesFull)')"
-                Include="$(FileReleaseNotesFull)" />
-            <GeneratedFilesToDelete
-                Condition="Exists('$(FileVcsInfo)')"
-                Include="$(FileVcsInfo)" />
-            <GeneratedFilesToDelete
-                Condition="Exists('$(FileReportMsTest)')"
-                Include="$(FileReportMsTest)" />
-            <GeneratedFilesToDelete
-                Condition="Exists('$(FileReportOpenCoverXml)')"
-                Include="$(FileReportOpenCoverXml)" />
-            <GeneratedFilesToDelete
-                Condition="Exists('$(FileReportOpenCoverCsv)')"
-                Include="$(FileReportOpenCoverCsv)" />
-            <GeneratedFilesToDelete
-                Condition="Exists('$(FileReportMoma)')"
-                Include="$(FileReportMoma)" />
-            <GeneratedFilesToDelete
-                Condition="Exists('$(FileReportFxCop)')"
-                Include="$(FileReportFxCop)" />
-            <GeneratedFilesToDelete
-                Condition="Exists('%(BuildFilesToGenerate.FullPath)')"
-                Include="%(BuildFilesToGenerate.FullPath)" />
-        </ItemGroup>
-        <Delete
-            Condition=" '@(GeneratedFilesToDelete)' != '' "
-            ContinueOnError="True"
-            Files="@(GeneratedFilesToDelete)" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Workspace_Delete_VisualStudioLocation" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Workspace_Clean_VisualStudioLocation" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Workspace_Clean_BuildDirectory" />
     </Target>
 
     <Target
         Condition=" '@(SolutionsToBuild)' != '' AND '$(ShouldClean)' == 'true' AND '$(ShouldDeleteVisualStudioOutputs)' == 'true' "
-        Name="_nBuildKit_Build_Prepare_Workspace_Delete_VisualStudioLocation"
+        Name="_nBuildKit_Shared_Prepare_Workspace_Delete_VisualStudioLocation"
         Outputs="%(SolutionsToBuild.Identity)">
         <TemplateText
             Template="%(SolutionsToBuild.FullPath)"
@@ -96,7 +54,7 @@
 
     <Target
         Condition=" '@(SolutionsToBuild)' != '' AND '$(ShouldClean)' == 'true' AND '$(ShouldCleanVisualStudioOutputs)' == 'true' AND '$(ShouldDeleteVisualStudioOutputs)' != 'true' "
-        Name="_nBuildKit_Build_Prepare_Workspace_Clean_VisualStudioLocation"
+        Name="_nBuildKit_Shared_Prepare_Workspace_Clean_VisualStudioLocation"
         Outputs="%(SolutionsToBuild.Identity)">
         <TemplateText
             Template="%(SolutionsToBuild.FullPath)"
@@ -126,37 +84,21 @@
 
     <Target
         Condition="'$(ShouldClean)' == 'true'"
-        Name="_nBuildKit_Build_Prepare_Workspace_Clean_BuildDirectory">
+        Name="_nBuildKit_Shared_Prepare_Workspace_Clean_BuildDirectory">
         <!--
             We'll try to delete the directory and files but that may fail randomly because
             some file is being locked (by some other process). This could leads to a failing task, but ..
             the next task is run and then the delete command still executes (delayed
             by the OS).
         -->
-        <!--
-            Also make sure not to kill the 'DirBuildBootstrap' and 'DirUserConfiguration' folders because those contains the
-            nBuildKit bootstrap and the settings.props files respectively. Both of which we are currently using.
-        -->
-        <ItemGroup>
-            <BuildFilesToDelete
-                Condition="Exists('$(DirBuild)')"
-                Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*;$(DirHighLevelOverview)\$(FileNameHighLevelOverview).*"
-                Include="$(DirBuild)\**\*.*" />
-        </ItemGroup>
         <Delete
-            Condition=" '@(BuildFilesToDelete)' != '' "
+            Condition=" '@(FilesToDelete)' != '' "
             ContinueOnError="True"
-            Files="@(BuildFilesToDelete)" />
+            Files="@(FilesToDelete)" />
 
-        <ItemGroup>
-            <BuildDirectoriesToDelete
-                Condition="Exists('$(DirBuild)')"
-                Exclude="$(DirBuild);$(DirBuildBootstrap);$(DirUserConfiguration);$(DirHighLevelOverview)"
-                Include="$([System.IO.Directory]::GetDirectories('$(DirBuild)', '*', System.IO.SearchOption.TopDirectoryOnly))" />
-        </ItemGroup>
         <RemoveDir
-            Condition=" '@(BuildDirectoriesToDelete)' != '' "
+            Condition=" '@(DirectoriesToDelete)' != '' "
             ContinueOnError="True"
-            Directories="@(BuildDirectoriesToDelete)" />
+            Directories="@(DirectoriesToDelete)" />
     </Target>
  </Project>

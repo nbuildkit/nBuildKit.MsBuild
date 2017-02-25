@@ -65,10 +65,45 @@
 
         If the deletion process fails the build will continue and a warning will be printed.
     -->
-    <ItemGroup Condition=" '@(BuildFilesToDelete)' == '' ">
+    <ItemGroup>
+        <FilesToDelete
+            Condition="Exists('$(FileSemanticVersion)')"
+            Include="$(FileSemanticVersion)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReleaseNotesShort)')"
+            Include="$(FileReleaseNotesShort)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReleaseNotesFull)')"
+            Include="$(FileReleaseNotesFull)" />
+        <FilesToDelete
+            Condition="Exists('$(FileVcsInfo)')"
+            Include="$(FileVcsInfo)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportMsTest)')"
+            Include="$(FileReportMsTest)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportOpenCoverXml)')"
+            Include="$(FileReportOpenCoverXml)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportOpenCoverCsv)')"
+            Include="$(FileReportOpenCoverCsv)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportMoma)')"
+            Include="$(FileReportMoma)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportFxCop)')"
+            Include="$(FileReportFxCop)" />
+        <FilesToDelete
+            Condition="Exists('%(BuildFilesToGenerate.FullPath)')"
+            Include="%(BuildFilesToGenerate.FullPath)" />
         <!--
-        <BuildFilesToDelete Include="" />
+            Make sure not to kill the 'DirBuildBootstrap' and 'DirUserConfiguration' folders because those contains the
+            nBuildKit bootstrap and the settings.props files respectively. Both of which we are currently using.
         -->
+        <FilesToDelete
+            Condition="Exists('$(DirBuild)')"
+            Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*;$(DirHighLevelOverview)\$(FileNameHighLevelOverview).*"
+            Include="$(DirBuild)\**\*.*" />
     </ItemGroup>
 
     <!--
@@ -77,10 +112,11 @@
 
         If the deletion process fails the build will continue and a warning will be printed.
     -->
-    <ItemGroup Condition=" '@(BuildDirectoriesToDelete)' == '' ">
-        <!--
-        <BuildDirectoriesToDelete Include="" />
-        -->
+    <ItemGroup>
+        <DirectoriesToDelete
+            Condition="Exists('$(DirBuild)')"
+            Exclude="$(DirBuild);$(DirBuildBootstrap);$(DirUserConfiguration);$(DirHighLevelOverview)"
+            Include="$([System.IO.Directory]::GetDirectories('$(DirBuild)', '*', System.IO.SearchOption.TopDirectoryOnly))" />
     </ItemGroup>
 
 
