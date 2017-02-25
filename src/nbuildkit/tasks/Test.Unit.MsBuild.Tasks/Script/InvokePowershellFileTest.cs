@@ -59,7 +59,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var output = task.Output;
             Assert.AreEqual(text, output);
 
-            VerifyNumberOfLogMessages(numberOfNormalMessages: 7);
+            VerifyNumberOfLogMessages(numberOfNormalMessages: 3);
         }
 
         [Test]
@@ -104,7 +104,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.AreEqual(text, output);
 
             // Expecting more than one message because powershell adds additional information to the error.
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 5, numberOfNormalMessages: 7);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 5, numberOfNormalMessages: 3);
         }
 
         [Test]
@@ -148,7 +148,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var output = task.Output;
             Assert.AreEqual(text, output);
 
-            VerifyNumberOfLogMessages(numberOfWarningMessages: 5, numberOfNormalMessages: 7);
+            VerifyNumberOfLogMessages(numberOfWarningMessages: 5, numberOfNormalMessages: 3);
         }
 
         [Test]

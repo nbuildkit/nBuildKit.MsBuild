@@ -42,7 +42,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var output = task.Output;
             Assert.AreEqual(text, output);
 
-            VerifyNumberOfLogMessages(numberOfNormalMessages: 6);
+            VerifyNumberOfLogMessages(numberOfNormalMessages: 2);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var output = task.Output;
             Assert.AreEqual(text, output);
 
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 3, numberOfNormalMessages: 6);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 3, numberOfNormalMessages: 2);
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var output = task.Output;
             Assert.AreEqual(text, output);
 
-            VerifyNumberOfLogMessages(numberOfWarningMessages: 3, numberOfNormalMessages: 6);
+            VerifyNumberOfLogMessages(numberOfWarningMessages: 3, numberOfNormalMessages: 2);
         }
 
         [Test]
