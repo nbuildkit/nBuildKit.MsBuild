@@ -579,15 +579,20 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+        <!--
         <FilesToCopy Include="">
             <Destination></Destination>
         </FilesToCopy>
-        <NuGetFilesToCopy Include="">
-            <PackageName></PackageName>
-            <PackageVersion></PackageVersion>
-            <Destination></Destination>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destination>$(DirBuildTemp)</Destination>
         </NuGetFilesToCopy>
+        -->
     </ItemGroup>
 
 

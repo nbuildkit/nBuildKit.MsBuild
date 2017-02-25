@@ -128,6 +128,7 @@
                                            currently allows gathering release notes from GitHub, Jira and YouTrack
         $(TestStepsPrepareVcsInfo)       - Stores the Version Control System (VCS) information in a file for later use.
                                            Currently supported version control systems is GIT
+        $(TestStepsPrepareCopyFiles)     - Copies one or more files from the file system or from a NuGet package.
         $(TestStepsPrepareGenerateFiles) - Generates one or more files from a set of template files.
         $(TestStepsIntegrationPester)    - Runs Pester on a specified test script file.
 
@@ -243,6 +244,20 @@
             </PostSteps>
         </TestStepsToExecute>
         -->
+
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyFiles)">
+            <Properties>
+            </Properties>
+            <Groups>
+                CopyFiles;
+                Prepare;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
+
         <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
             <Properties>
             </Properties>
@@ -366,16 +381,26 @@
         -->
     </ItemGroup>
 
+
     <!--
-        The list of all files that should be copied prior to starting the tests.
+        **** PREPARE - COPY FILES ****
     -->
-    <ItemGroup>
+    <!--
+        Files that should be copied, either from the file system or from a NuGet package.
+    -->
+    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
         <!--
-        <TestFilesToCopy Include="$(DirTestOldestVbNet)\**\*.*"
-                         Exclude="$(DirTestOldestVbNet)\environment.props;$(DirTestOldestVbNet)\**\packages.config;$(DirTestOldestVbNet)\**\*.vbproj"
-                         Condition="Exists('$(DirTestOldestVbNet)')">
-            <TargetDirectory>$(DirBuildTestOldestVbNet)</TargetDirectory>
-        </TestFilesToCopy>
+        <FilesToCopy Include="">
+            <Destination></Destination>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destination>$(DirBuildTemp)</Destination>
+        </NuGetFilesToCopy>
         -->
     </ItemGroup>
 
