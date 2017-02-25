@@ -29,7 +29,7 @@ namespace NBuildKit.MsBuild.Tasks
     {
         private const string DefaultNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 
-        private static void AppendUsingTask(XmlNode node, string typeName)
+        private static void AppendUsingTask(XmlNode node, string assemblyFilePropertyName, string typeName)
         {
             /*
                 Create a node similar to
@@ -46,11 +46,17 @@ namespace NBuildKit.MsBuild.Tasks
             node.AppendChild(usingTaskNode);
 
             var assemblyFileAttribute = doc.CreateAttribute("AssemblyFile");
-            assemblyFileAttribute.Value = "$(FileTasksAssembly)";
+            assemblyFileAttribute.Value = string.Format(
+                CultureInfo.InvariantCulture,
+                "$({0})",
+                assemblyFilePropertyName);
             usingTaskNode.Attributes.Append(assemblyFileAttribute);
 
             var conditionAttribute = doc.CreateAttribute("Condition");
-            conditionAttribute.Value = "Exists('$(FileTasksAssembly)')";
+            conditionAttribute.Value = string.Format(
+                CultureInfo.InvariantCulture,
+                "Exists('$({0})')",
+                assemblyFilePropertyName);
             usingTaskNode.Attributes.Append(conditionAttribute);
 
             var taskNameAttribute = doc.CreateAttribute("TaskName");
@@ -149,7 +155,8 @@ namespace NBuildKit.MsBuild.Tasks
             existsExtensionsNode.InnerText = "true";
             propertyGroupNode.AppendChild(existsExtensionsNode);
 
-            var filePropertyNode = doc.CreateElement("FileTasksAssembly", DefaultNamespace);
+            var assemblyFilePropertyName = Path.GetFileNameWithoutExtension(filePath).Replace(".", string.Empty);
+            var filePropertyNode = doc.CreateElement(assemblyFilePropertyName, DefaultNamespace);
             filePropertyNode.InnerText = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}(MSBuildThisFileDirectory){1}",
@@ -162,7 +169,7 @@ namespace NBuildKit.MsBuild.Tasks
                 var taskTypes = GetTaskTypes(filePath);
                 foreach (var typeName in taskTypes)
                 {
-                    AppendUsingTask(projectNode, typeName);
+                    AppendUsingTask(projectNode, assemblyFilePropertyName, typeName);
                 }
             }
             catch (Exception e)
