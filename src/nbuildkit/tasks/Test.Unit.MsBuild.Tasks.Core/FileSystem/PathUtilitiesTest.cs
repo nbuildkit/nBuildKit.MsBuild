@@ -85,22 +85,24 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 fileSystem.AddFile(@"c:\other\temp\file.txt", new MockFileData("b"));
             }
 
+            foobar();
+
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\temp\file.txt", fileSystem),
+                PathUtilities.IncludedPaths(@"c:\temp\file.txt"),
                 Is.EquivalentTo(
                     new[]
                     {
                         @"c:\temp\file.txt"
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\temp\*.txt", fileSystem),
+                PathUtilities.IncludedPaths(@"c:\temp\*.txt"),
                 Is.EquivalentTo(
                     new[]
                     {
                         @"c:\temp\file.txt"
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt", fileSystem),
+                PathUtilities.IncludedPaths(@"c:\**\*.txt"),
                 Is.EquivalentTo(
                     new[]
                     {
@@ -108,14 +110,14 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         @"c:\other\temp\file.txt"
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\other\**\*.txt", fileSystem),
+                PathUtilities.IncludedPaths(@"c:\other\**\*.txt"),
                 Is.EquivalentTo(
                     new[]
                     {
                         @"c:\other\temp\file.txt"
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\temp\*.txt", fileSystem),
+                PathUtilities.IncludedPaths(@"c:\**\temp\*.txt"),
                 Is.EquivalentTo(
                     new[]
                     {
@@ -135,8 +137,10 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 fileSystem.AddFile(@"c:\other\temp\other.txt", new MockFileData("b"));
             }
 
+            foobar();
+
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt", Enumerable.Empty<string>(), fileSystem),
+                PathUtilities.IncludedPaths(@"c:\**\*.txt", Enumerable.Empty<string>()),
                 Is.EquivalentTo(
                     new[]
                     {
@@ -146,17 +150,34 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         @"c:\other\temp\other.txt",
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { @"c:\other" }, fileSystem),
+                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { @"c:\other\**\*.*" }),
                 Is.EquivalentTo(
                     new[]
                     {
                         @"c:\temp\file.txt",
                         @"c:\temp\other.txt",
                     }));
+            Assert.That(
+                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { @"c:\temp\other.*" }),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        @"c:\temp\file.txt",
+                        @"c:\other\temp\file.txt",
+                        @"c:\other\temp\other.txt",
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { @"c:\**\other.*" }),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        @"c:\temp\file.txt",
+                        @"c:\other\temp\file.txt",
+                    }));
         }
 
+        // [Ignore("Ignoring files without directories doesn't work yet.")]
         [Test]
-        [Ignore("Ignoring files without directories doesn't work yet.")]
         public void IncludedPathsWithFileExclusions()
         {
             var fileSystem = new MockFileSystem();
@@ -167,9 +188,11 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 fileSystem.AddFile(@"c:\other\temp\other.txt", new MockFileData("b"));
             }
 
+            foobar();
+
             // This doesn't work yet
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { "other.txt" }, fileSystem),
+                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { "other.txt" }),
                 Is.EquivalentTo(
                     new[]
                     {

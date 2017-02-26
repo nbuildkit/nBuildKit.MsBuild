@@ -82,7 +82,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                         {
                             var expression = _fileSystem.Path.Combine(nugetPackagePath, e);
                             var baseDirectory = PathUtilities.BaseDirectory(expression);
-                            return PathUtilities.IncludedPaths(expression, _fileSystem)
+                            return PathUtilities.IncludedPaths(expression)
                                 .Select(p => Tuple.Create(p, PathUtilities.GetFilePathRelativeToDirectory(p, baseDirectory)));
                         })
                     .ToList();

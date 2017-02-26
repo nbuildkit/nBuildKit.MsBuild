@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
 {
@@ -104,12 +105,6 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
             return result;
         }
 
-        private static IEnumerable<FileInfoBase> GetFilteredFilePaths(string baseDirectory, string fileFilter, bool recurse, IFileSystem fileSystem)
-        {
-            var dirInfo = fileSystem.DirectoryInfo.FromDirectoryName(baseDirectory);
-            return dirInfo.EnumerateFiles(fileFilter, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-        }
-
         /// <summary>
         /// Creates a relative path from one directory to another.
         /// </summary>
@@ -186,11 +181,10 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         /// Returns a collection containing all paths that match the path expression.
         /// </summary>
         /// <param name="pathExpression">The expression that describes the desired paths. May contain wild cards.</param>
-        /// <param name="fileSystem">The object that abstracts the file system.</param>
         /// <returns>The collection of files that match the expression.</returns>
-        public static IEnumerable<string> IncludedPaths(string pathExpression, IFileSystem fileSystem)
+        public static IEnumerable<string> IncludedPaths(string pathExpression)
         {
-            return IncludedPaths(pathExpression, Enumerable.Empty<string>(), fileSystem);
+            return IncludedPaths(pathExpression, Enumerable.Empty<string>());
         }
 
         /// <summary>
@@ -201,42 +195,23 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         /// The expressions that describe the paths that should not be included in the final collection. Each expression may
         /// contain wild cards.
         /// </param>
-        /// <param name="fileSystem">The object that abstracts the file system.</param>
         /// <returns>The collection of files that match the expression.</returns>
-        public static IEnumerable<string> IncludedPaths(string pathExpression, IEnumerable<string> excludedPathExpressions, IFileSystem fileSystem)
+        public static IEnumerable<string> IncludedPaths(string pathExpression, IEnumerable<string> excludedPathExpressions)
         {
             if (string.IsNullOrWhiteSpace(pathExpression))
             {
                 return Enumerable.Empty<string>();
             }
 
-            if (fileSystem == null)
-            {
-                fileSystem = new System.IO.Abstractions.FileSystem();
-            }
+            var matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
 
-            var excludedPaths = new List<string>();
             if (excludedPathExpressions != null)
             {
-                foreach (var exclude in excludedPathExpressions)
-                {
-                    var excludedPathSections = exclude.Split(new[] { "**" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    var directoryToExclude = excludedPathSections[0].Trim('\\');
-                    var fileToExcludeFilter = excludedPathSections.Length == 1 ? "*.*" : excludedPathSections[excludedPathSections.Length - 1].Trim('\\');
-                    var filesToExclude = GetFilteredFilePaths(directoryToExclude, fileToExcludeFilter, true, fileSystem).Select(f => f.FullName);
-                    excludedPaths.AddRange(filesToExclude);
-                }
+                matcher.AddExcludePatterns(excludedPathExpressions);
             }
 
-            var pathSections = pathExpression.Split(new[] { "**" }, StringSplitOptions.RemoveEmptyEntries);
-
-            var directory = pathSections.Length == 1 ? fileSystem.Path.GetDirectoryName(pathSections[0]) : pathSections[0].Trim('\\');
-            var fileFilter = pathSections.Length == 1 ? fileSystem.Path.GetFileName(pathSections[0]) : pathSections[pathSections.Length - 1].Trim('\\');
-            var recurse = pathSections.Length > 1;
-            return GetFilteredFilePaths(directory, fileFilter, recurse, fileSystem)
-                .Where(f => !excludedPaths.Contains(f.FullName))
-                .Select(f => f.FullName);
+            matcher.AddInclude(pathExpression);
+            return matcher.GetResultsInFullPath(BaseDirectory(pathExpression));
         }
     }
 }

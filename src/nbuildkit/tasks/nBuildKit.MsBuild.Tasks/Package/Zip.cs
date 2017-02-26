@@ -11,7 +11,6 @@ using System.Globalization;
 using System.IO;
 using System.IO.Abstractions;
 using System.IO.Compression;
-using System.Linq;
 using System.Xml;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
@@ -120,7 +119,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 foreach (var source in sources)
                 {
                     var directory = PathUtilities.BaseDirectory(source);
-                    var filesToInclude = PathUtilities.IncludedPaths(source, excluded, _fileSystem);
+                    var filesToInclude = PathUtilities.IncludedPaths(source, excluded);
                     foreach (var file in filesToInclude)
                     {
                         var relativefilePath = PathUtilities.GetFilePathRelativeToDirectory(file, directory);
