@@ -16,6 +16,7 @@ using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core;
+using NBuildKit.MsBuild.Tasks.Core.FileSystem;
 
 namespace NBuildKit.MsBuild.Tasks
 {
@@ -256,7 +257,7 @@ namespace NBuildKit.MsBuild.Tasks
         private bool ExecuteStep(ITaskItem step, bool isFirst, bool isLast)
         {
             var stepResult = true;
-            var stepPath = GetAbsolutePath(step.ItemSpec);
+            var stepPath = PathUtilities.GetAbsolutePath(step.ItemSpec);
             if (PreSteps != null)
             {
                 foreach (var globalPreStep in PreSteps)
@@ -448,7 +449,7 @@ namespace NBuildKit.MsBuild.Tasks
                 return false;
             }
 
-            string projectPath = GetAbsolutePath(project.ItemSpec);
+            string projectPath = PathUtilities.GetAbsolutePath(project.ItemSpec);
             if (File.Exists(projectPath))
             {
                 if (project != null)

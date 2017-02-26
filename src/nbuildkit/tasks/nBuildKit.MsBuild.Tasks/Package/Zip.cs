@@ -9,11 +9,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Abstractions;
 using System.IO.Compression;
 using System.Linq;
 using System.Xml;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
+using NBuildKit.MsBuild.Tasks.Core.FileSystem;
 
 namespace NBuildKit.MsBuild.Tasks.Packaging
 {
@@ -22,10 +24,31 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
     /// </summary>
     public sealed class Zip : BaseTask
     {
-        private static IEnumerable<FileInfo> GetFilteredFilePaths(string baseDirectory, string fileFilter, bool recurse)
+        private readonly IFileSystem _fileSystem;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Zip"/> class.
+        /// </summary>
+        public Zip()
+            : this(new System.IO.Abstractions.FileSystem())
         {
-            var dirInfo = new DirectoryInfo(baseDirectory);
-            return dirInfo.EnumerateFiles(fileFilter, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Zip"/> class.
+        /// </summary>
+        /// <param name="fileSystem">The object that provides access to the file system.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown if <paramref name="fileSystem"/> is <see langword="null" />.
+        /// </exception>
+        public Zip(IFileSystem fileSystem)
+        {
+            if (fileSystem == null)
+            {
+                throw new ArgumentNullException("fileSystem");
+            }
+
+            _fileSystem = fileSystem;
         }
 
         private void Compress(
@@ -86,19 +109,8 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
             var filesNode = xmlDoc.SelectSingleNode("//archive/files");
             foreach (XmlNode child in filesNode.ChildNodes)
             {
-                var excludedFiles = new List<string>();
                 var excludedAttribute = child.Attributes["exclude"];
                 var excluded = (excludedAttribute != null ? excludedAttribute.Value : string.Empty).Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var exclude in excluded)
-                {
-                    var pathSections = exclude.Split(new[] { "**" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    var directory = pathSections.Length == 1 ? Path.GetDirectoryName(pathSections[0]) : pathSections[0].Trim('\\');
-                    var fileFilter = pathSections.Length == 1 ? Path.GetFileName(pathSections[0]) : pathSections[pathSections.Length - 1].Trim('\\');
-                    var recurse = pathSections.Length > 1;
-                    var filesToExclude = GetFilteredFilePaths(directory, fileFilter, recurse).Select(f => f.FullName);
-                    excludedFiles.AddRange(filesToExclude);
-                }
 
                 var targetAttribute = child.Attributes["target"];
                 var target = targetAttribute != null ? targetAttribute.Value : string.Empty;
@@ -107,18 +119,11 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 var sources = sourceAttribute.Value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var source in sources)
                 {
-                    var pathSections = source.Split(new[] { "**" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    var directory = pathSections.Length == 1 ? Path.GetDirectoryName(pathSections[0]) : pathSections[0].Trim('\\');
-                    var fileFilter = pathSections.Length == 1 ? Path.GetFileName(pathSections[0]) : pathSections[pathSections.Length - 1].Trim('\\');
-                    var recurse = pathSections.Length > 1;
-                    var filesToInclude = GetFilteredFilePaths(directory, fileFilter, recurse)
-                        .Where(f => !excludedFiles.Contains(f.FullName))
-                        .Select(f => f.FullName);
-
+                    var directory = PathUtilities.BaseDirectory(source);
+                    var filesToInclude = PathUtilities.IncludedPaths(source, excluded, _fileSystem);
                     foreach (var file in filesToInclude)
                     {
-                        var relativefilePath = GetFilePathRelativeToDirectory(file, directory);
+                        var relativefilePath = PathUtilities.GetFilePathRelativeToDirectory(file, directory);
                         var relativePath = Path.Combine(
                             target,
                             relativefilePath);

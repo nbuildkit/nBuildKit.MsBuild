@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
+using NBuildKit.MsBuild.Tasks.Core.FileSystem;
 
 namespace NBuildKit.MsBuild.Tasks.VersionControl
 {
@@ -53,7 +54,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                                 string.Format(
                                     CultureInfo.InvariantCulture,
                                     "\"{0}\" ",
-                                    GetFilePathRelativeToDirectory(GetAbsolutePath(taskItem), workingDirectory)));
+                                    PathUtilities.GetFilePathRelativeToDirectory(GetAbsolutePath(taskItem), workingDirectory)));
                         }
                     }
                 }

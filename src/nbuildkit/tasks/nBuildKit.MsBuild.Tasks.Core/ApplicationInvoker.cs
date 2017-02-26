@@ -124,6 +124,8 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
             };
 
             if (updateEnvironmentVariables != null)

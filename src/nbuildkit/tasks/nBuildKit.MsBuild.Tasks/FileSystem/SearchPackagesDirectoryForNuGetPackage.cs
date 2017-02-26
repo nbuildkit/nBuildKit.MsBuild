@@ -21,6 +21,66 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
     /// </summary>
     public sealed class SearchPackagesDirectoryForNuGetPackage : BaseTask
     {
+        internal static string HighestPackageVersionDirectoryFor(
+            string packageName,
+            string packagesDirectory,
+            IFileSystem fileSystem,
+            Action<MessageImportance, string> logger)
+        {
+            var packagesInfo = fileSystem.DirectoryInfo.FromDirectoryName(packagesDirectory);
+            var potentialPaths = packagesInfo.EnumerateDirectories(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}.*",
+                        packageName),
+                    SearchOption.TopDirectoryOnly);
+            logger(
+                MessageImportance.Low,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "Searching for {0} located the following potential directories: {1}",
+                    packageName,
+                    string.Join(", ", potentialPaths.Select(i => i.FullName))));
+
+            string selectedPath = null;
+            var selectedVersion = new Version();
+            foreach (var path in potentialPaths)
+            {
+                var versionText = path.Name.Substring(packageName.Length).Trim('.').Trim();
+
+                Version packageVersion;
+                if (!Version.TryParse(versionText, out packageVersion))
+                {
+                    logger(
+                        MessageImportance.Low,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Path {0} is not a match for package {1}",
+                            path.FullName,
+                            packageName));
+
+                    continue;
+                }
+
+                if (packageVersion > selectedVersion)
+                {
+                    logger(
+                        MessageImportance.Low,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Path {0} is a better match for package {1} than {2}",
+                            path.FullName,
+                            packageName,
+                            selectedPath));
+
+                    selectedVersion = packageVersion;
+                    selectedPath = path.FullName;
+                }
+            }
+
+            return selectedPath;
+        }
+
         private readonly IFileSystem _fileSystem;
 
         /// <summary>
@@ -51,54 +111,15 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         /// <inheritdoc/>
         public override bool Execute()
         {
-            var packagesInfo = _fileSystem.DirectoryInfo.FromDirectoryName(GetAbsolutePath(PackagesDirectory));
-            var potentialPaths = packagesInfo.EnumerateDirectories(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0}.*",
-                        PackageToLocate),
-                    SearchOption.TopDirectoryOnly);
-            Log.LogMessage(
-                MessageImportance.Low,
-                "Searching for {0} located the following potential directories: {1}",
+            Action<MessageImportance, string> logger = (importance, message) => Log.LogMessage(importance, message);
+            var selectedPath = HighestPackageVersionDirectoryFor(
                 PackageToLocate,
-                string.Join(", ", potentialPaths.Select(i => i.FullName)));
-
-            string selectedPath = null;
-            var selectedVersion = new Version();
-            foreach (var path in potentialPaths)
-            {
-                var versionText = path.Name.Substring(PackageToLocate.Length).Trim('.').Trim();
-
-                Version packageVersion;
-                if (!Version.TryParse(versionText, out packageVersion))
-                {
-                    Log.LogMessage(
-                        MessageImportance.Low,
-                        "Path {0} is not a match for package {1}",
-                        path.FullName,
-                        PackageToLocate);
-
-                    continue;
-                }
-
-                if (packageVersion > selectedVersion)
-                {
-                    Log.LogMessage(
-                        MessageImportance.Low,
-                        "Path {0} is a better match for package {1} than {2}",
-                        path.FullName,
-                        PackageToLocate,
-                        selectedPath);
-
-                    selectedVersion = packageVersion;
-                    selectedPath = path.FullName;
-                }
-            }
-
+                GetAbsolutePath(PackagesDirectory),
+                _fileSystem,
+                logger);
             Path = (selectedPath != null) ? new TaskItem(selectedPath) : null;
 
-            return true;
+            return !Log.HasLoggedErrors;
         }
 
         /// <summary>

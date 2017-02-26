@@ -380,7 +380,6 @@
             </PostSteps>
         </BuildStepsToExecute>
 
-        <!--
         <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
             <Properties>
                 Configuration=$(TestConfiguration);
@@ -394,6 +393,7 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
+        <!--
         <BuildStepsToExecute Include="$(BuildStepsUnitTestMsTest)">
             <Properties>
                 Configuration=$(TestConfiguration);
@@ -553,7 +553,7 @@
     <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
         <!--
         <FilesToCopy Include="">
-            <Destination></Destination>
+            <Destinations></Destinations>
         </FilesToCopy>
         -->
     </ItemGroup>
@@ -561,7 +561,7 @@
         <!--
         <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
             <Include>**/*.*</Include>
-            <Destination>$(DirBuildTemp)</Destination>
+            <Destinations>$(DirBuildTemp)</Destinations>
         </NuGetFilesToCopy>
         -->
     </ItemGroup>

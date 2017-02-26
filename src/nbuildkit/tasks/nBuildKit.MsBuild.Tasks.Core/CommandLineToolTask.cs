@@ -13,6 +13,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core.FileSystem;
 using Nuclei.Diagnostics;
 
 namespace NBuildKit.MsBuild.Tasks.Core
@@ -109,7 +110,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
                     "Searching for full path of {0}",
                     path));
 
-            var result = GetAbsolutePath(path);
+            var result = PathUtilities.GetAbsolutePath(path);
             if (!File.Exists(result))
             {
                 // Fall back to using the 'where' command. This really only searches based on the file name so ...
@@ -120,6 +121,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
                 };
 
                 var text = new StringBuilder();

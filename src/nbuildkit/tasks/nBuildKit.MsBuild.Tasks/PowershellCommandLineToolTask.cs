@@ -78,6 +78,7 @@ namespace NBuildKit.MsBuild.Tasks
                 arguments.Add("-NonInteractive ");
                 arguments.Add("-NoProfile ");
                 arguments.Add("-ExecutionPolicy Bypass ");
+                arguments.Add("-WindowStyle Hidden");
                 arguments.Add(powershellArgument);
             }
 
