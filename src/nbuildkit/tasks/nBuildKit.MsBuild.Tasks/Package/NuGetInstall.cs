@@ -51,7 +51,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 // Make sure we remove the back-slash because if we don't then
                 // the closing quote will be eaten by the command line parser. Note that
                 // this is only necessary because we're dealing with a directory
-                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-OutputDirectory \"{0}\" ", GetAbsolutePath(PackageDirectory).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-OutputDirectory \"{0}\" ", GetAbsolutePath(PackagesDirectory).TrimEnd('\\')));
 
                 // If the user has specified any sources to install from then only search those sources.
                 if (Sources != null)
@@ -104,7 +104,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         /// Gets or sets the full path to the directory into which the package should be installed.
         /// </summary>
         [Required]
-        public ITaskItem PackageDirectory
+        public ITaskItem PackagesDirectory
         {
             get;
             set;
