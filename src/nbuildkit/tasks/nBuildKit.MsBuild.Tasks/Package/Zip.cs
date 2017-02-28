@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.IO.Abstractions;
 using System.IO.Compression;
 using System.Xml;
 using Microsoft.Build.Framework;
@@ -23,33 +22,6 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
     /// </summary>
     public sealed class Zip : BaseTask
     {
-        private readonly IFileSystem _fileSystem;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Zip"/> class.
-        /// </summary>
-        public Zip()
-            : this(new System.IO.Abstractions.FileSystem())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Zip"/> class.
-        /// </summary>
-        /// <param name="fileSystem">The object that provides access to the file system.</param>
-        /// <exception cref="ArgumentNullException">
-        ///     Thrown if <paramref name="fileSystem"/> is <see langword="null" />.
-        /// </exception>
-        public Zip(IFileSystem fileSystem)
-        {
-            if (fileSystem == null)
-            {
-                throw new ArgumentNullException("fileSystem");
-            }
-
-            _fileSystem = fileSystem;
-        }
-
         private void Compress(
             string outputFile,
             IDictionary<string, List<string>> files,
@@ -99,6 +71,8 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 return false;
             }
 
+            var workingDirectory = GetAbsolutePath(WorkingDirectory);
+
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(GetAbsolutePath(File));
             var name = xmlDoc.SelectSingleNode("//archive/name/text()").InnerText;
@@ -119,7 +93,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 foreach (var source in sources)
                 {
                     var directory = PathUtilities.BaseDirectory(source);
-                    var filesToInclude = PathUtilities.IncludedPaths(source, excluded);
+                    var filesToInclude = PathUtilities.IncludedPaths(source, excluded, workingDirectory);
                     foreach (var file in filesToInclude)
                     {
                         var relativefilePath = PathUtilities.GetFilePathRelativeToDirectory(file, directory);
@@ -170,6 +144,16 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         /// Gets or sets a value indicating whether any existing files should be overwritten.
         /// </summary>
         public bool OverwriteExistingFiles
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the full path to the working directory
+        /// </summary>
+        [Required]
+        public ITaskItem WorkingDirectory
         {
             get;
             set;

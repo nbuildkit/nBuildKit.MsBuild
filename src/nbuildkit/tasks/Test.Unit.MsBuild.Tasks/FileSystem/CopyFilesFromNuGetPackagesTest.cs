@@ -5,14 +5,17 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
+using System.Reflection;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Tests;
+using Nuclei;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.FileSystem
@@ -24,6 +27,31 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         Justification = "Unit tests do not need documentation.")]
     public sealed class CopyFilesFromNuGetPackagesTest : TaskTest
     {
+        private static string CreateTempDirectory()
+        {
+            var assemblyDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var path = Path.Combine(assemblyDirectory, Guid.NewGuid().ToString());
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+
+            Directory.CreateDirectory(path);
+
+            return path;
+        }
+
+        private static void CreateTempFile(string path)
+        {
+            var directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(path, Path.GetFileName(path));
+        }
+
         [Test]
         public void ExecuteWithMultipleNuGetPackagesAndMultipleDestinations()
         {
@@ -39,23 +67,25 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                 "D.E.1.0.0",
             };
 
-            var packagesDirectory = "z:\\mock\\packages";
-            var destination1 = "x:\\mock\\destination";
-            var destination2 = "y:\\mock\\destination";
+            var directory = CreateTempDirectory();
+            var packagesDirectory = Path.Combine(directory, "packages");
+            var destination1 = Path.Combine(directory, "destination1");
+            var destination2 = Path.Combine(directory, "destination2");
+
             var fileSystem = new MockFileSystem();
             {
                 fileSystem.AddDirectory(packagesDirectory);
                 foreach (var package in knownPackages)
                 {
-                    fileSystem.AddFile(
-                        Path.Combine(
-                            packagesDirectory,
-                            package,
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "{0}.txt",
-                                package)),
-                        new MockFileData(package));
+                    var path = Path.Combine(
+                        packagesDirectory,
+                        package,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0}.txt",
+                            package));
+                    fileSystem.AddFile(path, new MockFileData(package));
+                    CreateTempFile(path);
                 }
 
                 fileSystem.AddDirectory(destination1);
@@ -204,23 +234,25 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                 "D.E.1.0.0",
             };
 
-            var packagesDirectory = "z:\\mock\\packages";
-            var destination1 = "x:\\mock\\destination";
-            var destination2 = "y:\\mock\\destination";
+            var directory = CreateTempDirectory();
+            var packagesDirectory = Path.Combine(directory, "packages");
+            var destination1 = Path.Combine(directory, "destination1");
+            var destination2 = Path.Combine(directory, "destination2");
+
             var fileSystem = new MockFileSystem();
             {
                 fileSystem.AddDirectory(packagesDirectory);
                 foreach (var package in knownPackages)
                 {
-                    fileSystem.AddFile(
-                        Path.Combine(
-                            packagesDirectory,
-                            package,
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "{0}.txt",
-                                package)),
-                        new MockFileData(package));
+                    var path = Path.Combine(
+                        packagesDirectory,
+                        package,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0}.txt",
+                            package));
+                    fileSystem.AddFile(path, new MockFileData(package));
+                    CreateTempFile(path);
                 }
 
                 fileSystem.AddDirectory(destination1);
@@ -321,23 +353,25 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                 "D.E.1.0.0",
             };
 
-            var packagesDirectory = "z:\\mock\\packages";
-            var destination1 = "x:\\mock\\destination";
-            var destination2 = "y:\\mock\\destination";
+            var directory = CreateTempDirectory();
+            var packagesDirectory = Path.Combine(directory, "packages");
+            var destination1 = Path.Combine(directory, "destination1");
+            var destination2 = Path.Combine(directory, "destination2");
+
             var fileSystem = new MockFileSystem();
             {
                 fileSystem.AddDirectory(packagesDirectory);
                 foreach (var package in knownPackages)
                 {
-                    fileSystem.AddFile(
-                        Path.Combine(
-                            packagesDirectory,
-                            package,
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "{0}.txt",
-                                package)),
-                        new MockFileData(package));
+                    var path = Path.Combine(
+                        packagesDirectory,
+                        package,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0}.txt",
+                            package));
+                    fileSystem.AddFile(path, new MockFileData(package));
+                    CreateTempFile(path);
                 }
 
                 fileSystem.AddDirectory(destination1);
@@ -429,22 +463,24 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                 "D.E.1.0.0",
             };
 
-            var packagesDirectory = "z:\\mock\\packages";
-            var destination = "y:\\mock\\destination";
+            var directory = CreateTempDirectory();
+            var packagesDirectory = Path.Combine(directory, "packages");
+            var destination = Path.Combine(directory, "destination");
+
             var fileSystem = new MockFileSystem();
             {
                 fileSystem.AddDirectory(packagesDirectory);
                 foreach (var package in knownPackages)
                 {
-                    fileSystem.AddFile(
-                        Path.Combine(
-                            packagesDirectory,
-                            package,
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "{0}.txt",
-                                package)),
-                        new MockFileData(package));
+                    var path = Path.Combine(
+                        packagesDirectory,
+                        package,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0}.txt",
+                            package));
+                    fileSystem.AddFile(path, new MockFileData(package));
+                    CreateTempFile(path);
                 }
 
                 fileSystem.AddDirectory(destination);

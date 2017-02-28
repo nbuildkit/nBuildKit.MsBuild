@@ -57,8 +57,27 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 return string.Empty;
             }
 
-            var pathSections = pathExpression.Split(new[] { "**" }, StringSplitOptions.RemoveEmptyEntries);
-            return pathSections.Length == 1 ? Path.GetDirectoryName(pathSections[0]) : pathSections[0].Trim('\\');
+            var pathSections = pathExpression.Split(new[] { "*" }, StringSplitOptions.None);
+            if (pathSections.Length == 1)
+            {
+                // We got the whole thing back. Either the whole thing describes a file or a directory.
+                // We don't really know. So ... eh ...
+                return pathSections[0];
+            }
+            else
+            {
+                // We got some of it back. Trim it back to the next directory separator so that we don't have
+                // half of a path section left, e.g. what we would get if somebody would pass: c:\temp\file*.*
+                // or c:\temp\mydirectory*\*.*
+                var result = pathSections[0];
+                var indexOfLastSeparator = result.LastIndexOf('\\');
+                if (indexOfLastSeparator > -1)
+                {
+                    result = result.Substring(0, indexOfLastSeparator);
+                }
+
+                return result.TrimEnd('\\');
+            }
         }
 
         /// <summary>
@@ -181,10 +200,11 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         /// Returns a collection containing all paths that match the path expression.
         /// </summary>
         /// <param name="pathExpression">The expression that describes the desired paths. May contain wild cards.</param>
+        /// <param name="baseDirectory">The base directory relative to which the path expressions will be taken.</param>
         /// <returns>The collection of files that match the expression.</returns>
-        public static IEnumerable<string> IncludedPaths(string pathExpression)
+        public static IEnumerable<string> IncludedPaths(string pathExpression, string baseDirectory)
         {
-            return IncludedPaths(pathExpression, Enumerable.Empty<string>());
+            return IncludedPaths(pathExpression, Enumerable.Empty<string>(), baseDirectory);
         }
 
         /// <summary>
@@ -195,8 +215,9 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         /// The expressions that describe the paths that should not be included in the final collection. Each expression may
         /// contain wild cards.
         /// </param>
+        /// <param name="baseDirectory">The base directory relative to which the path expressions will be taken.</param>
         /// <returns>The collection of files that match the expression.</returns>
-        public static IEnumerable<string> IncludedPaths(string pathExpression, IEnumerable<string> excludedPathExpressions)
+        public static IEnumerable<string> IncludedPaths(string pathExpression, IEnumerable<string> excludedPathExpressions, string baseDirectory)
         {
             if (string.IsNullOrWhiteSpace(pathExpression))
             {
@@ -207,11 +228,33 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
 
             if (excludedPathExpressions != null)
             {
-                matcher.AddExcludePatterns(excludedPathExpressions);
+                matcher.AddExcludePatterns(
+                    excludedPathExpressions.Select(
+                        e =>
+                        {
+                            return Path.IsPathRooted(e) ? GetRelativeDirectoryPath(e, baseDirectory) : e;
+                        }));
             }
 
-            matcher.AddInclude(pathExpression);
-            return matcher.GetResultsInFullPath(BaseDirectory(pathExpression));
+            var relativeExpression = pathExpression;
+            if (Path.IsPathRooted(pathExpression))
+            {
+                // If the path has a root drive then we assume the user gave us a full path. The matcher doesn't seem
+                // to handle full paths very well so now we need to create a 'relative expression'.
+                //
+                // First grab the longest part of the expression that doesn't have any '*' characters in it
+                var baseExpression = BaseDirectory(pathExpression);
+
+                // Get the left overs of the expression with all the wild cards etc.
+                var remainder = pathExpression.Substring(baseExpression.Length).TrimStart('\\');
+
+                // Get the relative directory
+                var relativeDirectory = GetRelativeDirectoryPath(baseExpression, baseDirectory);
+                relativeExpression = Path.Combine(relativeDirectory, remainder).TrimStart('\\');
+            }
+
+            matcher.AddInclude(relativeExpression);
+            return matcher.GetResultsInFullPath(baseDirectory);
         }
     }
 }

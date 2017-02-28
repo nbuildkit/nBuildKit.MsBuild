@@ -63,7 +63,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                     package);
 
                 Action<MessageImportance, string> logger = (importance, message) => Log.LogMessage(importance, message);
-                var nugetPackagePath = SearchPackagesDirectoryForNuGetPackage.HighestPackageVersionDirectoryFor(
+                var nugetPackagePath = NugetHelpers.HighestPackageVersionDirectoryFor(
                     package,
                     packageDirectory,
                     _fileSystem,
@@ -82,7 +82,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                         {
                             var expression = _fileSystem.Path.Combine(nugetPackagePath, e);
                             var baseDirectory = PathUtilities.BaseDirectory(expression);
-                            return PathUtilities.IncludedPaths(expression)
+                            return PathUtilities.IncludedPaths(e, nugetPackagePath)
                                 .Select(p => Tuple.Create(p, PathUtilities.GetFilePathRelativeToDirectory(p, baseDirectory)));
                         })
                     .ToList();

@@ -5,9 +5,14 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
+using System.Reflection;
+using Nuclei;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
@@ -19,6 +24,31 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         Justification = "Unit tests do not need documentation.")]
     public sealed class PathUtilitiesTest
     {
+        private static string CreateTempDirectory()
+        {
+            var assemblyDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var path = Path.Combine(assemblyDirectory, Guid.NewGuid().ToString());
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+
+            Directory.CreateDirectory(path);
+
+            return path;
+        }
+
+        private static void CreateTempFile(string path)
+        {
+            var directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(path, Path.GetFileName(path));
+        }
+
         [Test]
         public void AppendDirectorySeparatorChar()
         {
@@ -32,7 +62,6 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         public void BaseDirectory()
         {
             var expectedPath = @"c:\temp";
-            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\file.txt"));
             Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\**\file.txt"));
             Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\**\*.*"));
             Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\**\bin\**\file.txt"));
@@ -77,102 +106,249 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         }
 
         [Test]
-        public void IncludedPaths()
+        public void IncludedPathsWithAbsolutePaths()
         {
-            var fileSystem = new MockFileSystem();
-            {
-                fileSystem.AddFile(@"c:\temp\file.txt", new MockFileData("a"));
-                fileSystem.AddFile(@"c:\other\temp\file.txt", new MockFileData("b"));
-            }
+            var directory = CreateTempDirectory();
+            var file1 = Path.Combine(directory, "temp", "file.txt");
+            CreateTempFile(file1);
 
-            foobar();
+            var file2 = Path.Combine(directory, "other", "temp", "file.txt");
+            CreateTempFile(file2);
 
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\temp\file.txt"),
+                PathUtilities.IncludedPaths(file1, directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\temp\file.txt"
+                        file1
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\temp\*.txt"),
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}\\temp\\*.txt",
+                        directory),
+                    directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\temp\file.txt"
+                        file1
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt"),
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}\\**\\*.txt",
+                        directory),
+                    directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\temp\file.txt",
-                        @"c:\other\temp\file.txt"
+                        file1,
+                        file2
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\other\**\*.txt"),
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}\\other\\**\\*.txt",
+                        directory),
+                    directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\other\temp\file.txt"
+                        file2
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\temp\*.txt"),
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}\\**\\temp\\*.txt",
+                        directory),
+                    directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\temp\file.txt",
-                        @"c:\other\temp\file.txt"
+                        file1,
+                        file2
                     }));
         }
 
         [Test]
-        public void IncludedPathsWithExclusions()
+        public void IncludedPathsWithExclusionsAndAbsolutePaths()
         {
-            var fileSystem = new MockFileSystem();
-            {
-                fileSystem.AddFile(@"c:\temp\file.txt", new MockFileData("a"));
-                fileSystem.AddFile(@"c:\temp\other.txt", new MockFileData("a"));
-                fileSystem.AddFile(@"c:\other\temp\file.txt", new MockFileData("b"));
-                fileSystem.AddFile(@"c:\other\temp\other.txt", new MockFileData("b"));
-            }
+            var directory = CreateTempDirectory();
+            var file1 = Path.Combine(directory, "temp", "file.txt");
+            CreateTempFile(file1);
 
-            foobar();
+            var file2 = Path.Combine(directory, "temp", "other.txt");
+            CreateTempFile(file2);
+
+            var file3 = Path.Combine(directory, "other", "temp", "file.txt");
+            CreateTempFile(file3);
+
+            var file4 = Path.Combine(directory, "other", "temp", "other.txt");
+            CreateTempFile(file4);
 
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt", Enumerable.Empty<string>()),
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\**\*.txt",
+                        directory),
+                    Enumerable.Empty<string>(),
+                    directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\temp\file.txt",
-                        @"c:\temp\other.txt",
-                        @"c:\other\temp\file.txt",
-                        @"c:\other\temp\other.txt",
+                        file1,
+                        file2,
+                        file3,
+                        file4,
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { @"c:\other\**\*.*" }),
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\**\*.txt",
+                        directory),
+                    new[]
+                        {
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                @"{0}\other\**\*.*",
+                                directory)
+                        },
+                    directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\temp\file.txt",
-                        @"c:\temp\other.txt",
+                        file1,
+                        file2,
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { @"c:\temp\other.*" }),
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\**\*.txt",
+                        directory),
+                    new[]
+                        {
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                @"{0}\temp\other.*",
+                                directory)
+                        },
+                    directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\temp\file.txt",
-                        @"c:\other\temp\file.txt",
-                        @"c:\other\temp\other.txt",
+                        file1,
+                        file3,
+                        file4,
                     }));
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { @"c:\**\other.*" }),
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\**\*.txt",
+                        directory),
+                    new[]
+                        {
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                @"{0}\**\other.*",
+                                directory)
+                        },
+                    directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\temp\file.txt",
-                        @"c:\other\temp\file.txt",
+                        file1,
+                        file3
+                    }));
+        }
+
+        [Test]
+        public void IncludedPathsWithExclusionsAndRelativePaths()
+        {
+            var directory = CreateTempDirectory();
+            var file1 = Path.Combine(directory, "temp", "file.txt");
+            CreateTempFile(file1);
+
+            var file2 = Path.Combine(directory, "temp", "other.txt");
+            CreateTempFile(file2);
+
+            var file3 = Path.Combine(directory, "other", "temp", "file.txt");
+            CreateTempFile(file3);
+
+            var file4 = Path.Combine(directory, "other", "temp", "other.txt");
+            CreateTempFile(file4);
+
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    @"**\*.txt",
+                    Enumerable.Empty<string>(),
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file2,
+                        file3,
+                        file4,
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    @"**\*.txt",
+                    new[]
+                        {
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                @"{0}\other\**\*.*",
+                                directory)
+                        },
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file2,
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    @"**\*.txt",
+                    new[]
+                        {
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                @"{0}\temp\other.*",
+                                directory)
+                        },
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file3,
+                        file4,
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    @"**\*.txt",
+                    new[]
+                        {
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                @"{0}\**\other.*",
+                                directory)
+                        },
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file3
                     }));
         }
 
@@ -180,24 +356,79 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         [Test]
         public void IncludedPathsWithFileExclusions()
         {
-            var fileSystem = new MockFileSystem();
-            {
-                fileSystem.AddFile(@"c:\temp\file.txt", new MockFileData("a"));
-                fileSystem.AddFile(@"c:\temp\other.txt", new MockFileData("a"));
-                fileSystem.AddFile(@"c:\other\temp\file.txt", new MockFileData("b"));
-                fileSystem.AddFile(@"c:\other\temp\other.txt", new MockFileData("b"));
-            }
+            var directory = CreateTempDirectory();
+            var file1 = Path.Combine(directory, "temp", "file.txt");
+            CreateTempFile(file1);
 
-            foobar();
+            var file2 = Path.Combine(directory, "temp", "other.txt");
+            CreateTempFile(file2);
+
+            var file3 = Path.Combine(directory, "other", "temp", "file.txt");
+            CreateTempFile(file3);
+
+            var file4 = Path.Combine(directory, "other", "temp", "other.txt");
+            CreateTempFile(file4);
 
             // This doesn't work yet
             Assert.That(
-                PathUtilities.IncludedPaths(@"c:\**\*.txt", new[] { "other.txt" }),
+                PathUtilities.IncludedPaths(
+                    @"**\*.txt",
+                    new[] { "**\\other.txt" },
+                    directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        @"c:\temp\file.txt",
-                        @"c:\other\temp\file.txt",
+                        file1,
+                        file3,
+                    }));
+        }
+
+        [Test]
+        public void IncludedPathsWithRelativePaths()
+        {
+            var directory = CreateTempDirectory();
+            var file1 = Path.Combine(directory, "temp", "file.txt");
+            CreateTempFile(file1);
+
+            var file2 = Path.Combine(directory, "other", "temp", "file.txt");
+            CreateTempFile(file2);
+
+            Assert.That(
+                PathUtilities.IncludedPaths(PathUtilities.GetFilePathRelativeToDirectory(file1, directory), directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths("temp\\*.txt", directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths("**\\*.txt", directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file2
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths("other\\**\\*.txt", directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file2
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths("**\\temp\\*.txt", directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file2
                     }));
         }
     }
