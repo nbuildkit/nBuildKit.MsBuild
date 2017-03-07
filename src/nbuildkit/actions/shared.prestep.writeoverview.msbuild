@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Shared_PreStep_WriteOverview_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedPreStepWriteOverview>true</ExistsSharedPreStepWriteOverview>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Shared_PreStep_WriteOverview_Run">
+        <CallTarget Targets="_nBuildKit_Shared_PreStep_WriteOverview_Execute" />
+    </Target>
+
+    <ItemGroup>
+        <ExtensionHighLevelOverview Include="md" />
+        <ExtensionHighLevelOverview Include="xml" />
+    </ItemGroup>
+    <Target
+        Condition=" '$(DirHighLevelOverview)' != '' and '$(DirHighLevelOverview)' != 'UNDEFINED' "
+        Name="_nBuildKit_Shared_PreStep_WriteOverview_Execute"
+        Outputs="%(ExtensionHighLevelOverview.Identity)">
+
+        <PropertyGroup>
+            <FileHighLevelOverview>$(DirHighLevelOverview)\$(FileNameHighLevelOverview).%(ExtensionHighLevelOverview.Identity)</FileHighLevelOverview>
+
+            <FileHeaderContent>$(MSBuildThisFileDirectory)template.overview.header.%(ExtensionHighLevelOverview.Identity)</FileHeaderContent>
+            <FileStepContent>$(MSBuildThisFileDirectory)template.overview.step.start.%(ExtensionHighLevelOverview.Identity)</FileStepContent>
+
+            <ContentHeader>$([System.IO.File]::ReadAllText($(FileHeaderContent)))</ContentHeader>
+            <ContentStep>$([System.IO.File]::ReadAllText($(FileStepContent)))</ContentStep>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <TemplateTokens Include="StepDescription">
+                <ReplacementValue>$(StepDescription)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="StepId">
+                <ReplacementValue>$(StepId)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="StepName">
+                <ReplacementValue>$(StepName)</ReplacementValue>
+            </TemplateTokens>
+            <TemplateTokens Include="StepPath">
+                <ReplacementValue>$(StepPath)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+
+        <TemplateText
+            Condition=" '$(IsFirstStep)' == 'true' "
+            Template="$(ContentHeader)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="TextOverviewHeader"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <TemplateText
+            Template="$(ContentStep)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="TextOverviewStep"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <ItemGroup>
+            <StepInfo
+                Condition=" '$(IsFirstStep)' == 'true' "
+                Include="$(TextOverviewHeader)" />
+            <StepInfo Include="$(TextOverviewStep)" />
+        </ItemGroup>
+
+        <CreateProperty
+            Condition="!Exists('$(FileHighLevelOverview)')"
+            Value="$([System.IO.Path]::GetDirectoryName('$(FileHighLevelOverview)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)')"
+            Directories="$(DirToCreate)" />
+        <WriteLinesToFile
+            File="$(FileHighLevelOverview)"
+            Lines="@(StepInfo)"
+            Overwrite="$(IsFirstStep)" />
+    </Target>
+ </Project>

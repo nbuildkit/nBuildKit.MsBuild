@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Deploy_PushTo_Tag_Vcs_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsDeployTagVcs>true</ExistsDeployTagVcs>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Deploy_PushTo_Tag_Vcs_Run">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_Tag_Vcs_Git" />
+    </Target>
+
+    <Target
+        Condition=" '$(IsGitWorkspace)' == 'true' "
+        Name="_nBuildKit_Deploy_PushTo_Tag_Vcs_Git">
+        <Error
+            Condition=" '$(ToolsExternalGitPath)' == '' "
+            Text="The git executable does not exist. Cannot push tags." />
+
+        <!--
+            Push the tags to the remote repository. Note that we suppress all the output because otherwise GIT echo's the repository URL it
+            pushes too which may have the GitHub token in there
+        -->
+        <Exec
+            Command="&quot;$(ToolsExternalGitPath)&quot; push --tags --repo $(GitRemoteRepository) &gt;nul 2&gt;&amp;1"
+            WorkingDirectory="$(DirWorkspace)" />
+    </Target>
+ </Project>

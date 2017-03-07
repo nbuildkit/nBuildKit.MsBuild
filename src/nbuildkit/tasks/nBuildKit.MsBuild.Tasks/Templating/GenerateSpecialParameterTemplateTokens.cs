@@ -12,6 +12,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Templating
 {
@@ -19,7 +20,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
     /// Defines a <see cref="ITask"/> which takes user and system defined template tokens that consist of template tokens themselves
     /// and creates a property file for them.
     /// </summary>
-    public sealed class GenerateSpecialParameterTemplateTokens : NBuildKitMsBuildTask
+    public sealed class GenerateSpecialParameterTemplateTokens : BaseTask
     {
         private static void GeneratePropertyFile(string path, IDictionary<string, string> tokens)
         {

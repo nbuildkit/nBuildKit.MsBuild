@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Deploy_PushTo_NuGet_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsDeployPushToNuGet>true</ExistsDeployPushToNuGet>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Deploy_PushTo_NuGet_Run">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_NuGet_Push" />
+    </Target>
+
+    <Target
+        Name="_nBuildKit_Deploy_PushTo_NuGet_Push">
+        <Error
+            Condition=" '$(ToolsExternalNuGetPath)' == '' "
+            Text="No NuGet executable defined. Will not be able to restore the packages." />
+
+        <CreateProperty
+            Condition=" '$(NuGetSourceUrl)' != '' AND '$(NuGetSourceUrl)' != 'UNDEFINED' "
+            Value="$(NuGetSourceUrl)">
+            <Output
+                PropertyName="NuGetRepositoryToPushTo"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <TemplateText
+            Condition=" '@(NuGetPackagesToPush)' != '' "
+            Template="@(NuGetPackagesToPush)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="NuGetPackagesToPushExpanded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!--
+            Create the ItemGroup dynamically because creating a normal ItemGroup in the target with dynamically
+            created properties fails to expand the wildcards.
+        -->
+        <CreateItem
+            Condition=" '$(NuGetPackagesToPushExpanded)' != '' "
+            Include="$(NuGetPackagesToPushExpanded.Split(';'))">
+            <Output
+                ItemName="NuGetPackagesToPushLocal"
+                TaskParameter="Include" />
+        </CreateItem>
+        <Message
+            Condition=" '@(NuGetPackagesToPushLocal)' != '' "
+            Importance="low"
+            Text="The following NuGet packages were specified in the settings file: " />
+        <Message
+            Condition=" '@(NuGetPackagesToPushLocal)' != '' "
+            Importance="low"
+            Text="@(NuGetPackagesToPushLocal)" />
+
+        <Error
+            Condition=" '@(NuGetPackagesToPushLocal)' == '' "
+            Text="There are no files to be pushed to the NuGet feed" />
+
+        <Message
+            Importance="low"
+            Text="Pushing: @(NuGetPackagesToPushLocal)" />
+        <NuGetPush
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesToPush="@(NuGetPackagesToPushLocal)"
+            Source="$(NuGetRepositoryToPushTo)" />
+    </Target>
+</Project>

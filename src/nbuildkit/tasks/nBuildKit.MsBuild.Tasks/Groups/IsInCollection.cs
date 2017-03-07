@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Groups
 {
@@ -19,7 +20,7 @@ namespace NBuildKit.MsBuild.Tasks.Groups
         "Microsoft.Naming",
         "CA1711:IdentifiersShouldNotHaveIncorrectSuffix",
         Justification = "Task name indicates that it finds out if an element is in a collection.")]
-    public sealed class IsInCollection : NBuildKitMsBuildTask
+    public sealed class IsInCollection : BaseTask
     {
         /// <summary>
         /// Gets or sets the collection.

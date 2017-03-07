@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.VersionControl
 {
@@ -16,6 +17,23 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
     /// </summary>
     public sealed class GitReset : GitCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitReset"/> class.
+        /// </summary>
+        public GitReset()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitReset"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public GitReset(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the commit ID to which the current workspace should be reset.
         /// </summary>

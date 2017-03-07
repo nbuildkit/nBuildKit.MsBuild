@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.VersionControl
 {
@@ -24,6 +25,23 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
     {
         // Grab any number that is preceded by a hash sign
         private const string DefaultIssueIdRegex = @"(?:#)(\d+)";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExtractIssueIdsFromGitCommitMessages"/> class.
+        /// </summary>
+        public ExtractIssueIdsFromGitCommitMessages()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExtractIssueIdsFromGitCommitMessages"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public ExtractIssueIdsFromGitCommitMessages(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
 
         /// <inheritdoc/>
         public override bool Execute()

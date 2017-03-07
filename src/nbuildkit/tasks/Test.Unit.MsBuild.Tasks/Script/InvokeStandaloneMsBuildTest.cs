@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Tests;
 using Nuclei;
 using NUnit.Framework;
 

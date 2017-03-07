@@ -33,9 +33,13 @@
   </PropertyGroup>
   <Import Project="$(SolutionDir)/base.props" />
   <ItemGroup>
-    <Reference Include="Microsoft.Build, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Build.Framework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Build.Utilities.v12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Consul, Version=0.6.4.7, Culture=neutral, PublicKeyToken=20a6ad9a81df1d95, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Consul.0.6.4.7\lib\net45\Consul.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Nuclei, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\Nuclei.0.9.2\lib\net452\Nuclei.dll</HintPath>
       <Private>True</Private>
@@ -44,12 +48,24 @@
       <HintPath>..\..\..\..\packages\Nuclei.Build.0.9.0\lib\net40\Nuclei.Build.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nuclei.Configuration, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.Configuration.0.9.0\lib\net452\Nuclei.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nuclei.Diagnostics, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.Diagnostics.0.9.0\lib\net452\Nuclei.Diagnostics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NuGet.Versioning, Version=3.4.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\NuGet.Versioning.3.4.4-rtm-final\lib\net45\NuGet.Versioning.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Abstractions, Version=2.0.0.140, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\System.IO.Abstractions.2.0.0.140\lib\net40\System.IO.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
@@ -65,25 +81,25 @@
     <Compile Include="Code\AddOrUpdateAttributeInCode.cs" />
     <Compile Include="Code\GetProjectsFromVisualStudioSolution.cs" />
     <Compile Include="Code\ILRepack.cs" />
-    <Compile Include="EscapingUtilities.cs" />
+    <Compile Include="FileSystem\CopyFilesFromNuGetPackages.cs" />
+    <Compile Include="FileSystem\SearchPackagesDirectoryForNuGetPackage.cs" />
     <Compile Include="MsBuildCommandLineToolTask.cs" />
     <Compile Include="MsBuildLog.cs" />
+    <Compile Include="NugetHelpers.cs" />
     <Compile Include="Script\InvokeSteps.cs" />
     <Compile Include="PowershellCommandLineToolTask.cs" />
-    <Compile Include="PropertyParser.cs" />
     <Compile Include="Script\InvokePowershellCommand.cs" />
     <Compile Include="Script\InvokePowershellFile.cs" />
     <Compile Include="Script\InvokeStandaloneMsBuild.cs" />
     <Compile Include="Templating\GenerateSpecialParameterTemplateTokens.cs" />
     <Compile Include="Versions\CalculateSemanticVersionWithGitVersion.cs" />
-    <Compile Include="CommandLineToolTask.cs" />
     <Compile Include="VersionControl\ExtractIssueIdsFromGitCommitMessages.cs" />
     <Compile Include="Templating\FindAndReplaceInFile.cs" />
     <Compile Include="Templating\FindAndReplaceInText.cs" />
     <Compile Include="Validation\FxCopCommandLineToolTask.cs" />
     <Compile Include="Validation\FxCopViaAssemblies.cs" />
     <Compile Include="Validation\FxCopViaProject.cs" />
-    <Compile Include="Packaging\GatherNuGetDependenciesForProject.cs" />
+    <Compile Include="Package\GatherNuGetDependenciesForProject.cs" />
     <Compile Include="Code\GenerateInternalsVisibleToAttributes.cs" />
     <Compile Include="GenerateTargetsFile.cs" />
     <Compile Include="Versions\GetFileVersion.cs" />
@@ -111,7 +127,6 @@
     <Compile Include="Testing\InvokePesterOnFile.cs" />
     <Compile Include="Groups\IsInCollection.cs" />
     <Compile Include="Groups\LastItemInGroup.cs" />
-    <Compile Include="NBuildKitMsBuildTask.cs" />
     <Compile Include="Nuclei\AppDomains\AppDomainBuilder.cs" />
     <Compile Include="Nuclei\AppDomains\AppDomainBuilder.DirectoryBasedResolver.cs" />
     <Compile Include="Nuclei\AppDomains\AppDomainBuilder.FileBasedResolver.cs" />
@@ -127,11 +142,11 @@
     <Compile Include="Nuclei\ExceptionHandling\TopLevelExceptionGuard.cs" />
     <Compile Include="Nuclei\Fusion\AssemblyNameElements.cs" />
     <Compile Include="Nuclei\Fusion\FusionHelper.cs" />
-    <Compile Include="Packaging\NuGetCommandLineToolTask.cs" />
-    <Compile Include="Packaging\NuGetInstall.cs" />
-    <Compile Include="Packaging\NuGetPack.cs" />
-    <Compile Include="Packaging\NuGetPush.cs" />
-    <Compile Include="Packaging\NuGetRestore.cs" />
+    <Compile Include="Package\NuGetCommandLineToolTask.cs" />
+    <Compile Include="Package\NuGetInstall.cs" />
+    <Compile Include="Package\NuGetPack.cs" />
+    <Compile Include="Package\NuGetPush.cs" />
+    <Compile Include="Package\NuGetRestore.cs" />
     <Compile Include="Testing\OpenCover.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicKeySignatureFromKeyFile.cs" />
@@ -142,13 +157,12 @@
     <Compile Include="SetEnvironmentVariable.cs" />
     <Compile Include="FileSystem\SortFilesByDirectory.cs" />
     <Compile Include="FileSystem\SortItemGroupByKey.cs" />
-    <Compile Include="TaskItemExtensions.cs" />
     <Compile Include="Templating\TemplateFile.cs" />
     <Compile Include="Templating\TemplateText.cs" />
-    <Compile Include="Packaging\Unzip.cs" />
+    <Compile Include="Package\Unzip.cs" />
     <Compile Include="Code\UpdateAttributeInCode.cs" />
     <Compile Include="Validation\ValidateXmlAgainstSchema.cs" />
-    <Compile Include="Packaging\Zip.cs" />
+    <Compile Include="Package\Zip.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -160,6 +174,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Script\MsBuildTemplate.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\nBuildKit.MsBuild.Tasks.Core\nBuildKit.MsBuild.Tasks.Core.csproj">
+      <Project>{419a1a8e-f3cc-4ce1-9294-6b7fbb7ee96d}</Project>
+      <Name>nBuildKit.MsBuild.Tasks.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

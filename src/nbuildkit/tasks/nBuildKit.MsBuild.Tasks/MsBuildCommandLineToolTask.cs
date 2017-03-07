@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks
 {
@@ -59,6 +60,15 @@ namespace NBuildKit.MsBuild.Tasks
             return Directory.GetFiles(msbuildBasePath, "msbuild.exe", SearchOption.AllDirectories)
                 .OrderByDescending(f => f)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MsBuildCommandLineToolTask"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        protected MsBuildCommandLineToolTask(IApplicationInvoker invoker)
+            : base(invoker)
+        {
         }
 
         private Hashtable GetCommandLineProperties()
@@ -160,12 +170,21 @@ namespace NBuildKit.MsBuild.Tasks
 
                 foreach (DictionaryEntry pair in commandLineProperties)
                 {
-                    arguments.Add(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "/P:{0}=\"{1}\"",
-                            pair.Key,
-                            EscapingUtilities.UnescapeAll(pair.Value as string).TrimEnd(new[] { '\\' })));
+                    var propertyName = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "/P:{0}=",
+                        pair.Key);
+
+                    // Only add the command line property if there is no user version of the property.
+                    if (instanceArguments.FirstOrDefault(s => s.StartsWith(propertyName, StringComparison.OrdinalIgnoreCase)) == null)
+                    {
+                        arguments.Add(
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                "{0}\"{1}\"",
+                                propertyName,
+                                EscapingUtilities.UnescapeAll(pair.Value as string).TrimEnd(new[] { '\\' })));
+                    }
                 }
 
                 arguments.AddRange(instanceArguments);

@@ -14,6 +14,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Code
 {
@@ -24,6 +25,23 @@ namespace NBuildKit.MsBuild.Tasks.Code
     public sealed class GenerateInternalsVisibleToAttributes : CommandLineToolTask
     {
         private const string MetadataValueTag = "ReplacementValue";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenerateInternalsVisibleToAttributes"/> class.
+        /// </summary>
+        public GenerateInternalsVisibleToAttributes()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenerateInternalsVisibleToAttributes"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public GenerateInternalsVisibleToAttributes(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
 
         /// <summary>
         /// Gets or sets the string template for the <see cref="InternalsVisibleToAttribute"/> for assemblies that are strong named.

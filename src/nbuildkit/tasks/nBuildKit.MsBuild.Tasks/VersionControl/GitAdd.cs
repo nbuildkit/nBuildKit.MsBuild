@@ -8,6 +8,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
+using NBuildKit.MsBuild.Tasks.Core.FileSystem;
 
 namespace NBuildKit.MsBuild.Tasks.VersionControl
 {
@@ -16,6 +18,23 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
     /// </summary>
     public sealed class GitAdd : GitCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitAdd"/> class.
+        /// </summary>
+        public GitAdd()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitAdd"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public GitAdd(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {
@@ -35,7 +54,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                                 string.Format(
                                     CultureInfo.InvariantCulture,
                                     "\"{0}\" ",
-                                    GetFilePathRelativeToDirectory(GetAbsolutePath(taskItem), workingDirectory)));
+                                    PathUtilities.GetFilePathRelativeToDirectory(GetAbsolutePath(taskItem), workingDirectory)));
                         }
                     }
                 }

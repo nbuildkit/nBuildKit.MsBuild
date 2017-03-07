@@ -7,13 +7,14 @@
 
 using System.Diagnostics;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Versions
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that extracts the version of a given file.
     /// </summary>
-    public sealed class GetFileVersion : NBuildKitMsBuildTask
+    public sealed class GetFileVersion : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

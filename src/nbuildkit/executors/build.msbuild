@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="_nBuildKit_Executors_Build_Execute"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <!-- Note the current script is not meant to be imported! -->
+        <ExistsBuildExecute>true</ExistsBuildExecute>
+
+        <!-- Don't load the template tokens, this script doesn't need them -->
+        <LoadTemplateTokens>false</LoadTemplateTokens>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileBuildImports)') AND '$(ExistsBuildImports)' != 'true' "
+        Project="$(FileBuildImports)" />
+
+    <!--
+        Collect the standard paths for injection into nBuildKit.
+    -->
+    <PropertyGroup>
+        <Locations>
+            DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+            DirNBuildKitMsBuildTasks=$(DirNBuildKitMsBuildTasks);
+            DirWorkspace=$(DirWorkspace);
+            DirUserSettings=$(DirUserSettings);
+        </Locations>
+        <Files>
+            FileImports=$(FileBuildImports);
+        </Files>
+        <DefaultProperties>
+        </DefaultProperties>
+    </PropertyGroup>
+
+    <Target
+        Condition=" '@(BuildStepsToExecute)' != ''"
+        Name="_nBuildKit_Executors_Build_Execute">
+
+        <CreateItem Include="$(GroupsToExecute.Replace(',', ';').ToLower().Split(';'))">
+            <Output
+                ItemName="ExecutionGroupsFromUser"
+                TaskParameter="Include" />
+        </CreateItem>
+
+        <InvokeSteps
+            FailOnPreStepFailure="$(FailBuildOnPreStepFailure)"
+            FailOnPostStepFailure="$(FailBuildOnPostStepFailure)"
+            FailureSteps="@(BuildFailureStepsToExecute)"
+            GroupsToExecute="@(ExecutionGroupsFromUser)"
+            PreSteps="@(BuildPreStepsToExecute)"
+            PostSteps="@(BuildPostStepsToExecute)"
+            Projects="@(BuildStepsToExecute)"
+            Properties="$(Locations);$(Files);$(DefaultProperties)"
+            StepMetadata="@(AvailableStepMetadata)"
+            StopOnFirstFailure="true"
+            StopOnPreStepFailure="$(StopBuildOnPreStepFailure)"
+            StopOnPostStepFailure="$(StopBuildOnPostStepFailure)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)" />
+    </Target>
+</Project>

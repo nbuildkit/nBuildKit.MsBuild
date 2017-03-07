@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.VersionControl
 {
@@ -16,6 +17,23 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
     /// </summary>
     public sealed class GitCheckout : GitCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitCheckout"/> class.
+        /// </summary>
+        public GitCheckout()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitCheckout"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public GitCheckout(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the branch that should be checked out.
         /// </summary>

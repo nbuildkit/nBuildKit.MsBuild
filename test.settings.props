@@ -128,6 +128,7 @@
                                            currently allows gathering release notes from GitHub, Jira and YouTrack
         $(TestStepsPrepareVcsInfo)       - Stores the Version Control System (VCS) information in a file for later use.
                                            Currently supported version control systems is GIT
+        $(TestStepsPrepareCopyFiles)     - Copies one or more files from the file system or from a NuGet package.
         $(TestStepsPrepareGenerateFiles) - Generates one or more files from a set of template files.
         $(TestStepsIntegrationPester)    - Runs Pester on a specified test script file.
 
@@ -135,12 +136,7 @@
         for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
-        Each script has the following properties passed to it:
-        $(NBuildKitVersion)               - The full version of the nBuildKit library that is executing the build.
-        $(DirNBuildKitMsBuild)            - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)      - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
-        $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
+        Any properties defined by the 'Properties' section are pushed up.
     -->
     <ItemGroup>
         <TestStepsToExecute Include="$(TestStepsPrepareWorkspace)">
@@ -155,23 +151,9 @@
             </PostSteps>
         </TestStepsToExecute>
 
-        <TestStepsToExecute
-            Condition="!Exists('$(FileNBuildKitExtensionsImport)')"
-            Include="$(TestStepsGenerateTargetsFile)">
-            <Properties>
-            </Properties>
-            <Groups>
-                Bootstrap;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
-        </TestStepsToExecute>
-
         <TestStepsToExecute Include="$(TestStepsPrepareRestoreNuGet)">
             <Properties>
-                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\test\packages.config
+                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuildActions)\test\packages.config
             </Properties>
             <Groups>
                 NuGet;
@@ -262,6 +244,20 @@
             </PostSteps>
         </TestStepsToExecute>
         -->
+
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyFiles)">
+            <Properties>
+            </Properties>
+            <Groups>
+                CopyFiles;
+                Prepare;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
+
         <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
             <Properties>
             </Properties>
@@ -347,14 +343,7 @@
         for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
-        Each script has the following properties passed to it:
-        $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
-        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
-        $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
-
-        Additionally any properties defined by the 'Properties' section are also pushed up.
+        Any properties defined by the 'Properties' section are pushed up.
     -->
     <ItemGroup>
         <!--
@@ -376,7 +365,7 @@
     -->
     <ItemGroup>
         <!--
-        <TestFilesToDelete Include="" />
+        <FilesToDelete Include="" />
         -->
     </ItemGroup>
 
@@ -388,20 +377,30 @@
     -->
     <ItemGroup>
         <!--
-        <TestDirectoriesToDelete Include="" />
+        <DirectoriesToDelete Include="" />
         -->
     </ItemGroup>
 
+
     <!--
-        The list of all files that should be copied prior to starting the tests.
+        **** PREPARE - COPY FILES ****
     -->
-    <ItemGroup>
+    <!--
+        Files that should be copied, either from the file system or from a NuGet package.
+    -->
+    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
         <!--
-        <TestFilesToCopy Include="$(DirTestOldestVbNet)\**\*.*"
-                         Exclude="$(DirTestOldestVbNet)\environment.props;$(DirTestOldestVbNet)\**\packages.config;$(DirTestOldestVbNet)\**\*.vbproj"
-                         Condition="Exists('$(DirTestOldestVbNet)')">
-            <TargetDirectory>$(DirBuildTestOldestVbNet)</TargetDirectory>
-        </TestFilesToCopy>
+        <FilesToCopy Include="">
+            <Destinations></Destinations>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destinations>$(DirBuildTemp)</Destinations>
+        </NuGetFilesToCopy>
         -->
     </ItemGroup>
 
@@ -423,15 +422,13 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <!--
-        <TestFilesToGenerate Include="$(DirBuildTestLatestCSharp)\tools\environment.props">
-            <Encoding>UTF-8</Encoding>
+        <!--<TestFilesToGenerate Include="$(DirBuildTemp)\MyFile.txt">
+            <<Encoding>UTF-8</Encoding>
             <Expression>(MyRegex)</Expression>
-            <ReplacementValue>$(DirBuildDeploy)</ReplacementValue>
-            <Template>$(DirTestLatestCSharp)\tools\environment.props</Template>
-            <Token>LocalNuGetRepository</Token>
-        </TestFilesToGenerate>
-        -->
+            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
+            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
+            <Token>MyAdditionalTemplateParameter</Token>
+        </TestFilesToGenerate>-->
     </ItemGroup>
 
 

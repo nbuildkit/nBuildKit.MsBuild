@@ -9,13 +9,14 @@ using System;
 using System.Globalization;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Groups
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that returns the last item in a given collection.
     /// </summary>
-    public sealed class LastItemInGroup : NBuildKitMsBuildTask
+    public sealed class LastItemInGroup : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

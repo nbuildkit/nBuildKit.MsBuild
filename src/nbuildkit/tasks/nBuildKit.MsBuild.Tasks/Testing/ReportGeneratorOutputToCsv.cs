@@ -11,13 +11,14 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Testing
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that converts a ReportGenerator output to a CSV file.
     /// </summary>
-    public sealed class ReportGeneratorOutputToCsv : NBuildKitMsBuildTask
+    public sealed class ReportGeneratorOutputToCsv : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

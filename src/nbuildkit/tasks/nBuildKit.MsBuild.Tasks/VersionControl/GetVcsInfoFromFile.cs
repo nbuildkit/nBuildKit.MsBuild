@@ -8,13 +8,14 @@
 using System;
 using System.IO;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.VersionControl
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that extracts version control information from a file written.
     /// </summary>
-    public sealed class GetVcsInfoFromFile : NBuildKitMsBuildTask
+    public sealed class GetVcsInfoFromFile : BaseTask
     {
         /// <summary>
         /// Gets or sets the name of the branch.

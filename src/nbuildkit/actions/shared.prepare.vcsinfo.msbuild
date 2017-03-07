@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_VcsInfo_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedPrepareVcsInfo>true</ExistsSharedPrepareVcsInfo>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Import
+        Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild" />
+
+    <Target
+        Condition="!Exists('$(FileVcsInfo)')"
+        Name="nBuildKit_Shared_Prepare_VcsInfo_Run">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo" />
+        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
+    </Target>
+
+    <Target
+        Condition="$(IsGitWorkspace)"
+        Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo">
+        <Error
+            Condition=" '$(ToolsExternalGitPath)' == '' "
+            Text="No GIT executable defined. Will not be able to gather the VCS information." />
+
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsInfo)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') "
+            Directories="$(DirToCreate)" />
+
+        <GitCurrentBranch
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
+            <Output
+                PropertyName="GitCurrentBranch"
+                TaskParameter="CurrentBranch" />
+        </GitCurrentBranch>
+        <GitCurrentRevision
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
+            <Output
+                PropertyName="GitCurrentRevision"
+                TaskParameter="CurrentRevision" />
+        </GitCurrentRevision>
+
+        <ItemGroup>
+            <GitInfoItems Include="{" />
+            <GitInfoItems Include="    &quot;revision&quot;: &quot;$(GitCurrentRevision)&quot;," />
+            <GitInfoItems Include="    &quot;branch&quot;: &quot;$(GitCurrentBranch)&quot;" />
+            <GitInfoItems Include="}" />
+        </ItemGroup>
+
+        <WriteLinesToFile
+            File="$(FileVcsInfo)"
+            Lines="@(GitInfoItems)"
+            Overwrite="true" />
+    </Target>
+ </Project>

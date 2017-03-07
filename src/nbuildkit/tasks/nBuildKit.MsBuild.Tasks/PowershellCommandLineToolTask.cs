@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks
 {
@@ -20,6 +21,15 @@ namespace NBuildKit.MsBuild.Tasks
     public abstract class PowershellCommandLineToolTask : CommandLineToolTask
     {
         private ITaskItem _powershellExePath = new TaskItem(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe");
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PowershellCommandLineToolTask"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        protected PowershellCommandLineToolTask(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
 
         /// <summary>
         /// Gets the event handler that processes data from the data stream, or standard output stream, of
@@ -68,6 +78,7 @@ namespace NBuildKit.MsBuild.Tasks
                 arguments.Add("-NonInteractive ");
                 arguments.Add("-NoProfile ");
                 arguments.Add("-ExecutionPolicy Bypass ");
+                arguments.Add("-WindowStyle Hidden");
                 arguments.Add(powershellArgument);
             }
 

@@ -17,13 +17,14 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Projects
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that extracts all issues with a given state for a given milestone from GitHub.
     /// </summary>
-    public sealed class GetIssuesForGitHubMilestone : NBuildKitMsBuildTask
+    public sealed class GetIssuesForGitHubMilestone : BaseTask
     {
         private const string MetadataTitleTag = "Title";
         private const string MetadataUrlTag = "Url";

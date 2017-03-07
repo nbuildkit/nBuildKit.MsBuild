@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsFileImports>true</ExistsFileImports>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(MSBuildThisFileDirectory)import.base.props') AND '$(ExistsBaseImports)' != 'true' "
+        Project="$(MSBuildThisFileDirectory)import.base.props" />
+
+    <PropertyGroup>
+        <LoadTemplateTokens Condition=" '$(LoadTemplateTokens)' == '' ">true</LoadTemplateTokens>
+    </PropertyGroup>
+
+    <!-- Import the steps -->
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\shared.deploysteps.msbuild') AND '$(ExistsNBuildKitDeploySteps)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\deploy\shared.deploysteps.msbuild" />
+
+    <!-- Import the settings files -->
+    <PropertyGroup>
+        <DeployPropertyFile>$(DirUserSettings)\deploy.settings.props</DeployPropertyFile>
+    </PropertyGroup>
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.preuser.props') AND '$(ExistsNBuildKitDeployPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.preuser.props" />
+    <Import
+        Condition="Exists('$(DeployPropertyFile)') AND '$(ExistsDeploySettings)' != 'true' "
+        Project="$(DeployPropertyFile)" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.postuser.props') AND '$(ExistsNBuildKitDeployPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.postuser.props" />
+
+    <!-- Import the standard template token files -->
+    <Import
+        Condition=" '$(LoadTemplateTokens)' == 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\templatetokens.*.props" />
+    <Import
+        Condition=" '$(LoadTemplateTokens)' == 'true' "
+        Project="$(DirGeneratedPropertiesFiles)\templatetokens.*.props" />
+</Project>

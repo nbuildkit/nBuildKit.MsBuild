@@ -118,6 +118,7 @@
                                              - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
         $(DeployStepsPrepareTagVcs)        - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
         $(DeployStepsPrepareGetIssueIds)   - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
+        $(DeployStepsPrepareCopyFiles)     - Copies one or more files from the file system or from a NuGet package.
         $(DeployStepsPushToTags)           - Pushes the tags to a remote git repository
         $(DeployStepsPushToNuget)          - Pushes one or more artifacts to a NuGet feed
         $(DeployStepsPushToDirectory)      - Pushes one or more artifacts to a directory
@@ -131,17 +132,11 @@
         for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
-        Each script has the following properties passed to it:
-        $(NBuildKitVersion)               - The full version of the nBuildKit library that is executing the build.
-        $(DirNBuildKitMsBuild)            - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)      - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions)  - The full path to the directory that contains the nBuildKit extension scripts.
-        $(DirNBuildKitMsBuildTemplates)   - The full path to the directory that contains the nBuildKit templates.
+        Any properties defined by the 'Properties' section are pushed up.
     -->
     <ItemGroup>
         <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
             <Properties>
-                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\deploy\packages.config
             </Properties>
             <Groups>
                 NuGet;
@@ -212,6 +207,19 @@
             </PostSteps>
         </DeployStepsToExecute>
         -->
+
+        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyFiles)">
+            <Properties>
+            </Properties>
+            <Groups>
+                CopyFiles;
+                Prepare;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
 
         <!--
         <DeployStepsToExecute Include="$(DeployStepsPushToTags)">
@@ -328,14 +336,7 @@
         for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
-        Each script has the following properties passed to it:
-        $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
-        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
-        $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
-
-        Additionally any properties defined by the 'Properties' section are also pushed up.
+        Any properties defined by the 'Properties' section are pushed up.
     -->
     <ItemGroup>
         <!--
@@ -343,6 +344,29 @@
             <Properties>
             </Properties>
         </DeployFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - COPY FILES ****
+    -->
+    <!--
+        Files that should be copied, either from the file system or from a NuGet package.
+    -->
+    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+        <!--
+        <FilesToCopy Include="">
+            <Destinations></Destinations>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destinations>$(DirBuildTemp)</Destinations>
+        </NuGetFilesToCopy>
         -->
     </ItemGroup>
 

@@ -7,13 +7,14 @@
 
 using System;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that sets an environment variable.
     /// </summary>
-    public sealed class SetEnvironmentVariable : NBuildKitMsBuildTask
+    public sealed class SetEnvironmentVariable : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

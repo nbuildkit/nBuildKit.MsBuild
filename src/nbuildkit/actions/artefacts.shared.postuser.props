@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** BOOTSTRAP - BUILD TASKS ****
+    -->
+    <!--
+        The collection of all Visual Studio projects that contain MsBuild tasks for nBuildKit. These will be
+        compiled and placed in a bootstrap directory so that the nBuildKit build can use them.
+    -->
+    <ItemGroup Condition=" '@(MsBuildTasksProjectsToBuild)' == '' ">
+        <!--
+        <MsBuildTasksProjectsToBuild Include="$(DirSrc)\MyTasks.Tasks.csproj">
+            <Configuration>$(ProductionConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties>
+                OutputPath=$(DirBuildBootstrap);
+                ShouldRunAnalyzers=false;
+                ShouldPerformCodeAnalysis=false;
+            </Properties>
+        </MsBuildTasksProjectsToBuild>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** BOOTSTRAP - GENERATE TARGETS ****
+    -->
+    <!--
+        The collection that contains all the assembly files that contain custom MsBuild Task definitions.
+    -->
+    <ItemGroup Condition=" '@(ExtensionAssemblies)' == '' ">
+        <!--
+        <ExtensionAssemblies Include="$(DirBuildBootstrap)\*.Tasks.dll">
+            <ExistsProperty>MyPropertyName</ExistsProperty>
+        </ExtensionAssemblies>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PACK - ILMERGE ****
+    -->
+    <!--
+        The item group defining which assemblies should be IL merged.
+    -->
+    <ItemGroup Condition=" '@(AssembliesToMerge)' == '' ">
+        <!--
+        <AssembliesToMerge Include="">
+            <Assemblies></Assemblies>
+            <Destination></Destination>
+            <KeyFile></KeyFile>
+            <Version></Version>
+        </AssembliesToMerge>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PACK - NUGET ****
+    -->
+    <!--
+        The item group defining the location and contents of the NuGet packages that are generated during the build.
+
+        The IncludedDependencies and the ExcludedDependencies are lists of packages.config files that
+        should be included (or excluded) in the list of dependencies. Each entry is separated by a semi-colon(;).
+        If there is a 'packages.config' file in the same directory as the nuspec file then it is assumed that
+        all references in the 'packages.config' file should be added as dependencies.
+
+        All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
+    -->
+    <ItemGroup Condition=" '@(NuGetPackageSpecs)' == '' ">
+        <!--
+        <NuGetPackageSpecs Include="$(DirSrc)\myproject\myproject.nuspec">
+            <ShouldBuildSymbols>true</ShouldBuildSymbols>
+            <IncludedDependencies>
+                $(DirSrc)\MyOtherProject\packages.config
+            </IncludedDependencies>
+            <ExcludedDependencies>
+            </ExcludedDependencies>
+        </NuGetPackageSpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PACK - ZIP ARCHIVE ****
+    -->
+    <!--
+        The item group defining the location and contents of the archive files that are generated during the build
+        All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
+    -->
+    <ItemGroup>
+        <ArchivePackageSpecs
+            Condition="Exists('$(DirWorkspace)') AND '@(ArchivePackageSpecs)' == '' "
+            Exclude="$(DirBuild)\**\*.zipspec;$(DirPackages)\**\*.zipspec"
+            Include="$(DirWorkspace)\**\*.zipspec" />
+        <ArchivePackageSpecs
+            Condition=" '$(IsGitWorkspace)' == 'true' AND '$(IsOnBuildServer)' == 'true' AND Exists('$(FileVcsMergeInfo)') "
+            Include="$(MSBuildThisFileDirectory)build\gitmerge.zipspec" />
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsNBuildKitArtefactPostUserSharedSettings>true</ExistsNBuildKitArtefactPostUserSharedSettings>
+    </PropertyGroup>
+</Project>

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.VersionControl
 {
@@ -17,6 +18,23 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
     /// </summary>
     public sealed class GitCurrentBranch : GitCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitCurrentBranch"/> class.
+        /// </summary>
+        public GitCurrentBranch()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitCurrentBranch"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public GitCurrentBranch(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the current branch.
         /// </summary>

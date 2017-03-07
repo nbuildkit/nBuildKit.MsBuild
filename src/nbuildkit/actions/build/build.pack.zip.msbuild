@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Build_Pack_Zip_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildPackZip>true</ExistsBuildPackZip>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Build_Pack_Zip_Run">
+        <CallTarget Targets="_nBuildKit_Build_Pack_Zip_Pack" />
+    </Target>
+
+    <Target
+        Condition=" '@(ArchivePackageSpecs)' != '' "
+        Name="_nBuildKit_Build_Pack_Zip_Pack"
+        Outputs="%(ArchivePackageSpecs.Identity)">
+        <Message
+            Importance="low"
+            Text="Resolving build templates for: %(ArchivePackageSpecs.Identity)" />
+
+        <MakeDir
+            Condition="!Exists('$(DirBuildDeploy)')"
+            Directories="$(DirBuildDeploy)" />
+
+        <TemplateText
+            Template="%(ArchivePackageSpecs.Identity)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileArchiveSpec"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <CreateProperty Value="$([System.IO.Path]::GetFileName('$(FileArchiveSpec)'))" >
+            <Output
+                PropertyName="FileNameArchiveSpec"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <CreateProperty Value="$(DirBuildTemp)\$(FileNameArchiveSpec)" >
+            <Output
+                PropertyName="FileGeneratedArchiveSpec"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <TemplateFile
+            Encoding="UTF-8"
+            OutputFileName="$(FileGeneratedArchiveSpec)"
+            Template="$(FileArchiveSpec)"
+            Tokens="@(TemplateTokens)" />
+
+        <Zip
+            File="$(FileGeneratedArchiveSpec)"
+            OutputDirectory="$(DirBuildDeploy)"
+            OverwriteExistingFiles="true"
+            WorkingDirectory="$(DirWorkspace)" />
+    </Target>
+ </Project>

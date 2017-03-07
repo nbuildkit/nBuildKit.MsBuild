@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Build_Analyze_Xml_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildAnalyzeXml>true</ExistsBuildAnalyzeXml>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Import
+        Condition="Exists('$(MSBuildThisFileDirectory)..\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
+        Project="$(MSBuildThisFileDirectory)..\shared.templatetokens.msbuild" />
+
+    <Target
+        Name="nBuildKit_Build_Analyze_Xml_Run">
+        <CallTarget Targets="_nBuildKit_Build_Analyze_Xml_Analyze_Files" />
+    </Target>
+
+    <Target
+        Condition=" '@(XmlFilesToValidate)' != '' "
+        Name="_nBuildKit_Build_Analyze_Xml_Analyze_Files">
+
+        <ValidateXmlAgainstSchema
+            InputFile="%(XmlFilesToValidate.FullPath)"
+            SchemaFile="%(XmlFilesToValidate.SchemaFile)"
+            TargetNamespace="%(XmlFilesToValidate.TargetNamespace)" />
+    </Target>
+ </Project>

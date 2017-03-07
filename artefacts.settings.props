@@ -114,8 +114,17 @@
         All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
     -->
     <ItemGroup>
-        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\nbuildkit.msbuild.nuspec">
+        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\actions\*.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\entrypoint\*.nuspec">
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\executors\*.nuspec">
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
+        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\tasks\**\*.nuspec">
+            <ShouldBuildSymbols>true</ShouldBuildSymbols>
         </NuGetPackageSpecs>
         <NuGetPackageSpecs Include="$(DirSrc)\tests\nbuildkit.msbuild.tests.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>

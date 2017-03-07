@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedTemplateTokens>true</ExistsSharedTemplateTokens>
+    </PropertyGroup>
+
+    <Import Project="$(SystemTemplateTokenGenerators)" />
+    <Import
+        Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "
+        Project="$(TemplateTokenGenerators)" />
+
+    <Target Name="nBuildKit_Shared_TemplateTokens_Generate">
+        <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators" />
+        <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Generate_SpecialVersionParameters" />
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators_Prepare">
+        <ItemGroup>
+            <GeneratorTargetsToInvoke Include="$(SystemTemplateTokenGenerators)" />
+            <GeneratorTargetsToInvoke
+                Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "
+                Include="$(TemplateTokenGenerators)" />
+        </ItemGroup>
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators_Prepare"
+        Name="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators"
+        Outputs="%(GeneratorTargetsToInvoke.Identity)">
+        <CreateProperty Value="%(GeneratorTargetsToInvoke.Filename)">
+            <Output
+                PropertyName="TargetsToInvoke"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <CallTarget Targets="$(TargetsToInvoke.Replace(' ', '_').Replace('.', '_'))" />
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators"
+        Name="_nBuildKit_Shared_TemplateTokens_Generate_SpecialVersionParameters"
+        Outputs="$(FileTemplateTokensPretranslatedTokens)">
+
+        <PropertyGroup>
+            <DirectoriesForNBuildKit>
+                DirWorkspace=$(DirWorkspace);
+                DirUserSettings=$(DirUserSettings);
+            </DirectoriesForNBuildKit>
+        </PropertyGroup>
+
+        <InvokeStandaloneMsBuild
+            Projects="$(MSBuildThisFileDirectory)shared.templatetokens.pregenerate.msbuild"
+            Properties="$(DirectoriesForNBuildKit);$(DefaultPathProperties)"
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            Targets=""
+            TemporaryDirectory="$(DirBuildTemp)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)" />
+    </Target>
+</Project>

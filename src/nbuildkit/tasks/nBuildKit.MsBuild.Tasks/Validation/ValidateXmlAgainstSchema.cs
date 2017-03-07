@@ -9,13 +9,14 @@ using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Validation
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that validates an XML file against an XSD schema file.
     /// </summary>
-    public sealed class ValidateXmlAgainstSchema : NBuildKitMsBuildTask
+    public sealed class ValidateXmlAgainstSchema : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

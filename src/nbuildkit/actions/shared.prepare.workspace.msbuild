@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Build_Prepare_Workspace_Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsPrepareWorkspace>true</ExistsPrepareWorkspace>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Build_Prepare_Workspace_Run">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Workspace_Delete_VisualStudioLocation" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Workspace_Clean_VisualStudioLocation" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_Workspace_Clean_BuildDirectory" />
+    </Target>
+
+    <Target
+        Condition=" '@(SolutionsToBuild)' != '' AND '$(ShouldClean)' == 'true' AND '$(ShouldDeleteVisualStudioOutputs)' == 'true' "
+        Name="_nBuildKit_Shared_Prepare_Workspace_Delete_VisualStudioLocation"
+        Outputs="%(SolutionsToBuild.Identity)">
+        <TemplateText
+            Template="%(SolutionsToBuild.FullPath)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileSln"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <Message
+            Importance="normal"
+            Text="Deleting relevant 'bin' and 'obj' folders for all projects in $(FileSln) ..." />
+
+        <GetProjectsFromVisualStudioSolution
+            Condition="Exists('$(FileSln)')"
+            SolutionFile="$(FileSln)">
+            <Output ItemName="ProjectsForSolution" TaskParameter="Projects" />
+        </GetProjectsFromVisualStudioSolution>
+
+        <ItemGroup>
+            <VisualStudioProjectDirectoriesToDelete Include="@(ProjectsForSolution -> '%(RootDir)%(Directory)bin')" />
+            <VisualStudioProjectDirectoriesToDelete Include="@(ProjectsForSolution -> '%(RootDir)%(Directory)obj')" />
+        </ItemGroup>
+
+        <RemoveDir
+            Condition=" '@(VisualStudioProjectDirectoriesToDelete)' != '' "
+            ContinueOnError="True"
+            Directories="@(VisualStudioProjectDirectoriesToDelete)" />
+    </Target>
+
+    <Target
+        Condition=" '@(SolutionsToBuild)' != '' AND '$(ShouldClean)' == 'true' AND '$(ShouldCleanVisualStudioOutputs)' == 'true' AND '$(ShouldDeleteVisualStudioOutputs)' != 'true' "
+        Name="_nBuildKit_Shared_Prepare_Workspace_Clean_VisualStudioLocation"
+        Outputs="%(SolutionsToBuild.Identity)">
+        <TemplateText
+            Template="%(SolutionsToBuild.FullPath)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileSln"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <Message
+            Importance="normal"
+            Text="Cleaning $(FileSln) with: Configuration = %(SolutionsToBuild.Configuration) and Platform = %(SolutionsToBuild.Platform) ..." />
+
+        <InvokeStandaloneMsBuild
+            Condition="Exists('$(FileSln)')"
+            Projects="$(FileSln)"
+            Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=%(SolutionsToBuild.Platform)"
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="True"
+            StopOnFirstFailure="False"
+            Targets="Clean"
+            TemporaryDirectory="$(DirBuildTemp)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)">
+        </InvokeStandaloneMsBuild>
+    </Target>
+
+    <Target
+        Condition="'$(ShouldClean)' == 'true'"
+        Name="_nBuildKit_Shared_Prepare_Workspace_Clean_BuildDirectory">
+        <!--
+            We'll try to delete the directory and files but that may fail randomly because
+            some file is being locked (by some other process). This could leads to a failing task, but ..
+            the next task is run and then the delete command still executes (delayed
+            by the OS).
+        -->
+        <Delete
+            Condition=" '@(FilesToDelete)' != '' "
+            ContinueOnError="True"
+            Files="@(FilesToDelete)" />
+
+        <RemoveDir
+            Condition=" '@(DirectoriesToDelete)' != '' "
+            ContinueOnError="True"
+            Directories="@(DirectoriesToDelete)" />
+    </Target>
+ </Project>

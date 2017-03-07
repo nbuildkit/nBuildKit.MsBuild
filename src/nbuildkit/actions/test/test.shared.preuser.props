@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** TEST STEPS ****
+    -->
+    <PropertyGroup>
+        <!-- Indicate if an error in the pre-step actions should fail the test -->
+        <FailTestOnPreStepFailure Condition=" '$(FailTestOnPreStepFailure)' == '' ">false</FailTestOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should fail the test -->
+        <FailTestOnPostStepFailure Condition=" '$(FailTestOnPostStepFailure)' == '' ">false</FailTestOnPostStepFailure>
+
+        <!-- Indicate if an error in the pre-step actions should immediately stop the test -->
+        <StopTestOnPreStepFailure Condition=" '$(StopTestOnPreStepFailure)' == '' ">false</StopTestOnPreStepFailure>
+
+        <!-- Indicate if an error in the post-step actions should immediately stop the test -->
+        <StopTestOnPostStepFailure Condition=" '$(StopTestOnPostStepFailure)' == '' ">false</StopTestOnPostStepFailure>
+    </PropertyGroup>
+
+
+    <!--
+        **** INTEGRATION - PESTER ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the file into which Pester will write the test results.
+        -->
+        <FileTestReport Condition=" '$(FileTestReport)' == '' ">$(DirBuildLogs)\pester.integration.xml</FileTestReport>
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
+        *     SHARED TOOLS                  *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the tools paths -->
+    <PropertyGroup>
+        <!-- Currently there are no test specific tools -->
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsNBuildKitTestPreUserSharedSettings>true</ExistsNBuildKitTestPreUserSharedSettings>
+    </PropertyGroup>
+</Project>

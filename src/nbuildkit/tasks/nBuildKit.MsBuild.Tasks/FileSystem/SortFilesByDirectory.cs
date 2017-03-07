@@ -10,13 +10,14 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.FileSystem
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that sort a set of files based on their parent directory.
     /// </summary>
-    public sealed class SortFilesByDirectory : NBuildKitMsBuildTask
+    public sealed class SortFilesByDirectory : BaseTask
     {
         /// <summary>
         /// Gets or sets the collection containing the directories.

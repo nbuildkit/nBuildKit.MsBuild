@@ -9,13 +9,14 @@ using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.FileSystem
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that searches a given directory for a specific tool and returns the full path to the directory containing the tool.
     /// </summary>
-    public sealed class SearchPackagesDirectoryForToolDirectory : NBuildKitMsBuildTask
+    public sealed class SearchPackagesDirectoryForToolDirectory : BaseTask
     {
         /// <inheritdoc/>
         public override bool Execute()

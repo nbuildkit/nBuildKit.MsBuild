@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Projects
 {
@@ -19,6 +20,23 @@ namespace NBuildKit.MsBuild.Tasks.Projects
     /// </summary>
     public sealed class GitHubReleaseUpload : CommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitHubReleaseUpload"/> class.
+        /// </summary>
+        public GitHubReleaseUpload()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GitHubReleaseUpload"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public GitHubReleaseUpload(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {

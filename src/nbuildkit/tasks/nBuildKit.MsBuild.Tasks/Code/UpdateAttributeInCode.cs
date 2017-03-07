@@ -10,13 +10,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Code
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that updates an <see cref="Attribute"/> in a code file.
     /// </summary>
-    public sealed class UpdateAttributeInCode : NBuildKitMsBuildTask
+    public sealed class UpdateAttributeInCode : BaseTask
     {
         /// <summary>
         /// Gets or sets the name of the attribute that should be updated.

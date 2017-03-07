@@ -145,6 +145,7 @@
                                                            currently allows gathering release notes from GitHub, Jira and YouTrack
         $(BuildStepsPrepareRestoreNpm)                   - Restores all the NPM packages for the project.
         $(BuildStepsPrepareRestoreBower)                 - Restores all the Bower packages for the project.
+        $(BuildStepsPrepareCopyFiles)                    - Copies one or more files from the file system or from a NuGet package.
         $(BuildStepsPrepareAssemblyInfo)                 - Updates all existing AssemblyInfo.cs and AssemblyInfo.vb files with the version numbers, company information,
                                                            copyright information and optionally build time and build information.
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
@@ -162,14 +163,7 @@
         for that step, e.g. adding a build step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
-        Each script has the following properties passed to it:
-        $(NBuildKitVersion)                              - The full version of the nBuildKit library that is executing the build.
-        $(DirNBuildKitMsBuild)                           - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)                     - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions)                 - The full path to the directory that contains the nBuildKit extension scripts.
-        $(DirNBuildKitMsBuildTemplates)                  - The full path to the directory that contains the nBuildKit templates.
-
-        Additionally any properties defined by the 'Properties' section are also pushed up.
+        Any properties defined by the 'Properties' section are pushed up.
 
         Custom build steps may chose to add metadata to the 'AvailableStepMetadata' ItemGroup. This ItemGroup contains metadata describing
         all known steps.
@@ -213,7 +207,6 @@
 
         <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreNuGet)">
             <Properties>
-                StageSpecificNuGetPackageFilesToRestore=$(DirNBuildKitMsBuild)\build\packages.config
             </Properties>
             <Groups>
                 NuGet;
@@ -342,6 +335,19 @@
                 Bower;
                 Prepare;
                 Restore;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsPrepareCopyFiles)">
+            <Properties>
+            </Properties>
+            <Groups>
+                CopyFiles;
+                Prepare;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -508,14 +514,7 @@
         for that step, e.g. adding a build step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
-        Each script has the following properties passed to it:
-        $(NBuildKitVersion)              - The full version of the nBuildKit library that is executing the build.
-        $(DirNBuildKitMsBuild)           - The full path to the directory that contains the nBuildKit scripts.
-        $(DirNBuildKitMsBuildShared)     - The full path to the directory that contains the shared nBuildkit scripts.
-        $(DirNBuildKitMsBuildExtensions) - The full path to the directory that contains the nBuildKit extension scripts.
-        $(DirNBuildKitMsBuildTemplates)  - The full path to the directory that contains the nBuildKit templates.
-
-        Additionally any properties defined by the 'Properties' section are also pushed up.
+        Any properties defined by the 'Properties' section are pushed up.
     -->
     <ItemGroup>
         <!--
@@ -557,7 +556,7 @@
     -->
     <ItemGroup>
         <!--
-        <BuildFilesToDelete Include="" />
+        <FilesToDelete Include="" />
         -->
     </ItemGroup>
 
@@ -569,7 +568,30 @@
     -->
     <ItemGroup>
         <!--
-        <BuildDirectoriesToDelete Include="" />
+        <DirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - COPY FILES ****
+    -->
+    <!--
+        Files that should be copied, either from the file system or from a NuGet package.
+    -->
+    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+        <!--
+        <FilesToCopy Include="">
+            <Destinations></Destinations>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destinations>$(DirBuildTemp)</Destinations>
+        </NuGetFilesToCopy>
         -->
     </ItemGroup>
 

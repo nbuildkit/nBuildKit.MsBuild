@@ -37,10 +37,14 @@
       <HintPath>..\..\..\..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Build.Framework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Build.Utilities.v12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Moq, Version=4.6.38.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\Moq.4.6.38-alpha\lib\net45\Moq.dll</HintPath>
+    <Reference Include="Consul, Version=0.6.4.7, Culture=neutral, PublicKeyToken=20a6ad9a81df1d95, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Consul.0.6.4.7\lib\net45\Consul.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Moq, Version=4.5.30.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Moq.4.5.30\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nuclei, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
@@ -49,6 +53,14 @@
     </Reference>
     <Reference Include="Nuclei.Build, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\Nuclei.Build.0.9.0\lib\net40\Nuclei.Build.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nuclei.Configuration, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.Configuration.0.9.0\lib\net452\Nuclei.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nuclei.Diagnostics, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.Diagnostics.0.9.0\lib\net452\Nuclei.Diagnostics.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nuclei.Nunit.Extensions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
@@ -60,13 +72,22 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.IO.Abstractions, Version=2.0.0.140, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\System.IO.Abstractions.2.0.0.140\lib\net40\System.IO.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Abstractions.TestingHelpers, Version=2.0.0.140, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\System.IO.Abstractions.TestingHelpers.2.0.0.140\lib\net40\System.IO.Abstractions.TestingHelpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystem\CopyFilesFromNuGetPackagesTest.cs" />
+    <Compile Include="FileSystem\SearchPackagesDirectoryForNuGetPackageTest.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Script\InvokePowershellCommandTest.cs" />
     <Compile Include="Script\InvokePowershellFileTest.cs" />
     <Compile Include="Script\InvokeStandaloneMsBuildTest.cs" />
-    <Compile Include="TaskTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +99,14 @@
     <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\nBuildKit.MsBuild.Tasks.Core\nBuildKit.MsBuild.Tasks.Core.csproj">
+      <Project>{419a1a8e-f3cc-4ce1-9294-6b7fbb7ee96d}</Project>
+      <Name>nBuildKit.MsBuild.Tasks.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\nBuildKit.MsBuild.Tasks.Tests\nBuildKit.MsBuild.Tasks.Tests.csproj">
+      <Project>{86531f8e-f635-40d4-bd7b-335594ded577}</Project>
+      <Name>nBuildKit.MsBuild.Tasks.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\nBuildKit.MsBuild.Tasks\nBuildKit.MsBuild.Tasks.csproj">
       <Project>{8450f57f-6333-4ad6-8833-1048ca754c4b}</Project>
       <Name>nBuildKit.MsBuild.Tasks</Name>

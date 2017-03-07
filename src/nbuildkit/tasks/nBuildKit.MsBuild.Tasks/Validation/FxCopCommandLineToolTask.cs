@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Validation
 {
@@ -18,6 +19,15 @@ namespace NBuildKit.MsBuild.Tasks.Validation
     /// </summary>
     public abstract class FxCopCommandLineToolTask : CommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FxCopCommandLineToolTask"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        protected FxCopCommandLineToolTask(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the full path to the directory that contains the 'FxCopCmd' executable.
         /// </summary>

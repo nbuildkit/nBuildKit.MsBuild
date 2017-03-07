@@ -8,6 +8,7 @@
 using System.Diagnostics;
 using System.Text;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Script
 {
@@ -16,6 +17,23 @@ namespace NBuildKit.MsBuild.Tasks.Script
     /// </summary>
     public sealed class InvokePowershellCommand : PowershellCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvokePowershellCommand"/> class.
+        /// </summary>
+        public InvokePowershellCommand()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvokePowershellCommand"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public InvokePowershellCommand(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         /// <summary>
         /// Gets or sets the command that should be executed.
         /// </summary>

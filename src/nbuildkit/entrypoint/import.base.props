@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBaseImports>true</ExistsBaseImports>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(DirPackages)' == '' ">
+        <!--
+            Find the path to the PackagesDirectory manually so that we can load the shared build steps before loading the
+            'settings.props' file. This is necessary because otherwise the BuildStepsToExecute ItemGroup will only be partially populated
+
+            Searching for the package directory is complicated. Technically we would like to get it from the 'settings.props' file because
+            that would be easy, except that we can only load that file once. So the next best thing is to see if there is a 'nuget.config'
+            file somewhere that gives us the path. If not we'll assume it is in the workspace directory.
+        -->
+        <!--
+            Assume the 'nuget.config' file is in the workspace directory. If it's somewhere else we're stuffed and nBuildKit won't be working
+            correctly anyway.
+
+            Then get the content and strip out the whitespace for easier use.
+        -->
+        <FileNuGetConfig>$(DirWorkspace)\nuget.config</FileNuGetConfig>
+        <ContentNuGetConfig Condition="Exists('$(FileNuGetConfig)')">$([System.IO.File]::ReadAllText('$(FileNuGetConfig)'))</ContentNuGetConfig>
+        <ContentNuGetConfig Condition="Exists('$(FileNuGetConfig)')">$([System.Text.RegularExpressions.Regex]::Replace('$(ContentNuGetConfig)', '\s+', ''))</ContentNuGetConfig>
+
+        <!--
+            Now search for the element '<add key="repositorypath" value="foobar">'. Using a Regex here because that's the only way MsBuild allows us to find the element value.
+            This regex searches for the block 'addkey="repositorypath"value="' and then grabs the word characters (\w+) after it (?<= is the positive lookbehind operator).
+        -->
+        <ConfigPackagesLocation>$([System.Text.RegularExpressions.Regex]::Match('$(ContentNuGetConfig)', '(?&lt;=addkey\=\"repositorypath\"value\=\")\w+'))</ConfigPackagesLocation>
+
+        <!--
+            Now determine the packages path. If the packages path from the 'nuget.config' file is a full path (i.e. it is rooted) then we use that, otherwise we assume it's a
+            path relative to the workspace directory.
+        -->
+        <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND $([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(ConfigPackagesLocation)'))</DirPackages>
+        <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND !$([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(DirWorkspace)\$(ConfigPackagesLocation)'))</DirPackages>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <DefaultPathProperties>
+            $(DefaultPathProperties);
+        </DefaultPathProperties>
+    </PropertyGroup>
+
+    <!--
+        Import the environment specific settings. These settings may be different for different environments, e.g. there might be a difference
+        between a dev machine and a build machine, so the loading of these files is done slightly differently than other settings files.
+
+        We check the following locations in order:
+        * A user specified location as indicated by the variable: $(FileEnvironment)
+        * An user environment variable named NBUILDKIT_USER_ENVIRONMENT_FILE
+        * A machine environment variable named NBUILDKIT_MACHINE_ENVIRONMENT_FILE
+        * The workspace
+
+        The user can override the location where the file should be loaded from by specifying the 'UseEnvironmentFrom' property and setting it to
+        one of the following values:
+        * File      - Load the environment information from the user specified file, if it exists.
+        * User      - Load the environment information from file pointed to by the user environment variable
+                        NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists
+        * Machine   - Load the environment information from file pointed to by the machine environment variable
+                        NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists
+        * Workspace - Load the environment information from the file in the workspace, if it exists
+    -->
+    <Import
+        Condition="Exists('$(FileEnvironment)') AND (('$(UseEnvironmentFrom)' == 'File')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) "
+        Project="$(FileEnvironment)" />
+    <Import
+        Condition="Exists('$(NBUILDKIT_USER_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'User')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) "
+        Project="$(NBUILDKIT_USER_ENVIRONMENT_FILE)" />
+    <Import
+        Condition="Exists('$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)') AND (('$(UseEnvironmentFrom)' == 'Machine')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) "
+        Project="$(NBUILDKIT_MACHINE_ENVIRONMENT_FILE)" />
+    <Import
+        Condition="Exists('$(DirUserSettings)\environment.props') AND (('$(UseEnvironmentFrom)' == 'Workspace')  OR (('$(UseEnvironmentFrom)' == '') AND ('$(ExistsEnvironmentSettings)' != 'true'))) "
+        Project="$(DirUserSettings)\environment.props" />
+
+    <!--
+    Import the environment specific settings for the build server. These settings contain information about the active build server
+    and should only be loaded when a build is running on a build server.
+
+    We check the following locations in order:
+    * A user specified directory as indicated by the $(DirBuildServerSettings)
+    * A user or machine environment variable named NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR
+
+    It is expected that both point to a directory containing the 'buildserver.environment.props' file.
+-->
+    <PropertyGroup>
+        <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' AND '$(DirBuildServerSettings)' != '' AND Exists('$(DirBuildServerSettings)\buildserver.environment.props') ">$(DirBuildServerSettings)\buildserver.environment.props</FileBuildServerSettings>
+        <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' AND '$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)' != '' AND Exists('$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.props') ">$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.props</FileBuildServerSettings>
+        <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' ">UNDEFINED</FileBuildServerSettings>
+    </PropertyGroup>
+    <Import
+        Condition="Exists('$(FileBuildServerSettings)') AND '$(ExistsBuildServerEnvironmentSettings)' != 'true' "
+        Project="$(FileBuildServerSettings)" />
+
+    <!--
+        Always load the default environment settings.
+    -->
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.environment.props') AND '$(ExistsNBuildKitSharedEnvironmentSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\shared.environment.props" />
+
+    <!-- Import the shared steps file which contains standard pre- and post-step actions -->
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.steps.msbuild') AND '$(ExistsNBuildKitSharedSteps)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\shared.steps.msbuild" />
+
+    <!-- Import the settings files that has all the overriden settings -->
+    <!--
+        Note that we rely on loading the user settings file first so that the 'TemplateVersion' items created by the user are first in their list.
+    -->
+    <PropertyGroup>
+        <SharedPropertyFile>$(DirUserSettings)\settings.props</SharedPropertyFile>
+        <ArtefactPropertyFile>$(DirUserSettings)\artefacts.settings.props</ArtefactPropertyFile>
+    </PropertyGroup>
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.preuser.props') AND '$(ExistsNBuildKitPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\shared.preuser.props" />
+    <Import
+        Condition="Exists('$(SharedPropertyFile)') AND '$(ExistsSettings)' != 'true' "
+        Project="$(SharedPropertyFile)" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.postuser.props') AND '$(ExistsNBuildKitPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\shared.postuser.props" />
+
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\artefacts.shared.preuser.props') AND '$(ExistsNBuildKitArtefactPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\artefacts.shared.preuser.props" />
+    <Import
+        Condition="Exists('$(ArtefactPropertyFile)') AND '$(ExistsArtefactSettings)' != 'true' "
+        Project="$(ArtefactPropertyFile)" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\artefacts.shared.postuser.props') AND '$(ExistsNBuildKitArtefactPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\artefacts.shared.postuser.props" />
+
+    <!--
+        Define the location of the nBuildKit.MsBuild targets file.
+    -->
+    <PropertyGroup>
+        <FileNBuildKitExtensionsAssembly>$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll</FileNBuildKitExtensionsAssembly>
+        <FileNBuildKitExtensionsImport>$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.targets</FileNBuildKitExtensionsImport>
+    </PropertyGroup>
+
+    <!--
+        Import the custom tasks
+    -->
+    <Import
+        Condition="Exists('$(FileNBuildKitExtensionsImport)') AND '$(ExistsNBuildKitExtensions)' != 'true' "
+        Project="$(FileNBuildKitExtensionsImport)" />
+</Project>

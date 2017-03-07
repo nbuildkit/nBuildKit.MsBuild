@@ -14,13 +14,14 @@ using System.Reflection;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Code
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that extracts the projects from a given Visual Studio solution file.
     /// </summary>
-    public sealed class GetProjectsFromVisualStudioSolution : NBuildKitMsBuildTask
+    public sealed class GetProjectsFromVisualStudioSolution : BaseTask
     {
         private static IEnumerable<ITaskItem> GetProjects(string path)
         {

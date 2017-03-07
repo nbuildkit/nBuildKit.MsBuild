@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
+using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Validation
 {
@@ -18,6 +19,23 @@ namespace NBuildKit.MsBuild.Tasks.Validation
     /// </summary>
     public sealed class FxCopViaAssemblies : FxCopCommandLineToolTask
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FxCopViaAssemblies"/> class.
+        /// </summary>
+        public FxCopViaAssemblies()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FxCopViaAssemblies"/> class.
+        /// </summary>
+        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
+        public FxCopViaAssemblies(IApplicationInvoker invoker)
+            : base(invoker)
+        {
+        }
+
         private IEnumerable<string> AssembleFxCopArguments(string targetFramework, string ruleSetFilePath, IEnumerable<string> assemblyPaths)
         {
             var arguments = new List<string>();
