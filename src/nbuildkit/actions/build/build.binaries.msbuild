@@ -14,6 +14,10 @@
 
     <Target
         Name="nBuildKit_Build_Binaries_Run">
+        <Error
+            Condition=" '@(SolutionsToBuild)' == '' "
+            Text="Cannot build the Visual Studio solutions or projects because no solutions or projects were specified." />
+
         <CallTarget Targets="_nBuildKit_Build_Binaries_Execute" />
     </Target>
 
@@ -23,7 +27,7 @@
     -->
     <Target
         Condition=" '@(SolutionsToBuild)' != '' "
-        Name="_nBuildKit_Build_Binaries_Execute"
+        Name="nBuildKit_Build_Binaries_Run"
         Outputs="%(SolutionsToBuild.Identity)_%(SolutionsToBuild.Configuration)_%(SolutionsToBuild.Platform)">
         <TemplateText
             Template="%(SolutionsToBuild.FullPath)"
