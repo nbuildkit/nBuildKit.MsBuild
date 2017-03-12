@@ -19,7 +19,8 @@
         <TestStepsPrepareReleaseNotes>$(MSBuildThisFileDirectory)..\shared.prepare.gatherreleasenotes.msbuild</TestStepsPrepareReleaseNotes>
         <TestStepsPrepareVcsInfo>$(MSBuildThisFileDirectory)..\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
 
-        <TestStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.msbuild</TestStepsPrepareCopyFiles>
+        <TestStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</TestStepsPrepareCopyNuGet>
+        <TestStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</TestStepsPrepareCopyFiles>
 
         <TestStepsPrepareGenerateFiles>$(MSBuildThisFileDirectory)test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
 
@@ -98,9 +99,17 @@
             <Name>Test - gather VCS information</Name>
             <Path>$(TestStepsPrepareVcsInfo)</Path>
         </AvailableStepMetadata>
-         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyFiles)'))">
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyNuGet)'))">
             <Description>
-                Copies one or more files from the file system or from a NuGet package.
+                Copies one or more files from a NuGet package.
+            </Description>
+            <Id>TestStepsPrepareCopyNuGet</Id>
+            <Name>Test - copy nuget</Name>
+            <Path>$(TestStepsPrepareCopyNuGet)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyFiles)'))">
+            <Description>
+                Copies one or more files from the file system.
             </Description>
             <Id>TestStepsPrepareCopyFiles</Id>
             <Name>Test - copy files</Name>

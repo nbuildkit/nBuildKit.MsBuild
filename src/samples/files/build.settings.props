@@ -145,7 +145,8 @@
                                                            currently allows gathering release notes from GitHub, Jira and YouTrack
         $(BuildStepsPrepareRestoreNpm)                   - Restores all the NPM packages for the project.
         $(BuildStepsPrepareRestoreBower)                 - Restores all the Bower packages for the project.
-        $(BuildStepsPrepareCopyFiles)                    - Copies one or more files from the file system or from a NuGet package.
+        $(BuildStepsPrepareCopyNuGet)                    - Copies one or more files from a NuGet package.
+        $(BuildStepsPrepareCopyFiles)                    - Copies one or more files from the file system.
         $(BuildStepsPrepareAssemblyInfo)                 - Updates all existing AssemblyInfo.cs and AssemblyInfo.vb files with the version numbers, company information,
                                                            copyright information and optionally build time and build information.
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
@@ -342,6 +343,18 @@
             </PostSteps>
         </BuildStepsToExecute>
 
+        <BuildStepsToExecute Include="$(BuildStepsPrepareCopyNuGet)">
+            <Properties>
+            </Properties>
+            <Groups>
+                CopyFiles;
+                Prepare;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareCopyFiles)">
             <Properties>
             </Properties>
@@ -582,7 +595,7 @@
     <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
         <!--
         <FilesToCopy Include="">
-            <Destinations></Destinations>
+            <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>

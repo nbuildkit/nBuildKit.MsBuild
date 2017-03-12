@@ -25,7 +25,8 @@
         <BuildStepsPrepareRestoreNpm>$(MSBuildThisFileDirectory)..\shared.prepare.npm.restore.msbuild</BuildStepsPrepareRestoreNpm>
         <BuildStepsPrepareRestoreBower>$(MSBuildThisFileDirectory)..\shared.prepare.bower.restore.msbuild</BuildStepsPrepareRestoreBower>
 
-        <BuildStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.msbuild</BuildStepsPrepareCopyFiles>
+        <BuildStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</BuildStepsPrepareCopyNuGet>
+        <BuildStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</BuildStepsPrepareCopyFiles>
 
         <BuildStepsPrepareAssemblyInfo>$(MSBuildThisFileDirectory)build.prepare.updateassemblyinfo.msbuild</BuildStepsPrepareAssemblyInfo>
         <BuildStepsPrepareGenerateLicenses>$(MSBuildThisFileDirectory)build.prepare.generatelicenses.msbuild</BuildStepsPrepareGenerateLicenses>
@@ -136,9 +137,17 @@
             <Name>Build - restore Bower packages</Name>
             <Path>$(BuildStepsPrepareRestoreBower)</Path>
         </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareCopyNuGet)'))">
+            <Description>
+                Copies one or more files from from a NuGet package.
+            </Description>
+            <Id>BuildStepsPrepareCopyNuGet</Id>
+            <Name>Build - copy nuget</Name>
+            <Path>$(BuildStepsPrepareCopyNuGet)</Path>
+        </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareCopyFiles)'))">
             <Description>
-                Copies one or more files from the file system or from a NuGet package.
+                Copies one or more files from the file system.
             </Description>
             <Id>BuildStepsPrepareCopyFiles</Id>
             <Name>Build - copy files</Name>
