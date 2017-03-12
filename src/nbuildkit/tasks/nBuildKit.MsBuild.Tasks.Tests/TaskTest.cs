@@ -7,7 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using Microsoft.Build.Framework;
 using Moq;
 
@@ -18,6 +21,40 @@ namespace NBuildKit.MsBuild.Tasks.Tests
     /// </summary>
     public abstract class TaskTest
     {
+        /// <summary>
+        /// Creates a <see cref="DataReceivedEventArgs"/> instance with the given test data.
+        /// </summary>
+        /// <param name="testData">The test data.</param>
+        /// <returns>A new instance of the <see cref="DataReceivedEventArgs"/> class.</returns>
+        public static DataReceivedEventArgs CreateDataReceivedEventArgs(string testData)
+        {
+            if (string.IsNullOrEmpty(testData))
+            {
+                throw new ArgumentException("testData is null or empty.", "testData");
+            }
+
+            DataReceivedEventArgs mockEventArgs =
+                (DataReceivedEventArgs)System.Runtime.Serialization.FormatterServices
+                 .GetUninitializedObject(typeof(DataReceivedEventArgs));
+
+            var eventFields = typeof(DataReceivedEventArgs)
+                .GetFields(
+                    BindingFlags.NonPublic |
+                    BindingFlags.Instance |
+                    BindingFlags.DeclaredOnly);
+
+            if (eventFields.Count() > 0)
+            {
+                eventFields[0].SetValue(mockEventArgs, testData);
+            }
+            else
+            {
+                throw new InvalidOperationException("Failed to find _data field!");
+            }
+
+            return mockEventArgs;
+        }
+
         private readonly List<string> _errorMessages = new List<string>();
         private readonly List<string> _logMessages = new List<string>();
         private readonly List<string> _warningMessages = new List<string>();

@@ -58,10 +58,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
                             invokedArgs.AddRange(args);
                             invokedWorkingDirectory = dir;
                             environmentVariableBuilder = e;
+
+                            o(null, CreateDataReceivedEventArgs(text));
                         });
             }
 
-            var task = new InvokePowershellCommand();
+            var task = new InvokePowershellCommand(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.IgnoreErrors = false;
             task.Command = command;
@@ -69,17 +71,16 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            var output = task.Output;
-            Assert.AreEqual(text, output);
+            Assert.AreEqual(text, task.Output);
 
             Assert.AreEqual(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", invokedPath);
 
-            Assert.AreEqual(5, invokedArgs.Count);
-            Assert.AreEqual("-NoLogo", invokedArgs[0]);
-            Assert.AreEqual("-NonInteractive", invokedArgs[1]);
-            Assert.AreEqual("-NoProfile", invokedArgs[2]);
-            Assert.AreEqual("-ExecutionPolicy Bypass", invokedArgs[3]);
-            Assert.AreEqual("-WindowStyle Hidden", invokedArgs[4]);
+            Assert.AreEqual(6, invokedArgs.Count);
+            Assert.AreEqual("-NoLogo ", invokedArgs[0]);
+            Assert.AreEqual("-NonInteractive ", invokedArgs[1]);
+            Assert.AreEqual("-NoProfile ", invokedArgs[2]);
+            Assert.AreEqual("-ExecutionPolicy Bypass ", invokedArgs[3]);
+            Assert.AreEqual("-WindowStyle Hidden ", invokedArgs[4]);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -134,23 +135,45 @@ namespace NBuildKit.MsBuild.Tasks.Script
                             invokedArgs.AddRange(args);
                             invokedWorkingDirectory = dir;
                             environmentVariableBuilder = e;
+
+                            err(null, CreateDataReceivedEventArgs(errorText));
                         })
                     .Returns(-1);
             }
 
-            var task = new InvokePowershellCommand();
+            var task = new InvokePowershellCommand(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.IgnoreErrors = false;
             task.Command = command;
 
             var result = task.Execute();
-
             Assert.IsFalse(result);
 
-            var output = task.Output;
-            Assert.AreEqual(text, output);
+            Assert.AreEqual(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", invokedPath);
 
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 3, numberOfNormalMessages: 2);
+            Assert.AreEqual(6, invokedArgs.Count);
+            Assert.AreEqual("-NoLogo ", invokedArgs[0]);
+            Assert.AreEqual("-NonInteractive ", invokedArgs[1]);
+            Assert.AreEqual("-NoProfile ", invokedArgs[2]);
+            Assert.AreEqual("-ExecutionPolicy Bypass ", invokedArgs[3]);
+            Assert.AreEqual("-WindowStyle Hidden ", invokedArgs[4]);
+            Assert.AreEqual(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "-Command \"{0}\"",
+                    command),
+                invokedArgs[5]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
         }
 
         [Test]
@@ -160,31 +183,109 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var errorText = "It is all wrong";
             var command = string.Format(
                 CultureInfo.InvariantCulture,
-                "$ErrorActionPreference = 'Continue'; Write-Error '{0}'; Write-Output '{1}'",
+                "$ErrorActionPreference = 'Stop'; Write-Error '{0}'; Write-Output '{1}'",
                 errorText,
                 text);
 
             InitializeBuildEngine();
 
-            var task = new InvokePowershellCommand();
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+
+                            err(null, CreateDataReceivedEventArgs(errorText));
+                        })
+                    .Returns(-1);
+            }
+
+            var task = new InvokePowershellCommand(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.IgnoreErrors = true;
 
             task.Command = command;
             var result = task.Execute();
-
             Assert.IsTrue(result);
 
-            var output = task.Output;
-            Assert.AreEqual(text, output);
+            Assert.AreEqual(string.Empty, task.Output);
 
-            VerifyNumberOfLogMessages(numberOfWarningMessages: 3, numberOfNormalMessages: 2);
+            Assert.AreEqual(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", invokedPath);
+
+            Assert.AreEqual(6, invokedArgs.Count);
+            Assert.AreEqual("-NoLogo ", invokedArgs[0]);
+            Assert.AreEqual("-NonInteractive ", invokedArgs[1]);
+            Assert.AreEqual("-NoProfile ", invokedArgs[2]);
+            Assert.AreEqual("-ExecutionPolicy Bypass ", invokedArgs[3]);
+            Assert.AreEqual("-WindowStyle Hidden ", invokedArgs[4]);
+            Assert.AreEqual(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "-Command \"{0}\"",
+                    command),
+                invokedArgs[5]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
         }
 
         [Test]
         public void ExecuteWithEmptyCommand()
         {
-            var task = new InvokePowershellCommand();
+            InitializeBuildEngine();
+
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        })
+                    .Returns(-1);
+            }
+
+            var task = new InvokePowershellCommand(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.IgnoreErrors = false;
 
@@ -192,7 +293,17 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var result = task.Execute();
 
             Assert.IsFalse(result);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Never());
         }
     }
 }
