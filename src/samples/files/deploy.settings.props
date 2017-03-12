@@ -118,7 +118,8 @@
                                              - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
         $(DeployStepsPrepareTagVcs)        - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
         $(DeployStepsPrepareGetIssueIds)   - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
-        $(DeployStepsPrepareCopyFiles)     - Copies one or more files from the file system or from a NuGet package.
+        $(DeployStepsPrepareCopyNuGet)     - Copies one or more files from a NuGet package.
+        $(DeployStepsPrepareCopyFiles)     - Copies one or more files from the file system.
         $(DeployStepsPushToTags)           - Pushes the tags to a remote git repository
         $(DeployStepsPushToNuget)          - Pushes one or more artifacts to a NuGet feed
         $(DeployStepsPushToDirectory)      - Pushes one or more artifacts to a directory
@@ -229,6 +230,18 @@
             </PostSteps>
         </DeployStepsToExecute>
 
+        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyNuGet)">
+            <Properties>
+            </Properties>
+            <Groups>
+                CopyFiles;
+                Prepare;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsPrepareCopyFiles)">
             <Properties>
             </Properties>

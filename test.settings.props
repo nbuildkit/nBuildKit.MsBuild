@@ -128,6 +128,7 @@
                                            currently allows gathering release notes from GitHub, Jira and YouTrack
         $(TestStepsPrepareVcsInfo)       - Stores the Version Control System (VCS) information in a file for later use.
                                            Currently supported version control systems is GIT
+        $(TestStepsPrepareCopyNuGet)     - Copies one or more files from a NuGet package.
         $(TestStepsPrepareCopyFiles)     - Copies one or more files from the file system or from a NuGet package.
         $(TestStepsPrepareGenerateFiles) - Generates one or more files from a set of template files.
         $(TestStepsIntegrationPester)    - Runs Pester on a specified test script file.
@@ -245,6 +246,18 @@
         </TestStepsToExecute>
         -->
 
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyNuGet)">
+            <Properties>
+            </Properties>
+            <Groups>
+                CopyFiles;
+                Prepare;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsPrepareCopyFiles)">
             <Properties>
             </Properties>

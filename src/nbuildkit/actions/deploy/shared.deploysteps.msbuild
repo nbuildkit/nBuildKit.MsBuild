@@ -18,7 +18,8 @@
         <DeployStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
         <DeployStepsRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
 
-        <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.msbuild</DeployStepsPrepareCopyFiles>
+        <DeployStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</DeployStepsPrepareCopyNuGet>
+        <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</DeployStepsPrepareCopyFiles>
 
         <DeployStepsPushToTags>$(MSBuildThisFileDirectory)deploy.pushto.tags.msbuild</DeployStepsPushToTags>
         <DeployStepsPushToNuget>$(MSBuildThisFileDirectory)deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
@@ -85,9 +86,17 @@
             <Name>Deploy - restore NuGet packages</Name>
             <Path>$(DeployStepsRestoreNuGet)</Path>
         </AvailableStepMetadata>
-         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyFiles)'))">
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyNuGet)'))">
             <Description>
-                Copies one or more files from the file system or from a NuGet package.
+                Copies one or more files from a NuGet package.
+            </Description>
+            <Id>DeployStepsPrepareCopyNuGet</Id>
+            <Name>Deploy - copy nuget</Name>
+            <Path>$(DeployStepsPrepareCopyNuGet)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyFiles)'))">
+            <Description>
+                Copies one or more files from the file system.
             </Description>
             <Id>DeployStepsPrepareCopyFiles</Id>
             <Name>Deploy - copy files</Name>

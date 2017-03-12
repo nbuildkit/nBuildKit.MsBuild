@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project
-    DefaultTargets="nBuildKit_Shared_Prepare_Copy_Run"
+    DefaultTargets="nBuildKit_Shared_Prepare_Copy_FromFileSystem"
     ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ExistsSharedPrepareCopy>true</ExistsSharedPrepareCopy>
+        <ExistsSharedPrepareCopyFileSystem>true</ExistsSharedPrepareCopyFileSystem>
     </PropertyGroup>
 
     <Import
@@ -12,13 +12,8 @@
         Project="$(FileImports)" />
 
     <Target
-        DependsOnTargets="_nBuildKit_Shared_Prepare_Copy_FromFileSystem;_nBuildKit_Shared_Prepare_Copy_FromNuGetPackage"
-        Name="nBuildKit_Shared_Prepare_Copy_Run">
-    </Target>
-
-    <Target
         Condition=" '@(FilesToCopy)' != '' "
-        Name="_nBuildKit_Shared_Prepare_Copy_FromFileSystem">
+        Name="nBuildKit_Shared_Prepare_Copy_FromFileSystem">
         <!--
             MsBuild can't seem to handle using item metadata (FilesToCopy.FullPath) inside a property function
             inside the Exists() function, so we'll split the process and do the transfer separately.
@@ -39,14 +34,5 @@
             RetryDelayMilliseconds="1000"
             SkipUnchangedFiles="False"
             UseHardlinksIfPossible="False" />
-    </Target>
-
-    <Target
-        Condition=" '@(NuGetFilesToCopy)' != '' "
-        Name="_nBuildKit_Shared_Prepare_Copy_FromNuGetPackage">
-        <CopyFilesFromNuGetPackages
-            Items="@(NuGetFilesToCopy)"
-            PackagesDirectory="$(DirPackages)">
-        </CopyFilesFromNuGetPackages>
     </Target>
  </Project>
