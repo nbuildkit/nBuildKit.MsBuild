@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -15,6 +17,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Build.Utilities;
+using Moq;
+using NBuildKit.MsBuild.Tasks.Core;
 using NBuildKit.MsBuild.Tasks.Tests;
 using Nuclei;
 using NUnit.Framework;
@@ -90,7 +94,33 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             InitializeBuildEngine();
 
-            var task = new InvokeStandaloneMsBuild();
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        })
+                    .Returns(-1);
+            }
+
+            var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath) };
             task.Properties = new TaskItem[0];
@@ -103,6 +133,22 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             var result = task.Execute();
             Assert.IsFalse(result);
+
+            Assert.AreEqual(4, invokedArgs.Count);
+            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
+            Assert.AreEqual("/nologo", invokedArgs[1]);
+            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
 
             Assert.IsNull(task.TargetOutputs);
 
@@ -122,7 +168,33 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             InitializeBuildEngine();
 
-            var task = new InvokeStandaloneMsBuild();
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        })
+                    .Returns(-1);
+            }
+
+            var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath) };
             task.Properties = new TaskItem[0];
@@ -136,7 +208,16 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.IsNull(task.TargetOutputs);
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1);
         }
@@ -158,7 +239,32 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             InitializeBuildEngine();
 
-            var task = new InvokeStandaloneMsBuild();
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        });
+            }
+
+            var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(nonExistingPath), new TaskItem(existingPath) };
             task.Properties = new TaskItem[0];
@@ -172,9 +278,21 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.IsNotNull(task.TargetOutputs);
-            Assert.AreEqual(1, task.TargetOutputs.Length);
-            Assert.AreEqual("PassingScript", task.TargetOutputs[0].ItemSpec);
+            Assert.AreEqual(4, invokedArgs.Count);
+            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
+            Assert.AreEqual("/nologo", invokedArgs[1]);
+            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 0);
         }
@@ -198,7 +316,32 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             InitializeBuildEngine();
 
-            var task = new InvokeStandaloneMsBuild();
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        });
+            }
+
+            var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath1), new TaskItem(scriptPath2) };
             task.Properties = new TaskItem[0];
@@ -212,10 +355,21 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.IsNotNull(task.TargetOutputs);
-            Assert.AreEqual(2, task.TargetOutputs.Length);
-            Assert.AreEqual("PassingScript", task.TargetOutputs[0].ItemSpec);
-            Assert.AreEqual("PassingScript", task.TargetOutputs[1].ItemSpec);
+            Assert.AreEqual(4, invokedArgs.Count);
+            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
+            Assert.AreEqual("/nologo", invokedArgs[1]);
+            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 0);
         }
@@ -239,7 +393,34 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             InitializeBuildEngine();
 
-            var task = new InvokeStandaloneMsBuild();
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        })
+                    .Returns(-1);
+            }
+
+            var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath1), new TaskItem(scriptPath2) };
             task.Properties = new TaskItem[0];
@@ -253,7 +434,21 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.IsNull(task.TargetOutputs);
+            Assert.AreEqual(4, invokedArgs.Count);
+            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
+            Assert.AreEqual("/nologo", invokedArgs[1]);
+            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1);
         }
@@ -277,7 +472,33 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             InitializeBuildEngine();
 
-            var task = new InvokeStandaloneMsBuild();
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        })
+                    .Returns(-1);
+            }
+
+            var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath1), new TaskItem(scriptPath2) };
             task.Properties = new TaskItem[0];
@@ -291,7 +512,21 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.IsNull(task.TargetOutputs);
+            Assert.AreEqual(4, invokedArgs.Count);
+            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
+            Assert.AreEqual("/nologo", invokedArgs[1]);
+            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1);
         }
@@ -309,7 +544,32 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             InitializeBuildEngine();
 
-            var task = new InvokeStandaloneMsBuild();
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        });
+            }
+
+            var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(nonexistingPath) };
             task.Properties = new TaskItem[0];
@@ -323,8 +583,21 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.IsNotNull(task.TargetOutputs);
-            Assert.AreEqual(0, task.TargetOutputs.Length);
+            Assert.AreEqual(4, invokedArgs.Count);
+            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
+            Assert.AreEqual("/nologo", invokedArgs[1]);
+            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 0);
         }
@@ -343,7 +616,32 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             InitializeBuildEngine();
 
-            var task = new InvokeStandaloneMsBuild();
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        });
+            }
+
+            var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath) };
             task.Properties = new TaskItem[0];
@@ -357,9 +655,21 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.IsNotNull(task.TargetOutputs);
-            Assert.AreEqual(1, task.TargetOutputs.Length);
-            Assert.AreEqual("PassingScript", task.TargetOutputs[0].ItemSpec);
+            Assert.AreEqual(4, invokedArgs.Count);
+            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
+            Assert.AreEqual("/nologo", invokedArgs[1]);
+            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 0);
         }
