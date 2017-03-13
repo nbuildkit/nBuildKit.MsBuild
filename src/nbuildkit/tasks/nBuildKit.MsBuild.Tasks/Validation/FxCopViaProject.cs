@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
 
@@ -37,9 +38,16 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         /// <inheritdoc/>
         public override bool Execute()
         {
+            var projectPath = GetAbsolutePath(ProjectFile).TrimEnd('\\');
+            if (string.IsNullOrWhiteSpace(projectPath) || !File.Exists(projectPath))
+            {
+                Log.LogError("No project file was provided.");
+                return false;
+            }
+
             var arguments = new List<string>();
             {
-                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/project:\"{0}\" ", GetAbsolutePath(ProjectFile).TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/project:\"{0}\" ", projectPath));
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "/out:\"{0}\" ", GetAbsolutePath(OutputFile).TrimEnd('\\')));
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "/ignoregeneratedcode "));
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "/searchgac "));
