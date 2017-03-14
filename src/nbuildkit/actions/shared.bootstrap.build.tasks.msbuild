@@ -40,7 +40,16 @@
             Importance="normal"
             Text="Building $(FileMsBuildTasksProject) for targets = %(MsBuildTasksProjectsToBuild.Targets) with: Configuration = %(MsBuildTasksProjectsToBuild.Configuration) and Platform = %(MsBuildTasksProjectsToBuild.Platform) ..." />
 
-        <CreateProperty Value="$([System.IO.Path]::Combine('%(MsBuildTasksProjectsToBuild.RootDir)%(MsBuildTasksProjectsToBuild.Directory)', 'packages.config'))">
+        <CreateProperty
+            Condition=" '%(MsBuildTasksProjectsToBuild.Extension)' == '.csproj' OR '%(MsBuildTasksProjectsToBuild.Extension)' == '.vbproj' "
+            Value="$([System.IO.Path]::Combine('%(MsBuildTasksProjectsToBuild.RootDir)%(MsBuildTasksProjectsToBuild.Directory)', 'packages.config'))">
+            <Output
+                PropertyName="FilePackages"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <CreateProperty
+            Condition=" '%(MsBuildTasksProjectsToBuild.Extension)' == '.sln' "
+            Value="%(MsBuildTasksProjectsToBuild.FullPath)">
             <Output
                 PropertyName="FilePackages"
                 TaskParameter="Value" />
