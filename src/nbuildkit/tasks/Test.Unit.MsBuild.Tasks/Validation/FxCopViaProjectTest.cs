@@ -11,28 +11,48 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using Microsoft.Build.Utilities;
 using Moq;
 using NBuildKit.MsBuild.Tasks.Core;
 using NBuildKit.MsBuild.Tasks.Tests;
+using Nuclei;
 using NUnit.Framework;
 
-namespace NBuildKit.MsBuild.Tasks.Script
+namespace NBuildKit.MsBuild.Tasks.Validation
 {
     [TestFixture]
     [SuppressMessage(
         "Microsoft.StyleCop.CSharp.DocumentationRules",
         "SA1600:ElementsMustBeDocumented",
         Justification = "Unit tests do not need documentation.")]
-    public sealed class InvokePowershellCommandTest : TaskTest
+    public sealed class FxCopViaProjectTest : TaskTest
     {
         [Test]
         public void Execute()
         {
-            var text = "hello world";
-            var command = string.Format(
-                CultureInfo.InvariantCulture,
-                "Write-Output '{0}'",
-                text);
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var outputPath = Path.Combine(
+                directory,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}.xml",
+                    Guid.NewGuid().ToString()));
+
+            var projectPath = Path.Combine(
+                directory,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}.proj",
+                    Guid.NewGuid().ToString()));
+
+            var text = "FxCopViaProjectsTest.Execute()";
+            using (var writer = new StreamWriter(projectPath, false, Encoding.Unicode))
+            {
+                writer.WriteLine(text);
+            }
 
             InitializeBuildEngine();
 
@@ -58,35 +78,38 @@ namespace NBuildKit.MsBuild.Tasks.Script
                             invokedArgs.AddRange(args);
                             invokedWorkingDirectory = dir;
                             environmentVariableBuilder = e;
-
-                            o(null, CreateDataReceivedEventArgs(text));
                         });
             }
 
-            var task = new InvokePowershellCommand(invoker.Object);
+            var task = new FxCopViaProject(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
-            task.IgnoreErrors = false;
-            task.Command = command;
+            task.FxCopDirectory = new TaskItem(directory);
+            task.OutputFile = new TaskItem(outputPath);
+            task.ProjectFile = new TaskItem(projectPath);
+            task.WarningsAsErrors = true;
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(text, task.Output);
-
-            Assert.AreEqual(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", invokedPath);
+            Assert.AreEqual(Path.Combine(directory, "FxCopCmd.exe"), invokedPath);
 
             Assert.AreEqual(6, invokedArgs.Count);
-            Assert.AreEqual("-NoLogo ", invokedArgs[0]);
-            Assert.AreEqual("-NonInteractive ", invokedArgs[1]);
-            Assert.AreEqual("-NoProfile ", invokedArgs[2]);
-            Assert.AreEqual("-ExecutionPolicy Bypass ", invokedArgs[3]);
-            Assert.AreEqual("-WindowStyle Hidden ", invokedArgs[4]);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "-Command \"{0}\"",
-                    command),
-                invokedArgs[5]);
+                    "/project:\"{0}\" ",
+                    projectPath),
+                invokedArgs[0]);
+            Assert.AreEqual(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/out:\"{0}\" ",
+                    outputPath),
+                invokedArgs[1]);
+            Assert.AreEqual("/ignoregeneratedcode ", invokedArgs[2]);
+            Assert.AreEqual("/searchgac ", invokedArgs[3]);
+            Assert.AreEqual("/forceoutput ", invokedArgs[4]);
+            Assert.AreEqual("/successfile ", invokedArgs[5]);
 
             invoker.Verify(
                 i => i.Invoke(
@@ -98,18 +121,33 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     It.IsAny<DataReceivedEventHandler>(),
                     It.IsAny<bool>()),
                 Times.Once());
+
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 3);
         }
 
         [Test]
         public void ExecuteWithErrors()
         {
-            var text = "hello world";
-            var errorText = "It is all wrong";
-            var command = string.Format(
-                CultureInfo.InvariantCulture,
-                "$ErrorActionPreference = 'Stop'; Write-Error '{0}'; Write-Output '{1}'",
-                errorText,
-                text);
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var outputPath = Path.Combine(
+                directory,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}.xml",
+                    Guid.NewGuid().ToString()));
+
+            var projectPath = Path.Combine(
+                directory,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}.proj",
+                    Guid.NewGuid().ToString()));
+
+            var text = "FxCopViaProjectsTest.Execute()";
+            using (var writer = new StreamWriter(projectPath, false, Encoding.Unicode))
+            {
+                writer.WriteLine(text);
+            }
 
             InitializeBuildEngine();
 
@@ -135,34 +173,39 @@ namespace NBuildKit.MsBuild.Tasks.Script
                             invokedArgs.AddRange(args);
                             invokedWorkingDirectory = dir;
                             environmentVariableBuilder = e;
-
-                            err(null, CreateDataReceivedEventArgs(errorText));
                         })
                     .Returns(-1);
             }
 
-            var task = new InvokePowershellCommand(invoker.Object);
+            var task = new FxCopViaProject(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
-            task.IgnoreErrors = false;
-            task.Command = command;
+            task.FxCopDirectory = new TaskItem(directory);
+            task.OutputFile = new TaskItem(outputPath);
+            task.ProjectFile = new TaskItem(projectPath);
+            task.WarningsAsErrors = true;
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", invokedPath);
+            Assert.AreEqual(Path.Combine(directory, "FxCopCmd.exe"), invokedPath);
 
             Assert.AreEqual(6, invokedArgs.Count);
-            Assert.AreEqual("-NoLogo ", invokedArgs[0]);
-            Assert.AreEqual("-NonInteractive ", invokedArgs[1]);
-            Assert.AreEqual("-NoProfile ", invokedArgs[2]);
-            Assert.AreEqual("-ExecutionPolicy Bypass ", invokedArgs[3]);
-            Assert.AreEqual("-WindowStyle Hidden ", invokedArgs[4]);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "-Command \"{0}\"",
-                    command),
-                invokedArgs[5]);
+                    "/project:\"{0}\" ",
+                    projectPath),
+                invokedArgs[0]);
+            Assert.AreEqual(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/out:\"{0}\" ",
+                    outputPath),
+                invokedArgs[1]);
+            Assert.AreEqual("/ignoregeneratedcode ", invokedArgs[2]);
+            Assert.AreEqual("/searchgac ", invokedArgs[3]);
+            Assert.AreEqual("/forceoutput ", invokedArgs[4]);
+            Assert.AreEqual("/successfile ", invokedArgs[5]);
 
             invoker.Verify(
                 i => i.Invoke(
@@ -174,18 +217,27 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     It.IsAny<DataReceivedEventHandler>(),
                     It.IsAny<bool>()),
                 Times.Once());
+
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 3);
         }
 
         [Test]
-        public void ExecuteWithErrorsAsWarnings()
+        public void ExecuteWithMissingProject()
         {
-            var text = "hello world";
-            var errorText = "It is all wrong";
-            var command = string.Format(
-                CultureInfo.InvariantCulture,
-                "$ErrorActionPreference = 'Stop'; Write-Error '{0}'; Write-Output '{1}'",
-                errorText,
-                text);
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var outputPath = Path.Combine(
+                directory,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}.xml",
+                    Guid.NewGuid().ToString()));
+
+            var projectPath = Path.Combine(
+                directory,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}.proj",
+                    Guid.NewGuid().ToString()));
 
             InitializeBuildEngine();
 
@@ -211,87 +263,17 @@ namespace NBuildKit.MsBuild.Tasks.Script
                             invokedArgs.AddRange(args);
                             invokedWorkingDirectory = dir;
                             environmentVariableBuilder = e;
-
-                            err(null, CreateDataReceivedEventArgs(errorText));
-                        })
-                    .Returns(-1);
+                        });
             }
 
-            var task = new InvokePowershellCommand(invoker.Object);
+            var task = new FxCopViaProject(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
-            task.IgnoreErrors = true;
+            task.FxCopDirectory = new TaskItem(directory);
+            task.OutputFile = new TaskItem(outputPath);
+            task.ProjectFile = new TaskItem(projectPath);
+            task.WarningsAsErrors = false;
 
-            task.Command = command;
             var result = task.Execute();
-            Assert.IsTrue(result);
-
-            Assert.AreEqual(string.Empty, task.Output);
-
-            Assert.AreEqual(@"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", invokedPath);
-
-            Assert.AreEqual(6, invokedArgs.Count);
-            Assert.AreEqual("-NoLogo ", invokedArgs[0]);
-            Assert.AreEqual("-NonInteractive ", invokedArgs[1]);
-            Assert.AreEqual("-NoProfile ", invokedArgs[2]);
-            Assert.AreEqual("-ExecutionPolicy Bypass ", invokedArgs[3]);
-            Assert.AreEqual("-WindowStyle Hidden ", invokedArgs[4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "-Command \"{0}\"",
-                    command),
-                invokedArgs[5]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-        }
-
-        [Test]
-        public void ExecuteWithEmptyCommand()
-        {
-            InitializeBuildEngine();
-
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<string>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.AddRange(args);
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns(-1);
-            }
-
-            var task = new InvokePowershellCommand(invoker.Object);
-            task.BuildEngine = BuildEngine.Object;
-            task.IgnoreErrors = false;
-
-            task.Command = string.Empty;
-            var result = task.Execute();
-
             Assert.IsFalse(result);
 
             invoker.Verify(
@@ -304,6 +286,104 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     It.IsAny<DataReceivedEventHandler>(),
                     It.IsAny<bool>()),
                 Times.Never());
+
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 1);
+        }
+
+        [Test]
+        public void ExecuteWithWarnings()
+        {
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var outputPath = Path.Combine(
+                directory,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}.xml",
+                    Guid.NewGuid().ToString()));
+
+            var projectPath = Path.Combine(
+                directory,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}.proj",
+                    Guid.NewGuid().ToString()));
+
+            var text = "FxCopViaProjectsTest.Execute()";
+            using (var writer = new StreamWriter(projectPath, false, Encoding.Unicode))
+            {
+                writer.WriteLine(text);
+            }
+
+            InitializeBuildEngine();
+
+            var invokedPath = string.Empty;
+            var invokedArgs = new List<string>();
+            var invokedWorkingDirectory = string.Empty;
+            Action<StringDictionary> environmentVariableBuilder = null;
+            var invoker = new Mock<IApplicationInvoker>();
+            {
+                invoker.Setup(
+                    i => i.Invoke(
+                        It.IsAny<string>(),
+                        It.IsAny<IEnumerable<string>>(),
+                        It.IsAny<string>(),
+                        It.IsAny<Action<StringDictionary>>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<DataReceivedEventHandler>(),
+                        It.IsAny<bool>()))
+                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
+                        (path, args, dir, e, o, err, f) =>
+                        {
+                            invokedPath = path;
+                            invokedArgs.AddRange(args);
+                            invokedWorkingDirectory = dir;
+                            environmentVariableBuilder = e;
+                        })
+                    .Returns(-1);
+            }
+
+            var task = new FxCopViaProject(invoker.Object);
+            task.BuildEngine = BuildEngine.Object;
+            task.FxCopDirectory = new TaskItem(directory);
+            task.OutputFile = new TaskItem(outputPath);
+            task.ProjectFile = new TaskItem(projectPath);
+            task.WarningsAsErrors = false;
+
+            var result = task.Execute();
+            Assert.IsTrue(result);
+
+            Assert.AreEqual(Path.Combine(directory, "FxCopCmd.exe"), invokedPath);
+
+            Assert.AreEqual(6, invokedArgs.Count);
+            Assert.AreEqual(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/project:\"{0}\" ",
+                    projectPath),
+                invokedArgs[0]);
+            Assert.AreEqual(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "/out:\"{0}\" ",
+                    outputPath),
+                invokedArgs[1]);
+            Assert.AreEqual("/ignoregeneratedcode ", invokedArgs[2]);
+            Assert.AreEqual("/searchgac ", invokedArgs[3]);
+            Assert.AreEqual("/forceoutput ", invokedArgs[4]);
+            Assert.AreEqual("/successfile ", invokedArgs[5]);
+
+            invoker.Verify(
+                i => i.Invoke(
+                    It.IsAny<string>(),
+                    It.IsAny<IEnumerable<string>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Action<StringDictionary>>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<DataReceivedEventHandler>(),
+                    It.IsAny<bool>()),
+                Times.Once());
+
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 4);
         }
     }
 }

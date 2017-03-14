@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
 
@@ -36,7 +37,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         {
         }
 
-        private IEnumerable<string> AssembleFxCopArguments(string targetFramework, string ruleSetFilePath, IEnumerable<string> assemblyPaths)
+        private IEnumerable<string> AssembleFxCopArguments(string targetFramework, string ruleSetFilePath, IEnumerable<string> assemblyPaths, int index)
         {
             var arguments = new List<string>();
             {
@@ -45,9 +46,10 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                     Path.GetDirectoryName(outputFile),
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        "{0}_{1}{2}",
+                        "{0}_{1}-{2}{3}",
                         Path.GetFileNameWithoutExtension(outputFile),
                         targetFramework.Replace(" ", string.Empty).Replace(".", string.Empty),
+                        index,
                         Path.GetExtension(outputFile)));
 
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "/ruleset:=\"{0}\" ", ruleSetFilePath.TrimEnd('\\')));
@@ -174,16 +176,18 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                     }
                 }
 
-                foreach (var map in assemblyPaths)
+                for (int i = 0; i < assemblyPaths.Count; i++)
                 {
+                    var pair = assemblyPaths.ElementAt(i);
+
                     Log.LogMessage(
                         MessageImportance.Normal,
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "Analyzing assemblies with target framework [{0}] with FxCop",
-                            map.Key));
+                            pair.Key));
 
-                    var arguments = AssembleFxCopArguments(map.Key.Item1, map.Key.Item2, map.Value);
+                    var arguments = AssembleFxCopArguments(pair.Key.Item1, pair.Key.Item2, pair.Value, i);
                     InvokeFxCop(arguments);
                 }
             }
