@@ -10,10 +10,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
 
@@ -176,7 +173,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// <summary>
         /// Gets or sets a value indicating whether error should be ignored.
         /// </summary>
-        [Required]
         public bool IgnoreErrors
         {
             get;
@@ -186,7 +182,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// <summary>
         /// Gets or sets a value indicating whether the exit code should be ignored.
         /// </summary>
-        [Required]
         public bool IgnoreExitCode
         {
             get;
