@@ -19,6 +19,7 @@
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_Execute" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GenerateCoberturaReports" />
     </Target>
 
     <Target Name="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths">
@@ -265,9 +266,29 @@
             Condition="Exists('$(FileReportReportGeneratorXmlSummary)') "
             InputFile="$(FileReportReportGeneratorXmlSummary)"
             OutputFile="$(FileReportOpenCoverCsvExpanded)" />
+    </Target>
 
-        <Exec
-            Command="&quot;$(ToolsExternalOpenCoverToCoberturaConverterPath)&quot; -input:&quot;%(FilesReportOpenCoverXml.Identity)&quot; -output:&quot;$(DirReportOpenCoverCoberturaExpanded)\cobertura-$([System.IO.Path]::GetFileName('%(FilesReportOpenCoverXml.Identity)'))&quot; -sources:&quot;$(DirSrc)&quot;"
-            Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') " />
+    <Target
+        Name="_nBuildKit_Build_Test_Unit_NUnit_GenerateCoberturaReports"
+        Outputs="%(FilesReportOpenCoverXml.Identity)">
+
+        <ItemGroup>
+            <ConverterArguments Include="input">
+                <Value>%(FilesReportOpenCoverXml.Identity)</Value>
+            </ConverterArguments>
+            <ConverterArguments Include="output">
+                <Value>$(DirReportOpenCoverCoberturaExpanded)\cobertura-$([System.IO.Path]::GetFileName('%(FilesReportOpenCoverXml.Identity)'))</Value>
+            </ConverterArguments>
+            <ConverterArguments Include="sources">
+                <Value>$(DirSrc)</Value>
+            </ConverterArguments>
+        </ItemGroup>
+        <ExecWithArguments
+            Arguments="@(ConverterArguments)"
+            ArgumentPrefix="-"
+            ArgumentSeparator=":"
+            Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') "
+            ToolPath="$(ToolsExternalOpenCoverToCoberturaConverterPath)"
+            WorkingDirectory="$(DirWorkspace)" />
     </Target>
  </Project>
