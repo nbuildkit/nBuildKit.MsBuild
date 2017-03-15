@@ -138,14 +138,5 @@
             NodeExecutablePath="$(ToolsExternalNodeJsPath)"
             ToolPath="$(ToolsExternalNpmPath)"
             WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)" />
-
-        <!--
-        <Exec
-            Command="$(ToolsExternalNpmPath) install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
-            Condition=" '@(NpmPackageFiles)' != '' AND !$(ToolsExternalNpmPath.EndsWith('npm-cli.js')) "
-            IgnoreExitCode="false"
-            IgnoreStandardErrorWarningFormat="true"
-            WorkingDirectory="%(NpmPackageFiles.RootDir)%(NpmPackageFiles.Directory)" />
-        -->
     </Target>
  </Project>
