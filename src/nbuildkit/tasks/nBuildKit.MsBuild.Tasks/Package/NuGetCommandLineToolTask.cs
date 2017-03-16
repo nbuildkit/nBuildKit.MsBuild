@@ -62,16 +62,6 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 arguments,
                 standardOutputHandler: standardOutputHandler,
                 standardErrorHandler: standardErrorHandler);
-            if (exitCode != 0)
-            {
-                Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        System.IO.Path.GetFileName(NuGetExecutablePath.ItemSpec),
-                        exitCode));
-            }
-
             return exitCode;
         }
 
