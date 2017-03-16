@@ -20,6 +20,7 @@
     <Target Name="_nBuildKit_Test_Integration_Pester_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="Pester"

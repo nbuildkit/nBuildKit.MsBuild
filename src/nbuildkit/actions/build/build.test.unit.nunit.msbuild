@@ -29,6 +29,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="NUnit.Runners"
@@ -59,6 +60,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="OpenCover"
@@ -89,6 +91,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="ReportGenerator"
@@ -119,6 +122,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="OpenCoverToCoberturaConverter"

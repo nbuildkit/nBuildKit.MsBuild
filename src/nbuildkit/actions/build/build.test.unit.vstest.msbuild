@@ -33,6 +33,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="nBuildKit.Tools.VsCoverageToReportGenerator"
@@ -62,6 +63,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="ReportGenerator"
@@ -92,6 +94,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="OpenCoverToCoberturaConverter"
