@@ -99,14 +99,14 @@
             Define any additional constants for the C# compiler. Multiple constants should be
             separated by a semi-colon (;).
         -->
-        <DefineConstants>TRACE</DefineConstants>
+        <DefineConstants></DefineConstants>
     </PropertyGroup>
 
     <!--
         Debug configuration
     -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <DefineConstants>DEBUG;CODE_ANALYSIS;$(DefineConstants)</DefineConstants>
+        <DefineConstants>CODE_ANALYSIS;INTERNALS_VISIBLE_TO;$(DefineConstants)</DefineConstants>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <DefineDebug>true</DefineDebug>
@@ -122,7 +122,7 @@
         Release configuration
     -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <DefineConstants>CODE_ANALYSIS;$(DefineConstants)</DefineConstants>
+        <DefineConstants>CODE_ANALYSIS;INTERNALS_VISIBLE_TO;$(DefineConstants)</DefineConstants>
         <DebugSymbols>false</DebugSymbols>
         <DebugType>pdbonly</DebugType>
         <DefineDebug>false</DefineDebug>

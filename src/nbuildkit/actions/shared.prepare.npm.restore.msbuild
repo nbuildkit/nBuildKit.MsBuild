@@ -22,6 +22,7 @@
         Name="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="Node.js"
@@ -54,6 +55,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="Python.Runtime"
@@ -85,6 +87,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="Npm"

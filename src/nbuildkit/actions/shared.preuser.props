@@ -96,6 +96,11 @@
             deletes outputs from all configurations.
         -->
         <ShouldDeleteVisualStudioOutputs Condition=" '$(ShouldDeleteVisualStudioOutputs)' == '' AND '$(IsOnBuildServer)' != 'true' ">false</ShouldDeleteVisualStudioOutputs>
+
+        <!--
+            A flag that indicates whether all NuGet packages should be restored to a directory that includes the package version or not.
+        -->
+        <ShouldRestoreNuGetPackagesWithoutVersionInPath Condition=" '$(ShouldRestoreNuGetPackagesWithoutVersionInPath)' == '' ">true</ShouldRestoreNuGetPackagesWithoutVersionInPath>
     </PropertyGroup>
 
     <!-- Overrides for the project specific properties -->

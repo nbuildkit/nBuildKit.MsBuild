@@ -26,7 +26,7 @@ namespace NBuildKit.MsBuild.Tasks
             var potentialPaths = packagesInfo.EnumerateDirectories(
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        "{0}.*",
+                        "{0}*",
                         packageName),
                     SearchOption.TopDirectoryOnly);
             logger(
@@ -39,9 +39,17 @@ namespace NBuildKit.MsBuild.Tasks
 
             string selectedPath = null;
             var selectedVersion = new Version();
+
+            var nonVersionPath = string.Empty;
             foreach (var path in potentialPaths)
             {
                 var versionText = path.Name.Substring(packageName.Length).Trim('.').Trim();
+                if (string.IsNullOrEmpty(versionText))
+                {
+                    // There can only be one path that matches the package name and doesn't have a version
+                    // number in the path
+                    nonVersionPath = path.FullName;
+                }
 
                 Version packageVersion;
                 if (!Version.TryParse(versionText, out packageVersion))
@@ -71,6 +79,11 @@ namespace NBuildKit.MsBuild.Tasks
                     selectedVersion = packageVersion;
                     selectedPath = path.FullName;
                 }
+            }
+
+            if ((selectedPath == null) && !string.IsNullOrEmpty(nonVersionPath))
+            {
+                selectedPath = nonVersionPath;
             }
 
             return selectedPath;

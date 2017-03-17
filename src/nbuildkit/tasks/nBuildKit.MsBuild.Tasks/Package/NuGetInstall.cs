@@ -35,6 +35,16 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         {
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether or not the version of the package should be included in the
+        /// install directory.
+        /// </summary>
+        public bool ExcludeVersion
+        {
+            get;
+            set;
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {
@@ -46,7 +56,14 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                     arguments.Add(string.Format(CultureInfo.InvariantCulture, "-Version \"{0}\" ", PackageVersion));
                 }
 
-                arguments.Add("-NonInteractive -Verbosity detailed -NoCache ");
+                if (ExcludeVersion)
+                {
+                    arguments.Add("-ExcludeVersion ");
+                }
+
+                arguments.Add("-NonInteractive ");
+                arguments.Add("-Verbosity detailed ");
+                arguments.Add("-NoCache ");
 
                 // Make sure we remove the back-slash because if we don't then
                 // the closing quote will be eaten by the command line parser. Note that
