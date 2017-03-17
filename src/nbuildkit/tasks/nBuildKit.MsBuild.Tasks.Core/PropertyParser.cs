@@ -47,7 +47,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
             TaskLoggingHelper log,
             string parameterName,
             string syntaxName,
-            string[] propertyNameValues,
+            IEnumerable<string> propertyNameValues,
             out Hashtable finalPropertiesTable)
         {
             finalPropertiesTable = null;

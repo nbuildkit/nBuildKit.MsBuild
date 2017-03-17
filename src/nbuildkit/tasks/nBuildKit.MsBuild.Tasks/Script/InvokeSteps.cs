@@ -63,30 +63,30 @@ namespace NBuildKit.MsBuild.Tasks
         {
             const string MetadataTag = "PreSteps";
             var steps = step.GetMetadata(MetadataTag);
-            return steps.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => new TaskItem(s)).ToArray();
+            return steps.Split(';').Select(s => new TaskItem(s)).ToArray();
         }
 
         private static ITaskItem[] LocalPostSteps(ITaskItem step)
         {
             const string MetadataTag = "PostSteps";
             var steps = step.GetMetadata(MetadataTag);
-            return steps.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => new TaskItem(s)).ToArray();
+            return steps.Split(';').Select(s => new TaskItem(s)).ToArray();
         }
 
         private static string MetadataTableToString(Hashtable metadataTable)
         {
-            var builder = new StringBuilder();
+            var list = new List<string>();
             foreach (DictionaryEntry entry in metadataTable)
             {
-                builder.Append(
+                list.Add(
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        "{0}={1};",
+                        "{0}={1}",
                         entry.Key,
                         EscapingUtilities.UnescapeAll(entry.Value as string)));
             }
 
-            return builder.ToString();
+            return string.Join(";", list);
         }
 
         private static IEnumerable<string> StepGroups(ITaskItem step)
@@ -124,7 +124,14 @@ namespace NBuildKit.MsBuild.Tasks
             if (!string.IsNullOrEmpty(stepProperties))
             {
                 Hashtable additionalProjectPropertiesTable = null;
-                if (!PropertyParser.GetTableWithEscaping(Log, "AdditionalProperties", "AdditionalProperties", stepProperties.Split(';'), out additionalProjectPropertiesTable))
+                var parseResult = PropertyParser.GetTableWithEscaping(
+                    Log,
+                    "AdditionalProperties",
+                    "AdditionalProperties",
+                    stepProperties.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(s => s.Trim()),
+                    out additionalProjectPropertiesTable);
+                if (!parseResult)
                 {
                     // Ignore it ...
                 }
@@ -187,10 +194,10 @@ namespace NBuildKit.MsBuild.Tasks
                         {
                             break;
                         }
-
-                        // Create some additional space in the logs between the stages.
-                        Log.LogMessage(string.Empty);
                     }
+
+                    // Create some additional space in the logs between the stages.
+                    Log.LogMessage(string.Empty);
                 }
                 catch (Exception e)
                 {
@@ -443,8 +450,19 @@ namespace NBuildKit.MsBuild.Tasks
 
         private bool InvokeBuildEngine(ITaskItem project)
         {
+            if (project == null)
+            {
+                return false;
+            }
+
             Hashtable propertiesTable;
-            if (!PropertyParser.GetTableWithEscaping(Log, "GlobalProperties", "Properties", Properties.Select(t => t.ItemSpec).ToArray(), out propertiesTable))
+            var parseResult = PropertyParser.GetTableWithEscaping(
+                Log,
+                "GlobalProperties",
+                "Properties",
+                Properties.Select(t => t.ItemSpec).ToArray(),
+                out propertiesTable);
+            if (!parseResult)
             {
                 return false;
             }
@@ -452,40 +470,44 @@ namespace NBuildKit.MsBuild.Tasks
             string projectPath = PathUtilities.GetAbsolutePath(project.ItemSpec);
             if (File.Exists(projectPath))
             {
-                if (project != null)
+                // If the user specified additional properties then add those
+                var projectProperties = project.GetMetadata("Properties");
+                if (!string.IsNullOrEmpty(projectProperties))
                 {
-                    // If the user specified additional properties then add those
-                    var projectProperties = project.GetMetadata("Properties");
-                    if (!string.IsNullOrEmpty(projectProperties))
+                    Hashtable additionalProjectPropertiesTable;
+                    var wasPropertyParseSuccessful = PropertyParser.GetTableWithEscaping(
+                        Log,
+                        "AdditionalProperties",
+                        "AdditionalProperties",
+                        projectProperties.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(s => s.Trim().Trim(';')),
+                        out additionalProjectPropertiesTable);
+                    if (!wasPropertyParseSuccessful)
                     {
-                        Hashtable additionalProjectPropertiesTable;
-                        if (!PropertyParser.GetTableWithEscaping(Log, "AdditionalProperties", "AdditionalProperties", projectProperties.Split(';'), out additionalProjectPropertiesTable))
-                        {
-                            return false;
-                        }
+                        return false;
+                    }
 
-                        var combinedTable = new Hashtable(StringComparer.OrdinalIgnoreCase);
+                    var combinedTable = new Hashtable(StringComparer.OrdinalIgnoreCase);
 
-                        // First copy in the properties from the global table that not in the additional properties table
-                        if (propertiesTable != null)
+                    // First copy in the properties from the global table that not in the additional properties table
+                    if (propertiesTable != null)
+                    {
+                        foreach (DictionaryEntry entry in propertiesTable)
                         {
-                            foreach (DictionaryEntry entry in propertiesTable)
+                            if (!additionalProjectPropertiesTable.Contains(entry.Key))
                             {
-                                if (!additionalProjectPropertiesTable.Contains(entry.Key))
-                                {
-                                    combinedTable.Add(entry.Key, entry.Value);
-                                }
+                                combinedTable.Add(entry.Key, entry.Value);
                             }
                         }
-
-                        // Add all the additional properties
-                        foreach (DictionaryEntry entry in additionalProjectPropertiesTable)
-                        {
-                            combinedTable.Add(entry.Key, entry.Value);
-                        }
-
-                        propertiesTable = combinedTable;
                     }
+
+                    // Add all the additional properties
+                    foreach (DictionaryEntry entry in additionalProjectPropertiesTable)
+                    {
+                        combinedTable.Add(entry.Key, entry.Value);
+                    }
+
+                    propertiesTable = combinedTable;
                 }
 
                 // Send the project off to the build engine. By passing in null to the
@@ -530,18 +552,18 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <summary>
-        /// Gets or sets the steps that should be executed prior to each step.
+        /// Gets or sets the steps that should be executed after each step.
         /// </summary>
-        public ITaskItem[] PreSteps
+        public ITaskItem[] PostSteps
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Gets or sets the steps that should be executed after each step.
+        /// Gets or sets the steps that should be executed prior to each step.
         /// </summary>
-        public ITaskItem[] PostSteps
+        public ITaskItem[] PreSteps
         {
             get;
             set;
