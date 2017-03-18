@@ -530,5 +530,122 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                         destination,
                         knownPackages[2])));
         }
+
+        [Test]
+        public void ExecuteWithSingleNuGetPackageAndDirectoryWildcards()
+        {
+            InitializeBuildEngine();
+
+            var knownPackages = new[]
+            {
+                "A.B.1.0.0",
+                "A.B.1.1.0",
+                "A.B.1.1.1",
+                "A.B.C.1.0.0",
+                "A.B.D.1.0.0",
+                "D.E.1.0.0",
+            };
+
+            var directory = CreateTempDirectory();
+            var packagesDirectory = Path.Combine(directory, "packages");
+            var destination = Path.Combine(directory, "destination");
+
+            var fileSystem = new MockFileSystem();
+            {
+                fileSystem.AddDirectory(packagesDirectory);
+                foreach (var package in knownPackages)
+                {
+                    // Root level file
+                    var path = Path.Combine(
+                        packagesDirectory,
+                        package,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0}.txt",
+                            package));
+                    fileSystem.AddFile(path, new MockFileData(package));
+                    CreateTempFile(path);
+
+                    // File in sub-directory
+                    path = Path.Combine(
+                        packagesDirectory,
+                        package,
+                        "other",
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0}.txt",
+                            package));
+                    fileSystem.AddFile(path, new MockFileData(package));
+                    CreateTempFile(path);
+                }
+
+                fileSystem.AddDirectory(destination);
+            }
+
+            var task = new CopyFilesFromNuGetPackages(fileSystem);
+            task.BuildEngine = BuildEngine.Object;
+            task.PackagesDirectory = new TaskItem(packagesDirectory);
+            task.Items = new ITaskItem[]
+            {
+                new TaskItem(
+                    "A.B",
+                    new Hashtable
+                    {
+                        {
+                            "Include",
+                            "**\\*"
+                        },
+                        {
+                            "Destinations",
+                            destination
+                        }
+                    }),
+            };
+
+            var result = task.Execute();
+            Assert.IsTrue(result);
+
+            Assert.IsTrue(
+                fileSystem.File.Exists(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\{1}.txt",
+                        destination,
+                        knownPackages[2])),
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    @"Expected a file to exist at: {0}\{1}.txt",
+                    destination,
+                    knownPackages[2]));
+            Assert.AreEqual(
+                knownPackages[2],
+                fileSystem.File.ReadAllText(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\{1}.txt",
+                        destination,
+                        knownPackages[2])));
+
+            Assert.IsTrue(
+                fileSystem.File.Exists(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\other\{1}.txt",
+                        destination,
+                        knownPackages[2])),
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    @"Expected a file to exist at: {0}\other\{1}.txt",
+                    destination,
+                    knownPackages[2]));
+            Assert.AreEqual(
+                knownPackages[2],
+                fileSystem.File.ReadAllText(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\other\{1}.txt",
+                        destination,
+                        knownPackages[2])));
+        }
     }
 }
