@@ -218,41 +218,66 @@
                     {
                         try
                         {
-                            var regex = new System.Text.RegularExpressions.Regex(
+                            var packagesDir = new System.IO.DirectoryInfo(PackagesDirectory);
+                            var potentialPaths = packagesDir.GetDirectories(
                                 string.Format(
                                     System.Globalization.CultureInfo.InvariantCulture,
-                                    @"({0})\.\d*.*",
-                                    PackageName.Replace(".", @"\.")),
-                                System.Text.RegularExpressions.RegexOptions.IgnoreCase
-                                | System.Text.RegularExpressions.RegexOptions.Multiline
-                                | System.Text.RegularExpressions.RegexOptions.Compiled
-                                | System.Text.RegularExpressions.RegexOptions.Singleline);
+                                    "{0}*",
+                                    PackageName),
+                                SearchOption.TopDirectoryOnly);
 
-                            var directories = System.IO.Directory.GetDirectories(PackagesDirectory);
+                            Log.LogMessage(
+                                MessageImportance.Low,
+                                "Searching for {0} located the following potential directories: {1}",
+                                PackageName,
+                                string.Join(", ", potentialPaths.Select(i => i.FullName)));
 
-                            var matches = new System.Collections.Generic.List<string>();
-                            foreach(var directory in directories)
+                            string selectedPath = null;
+                            var selectedVersion = new Version();
+
+                            var nonVersionPath = string.Empty;
+                            foreach (var path in potentialPaths)
                             {
-                                Log.LogMessage(
-                                    MessageImportance.Low,
-                                    "Searching for '{0}' in '{1}' ...",
-                                    PackageName,
-                                    directory);
+                                var versionText = path.Name.Substring(PackageName.Length).Trim('.').Trim();
+                                if (string.IsNullOrEmpty(versionText))
+                                {
+                                    // There can only be one path that matches the package name and doesn't have a version
+                                    // number in the path
+                                    nonVersionPath = path.FullName;
+                                }
 
-                                var name = new System.IO.DirectoryInfo(directory).Name;
-                                var match = regex.IsMatch(name);
-                                if (match)
+                                Version packageVersion;
+                                if (!Version.TryParse(versionText, out packageVersion))
                                 {
                                     Log.LogMessage(
                                         MessageImportance.Low,
-                                        "Found '{0}'.",
-                                        directory);
+                                        "Path {0} is not a match for package {1}",
+                                        path.FullName,
+                                        PackageName);
 
-                                    matches.Add(directory);
+                                    continue;
+                                }
+
+                                if (packageVersion > selectedVersion)
+                                {
+                                    Log.LogMessage(
+                                        MessageImportance.Low,
+                                        "Path {0} is a better match for package {1} than {2}",
+                                        path.FullName,
+                                        PackageName,
+                                        selectedPath);
+
+                                    selectedVersion = packageVersion;
+                                    selectedPath = path.FullName;
                                 }
                             }
 
-                            Path = matches.OrderBy(p => p).FirstOrDefault();
+                            if ((selectedPath == null) && !string.IsNullOrEmpty(nonVersionPath))
+                            {
+                                selectedPath = nonVersionPath;
+                            }
+
+                            Path = selectedPath;
                             if (string.IsNullOrWhiteSpace(Path))
                             {
                                 Log.LogError(
