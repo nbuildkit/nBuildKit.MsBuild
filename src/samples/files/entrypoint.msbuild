@@ -417,7 +417,7 @@
 
         <!-- Get the location of the packages directory from the local nuget.config file -->
         <XmlPeek
-            Condition="!Exists('$(DirPackages)')"
+            Condition="!Exists('$(DirPackages)') AND Exists('$(FileNugetConfig)')"
             Query="//add[@key='repositorypath']/@value"
             XmlInputPath="$(FileNugetConfig)">
             <Output
