@@ -41,11 +41,14 @@
         <DirPackages Condition=" '$(ConfigPackagesLocation)' != '' AND !$([System.IO.Path]::IsPathRooted('$(ConfigPackagesLocation)'))">$([System.IO.Path]::GetFullPath('$(DirWorkspace)\$(ConfigPackagesLocation)'))</DirPackages>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <DefaultPathProperties>
-            $(DefaultPathProperties);
-        </DefaultPathProperties>
-    </PropertyGroup>
+
+    <!--
+        Always load the default environment settings.
+    -->
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.environment.props') AND '$(ExistsNBuildKitSharedEnvironmentSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\shared.environment.props" />
+
 
     <!--
         Import the environment specific settings. These settings may be different for different environments, e.g. there might be a difference
@@ -80,35 +83,30 @@
         Project="$(DirUserSettings)\environment.props" />
 
     <!--
-    Import the environment specific settings for the build server. These settings contain information about the active build server
-    and should only be loaded when a build is running on a build server.
+        Import the environment specific settings for the build server. These settings contain information about the active build server
+        and should only be loaded when a build is running on a build server.
 
-    We check the following locations in order:
-    * A user specified directory as indicated by the $(DirBuildServerSettings)
-    * A user or machine environment variable named NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR
+        We check the following locations in order:
+        * A user specified directory as indicated by the $(DirBuildServerSettings)
+        * A user or machine environment variable named NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR
 
-    It is expected that both point to a directory containing the 'buildserver.environment.props' file.
--->
+        It is expected that both point to a directory containing the 'buildserver.environment.props' file.
+    -->
     <PropertyGroup>
-        <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' AND '$(DirBuildServerSettings)' != '' AND Exists('$(DirBuildServerSettings)\buildserver.environment.props') ">$(DirBuildServerSettings)\buildserver.environment.props</FileBuildServerSettings>
-        <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' AND '$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)' != '' AND Exists('$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.props') ">$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.props</FileBuildServerSettings>
-        <FileBuildServerSettings Condition=" '$(FileBuildServerSettings)' == '' ">UNDEFINED</FileBuildServerSettings>
+        <FileBuildServerPreSettings Condition=" '$(FileBuildServerPreSettings)' == '' AND '$(DirBuildServerSettings)' != '' AND Exists('$(DirBuildServerSettings)\buildserver.environment.pre.props') ">$(DirBuildServerSettings)\buildserver.environment.pre.props</FileBuildServerPreSettings>
+        <FileBuildServerPreSettings Condition=" '$(FileBuildServerPreSettings)' == '' AND '$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)' != '' AND Exists('$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.pre.props') ">$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.pre.props</FileBuildServerPreSettings>
+        <FileBuildServerPreSettings Condition=" '$(FileBuildServerPreSettings)' == '' ">UNDEFINED</FileBuildServerPreSettings>
     </PropertyGroup>
     <Import
-        Condition="Exists('$(FileBuildServerSettings)') AND '$(ExistsBuildServerEnvironmentSettings)' != 'true' "
-        Project="$(FileBuildServerSettings)" />
+        Condition="Exists('$(FileBuildServerPreSettings)') AND '$(ExistsBuildServerEnvironmentPreSettings)' != 'true' "
+        Project="$(FileBuildServerPreSettings)" />
 
-    <!--
-        Always load the default environment settings.
-    -->
-    <Import
-        Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.environment.props') AND '$(ExistsNBuildKitSharedEnvironmentSettings)' != 'true' "
-        Project="$(DirNBuildKitMsBuildActions)\shared.environment.props" />
 
     <!-- Import the shared steps file which contains standard pre- and post-step actions -->
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildActions)\shared.steps.msbuild') AND '$(ExistsNBuildKitSharedSteps)' != 'true' "
         Project="$(DirNBuildKitMsBuildActions)\shared.steps.msbuild" />
+
 
     <!-- Import the settings files that has all the overriden settings -->
     <!--
@@ -137,6 +135,7 @@
     <Import
         Condition="Exists('$(DirNBuildKitMsBuildActions)\artefacts.shared.postuser.props') AND '$(ExistsNBuildKitArtefactPostUserSharedSettings)' != 'true' "
         Project="$(DirNBuildKitMsBuildActions)\artefacts.shared.postuser.props" />
+
 
     <!--
         Define the location of the nBuildKit.MsBuild targets file.
