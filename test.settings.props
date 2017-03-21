@@ -435,7 +435,9 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <!--<TestFilesToGenerate Include="$(DirBuildTemp)\MyFile.txt">
+        <!--<TestFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\MyFile.txt">
             <<Encoding>UTF-8</Encoding>
             <Expression>(MyRegex)</Expression>
             <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>

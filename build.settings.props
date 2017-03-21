@@ -590,8 +590,12 @@
     -->
     <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
         <!--
-        <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.cs" />
-        <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.vb" />
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.cs" />
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.vb" />
         -->
     </ItemGroup>
 
@@ -613,26 +617,36 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\tools\vscoveragetoreportgenerator.readme.txt">
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\tools\vscoveragetoreportgenerator.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
             <Token>PackageName</Token>
             <ReplacementValue>nBuildKit.Tools.VsCoverageToReportGenerator</ReplacementValue>
         </BuildFilesToGenerate>
 
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\nbuildkit.readme.txt">
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\nbuildkit.readme.txt">
             <Template>$(DirSrc)\readme.txt</Template>
             <Token>PackageName</Token>
             <ReplacementValue>nBuildKit.MsBuild</ReplacementValue>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\actions\build\packages.config">
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\actions\build\packages.config">
             <Template>$(DirSrc)\nbuildkit\actions\build\packages.config</Template>
             <Encoding>UTF-8</Encoding>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\actions\test\packages.config">
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\actions\test\packages.config">
             <Template>$(DirSrc)\nbuildkit\actions\test\packages.config</Template>
             <Encoding>UTF-8</Encoding>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\actions\deploy\packages.config">
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\actions\deploy\packages.config">
             <Template>$(DirSrc)\nbuildkit\actions\deploy\packages.config</Template>
             <Encoding>UTF-8</Encoding>
         </BuildFilesToGenerate>
@@ -648,7 +662,7 @@
     -->
     <ItemGroup>
         <SolutionsToBuild
-            Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' "
+            Condition=" '$(DirSrc)' != '' AND '$(TestConfiguration)' != '$(ProductionConfiguration)' "
             Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
             <Configuration>$(TestConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
@@ -659,7 +673,9 @@
             <GeneratedAssembliesFile>$(DirBuildTemp)\nBuildKit.MsBuild.Tasks.$(TestConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
         </SolutionsToBuild>
 
-        <SolutionsToBuild Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -669,7 +685,9 @@
             <GeneratedAssembliesFile>$(DirBuildTemp)\nBuildKit.MsBuild.Tasks.$(ProductionConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
         </SolutionsToBuild>
 
-        <SolutionsToBuild Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -829,7 +847,9 @@
             The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
             e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
         -->
-        <UnitTestAssemblies Include="$(DirSrc)\nBuildKit\tasks\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
+        <UnitTestAssemblies
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nBuildKit\tasks\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
     </ItemGroup>
     <ItemGroup>
         <!--
@@ -889,11 +909,15 @@
         <!--
             The locations of the files that should be analyzed by FxCop.
         -->
-        <FxCopFiles Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\nBuildKit*.dll">
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\nBuildKit*.dll">
             <TargetFramework>4.5</TargetFramework>
             <RuleSet>$(DirSrc)\nbuildkit\tasks\default.ruleset</RuleSet>
         </FxCopFiles>
-        <FxCopFiles Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\Test.*.dll">
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\Test.*.dll">
             <TargetFramework>4.5</TargetFramework>
             <RuleSet>$(DirSrc)\nbuildkit\tasks\test.ruleset</RuleSet>
         </FxCopFiles>
