@@ -12,7 +12,9 @@
     -->
     <ItemGroup Condition=" '@(MsBuildTasksProjectsToBuild)' == '' ">
         <!--
-        <MsBuildTasksProjectsToBuild Include="$(DirSrc)\MyTasks.Tasks.csproj">
+        <MsBuildTasksProjectsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\MyTasks.Tasks.csproj">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -74,7 +76,9 @@
     -->
     <ItemGroup Condition=" '@(NuGetPackageSpecs)' == '' ">
         <!--
-        <NuGetPackageSpecs Include="$(DirSrc)\myproject\myproject.nuspec">
+        <NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\myproject\myproject.nuspec">
             <ShouldBuildSymbols>true</ShouldBuildSymbols>
             <IncludedDependencies>
                 $(DirSrc)\MyOtherProject\packages.config
@@ -95,7 +99,7 @@
     -->
     <ItemGroup>
         <ArchivePackageSpecs
-            Condition="Exists('$(DirWorkspace)') AND '@(ArchivePackageSpecs)' == '' "
+            Condition="'$(DirWorkspace)' != '' AND '$(DirBuild)' != '' AND Exists('$(DirWorkspace)') AND '@(ArchivePackageSpecs)' == '' "
             Exclude="$(DirBuild)\**\*.zipspec;$(DirPackages)\**\*.zipspec"
             Include="$(DirWorkspace)\**\*.zipspec" />
         <ArchivePackageSpecs

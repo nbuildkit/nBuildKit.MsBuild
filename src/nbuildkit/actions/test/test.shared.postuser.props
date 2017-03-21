@@ -68,7 +68,9 @@
         If the deletion process fails the test will continue and a warning will be printed.
     -->
     <ItemGroup>
-        <FilesToDelete Include="$(DirBuildTest)\**\*.*"/>
+        <FilesToDelete
+            Condition=" '$(DirBuildTest)' != '' "
+            Include="$(DirBuildTest)\**\*.*"/>
     </ItemGroup>
 
     <!--
@@ -78,8 +80,12 @@
         If the deletion process fails the test will continue and a warning will be printed.
     -->
     <ItemGroup>
-        <DirectoriesToDelete Include="$(DirBuildTest)" />
-        <DirectoriesToDelete Include="$(DirBuildTemp)" />
+        <DirectoriesToDelete
+            Condition=" '$(DirBuildTest)' != '' "
+            Include="$(DirBuildTest)" />
+        <DirectoriesToDelete
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)" />
     </ItemGroup>
 
 

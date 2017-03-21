@@ -91,6 +91,7 @@
             Condition="Exists('$(DirWorkspace)\packages.config')"
             Include="$(DirWorkspace)\packages.config" />
         <NuGetPackageFiles
+            Condition=" '$(DirSrc)' != '' "
             Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config"
             Include="$(DirSrc)\**\packages.config" />
     </ItemGroup>
@@ -101,6 +102,7 @@
     -->
     <ItemGroup Condition=" '@(NpmPackageFiles)' == '' ">
         <NpmPackageFiles
+            Condition=" '$(DirWorkspace)' != '' "
             Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json"
             Include="$(DirWorkspace)\**\package.json" />
     </ItemGroup>

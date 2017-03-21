@@ -12,7 +12,9 @@
     -->
     <ItemGroup>
         <!--
-        <MsBuildTasksProjectsToBuild Include="$(DirSrc)\MyTasks.Tasks.csproj">
+        <MsBuildTasksProjectsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\MyTasks.Tasks.csproj">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -34,7 +36,9 @@
     -->
     <ItemGroup>
         <!--
-        <ExtensionAssemblies Include="$(DirBuildBootstrap)\*.Tasks.dll">
+        <ExtensionAssemblies
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirBuildBootstrap)\*.Tasks.dll">
             <ExistsProperty>MyPropertyName</ExistsProperty>
         </ExtensionAssemblies>
          -->
@@ -114,7 +118,9 @@
         All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
     -->
     <ItemGroup>
-        <!--<NuGetPackageSpecs Include="$(DirSrc)\myproject\myproject.nuspec">
+        <!--<NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\myproject\myproject.nuspec">
             <ShouldBuildSymbols>true</ShouldBuildSymbols>
             <IncludedDependencies>
                 $(DirSrc)\MyOtherProject\packages.config
@@ -135,6 +141,7 @@
     <ItemGroup>
         <!--
         <ArchivePackageSpecs
+            Condition=" '$(DirWorkspace)' != '' "
             Include="$(DirWorkspace)\**\*.zipspec"
             Exclude="$(DirBuild)\**\*.zipspec" />
         -->

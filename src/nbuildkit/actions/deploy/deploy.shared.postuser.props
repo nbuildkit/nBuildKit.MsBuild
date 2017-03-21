@@ -116,6 +116,7 @@
     -->
     <ItemGroup Condition=" '@(NuGetPackagesToPush)' == '' ">
         <NuGetPackagesToPush
+            Condition=" '$(DirBuildDeploy)' != '' "
             Exclude="$(DirBuildDeploy)\*.symbols.nupkg"
             Include="$(DirBuildDeploy)\*.nupkg" />
     </ItemGroup>
@@ -129,7 +130,9 @@
         Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.symbols.nupkg.
     -->
     <ItemGroup Condition=" '@(SymbolPackagesToPush)' == '' ">
-        <SymbolPackagesToPush Include="$(DirBuildDeploy)\*.symbols.nupkg" />
+        <SymbolPackagesToPush
+            Condition=" '$(DirBuildDeploy)' != '' "
+            Include="$(DirBuildDeploy)\*.symbols.nupkg" />
     </ItemGroup>
 
 
@@ -164,7 +167,9 @@
     -->
     <ItemGroup Condition=" '@(PushToGitBranchSpecs)' == '' ">
         <!--
-        <PushToGitBranchSpecs Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
+        <PushToGitBranchSpecs
+            Condition=" '$(DirBuildDeploy)' != '' "
+            Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
              <Repository>$(GitRemoteRepository)</Repository>
              <Branch>master</Branch>
              <ExtractZipFiles>true</ExtractZipFiles>
@@ -183,7 +188,9 @@
     -->
     <ItemGroup Condition=" '@(PushToGitRepositorySpecs)' == '' ">
         <!--
-        <PushToGitRepositorySpecs Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
+        <PushToGitRepositorySpecs
+            Condition=" '$(DirBuildDeploy)' != '' "
+            Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
              <Repository>$(GitRemoteRepository)</Repository>
         </PushToGitRepositorySpecs>
         -->

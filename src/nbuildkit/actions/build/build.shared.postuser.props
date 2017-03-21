@@ -100,7 +100,7 @@
             nBuildKit bootstrap and the settings.props files respectively. Both of which we are currently using.
         -->
         <FilesToDelete
-            Condition="Exists('$(DirBuild)')"
+            Condition=" '$(DirBuild)' != '' AND Exists('$(DirBuild)')"
             Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*;$(DirHighLevelOverview)\$(FileNameHighLevelOverview).*"
             Include="$(DirBuild)\**\*.*" />
     </ItemGroup>
@@ -113,7 +113,7 @@
     -->
     <ItemGroup>
         <DirectoriesToDelete
-            Condition="Exists('$(DirBuild)')"
+            Condition=" '$(DirBuild)' != '' AND Exists('$(DirBuild)')"
             Exclude="$(DirBuild);$(DirBuildBootstrap);$(DirUserConfiguration);$(DirHighLevelOverview)"
             Include="$([System.IO.Directory]::GetDirectories('$(DirBuild)', '*', System.IO.SearchOption.TopDirectoryOnly))" />
     </ItemGroup>
@@ -151,8 +151,12 @@
         For additional information see the ShouldGenerateAssemblyXXXX properties below.
     -->
     <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
-        <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.cs" />
-        <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.vb" />
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.cs" />
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.vb" />
     </ItemGroup>
 
 
@@ -174,7 +178,9 @@
     -->
     <ItemGroup Condition=" '@(BuildFilesToGenerate)' == '' ">
         <!--
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\MyOtherFile.txt">
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\MyOtherFile.txt">
             <Encoding>UTF-8</Encoding>
             <Expression>(MyRegex)</Expression>
             <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
@@ -194,7 +200,7 @@
     -->
     <ItemGroup Condition=" '@(SolutionsToBuild)' == '' ">
         <SolutionsToBuild
-            Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' "
+            Condition=" '$(DirSrc)' != '' AND '$(TestConfiguration)' != '$(ProductionConfiguration)' "
             Include="$(DirSrc)\*.sln">
             <Configuration>$(TestConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
@@ -202,7 +208,9 @@
             <Properties></Properties>
             <GeneratedAssembliesFile></GeneratedAssembliesFile>
         </SolutionsToBuild>
-        <SolutionsToBuild Include="$(DirSrc)\*.sln">
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\*.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -246,7 +254,9 @@
             The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
             e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
         -->
-        <UnitTestAssemblies Include="$(DirSrc)\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
+        <UnitTestAssemblies
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
     </ItemGroup>
     <ItemGroup Condition=" '@(OpenCoverIgnoreAttributes)' == '' ">
         <!--
@@ -277,6 +287,7 @@
         -->
         <!--
         <XmlFilesToValidate
+            Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\**\*.xml"
             Exclude="$(DirSrc)\**\ignore.xml">
             <SchemaFile></SchemaFile>
@@ -294,12 +305,16 @@
             The locations of the files that should be analyzed by FxCop.
         -->
         <!--
-        <FxCopFiles Include="$(DirSrc)\**\bin\$(Configuration)\*.dll"
-                    Exclude="$(DirSrc)\**\bin\$(Configuration)\Test.*.dll">
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Exclude="$(DirSrc)\**\bin\$(Configuration)\Test.*.dll"
+            Include="$(DirSrc)\**\bin\$(Configuration)\*.dll">
             <TargetFramework>4.5</TargetFramework>
             <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>
-        <FxCopFiles Include="$(DirSrc)\**\bin\$(Configuration)\*.exe">
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\bin\$(Configuration)\*.exe">
             <TargetFramework>2.0</TargetFramework>
             <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>
