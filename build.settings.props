@@ -912,14 +912,16 @@
         <FxCopFiles
             Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\nBuildKit*.dll">
-            <TargetFramework>4.5</TargetFramework>
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
             <RuleSet>$(DirSrc)\nbuildkit\tasks\default.ruleset</RuleSet>
+            <TargetFramework>4.5</TargetFramework>
         </FxCopFiles>
         <FxCopFiles
             Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\Test.*.dll">
-            <TargetFramework>4.5</TargetFramework>
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
             <RuleSet>$(DirSrc)\nbuildkit\tasks\test.ruleset</RuleSet>
+            <TargetFramework>4.5</TargetFramework>
         </FxCopFiles>
     </ItemGroup>
     <ItemGroup>

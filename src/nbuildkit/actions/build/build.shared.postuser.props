@@ -309,14 +309,16 @@
             Condition=" '$(DirSrc)' != '' "
             Exclude="$(DirSrc)\**\bin\$(Configuration)\Test.*.dll"
             Include="$(DirSrc)\**\bin\$(Configuration)\*.dll">
-            <TargetFramework>4.5</TargetFramework>
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
             <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
+            <TargetFramework>4.5</TargetFramework>
         </FxCopFiles>
         <FxCopFiles
             Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\**\bin\$(Configuration)\*.exe">
-            <TargetFramework>2.0</TargetFramework>
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
             <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
+            <TargetFramework>2.0</TargetFramework>
         </FxCopFiles>
         -->
     </ItemGroup>
