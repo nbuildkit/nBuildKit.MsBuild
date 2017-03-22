@@ -15,9 +15,8 @@
         <!--
             A flag indicating if the current build is running on the build server or not.
         -->
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == '' ">UNDEFINED</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND '$(IsOnJenkinsBuildServer)' != 'true'">false</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND '$(IsOnJenkinsBuildServer)' == 'true'">true</IsOnBuildServer>
+        <IsOnBuildServer Condition=" '$(IsOnJenkinsBuildServer)' != 'true'">false</IsOnBuildServer>
+        <IsOnBuildServer Condition=" '$(IsOnJenkinsBuildServer)' == 'true'">true</IsOnBuildServer>
 
         <!-- Git parameters -->
         <GitBranchExpected>UNDEFINED</GitBranchExpected>

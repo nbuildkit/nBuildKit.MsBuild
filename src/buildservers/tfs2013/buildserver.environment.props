@@ -16,9 +16,8 @@
         <!--
             A flag indicating if the current build is running on the build server or not.
         -->
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == '' ">UNDEFINED</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND '$(IsOnTfs2013BuildServer)' != 'true' ">false</IsOnBuildServer>
-        <IsOnBuildServer Condition=" '$(IsOnBuildServer)' == 'UNDEFINED' AND '$(IsOnTfs2013BuildServer)' == 'true' ">true</IsOnBuildServer>
+        <IsOnBuildServer Condition=" '$(IsOnTfs2013BuildServer)' != 'true' ">false</IsOnBuildServer>
+        <IsOnBuildServer Condition=" '$(IsOnTfs2013BuildServer)' == 'true' ">true</IsOnBuildServer>
 
         <!-- Git parameters -->
         <TfsGitBranchExpectedHeader>LG:refs/heads/</TfsGitBranchExpectedHeader>
