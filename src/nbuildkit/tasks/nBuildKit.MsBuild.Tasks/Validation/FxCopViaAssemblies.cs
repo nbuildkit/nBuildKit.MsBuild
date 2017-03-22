@@ -5,7 +5,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -37,10 +36,11 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         {
         }
 
-        private IEnumerable<string> AssembleFxCopArguments(string targetFramework, string ruleSetFilePath, IEnumerable<string> assemblyPaths, int index)
+        private IEnumerable<string> AssembleFxCopArguments(FxCopInvocationProperties invocationProperties, IEnumerable<string> assemblyPaths, int index)
         {
             var arguments = new List<string>();
             {
+                var targetFramework = invocationProperties.TargetFramework;
                 var outputFile = GetAbsolutePath(OutputFile);
                 var outputFilePath = Path.Combine(
                     Path.GetDirectoryName(outputFile),
@@ -52,7 +52,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                         index,
                         Path.GetExtension(outputFile)));
 
-                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/ruleset:=\"{0}\" ", ruleSetFilePath.TrimEnd('\\')));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "/ruleset:=\"{0}\" ", invocationProperties.RuleSetFilePath.TrimEnd('\\')));
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "/rulesetdirectory:\"{0}\" ", GetAbsolutePath(RuleSetDirectory).TrimEnd('\\')));
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "/out:\"{0}\" ", outputFilePath));
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "/ignoregeneratedcode "));
@@ -61,7 +61,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "/successfile "));
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "/targetframeworkversion:v{0} ", targetFramework));
 
-                var dictionaryFile = GetAbsolutePath(Dictionary);
+                var dictionaryFile = GetAbsolutePath(invocationProperties.CustomDictionaryFilePath);
                 if (!string.IsNullOrEmpty(dictionaryFile))
                 {
                     arguments.Add(string.Format(CultureInfo.InvariantCulture, "/dictionary:\"{0}\" ", dictionaryFile.TrimEnd('\\')));
@@ -138,23 +138,20 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         {
             if (Assemblies != null)
             {
-                var assemblyPaths = new Dictionary<Tuple<string, string>, List<string>>();
+                var assemblyPaths = new Dictionary<FxCopInvocationProperties, List<string>>();
                 for (int i = 0; i < Assemblies.Length; i++)
                 {
                     var taskItem = Assemblies[i];
 
                     // Expecting that the taskItems have:
-                    // - taskItem.ItemSpec:        Name of the assembly to include in the attribute
-                    // - taskItem.TargetFramework: Name of the group the assemblies belong to
-                    // - taskItem.RuleSet:         File path of the rule set that should be used
+                    // - taskItem.ItemSpec:         Name of the assembly to include in the attribute
+                    // - taskItem.CustomDictionary: File path of the custom dictionary that should be used
+                    // - taskItem.RuleSet:          File path of the rule set that should be used
+                    // - taskItem.TargetFramework:  Name of the group the assemblies belong to
                     var path = GetAbsolutePath(taskItem);
                     if (!string.IsNullOrEmpty(path))
                     {
-                        var targetFramework = taskItem.GetMetadata("TargetFramework");
-                        if (string.IsNullOrEmpty(targetFramework))
-                        {
-                            continue;
-                        }
+                        var dictionary = taskItem.GetMetadata("CustomDictionary");
 
                         var ruleSet = taskItem.GetMetadata("RuleSet");
                         if (string.IsNullOrEmpty(ruleSet))
@@ -162,7 +159,13 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                             continue;
                         }
 
-                        var pair = new Tuple<string, string>(targetFramework, ruleSet);
+                        var targetFramework = taskItem.GetMetadata("TargetFramework");
+                        if (string.IsNullOrEmpty(targetFramework))
+                        {
+                            continue;
+                        }
+
+                        var pair = new FxCopInvocationProperties(targetFramework, ruleSet, dictionary);
                         if (!assemblyPaths.ContainsKey(pair))
                         {
                             assemblyPaths.Add(pair, new List<string>());
@@ -184,10 +187,10 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                         MessageImportance.Normal,
                         string.Format(
                             CultureInfo.InvariantCulture,
-                            "Analyzing assemblies with target framework [{0}] with FxCop",
+                            "Analyzing assemblies with {0}",
                             pair.Key));
 
-                    var arguments = AssembleFxCopArguments(pair.Key.Item1, pair.Key.Item2, pair.Value, i);
+                    var arguments = AssembleFxCopArguments(pair.Key, pair.Value, i);
                     InvokeFxCop(arguments);
                 }
             }

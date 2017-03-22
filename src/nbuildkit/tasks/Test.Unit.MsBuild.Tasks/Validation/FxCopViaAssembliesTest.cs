@@ -45,6 +45,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
             var assemblyPath = Assembly.GetExecutingAssembly().LocalFilePath();
             var ruleset = Path.Combine(directory, "rules.ruleset");
             var rulesetDirectory = Path.Combine(directory, "rules");
+            var dictionary = Path.Combine(directory, "dictionary.xml");
 
             InitializeBuildEngine();
 
@@ -82,7 +83,8 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                     new Hashtable
                     {
                         { "TargetFramework", "4.5" },
-                        { "RuleSet", ruleset }
+                        { "RuleSet", ruleset },
+                        { "CustomDictionary", dictionary }
                     }),
             };
             task.FxCopDirectory = new TaskItem(directory);
@@ -95,7 +97,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
 
             Assert.AreEqual(Path.Combine(directory, "FxCopCmd.exe"), invokedPath);
 
-            Assert.AreEqual(9, invokedArgs.Count);
+            Assert.AreEqual(10, invokedArgs.Count);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -123,9 +125,15 @@ namespace NBuildKit.MsBuild.Tasks.Validation
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
+                    "/dictionary:\"{0}\" ",
+                    dictionary),
+                invokedArgs[8]);
+            Assert.AreEqual(
+                string.Format(
+                    CultureInfo.InvariantCulture,
                     "/file:\"{0}\" ",
                     assemblyPath),
-                invokedArgs[8]);
+                invokedArgs[9]);
 
             invoker.Verify(
                 i => i.Invoke(

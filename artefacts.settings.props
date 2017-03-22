@@ -11,7 +11,9 @@
         compiled and placed in a bootstrap directory so that the nBuildKit build can use them.
     -->
     <ItemGroup>
-        <MsBuildTasksProjectsToBuild Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
+        <MsBuildTasksProjectsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -31,7 +33,9 @@
         The collection that contains all the assembly files that contain custom MsBuild Task definitions.
     -->
     <ItemGroup>
-        <ExtensionAssemblies Include="$(DirBuildBootstrap)\*.Tasks.dll">
+        <ExtensionAssemblies
+            Condition=" '$(DirBuildBootstrap)' != '' "
+            Include="$(DirBuildBootstrap)\*.Tasks.dll">
             <ExistsProperty>ExistsNBuildKitExtensions</ExistsProperty>
         </ExtensionAssemblies>
     </ItemGroup>
@@ -85,7 +89,9 @@
         The item group defining which assemblies should be IL merged.
     -->
     <ItemGroup>
-        <AssembliesToMerge Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\nBuildKit.MsBuild.Tasks.dll">
+        <AssembliesToMerge
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\nBuildKit.MsBuild.Tasks.dll">
             <AssembliesToExclude>
                 $(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\Microsoft.Build*.dll
             </AssembliesToExclude>
@@ -114,25 +120,39 @@
         All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
     -->
     <ItemGroup>
-        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\actions\*.nuspec">
+        <NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\actions\*.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\entrypoint\*.nuspec">
+        <NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\entrypoint\*.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\executors\*.nuspec">
+        <NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\executors\*.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirSrc)\nbuildkit\tasks\**\*.nuspec">
+        <NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\tasks\**\*.nuspec">
             <ShouldBuildSymbols>true</ShouldBuildSymbols>
         </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirSrc)\tests\nbuildkit.msbuild.tests.nuspec">
+        <NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\tests\nbuildkit.msbuild.tests.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirSrc)\buildservers\**\*.nuspec">
+        <NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\buildservers\**\*.nuspec">
             <ShouldBuildSymbols>false</ShouldBuildSymbols>
         </NuGetPackageSpecs>
-        <NuGetPackageSpecs Include="$(DirSrc)\tools\VSCoverageToReportGenerator\nbuildkit.tools.vscoveragetoreportgenerator.nuspec">
+        <NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\nbuildkit.tools.vscoveragetoreportgenerator.nuspec">
             <ShouldBuildSymbols>true</ShouldBuildSymbols>
         </NuGetPackageSpecs>
     </ItemGroup>
@@ -146,7 +166,9 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirSrc)\samples\samples.zipspec" />
+        <ArchivePackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\samples\samples.zipspec" />
     </ItemGroup>
 
 

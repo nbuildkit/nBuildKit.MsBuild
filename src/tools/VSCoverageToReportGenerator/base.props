@@ -58,7 +58,7 @@
             A flag that indicates whether or not the code analysis should be executed immediately after the compilation
             process is complete.
         -->
-        <ShouldPerformCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == '' ">false</ShouldPerformCodeAnalysis>
+        <ShouldPerformCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == '' ">true</ShouldPerformCodeAnalysis>
         <!--
             The code analysis rule set that should be used for non-test assemblies.
         -->
@@ -115,7 +115,7 @@
         <OutputPath Condition=" '$(IsWebProject)' == 'false' ">bin\Debug\</OutputPath>
         <OutputPath Condition=" '$(IsWebProject)' == 'true' ">bin\</OutputPath>
         <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunCodeAnalysis>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">false</RunCodeAnalysis>
+        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">true</RunCodeAnalysis>
     </PropertyGroup>
 
     <!--
@@ -131,7 +131,7 @@
         <OutputPath Condition=" '$(IsWebProject)' == 'false' ">bin\Release\</OutputPath>
         <OutputPath Condition=" '$(IsWebProject)' == 'true' ">bin\</OutputPath>
         <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunCodeAnalysis>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">false</RunCodeAnalysis>
+        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">true</RunCodeAnalysis>
     </PropertyGroup>
 
     <!--

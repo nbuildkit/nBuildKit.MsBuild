@@ -619,8 +619,12 @@
     -->
     <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
         <!--
-        <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.cs" />
-        <AssemblyInfoFilesToUpdate Include="$(DirSrc)\**\AssemblyInfo.vb" />
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.cs" />
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.vb" />
         -->
     </ItemGroup>
 
@@ -643,7 +647,9 @@
     -->
     <ItemGroup>
         <!--
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\MyFile.txt">
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\MyFile.txt">
             <Encoding>UTF-8</Encoding>
             <Expression>(MyRegex)</Expression>
             <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
@@ -663,15 +669,18 @@
     -->
     <ItemGroup>
         <!--
-        <SolutionsToBuild Include="$(DirSrc)\*.sln"
-                          Condition=" '$(TestConfiguration)' != '$(ProductionConfiguration)' " >
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' AND '$(TestConfiguration)' != '$(ProductionConfiguration)' "
+            Include="$(DirSrc)\*.sln">
             <Configuration>$(TestConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
             <Properties></Properties>
             <GeneratedAssembliesFile>$(DirBuildTemp)\mysln.$(TestConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
         </SolutionsToBuild>
-        <SolutionsToBuild Include="$(DirSrc)\*.sln">
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\*.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -829,7 +838,11 @@
             The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
             e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
         -->
-        <!-- <UnitTestAssemblies Include="$(DirSrc)\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" /> -->
+        <!--
+        <UnitTestAssemblies
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
+        -->
     </ItemGroup>
     <ItemGroup>
         <!--
@@ -860,8 +873,9 @@
         -->
         <!--
         <XmlFilesToValidate
-            Include="$(DirSrc)\**\*.xml"
-            Exclude="$(DirSrc)\**\ignore.xml">
+            Condition=" '$(DirSrc)' != '' "
+            Exclude="$(DirSrc)\**\ignore.xml"
+            Include="$(DirSrc)\**\*.xml">
             <SchemaFile></SchemaFile>
             <TargetNamespace></TargetNamespace>
         </XmlFilesToValidate>
@@ -900,14 +914,20 @@
             The locations of the files that should be analyzed by FxCop.
         -->
         <!--
-        <FxCopFiles Include="$(DirSrc)\**\bin\$(Configuration)\*.dll"
-                    Exclude="$(DirSrc)\**\bin\$(Configuration)\Test.*.dll">
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Exclude="$(DirSrc)\**\bin\$(Configuration)\Test.*.dll"
+            Include="$(DirSrc)\**\bin\$(Configuration)\*.dll">
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
+            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
             <TargetFramework>4.5</TargetFramework>
-            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
         </FxCopFiles>
-        <FxCopFiles Include="$(DirSrc)\**\bin\$(Configuration)\*.exe">
-            <TargetFramework>2.0</TargetFramework>
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\bin\$(Configuration)\*.exe">
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
             <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
+            <TargetFramework>2.0</TargetFramework>
         </FxCopFiles>
         -->
     </ItemGroup>

@@ -42,6 +42,27 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         }
 
         /// <summary>
+        /// Appends the directory separator character at the end of the string if it doesn't already exist.
+        /// </summary>
+        /// <param name="path">The directory path.</param>
+        /// <returns>The path with the appended directory separator character.</returns>
+        public static string AppendDirectorySeparatorCharToDirectory(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            path = path.Trim();
+            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                return path + Path.DirectorySeparatorChar;
+            }
+
+            return path;
+        }
+
+        /// <summary>
         /// Returns the base directory for a given path expression. The base directory is considered to be
         /// the directory of the file if there are no wild cards, or the directory path before the first
         /// set of wild cards.
@@ -190,7 +211,9 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
             }
 
             fromPath = fromPath.Trim();
-            var relativeDirectoryPath = GetRelativeDirectoryPath(Path.GetDirectoryName(fromPath), directoryPath.Trim());
+            var relativeDirectoryPath = GetRelativeDirectoryPath(
+                AppendDirectorySeparatorCharToDirectory(Path.GetDirectoryName(fromPath)),
+                AppendDirectorySeparatorCharToDirectory(directoryPath));
             return Path.Combine(
                 relativeDirectoryPath,
                 Path.GetFileName(fromPath));

@@ -52,11 +52,6 @@
         -->
         <PackageNameEntryPoint Condition=" '$(PackageNameEntryPoint)' == '' ">nBuildKit.MsBuild.EntryPoint</PackageNameEntryPoint>
 
-        <!--
-            Defines the version number of the configuration file
-        -->
-        <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
-
         <!-- MsBuild -->
         <!--
             For MsBuild versions 4.0 through to 12.0 the tasks dll was in an assembly that contains the version in the file name.
@@ -236,9 +231,6 @@
         DependsOnTargets="EntryPoint_LocateEntryPoint"
         Name="EntryPoint_Execute">
         <Error
-            Condition=" '$(PackageVersion)' == '' "
-            Text="Could not determine the correct version of the $(PackageNameEntryPoint) NuGet package. Without the correct version of this package it is not possible to start the build." />
-        <Error
             Condition=" '$(DirEntryPointPackage)' == '' OR !Exists('$(DirEntryPointPackage)')"
             Text="Could not determine the location of the $(PackageNameEntryPoint) NuGet package. The file was expected to be in '$(DirPackages)\$(PackageNameEntryPoint).&lt;VERSION&gt;' directory, but that directory does not exist. Cannot start build." />
 
@@ -314,8 +306,15 @@
             non-existing path but that will lead to an error.
         -->
         <CreateProperty
-            Condition="Exists('$(DirPackages)')"
+            Condition="Exists('$(DirPackages)') AND Exists('$(DirPackages)\$(PackageNameEntryPoint).$(PackageVersion)\build')"
             Value="$(DirPackages)\$(PackageNameEntryPoint).$(PackageVersion)\build">
+            <Output
+                PropertyName="DirEntryPointPackage"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <CreateProperty
+            Condition="Exists('$(DirPackages)') AND Exists('$(DirPackages)\$(PackageNameEntryPoint)\build')"
+            Value="$(DirPackages)\$(PackageNameEntryPoint)\build">
             <Output
                 PropertyName="DirEntryPointPackage"
                 TaskParameter="Value" />
@@ -394,7 +393,7 @@
 
         <CreateProperty
             Condition="Exists('$(DirPackages)')"
-            Value="$(DirPackages)\$(PackageNameEntryPoint).$(PackageVersion)\build">
+            Value="$(DirPackages)\$(PackageNameEntryPoint)\build">
             <Output
                 PropertyName="DirEntryPointPackage"
                 TaskParameter="Value" />
@@ -418,7 +417,7 @@
 
         <!-- Get the location of the packages directory from the local nuget.config file -->
         <XmlPeek
-            Condition="!Exists('$(DirPackages)')"
+            Condition="!Exists('$(DirPackages)') AND Exists('$(FileNugetConfig)')"
             Query="//add[@key='repositorypath']/@value"
             XmlInputPath="$(FileNugetConfig)">
             <Output
@@ -682,7 +681,7 @@
                             builder.Append(string.Format("install \"{0}\" ", PackageName));
                             builder.Append(string.Format("-Version \"{0}\" ", PackageVersion));
 
-                            builder.Append("-NonInteractive -Verbosity detailed -NoCache ");
+                            builder.Append("-NonInteractive -ExcludeVersion -Verbosity detailed -NoCache ");
 
                             // Make sure we remove the back-slash because if we don't then
                             // the closing quote will be eaten by the command line parser. Note that

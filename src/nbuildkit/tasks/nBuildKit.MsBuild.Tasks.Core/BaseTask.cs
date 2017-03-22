@@ -86,6 +86,23 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// Returns the absolute path for the given path item.
         /// </summary>
         /// <param name="path">The path</param>
+        /// <returns>The absolute path.</returns>
+        protected string GetAbsolutePath(string path)
+        {
+            Log.LogMessage(
+                MessageImportance.Low,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "Searching for absolute path of {0}",
+                    path));
+
+            return PathUtilities.GetAbsolutePath(path);
+        }
+
+        /// <summary>
+        /// Returns the absolute path for the given path item.
+        /// </summary>
+        /// <param name="path">The path</param>
         /// <param name="basePath">The full path to the base directory.</param>
         /// <returns>The absolute path.</returns>
         protected string GetAbsolutePath(ITaskItem path, ITaskItem basePath)
