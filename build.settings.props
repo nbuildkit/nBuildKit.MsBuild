@@ -688,6 +688,18 @@
         <SolutionsToBuild
             Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
+            <Configuration>$(TestConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties>
+                ShouldPerformCodeAnalysis=false;
+            </Properties>
+            <GeneratedAssembliesFile>$(DirBuildTemp)\VSCoverageToReportGenerator.$(ProductionConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
+        </SolutionsToBuild>
+
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
             <Configuration>$(ProductionConfiguration)</Configuration>
             <Platform>$(Platform)</Platform>
             <Targets>Rebuild</Targets>
@@ -921,6 +933,13 @@
             Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\Test.*.dll">
             <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
             <RuleSet>$(DirSrc)\nbuildkit\tasks\test.ruleset</RuleSet>
+            <TargetFramework>4.5</TargetFramework>
+        </FxCopFiles>
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\**\bin\$(Configuration)\VSCoverageToReportGenerator.exe">
+            <CustomDictionary>$(DirSrc)\tools\VSCoverageToReportGenerator\CustomDictionary.xml</CustomDictionary>
+            <RuleSet>$(DirSrc)\tools\VSCoverageToReportGenerator\default.ruleset</RuleSet>
             <TargetFramework>4.5</TargetFramework>
         </FxCopFiles>
     </ItemGroup>
