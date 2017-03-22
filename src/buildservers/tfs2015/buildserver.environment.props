@@ -32,11 +32,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <FileBuildServerEnvironmentShared>$(MSBuildThisFileDirectory)buildserver.environment.shared.props</FileBuildServerEnvironmentShared>
+        <FileBuildServerEnvironmentPreShared>$(MSBuildThisFileDirectory)buildserver.environment.shared.pre.props</FileBuildServerEnvironmentPreShared>
     </PropertyGroup>
     <Import
-        Condition="Exists('$(FileBuildServerEnvironmentShared)') AND '$(ExistsBuildServerEnvironmentSharedSettings)' != 'true' "
-        Project="$(FileBuildServerEnvironmentShared)" />
+        Condition="Exists('$(FileBuildServerEnvironmentPreShared)') AND '$(ExistsBuildServerEnvironmentSharedPreSettings)' != 'true' "
+        Project="$(FileBuildServerEnvironmentPreShared)" />
 
 
 
@@ -52,7 +52,7 @@
 
     <PropertyGroup>
         <!-- Defines whether the current script file has been loaded / imported or not -->
-        <ExistsBuildServerEnvironmentSettings>true</ExistsBuildServerEnvironmentSettings>
+        <ExistsBuildServerEnvironmentPreSettings>true</ExistsBuildServerEnvironmentPreSettings>
         <VersionBuildServerEnvironmentSettings>1.0.0</VersionBuildServerEnvironmentSettings>
     </PropertyGroup>
 </Project>
