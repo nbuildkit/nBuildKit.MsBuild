@@ -86,6 +86,11 @@
     <Compile Include="MsBuildCommandLineToolTask.cs" />
     <Compile Include="MsBuildLog.cs" />
     <Compile Include="NugetHelpers.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Script\ExecWithArguments.cs" />
     <Compile Include="Script\InvokeSteps.cs" />
     <Compile Include="PowershellCommandLineToolTask.cs" />
@@ -93,6 +98,7 @@
     <Compile Include="Script\InvokePowershellFile.cs" />
     <Compile Include="Script\InvokeStandaloneMsBuild.cs" />
     <Compile Include="Templating\GenerateSpecialParameterTemplateTokens.cs" />
+    <Compile Include="Validation\FxCopInvocationProperties.cs" />
     <Compile Include="Versions\CalculateSemanticVersionWithGitVersion.cs" />
     <Compile Include="VersionControl\ExtractIssueIdsFromGitCommitMessages.cs" />
     <Compile Include="Templating\FindAndReplaceInFile.cs" />
@@ -174,6 +180,10 @@
     <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Script\MsBuildTemplate.xml" />
   </ItemGroup>
   <ItemGroup>
