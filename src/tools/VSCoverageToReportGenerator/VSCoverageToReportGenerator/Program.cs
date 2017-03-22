@@ -1,28 +1,27 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright company="nBuildKit">
-//     Copyright 2014 nBuildKit. Licensed under the Apache License, Version 2.0.
+// Copyright (c) nBuildKit. All rights reserved.
+// Licensed under the Apache License, Version 2.0 license. See LICENCE.md file in the project root for full license information.
 // </copyright>
 //-----------------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.Coverage.Analysis;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using Microsoft.VisualStudio.Coverage.Analysis;
 using Mono.Options;
-using System.Globalization;
-using nBuildKit.Tools.VSCoverageToReportGenerator.Properties;
-using Nuclei;
-using System.Diagnostics;
-using System.Xml.Linq;
+using NBuildKit.Tools.VSCoverageToReportGenerator.Properties;
 
-namespace nBuildKit.Tools.VSCoverageToReportGenerator
+namespace NBuildKit.Tools.VSCoverageToReportGenerator
 {
-    [SuppressMessage("Microsoft.StyleCop.CSharp.MaintainabilityRules", "SA1400:AccessModifierMustBeDeclared",
+    [SuppressMessage(
+        "Microsoft.StyleCop.CSharp.MaintainabilityRules",
+        "SA1400:AccessModifierMustBeDeclared",
         Justification = "Access modifiers should not be declared on the entry point for a command line application. See FxCop.")]
     static class Program
     {
@@ -63,27 +62,27 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
         /// The collection that contains the full paths to the directories which contain the binaries that were
         /// used when running the tests.
         /// </summary>
-        private static readonly List<string> s_BinDirectories = new List<string>();
+        private static readonly List<string> _binDirectories = new List<string>();
 
         /// <summary>
         /// A flag indicating if the help information for the application should be displayed.
         /// </summary>
-        private static bool s_ShouldDisplayHelp;
+        private static bool _shouldDisplayHelp;
 
         /// <summary>
         /// The full path to the file that contains the VS code coverage data.
         /// </summary>
-        private static string s_InputFile;
+        private static string _inputFile;
 
         /// <summary>
         /// The full path to the file to which the converted coverage data should be written.
         /// </summary>
-        private static string s_OutputFile;
+        private static string _outputFile;
 
         /// <summary>
         /// The full path to the Visual Studio directory for the version that was used to execute the code coverage.
         /// </summary>
-        private static string s_VisualStudioDirectory;
+        private static string _visualStudioDirectory;
 
         static int Main(string[] args)
         {
@@ -108,54 +107,54 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
                     return InvalidCommandLineParametersExitCode;
                 }
 
-                if (s_ShouldDisplayHelp)
+                if (_shouldDisplayHelp)
                 {
                     ShowHelp(options);
                     return HelpShownExitCode;
                 }
 
-                if (string.IsNullOrWhiteSpace(s_InputFile))
+                if (string.IsNullOrWhiteSpace(_inputFile))
                 {
                     WriteErrorToConsole(Resources.Output_Error_MissingValues_InputFile);
                     ShowHelp(options);
                     return InvalidCommandLineParametersExitCode;
                 }
 
-                if (string.IsNullOrWhiteSpace(s_OutputFile))
+                if (string.IsNullOrWhiteSpace(_outputFile))
                 {
                     WriteErrorToConsole(Resources.Output_Error_MissingValues_OutputFile);
                     ShowHelp(options);
                     return InvalidCommandLineParametersExitCode;
                 }
 
-                if (string.IsNullOrWhiteSpace(s_VisualStudioDirectory))
+                if (string.IsNullOrWhiteSpace(_visualStudioDirectory))
                 {
                     WriteErrorToConsole(Resources.Output_Error_MissingValues_VisualStudioDirectory);
                     ShowHelp(options);
                     return InvalidCommandLineParametersExitCode;
                 }
 
-                if (s_BinDirectories.Count == 0)
+                if (_binDirectories.Count == 0)
                 {
                     WriteErrorToConsole(
                         string.Format(
                             CultureInfo.InvariantCulture,
                             Resources.Output_Error_MissingValues_NoBinDirectorySpecified,
-                            s_InputFile));
+                            _inputFile));
                     return InvalidCommandLineParametersExitCode;
                 }
 
-                if (!File.Exists(s_InputFile))
+                if (!File.Exists(_inputFile))
                 {
                     WriteErrorToConsole(
                         string.Format(
                             CultureInfo.InvariantCulture,
                             Resources.Output_Error_InputFileDoesNotExist_WithFile,
-                            s_InputFile));
+                            _inputFile));
                     return InvalidInputFileExitCode;
                 }
 
-                foreach (var binDirectory in s_BinDirectories)
+                foreach (var binDirectory in _binDirectories)
                 {
                     if (!Directory.Exists(binDirectory))
                     {
@@ -168,20 +167,20 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
                     }
                 }
 
-                if (!Directory.Exists(s_VisualStudioDirectory))
+                if (!Directory.Exists(_visualStudioDirectory))
                 {
                     WriteErrorToConsole(
                         string.Format(
                             CultureInfo.InvariantCulture,
                             Resources.Output_Error_VisualStudioDirectoryDoesNotExist_WithDirectory,
-                            s_VisualStudioDirectory));
+                            _visualStudioDirectory));
                     return InvalidVisualStudioDirectoryExitCode;
                 }
 
-                var searchPath = Path.Combine(s_VisualStudioDirectory, @"Common7\IDE\PrivateAssemblies");
+                var searchPath = Path.Combine(_visualStudioDirectory, @"Common7\IDE\PrivateAssemblies");
                 SetupAdditionalAssemblySearchPaths(searchPath);
 
-                ConvertCoverageFile(s_InputFile, s_OutputFile, s_BinDirectories.ToArray());
+                ConvertCoverageFile(_inputFile, _outputFile, _binDirectories.ToArray());
             }
             catch (Exception e)
             {
@@ -249,7 +248,7 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
         {
             /*
             Until nTreva has been updated to handle the latest version of NuGet we will disable this.
-            
+
             var licenseXml = EmbeddedResourceExtracter.LoadEmbeddedStream(
                 Assembly.GetExecutingAssembly(),
                 @"nBuildKit.Tools.VSCoverageToReportGenerator.Properties.licenses.xml");
@@ -286,32 +285,31 @@ namespace nBuildKit.Tools.VSCoverageToReportGenerator
                     {
                         Resources.CommandLine_Options_Help_Key,
                         Resources.CommandLine_Options_Help_Description,
-                        v => s_ShouldDisplayHelp = v != null
+                        v => _shouldDisplayHelp = v != null
                     },
                     {
                         Resources.CommandLine_Param_InputFile_Key,
                         Resources.CommandLine_Param_InputFile_Description,
-                        v => s_InputFile = v
+                        v => _inputFile = v
                     },
                     {
                         Resources.CommandLine_Param_OutputFile_Key,
                         Resources.CommandLine_Param_OutputFile_Description,
-                        v => s_OutputFile = v
+                        v => _outputFile = v
                     },
                     {
                         Resources.CommandLine_Param_BinDirectory_Key,
                         Resources.CommandLine_Param_BinDirectory_Description,
-                        v => s_BinDirectories.Add(v)
+                        v => _binDirectories.Add(v)
                     },
                     {
                         Resources.CommandLine_Param_VisualStudioDirectory_Key,
                         Resources.CommandLine_Param_VisualStudioDirectory_Description,
-                        v => s_VisualStudioDirectory = v
+                        v => _visualStudioDirectory = v
                     },
                 };
             return options;
         }
-
 
         [SuppressMessage(
             "Microsoft.Reliability",
