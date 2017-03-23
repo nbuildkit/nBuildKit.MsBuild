@@ -174,7 +174,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Clean;
+                clean;
+                prepare;
+                prepare.clean;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -186,7 +188,8 @@
             <Properties>
             </Properties>
             <Groups>
-                Bootstrap;
+                prepare;
+                prepare.bootstrap;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -198,7 +201,8 @@
             <Properties>
             </Properties>
             <Groups>
-                Bootstrap;
+                prepare;
+                prepare.bootstrap;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -210,9 +214,9 @@
             <Properties>
             </Properties>
             <Groups>
-                NuGet;
-                Prepare;
-                Restore;
+                prepare;
+                prepare.restore;
+                prepare.restore.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -228,7 +232,11 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.buildserver;
+                prepare.buildserver.vcssetbranch;
+                prepare.vcs;
+                prepare.vcs.vcssetbranch;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -239,7 +247,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.vcsinfo;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -250,7 +260,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.issueids;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -267,7 +279,11 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.buildserver;
+                prepare.buildserver.merge;
+                prepare.vcs;
+                prepare.vcs.merge;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -283,7 +299,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.version;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -296,7 +314,11 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.buildserver;
+                prepare.buildserver.tag;
+                prepare.vcs;
+                prepare.vcs.tag;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -308,7 +330,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.releasenotes;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -320,9 +344,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Npm;
-                Prepare;
-                Restore;
+                prepare;
+                prepare.restore;
+                prepare.restore.npm;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -333,9 +357,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Bower;
-                Prepare;
-                Restore;
+                prepare;
+                prepare.restore;
+                prepare.restore.bower;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -347,8 +371,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -359,8 +384,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.files;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -372,7 +398,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.generate;
+                prepare.generate.assemblyinfo;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -383,7 +411,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.generate;
+                prepare.generate.licenses;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -394,8 +424,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Generate;
-                Prepare;
+                prepare;
+                prepare.generate;
+                prepare.generate.files;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -407,7 +438,8 @@
             <Properties>
             </Properties>
             <Groups>
-                Compile;
+                build;
+                build.visualstudio;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -421,7 +453,9 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                UnitTest;
+                test;
+                test.unittest;
+                test.unittest.nunit;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -434,7 +468,9 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                UnitTest;
+                test;
+                test.unittest;
+                test.unittest.mstest;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -447,7 +483,9 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                UnitTest;
+                test;
+                test.unittest;
+                test.unittest.vstest;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -461,7 +499,9 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Analyze;
+                test;
+                test.analyze;
+                test.analyze.xml;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -474,7 +514,9 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Analyze;
+                test;
+                test.analyze;
+                test.analyze.fxcop;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -488,7 +530,8 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Package;
+                build;
+                build.ilmerge;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -502,7 +545,8 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Package;
+                package;
+                package.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -515,7 +559,8 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Package;
+                package;
+                package.zip;
             </Groups>
             <PreSteps>
             </PreSteps>
