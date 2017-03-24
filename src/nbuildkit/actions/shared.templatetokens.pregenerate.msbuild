@@ -17,6 +17,7 @@
     </PropertyGroup>
 
     <Target
+        Condition=" '$(ShouldGenerateVersionTokens)' == 'true' "
         Name="nBuildKit_Shared_TemplateTokens_PreGenerate_Run">
         <GenerateSpecialParameterTemplateTokens
             PropertyFile="$(FileTemplateTokensPretranslatedTokens)"

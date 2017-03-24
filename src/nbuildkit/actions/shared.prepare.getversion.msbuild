@@ -13,10 +13,6 @@
         Project="$(FileImports)" />
 
     <Import
-        Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild" />
-
-    <Import
         Condition=" '$(ScriptGetVersion)' != '' AND '$(ScriptGetVersion)' != 'UNDEFINED' AND Exists('$(ScriptGetVersion)')"
         Project="$(ScriptGetVersion)" />
     <Import
@@ -32,7 +28,33 @@
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_GetSemanticVersionViaGitVersion" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_WriteVersionsToFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals" />
-        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
+
+        <PropertyGroup>
+            <Locations>
+                DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+                DirNBuildKitMsBuildTasks=$(DirNBuildKitMsBuildTasks);
+                DirWorkspace=$(DirWorkspace);
+                DirUserSettings=$(DirUserSettings);
+            </Locations>
+            <Files>
+                FileImports=$(FileImports);
+            </Files>
+            <DefaultProperties>
+                ShouldGenerateVersionTokens=true;
+            </DefaultProperties>
+        </PropertyGroup>
+        <InvokeStandaloneMsBuild
+            Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild')"
+            Projects="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild"
+            Properties="$(Locations);$(Files);$(DefaultProperties)"
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            Targets="nBuildKit_Shared_TemplateTokens_Generate"
+            TemporaryDirectory="$(DirBuildTemp)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)">
+        </InvokeStandaloneMsBuild>
     </Target>
 
     <Target

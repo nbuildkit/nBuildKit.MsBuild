@@ -13,10 +13,6 @@
         Project="$(FileImports)" />
 
     <Import
-        Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild" />
-
-    <Import
         Condition=" '$(ScriptGatherIssues)' != '' AND '$(ScriptGatherIssues)' != 'UNDEFINED' AND Exists('$(ScriptGatherIssues)')"
         Project="$(ScriptGatherIssues)" />
     <Import
@@ -30,7 +26,32 @@
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToTextFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToConsole" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToCustomFile" />
-        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
+
+        <PropertyGroup>
+            <Locations>
+                DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+                DirNBuildKitMsBuildTasks=$(DirNBuildKitMsBuildTasks);
+                DirWorkspace=$(DirWorkspace);
+                DirUserSettings=$(DirUserSettings);
+            </Locations>
+            <Files>
+                FileImports=$(FileImports);
+            </Files>
+            <DefaultProperties>
+            </DefaultProperties>
+        </PropertyGroup>
+        <InvokeStandaloneMsBuild
+            Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild')"
+            Projects="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild"
+            Properties="$(Locations);$(Files);$(DefaultProperties)"
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            Targets="nBuildKit_Shared_TemplateTokens_Generate"
+            TemporaryDirectory="$(DirBuildTemp)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)">
+        </InvokeStandaloneMsBuild>
     </Target>
 
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites">

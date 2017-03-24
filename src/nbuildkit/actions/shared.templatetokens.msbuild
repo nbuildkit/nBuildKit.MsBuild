@@ -7,6 +7,10 @@
         <ExistsSharedTemplateTokens>true</ExistsSharedTemplateTokens>
     </PropertyGroup>
 
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
     <Import Project="$(SystemTemplateTokenGenerators)" />
     <Import
         Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "
@@ -51,15 +55,20 @@
             </DirectoriesForNBuildKit>
         </PropertyGroup>
 
-        <InvokeStandaloneMsBuild
+        <MSBuild
+            BuildInParallel="False"
             Projects="$(MSBuildThisFileDirectory)shared.templatetokens.pregenerate.msbuild"
-            Properties="$(DirectoriesForNBuildKit)"
+            Properties="$(DirectoriesForNBuildKit);ShouldGenerateVersionTokens=$(ShouldGenerateVersionTokens)"
+            RebaseOutputs="False"
+            RemoveProperties=""
             RunEachTargetSeparately="True"
             SkipNonexistentProjects="False"
             StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
             Targets=""
-            TemporaryDirectory="$(DirBuildTemp)"
             ToolsVersion="$(MSBuildToolsVersion)"
-            WorkingDirectory="$(DirWorkspace)" />
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
     </Target>
 </Project>
