@@ -68,18 +68,22 @@
             Importance="normal"
             Text="Cleaning $(FileSln) with: Configuration = %(SolutionsToBuild.Configuration) and Platform = %(SolutionsToBuild.Platform) ..." />
 
-        <InvokeStandaloneMsBuild
+        <MSBuild
+            BuildInParallel="False"
             Condition="Exists('$(FileSln)')"
             Projects="$(FileSln)"
             Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=%(SolutionsToBuild.Platform)"
+            RebaseOutputs="False"
+            RemoveProperties=""
             RunEachTargetSeparately="True"
-            SkipNonexistentProjects="True"
+            SkipNonexistentProjects="False"
             StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
             Targets="Clean"
-            TemporaryDirectory="$(DirBuildTemp)"
             ToolsVersion="$(MSBuildToolsVersion)"
-            WorkingDirectory="$(DirWorkspace)">
-        </InvokeStandaloneMsBuild>
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
     </Target>
 
     <Target

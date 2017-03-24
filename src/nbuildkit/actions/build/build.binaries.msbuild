@@ -74,20 +74,24 @@
             <BuildProperties>@(PropertyItems)</BuildProperties>
         </PropertyGroup>
 
-        <InvokeStandaloneMsBuild
+        <MSBuild
+            BuildInParallel="False"
             Projects="$(FileSln)"
             Properties="Configuration=%(SolutionsToBuild.Configuration);Platform=$(BuildPlatform);$(BuildProperties)"
+            RebaseOutputs="False"
+            RemoveProperties=""
             RunEachTargetSeparately="True"
             SkipNonexistentProjects="False"
             StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
             Targets="%(SolutionsToBuild.Targets)"
-            TemporaryDirectory="$(DirBuildTemp)"
             ToolsVersion="$(MSBuildToolsVersion)"
-            WorkingDirectory="$(DirWorkspace)">
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
             <Output
                 ItemName="GeneratedAssemblies"
                 TaskParameter="TargetOutputs" />
-        </InvokeStandaloneMsBuild>
+        </MSBuild>
 
         <!-- Move the code analysis logs -->
         <Message Text="Moving the code analysis logs for the build of $([System.IO.Path]::GetFileName('$(FileSln)')) (Configuration = %(SolutionsToBuild.Configuration), Platform = $(BuildPlatform)) to the logs directory" />
