@@ -85,9 +85,13 @@
                 TaskParameter="VersionPatch" />
         </GetLastRelease_LocalTask_GetLastReleaseVersionFromFile>
 
+        <PropertyGroup>
+            <GenerationTime>$([System.DateTime]::Now.ToString("o"))</GenerationTime>
+        </PropertyGroup>
         <ItemGroup>
             <TemplateTokensNBuildKitLastRelease Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
             <TemplateTokensNBuildKitLastRelease Include="&lt;Project xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot; &gt;" />
+            <TemplateTokensNBuildKitLastRelease Include='&lt;!-- Generated at $(GenerationTime) --&gt;' />
             <TemplateTokensNBuildKitLastRelease Include="&lt;PropertyGroup&gt;" />
             <TemplateTokensNBuildKitLastRelease Include="&lt;ExistsGeneratedTemplateTokensNBuildKitLastVersion&gt;true&lt;/ExistsGeneratedTemplateTokensNBuildKitLastVersion&gt;" />
             <TemplateTokensNBuildKitLastRelease Include="&lt;/PropertyGroup&gt;" />

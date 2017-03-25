@@ -61,9 +61,13 @@
                 TaskParameter="VersionSemanticNuGet" />
         </GetSemanticVersionFromFile>
 
+        <PropertyGroup>
+            <GenerationTime>$([System.DateTime]::Now.ToString("o"))</GenerationTime>
+        </PropertyGroup>
         <ItemGroup>
             <TemplateTokensVersions Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
             <TemplateTokensVersions Include="&lt;Project xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot; &gt;" />
+            <TemplateTokensVersions Include='&lt;!-- Generated at $(GenerationTime) --&gt;' />
             <TemplateTokensVersions Include="&lt;PropertyGroup&gt;" />
             <TemplateTokensVersions Include="&lt;ExistsGeneratedTemplateTokensVersions&gt;true&lt;/ExistsGeneratedTemplateTokensVersions&gt;" />
             <TemplateTokensVersions Include="&lt;/PropertyGroup&gt;" />

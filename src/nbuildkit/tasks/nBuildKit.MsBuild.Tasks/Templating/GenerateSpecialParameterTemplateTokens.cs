@@ -28,6 +28,11 @@ namespace NBuildKit.MsBuild.Tasks.Templating
             {
                 lines.Add("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                 lines.Add("<Project xmlns = \"http://schemas.microsoft.com/developer/msbuild/2003\" >");
+                lines.Add(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "    <!-- Generated at: {0} -->",
+                        DateTimeOffset.Now.ToString("O", CultureInfo.InvariantCulture)));
                 lines.Add("    <PropertyGroup>");
                 lines.Add("        <ExistsGeneratedTemplateTokensSpecialParameters>true</ExistsGeneratedTemplateTokensSpecialParameters>");
                 lines.Add("    </PropertyGroup>");
