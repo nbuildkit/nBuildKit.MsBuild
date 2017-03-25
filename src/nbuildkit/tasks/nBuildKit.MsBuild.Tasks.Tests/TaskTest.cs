@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -59,12 +60,12 @@ namespace NBuildKit.MsBuild.Tasks.Tests
         private readonly List<string> _logMessages = new List<string>();
         private readonly List<string> _warningMessages = new List<string>();
 
-        private Mock<IBuildEngine> _buildEngine;
+        private Mock<IBuildEngine4> _buildEngine;
 
         /// <summary>
         /// Gets the <see cref="IBuildEngine"/> instance that can be used as a mock MsBuild build engine.
         /// </summary>
-        protected Mock<IBuildEngine> BuildEngine
+        protected Mock<IBuildEngine4> BuildEngine
         {
             get
             {
@@ -75,24 +76,67 @@ namespace NBuildKit.MsBuild.Tasks.Tests
         /// <summary>
         /// Initializes the build engine.
         /// </summary>
-        public void InitializeBuildEngine()
+        /// <param name="projectBuildResults">An array containing the expected project build results.</param>
+        public void InitializeBuildEngine(bool[] projectBuildResults = null)
         {
             _errorMessages.Clear();
             _logMessages.Clear();
             _warningMessages.Clear();
 
-            _buildEngine = new Mock<IBuildEngine>();
+            var buildEngine = new Mock<IBuildEngine>();
             {
-                _buildEngine.Setup(b => b.LogErrorEvent(It.IsAny<BuildErrorEventArgs>()))
+                buildEngine.Setup(b => b.LogErrorEvent(It.IsAny<BuildErrorEventArgs>()))
                     .Callback<BuildErrorEventArgs>(b => _errorMessages.Add(b.Message))
                     .Verifiable();
-                _buildEngine.Setup(b => b.LogMessageEvent(It.IsAny<BuildMessageEventArgs>()))
+                buildEngine.Setup(b => b.LogMessageEvent(It.IsAny<BuildMessageEventArgs>()))
                     .Callback<BuildMessageEventArgs>(b => _logMessages.Add(b.Message))
                     .Verifiable();
-                _buildEngine.Setup(b => b.LogWarningEvent(It.IsAny<BuildWarningEventArgs>()))
+                buildEngine.Setup(b => b.LogWarningEvent(It.IsAny<BuildWarningEventArgs>()))
                     .Callback<BuildWarningEventArgs>(b => _warningMessages.Add(b.Message))
                     .Verifiable();
             }
+
+            var buildEngine2 = buildEngine.As<IBuildEngine2>();
+            var buildEngine3 = buildEngine2.As<IBuildEngine3>();
+            {
+                var count = 0;
+                buildEngine3.Setup(
+                    b => b.BuildProjectFilesInParallel(
+                        It.IsAny<string[]>(),
+                        It.IsAny<string[]>(),
+                        It.IsAny<IDictionary[]>(),
+                        It.IsAny<IList<string>[]>(),
+                        It.IsAny<string[]>(),
+                        It.IsAny<bool>()))
+                    .Returns(
+                        () =>
+                        {
+                            var result = (projectBuildResults != null) ? projectBuildResults[count] : true;
+                            count++;
+
+                            return new BuildEngineResult(result, new List<IDictionary<string, ITaskItem[]>>());
+                        })
+                    .Verifiable();
+            }
+
+            _buildEngine = buildEngine3.As<IBuildEngine4>();
+        }
+
+        /// <summary>
+        /// Verifies the number of times the build engine has been invoked.
+        /// </summary>
+        /// <param name="numberOfInvocations">The expected number of times the build engine should have been invoked.</param>
+        public void VerifyNumberOfInvocations(int numberOfInvocations = 0)
+        {
+            _buildEngine.Verify(
+                b => b.BuildProjectFilesInParallel(
+                    It.IsAny<string[]>(),
+                    It.IsAny<string[]>(),
+                    It.IsAny<IDictionary[]>(),
+                    It.IsAny<IList<string>[]>(),
+                    It.IsAny<string[]>(),
+                    It.IsAny<bool>()),
+                Times.Exactly(numberOfInvocations));
         }
 
         /// <summary>
