@@ -7,10 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using Microsoft.Extensions.FileSystemGlobbing;
+using NBuildKit.MsBuild.Tasks.Core.Properties;
 
 namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
 {
@@ -19,28 +21,6 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
     /// </summary>
     public static class PathUtilities
     {
-        /// <summary>
-        /// Appends the directory separator character at the end of the string if it doesn't already exist.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>The path with the appended directory separator character.</returns>
-        public static string AppendDirectorySeparatorChar(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return string.Empty;
-            }
-
-            path = path.Trim();
-            if (!Path.HasExtension(path) &&
-                !path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-                return path + Path.DirectorySeparatorChar;
-            }
-
-            return path;
-        }
-
         /// <summary>
         /// Appends the directory separator character at the end of the string if it doesn't already exist.
         /// </summary>
@@ -68,10 +48,11 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         /// set of wild cards.
         /// </summary>
         /// <param name="pathExpression">The path expression.</param>
+        /// <param name="pathPointsToFile">A flag that indicates whether or not the path expression points to a file or a directory.</param>
         /// <returns>
         /// Returns the base directory for the expression.
         /// </returns>
-        public static string BaseDirectory(string pathExpression)
+        public static string BaseDirectory(string pathExpression, bool pathPointsToFile = false)
         {
             if (string.IsNullOrWhiteSpace(pathExpression))
             {
@@ -82,8 +63,26 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
             if (pathSections.Length == 1)
             {
                 // We got the whole thing back. Either the whole thing describes a file or a directory.
+                if (File.Exists(pathSections[0]))
+                {
+                    // The path section matches an existing file, grab the parent directory.
+                    return Path.GetDirectoryName(pathSections[0]);
+                }
+
+                if (Directory.Exists(pathSections[0]))
+                {
+                    // The path section matches an existing directory. Good enough.
+                    return pathSections[0].Trim(Path.DirectorySeparatorChar);
+                }
+
+                if (pathSections[0].EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    // The path section is most likely a directory because it has a trailing slash / backslash
+                    return pathSections[0].Trim(Path.DirectorySeparatorChar);
+                }
+
                 // We don't really know. So ... eh ...
-                return pathSections[0];
+                return pathPointsToFile ? Path.GetDirectoryName(pathSections[0]) : pathSections[0].Trim(Path.DirectorySeparatorChar);
             }
             else
             {
@@ -146,40 +145,42 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         }
 
         /// <summary>
-        /// Creates a relative path from one directory to another.
+        /// Creates a relative path for a directory based on a given directory.
         /// </summary>
-        /// <remarks>
-        /// Original code here: http://stackoverflow.com/a/275749/539846
-        /// </remarks>
-        /// <param name="fromPath">Contains the directory that defines the start of the relative path.</param>
-        /// <param name="toPath">Contains the path that defines the endpoint of the relative path.</param>
-        /// <returns>The relative path from the start directory to the end path.</returns>
+        /// <param name="fromPath">Contains the directory path that defines the start of the relative path.</param>
+        /// <param name="directoryPath">The path of the base directory.</param>
+        /// <returns>The relative path from the start directory to the directory.</returns>
         /// <exception cref="ArgumentNullException">
-        ///     <paramref name="fromPath"/> or <paramref name="toPath"/> is <c>null</c>.
+        ///     <paramref name="fromPath"/> or <paramref name="directoryPath"/> is <c>null</c>.
         /// </exception>
-        public static string GetRelativeDirectoryPath(string fromPath, string toPath)
+        public static string GetDirectoryPathRelativeToDirectory(string fromPath, string directoryPath)
         {
             if (string.IsNullOrWhiteSpace(fromPath))
             {
                 throw new ArgumentNullException("fromPath");
             }
 
-            if (string.IsNullOrWhiteSpace(toPath))
+            if (string.IsNullOrWhiteSpace(directoryPath))
             {
-                throw new ArgumentNullException("toPath");
+                throw new ArgumentNullException("directoryPath");
             }
 
             // The Uri class treats paths that are directories but don't end in a directory separator as files.
-            Uri fromUri = new Uri(AppendDirectorySeparatorChar(fromPath.Trim()));
-            Uri toUri = new Uri(AppendDirectorySeparatorChar(toPath.Trim()));
+            var fromUri = new Uri(AppendDirectorySeparatorCharToDirectory(fromPath.Trim()));
+            var toUri = new Uri(AppendDirectorySeparatorCharToDirectory(directoryPath.Trim()));
 
             if (fromUri.Scheme != toUri.Scheme)
             {
-                return toPath;
+                throw new ArgumentException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.Exceptions_Messages_UrlSchemasDoNotMatch_WithUrls,
+                        fromUri.Scheme,
+                        toUri.Scheme));
             }
 
-            Uri relativeUri = toUri.MakeRelativeUri(fromUri);
-            string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+            var relativeUri = toUri.MakeRelativeUri(fromUri);
+            var relativePath = Uri.UnescapeDataString(relativeUri.ToString());
 
             if (string.Equals(toUri.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
             {
@@ -211,7 +212,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
             }
 
             fromPath = fromPath.Trim();
-            var relativeDirectoryPath = GetRelativeDirectoryPath(
+            var relativeDirectoryPath = GetDirectoryPathRelativeToDirectory(
                 AppendDirectorySeparatorCharToDirectory(Path.GetDirectoryName(fromPath)),
                 AppendDirectorySeparatorCharToDirectory(directoryPath));
             return Path.Combine(
@@ -255,7 +256,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                     excludedPathExpressions.Select(
                         e =>
                         {
-                            return Path.IsPathRooted(e) ? GetRelativeDirectoryPath(e, baseDirectory) : e;
+                            return Path.IsPathRooted(e) ? GetFilePathRelativeToDirectory(e, baseDirectory) : e;
                         }));
             }
 
@@ -272,7 +273,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 var remainder = pathExpression.Substring(baseExpression.Length).TrimStart('\\');
 
                 // Get the relative directory
-                var relativeDirectory = GetRelativeDirectoryPath(baseExpression, baseDirectory);
+                var relativeDirectory = GetDirectoryPathRelativeToDirectory(baseExpression, baseDirectory);
                 relativeExpression = Path.Combine(relativeDirectory, remainder).TrimStart('\\');
             }
 
