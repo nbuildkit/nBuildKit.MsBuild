@@ -17,6 +17,11 @@
         Name="nBuildKit_Shared_Prepare_VcsInfo_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo" />
 
+        <Copy
+            DestinationFolder="$(DirTemplateGenerators)"
+            SkipUnchangedFiles="true"
+            SourceFiles="$(MSBuildThisFileDirectory)shared.generatetoken.vcsinfo.msbuild" />
+
         <PropertyGroup>
             <Locations>
                 DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);

@@ -254,6 +254,9 @@
 
         <!-- The directory in which the transformed user configuration files will be stored while running nBuildKit. -->
         <DirUserConfiguration Condition=" '$(DirUserConfiguration)' == '' ">$(DirWorkspace)\build\configurations</DirUserConfiguration>
+
+        <!-- The directory in which the template generators will be dropped. -->
+        <DirTemplateGenerators Condition=" '$(DirTemplateGenerators)' == '' ">$(DirUserConfiguration)\generators</DirTemplateGenerators>
     </PropertyGroup>
 
     <!--
@@ -438,7 +441,7 @@
             The full path to the system provided scripts that contain a task to generate
             additional template tokens.
         -->
-        <SystemTemplateTokenGenerators>$(MSBuildThisFileDirectory)shared.generatetoken.*.msbuild</SystemTemplateTokenGenerators>
+        <SystemTemplateTokenGenerators>$(DirTemplateGenerators)\shared.generatetoken.*.msbuild</SystemTemplateTokenGenerators>
 
         <!--
             The full path to the system provided scripts that contain a task to generate

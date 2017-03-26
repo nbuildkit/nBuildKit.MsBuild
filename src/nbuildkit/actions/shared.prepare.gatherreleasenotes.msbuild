@@ -27,6 +27,11 @@
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToConsole" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GatherReleaseNotes_WriteToCustomFile" />
 
+        <Copy
+            DestinationFolder="$(DirTemplateGenerators)"
+            SkipUnchangedFiles="true"
+            SourceFiles="$(MSBuildThisFileDirectory)shared.generatetoken.releasenotes.msbuild" />
+
         <PropertyGroup>
             <Locations>
                 DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);

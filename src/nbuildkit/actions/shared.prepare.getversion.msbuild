@@ -29,6 +29,11 @@
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_WriteVersionsToFile" />
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetVersion_PushToExternals" />
 
+        <Copy
+            DestinationFolder="$(DirTemplateGenerators)"
+            SkipUnchangedFiles="true"
+            SourceFiles="$(MSBuildThisFileDirectory)shared.generatetoken.versions.msbuild" />
+
         <PropertyGroup>
             <Locations>
                 DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
