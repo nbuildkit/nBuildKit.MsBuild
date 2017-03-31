@@ -12,10 +12,6 @@
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
         Project="$(FileImports)" />
 
-    <Import
-        Condition="Exists('$(MSBuildThisFileDirectory)..\shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(MSBuildThisFileDirectory)..\shared.templatetokens.msbuild" />
-
     <Target
         Name="nBuildKit_Build_Analyze_Xml_Run">
         <CallTarget Targets="_nBuildKit_Build_Analyze_Xml_Analyze_Files" />

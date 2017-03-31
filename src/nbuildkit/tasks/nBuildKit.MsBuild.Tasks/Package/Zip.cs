@@ -92,8 +92,22 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 var sources = sourceAttribute.Value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var source in sources)
                 {
-                    var directory = PathUtilities.BaseDirectory(source);
+                    var directory = PathUtilities.BaseDirectory(source, true);
+                    Log.LogMessage(
+                        MessageImportance.Low,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Searching with base: {0}",
+                            directory));
+
                     var filesToInclude = PathUtilities.IncludedPaths(source, excluded, workingDirectory);
+
+                    Log.LogMessage(
+                        MessageImportance.Low,
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Adding: {0}",
+                            string.Join(", ", filesToInclude)));
                     foreach (var file in filesToInclude)
                     {
                         var relativefilePath = PathUtilities.GetFilePathRelativeToDirectory(file, directory);

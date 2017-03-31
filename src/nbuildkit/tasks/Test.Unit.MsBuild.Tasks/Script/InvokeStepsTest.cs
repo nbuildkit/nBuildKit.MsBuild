@@ -7,20 +7,12 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Moq;
-using NBuildKit.MsBuild.Tasks.Core;
 using NBuildKit.MsBuild.Tasks.Tests;
 using Nuclei;
 using NUnit.Framework;
@@ -34,6 +26,54 @@ namespace NBuildKit.MsBuild.Tasks.Script
         Justification = "Unit tests do not need documentation.")]
     public sealed class InvokeStepsTest : TaskTest
     {
+        private static void GenerateFailingScript(string path)
+        {
+            var content =
+@"<?xml version='1.0' encoding='utf-8'?>
+<Project
+    DefaultTargets='InvokeStandaloneMsBuild'
+    ToolsVersion='4.0'
+    xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
+    <Target 
+        Name='InvokeStandaloneMsBuild'
+        Returns='FailingScript'>
+        <Error Text='Fail' />
+    </Target>
+</Project>";
+
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            File.WriteAllText(path, content, Encoding.UTF8);
+        }
+
+        private static void GeneratePassingScript(string path)
+        {
+            var content =
+@"<?xml version='1.0' encoding='utf-8'?>
+<Project
+    DefaultTargets='InvokeStandaloneMsBuild'
+    ToolsVersion='4.0'
+    xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
+    <Target 
+        Name='InvokeStandaloneMsBuild'
+        Returns='PassingScript'>
+        <Message Text='Pass' />
+    </Target>
+</Project>";
+
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            File.WriteAllText(path, content, Encoding.UTF8);
+        }
+
         [Test]
         public void ExecuteWithFailingGlobalPostStep()
         {
@@ -47,52 +87,16 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var scriptPath1 = Path.Combine(
                 workingDir,
                 "script1.msbuild");
-            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
-            {
-                writer.WriteLine("ExecuteWithFailingGlobalPostStep");
-            }
+            GeneratePassingScript(scriptPath1);
 
             var scriptPath2 = Path.Combine(
                 workingDir,
                 "script2.msbuild");
-            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
-            {
-                writer.WriteLine("ExecuteWithFailingGlobalPostStep");
-            }
+            GenerateFailingScript(scriptPath2);
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true, false });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            return args.Any(s => s.Contains(scriptPath2)) ? -1 : 0;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -120,8 +124,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -146,60 +148,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(5, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[0][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][4]);
-
-            Assert.AreEqual(11, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[1][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[1][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[1][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[1][7]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[1][8]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[1][9]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[1][10]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 2, numberOfWarningMessages: 0, numberOfNormalMessages: 30);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
         }
 
         [Test]
@@ -228,39 +182,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithFailingGlobalPostStepAndContinue");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true, false });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            return args.Any(s => s.Contains(scriptPath2)) ? -1 : 0;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -288,8 +212,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -314,60 +236,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = false;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(5, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[0][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][4]);
-
-            Assert.AreEqual(11, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[1][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[1][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[1][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[1][7]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[1][8]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[1][9]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[1][10]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 2, numberOfWarningMessages: 0, numberOfNormalMessages: 30);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
         }
 
         [Test]
@@ -396,39 +270,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithFailingGlobalPreStep");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { false, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            return args.Any(s => s.Contains(scriptPath2)) ? -1 : 0;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -456,8 +300,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -482,48 +324,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(1, invokedArgs.Count);
-            Assert.AreEqual(11, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[0][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[0][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[0][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[0][7]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[0][8]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[0][9]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[0][10]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 2, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
+            VerifyNumberOfInvocations(1);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 13);
         }
 
         [Test]
@@ -552,39 +358,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithFailingGlobalPreStepAndContinue");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { false, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            return args.Any(s => s.Contains(scriptPath2)) ? -1 : 0;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -612,8 +388,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -638,60 +412,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = false;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(11, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[0][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[0][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[0][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[0][7]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[0][8]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[0][9]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[0][10]);
-
-            Assert.AreEqual(5, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[1][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][4]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 2, numberOfWarningMessages: 0, numberOfNormalMessages: 30);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
         }
 
         [Test]
@@ -720,39 +446,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithFailingLocalPostStep");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true, false });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            return args.Any(s => s.Contains(scriptPath2)) ? -1 : 0;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -772,8 +468,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -798,59 +492,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(5, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[0][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][4]);
-
-            Assert.AreEqual(10, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[1][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[1][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[1][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[1][7]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[1][8]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[1][9]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 2, numberOfWarningMessages: 0, numberOfNormalMessages: 27);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
         }
 
         [Test]
@@ -879,39 +526,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithFailingLocalPostStepAndContinue");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true, false });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            return args.Any(s => s.Contains(scriptPath2)) ? -1 : 0;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -931,8 +548,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -957,59 +572,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = false;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(5, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[0][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][4]);
-
-            Assert.AreEqual(10, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[1][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[1][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[1][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[1][7]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[1][8]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[1][9]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 2, numberOfWarningMessages: 0, numberOfNormalMessages: 27);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
         }
 
         [Test]
@@ -1038,39 +606,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithLocalPreStep");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { false, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            return args.Any(s => s.Contains(scriptPath2)) ? -1 : 0;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -1090,8 +628,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1116,47 +652,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(1, invokedArgs.Count);
-            Assert.AreEqual(10, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[0][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[0][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[0][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[0][7]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[0][8]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[0][9]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 2, numberOfWarningMessages: 0, numberOfNormalMessages: 16);
+            VerifyNumberOfInvocations(1);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 10);
         }
 
         [Test]
@@ -1185,39 +686,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithFailingLocalPreStepAndContinue");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { false, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            return args.Any(s => s.Contains(scriptPath2)) ? -1 : 0;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -1237,8 +708,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1263,59 +732,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = false;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(10, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[0][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[0][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[0][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[0][7]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[0][8]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[0][9]);
-
-            Assert.AreEqual(5, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[1][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][4]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 2, numberOfWarningMessages: 0, numberOfNormalMessages: 27);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
         }
 
         [Test]
@@ -1336,35 +758,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithFailingStep");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { false });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<string>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.AddRange(args);
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns(-1);
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -1384,8 +780,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1401,35 +795,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(4, invokedArgs.Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
-            Assert.AreEqual("/nologo", invokedArgs[1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath),
-                invokedArgs[3]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 9);
+            VerifyNumberOfInvocations(1);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 3);
         }
 
         [Test]
@@ -1458,39 +829,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithFailingStepAndFailureSteps");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { false, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        })
-                    .Returns<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            return args.Any(s => s.Contains(scriptPath1)) ? -1 : 0;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -1523,8 +864,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     }),
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1549,47 +888,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[0][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][4]);
-
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[1][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[1][4]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 22);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 9);
         }
 
         [Test]
@@ -1618,34 +922,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithLocalPostStep");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -1673,8 +952,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1699,60 +976,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(5, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[0][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][4]);
-
-            Assert.AreEqual(11, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[1][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[1][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[1][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[1][7]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[1][8]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[1][9]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[1][10]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 31);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
         }
 
         [Test]
@@ -1781,34 +1010,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithGlobalPreStep");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -1836,8 +1040,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1862,60 +1064,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(11, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[0][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[0][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[0][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[0][7]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[0][8]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[0][9]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[0][10]);
-
-            Assert.AreEqual(5, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[1][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][4]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 31);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
         }
 
         [Test]
@@ -1944,34 +1098,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithMultipleSteps");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -2003,8 +1132,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2029,36 +1156,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(1, invokedArgs.Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[0][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[0][4]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 13);
+            VerifyNumberOfInvocations(1);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 6);
         }
 
         [Test]
@@ -2087,34 +1190,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithLocalPostStep");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -2134,8 +1212,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2160,59 +1236,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(5, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[0][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][4]);
-
-            Assert.AreEqual(10, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[1][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[1][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[1][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[1][7]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[1][8]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[1][9]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 28);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
         }
 
         [Test]
@@ -2241,34 +1270,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithLocalPreStep");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -2288,8 +1292,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2314,59 +1316,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual(10, invokedArgs[0].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:IsFirstStep=\"true\"", invokedArgs[0][3]);
-            Assert.AreEqual("/P:IsLastStep=\"true\"", invokedArgs[0][4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "/P:StepPath=\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][5]);
-            Assert.AreEqual("/P:StepDescription=\"description1\"", invokedArgs[0][6]);
-            Assert.AreEqual("/P:StepName=\"name1\"", invokedArgs[0][7]);
-            Assert.AreEqual("/P:StepId=\"id1\"", invokedArgs[0][8]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[0][9]);
-
-            Assert.AreEqual(5, invokedArgs[1].Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[1][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[1][4]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 28);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
         }
 
         [Test]
@@ -2387,34 +1342,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithMultipleProperties");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<string>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.AddRange(args);
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -2434,8 +1364,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2451,37 +1379,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(6, invokedArgs.Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
-            Assert.AreEqual("/nologo", invokedArgs[1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[3]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath),
-                invokedArgs[5]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 13);
+            VerifyNumberOfInvocations(1);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 6);
         }
 
         [Test]
@@ -2502,34 +1405,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithMultiplePropertiesWithTrailingSemicolon");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<string>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.AddRange(args);
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -2549,8 +1427,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2566,37 +1442,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(6, invokedArgs.Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
-            Assert.AreEqual("/nologo", invokedArgs[1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[3]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[4]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath),
-                invokedArgs[5]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 13);
+            VerifyNumberOfInvocations(1);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 6);
         }
 
         [Test]
@@ -2625,34 +1476,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithMultipleSteps");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true, true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<List<string>>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.Add(new List<string>(args));
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -2681,8 +1507,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2707,47 +1531,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(2, invokedArgs.Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0][0]);
-            Assert.AreEqual("/nologo", invokedArgs[0][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[0][2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[0][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath1),
-                invokedArgs[0][4]);
-
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[1][0]);
-            Assert.AreEqual("/nologo", invokedArgs[1][1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[1][2]);
-            Assert.AreEqual("/P:c=\"d\"", invokedArgs[1][3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath2),
-                invokedArgs[1][4]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Exactly(2));
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 24);
+            VerifyNumberOfInvocations(2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 10);
         }
 
         [Test]
@@ -2768,34 +1557,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithSingleProperty");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<string>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.AddRange(args);
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -2815,8 +1579,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2832,36 +1594,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(5, invokedArgs.Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
-            Assert.AreEqual("/nologo", invokedArgs[1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath),
-                invokedArgs[4]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 12);
+            VerifyNumberOfInvocations(1);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 5);
         }
 
         [Test]
@@ -2882,34 +1620,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 writer.WriteLine("ExecuteWithSinglePropertyWithTrailingSemicolon");
             }
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<string>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.AddRange(args);
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -2929,8 +1642,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2946,36 +1657,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(5, invokedArgs.Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
-            Assert.AreEqual("/nologo", invokedArgs[1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
-            Assert.AreEqual("/P:a=\"b\"", invokedArgs[3]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath),
-                invokedArgs[4]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 12);
+            VerifyNumberOfInvocations(1);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 5);
         }
 
         [Test]
@@ -2991,39 +1678,11 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var scriptPath = Path.Combine(
                 workingDir,
                 "script.msbuild");
-            using (var writer = new StreamWriter(scriptPath, false, Encoding.Unicode))
-            {
-                writer.WriteLine("ExecuteWithSingleStep");
-            }
+            GeneratePassingScript(scriptPath);
 
-            InitializeBuildEngine();
+            InitializeBuildEngine(new[] { true });
 
-            var invokedPath = string.Empty;
-            var invokedArgs = new List<string>();
-            var invokedWorkingDirectory = string.Empty;
-            Action<StringDictionary> environmentVariableBuilder = null;
-            var invoker = new Mock<IApplicationInvoker>();
-            {
-                invoker.Setup(
-                    i => i.Invoke(
-                        It.IsAny<string>(),
-                        It.IsAny<IEnumerable<string>>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Action<StringDictionary>>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<DataReceivedEventHandler>(),
-                        It.IsAny<bool>()))
-                    .Callback<string, IEnumerable<string>, string, Action<StringDictionary>, DataReceivedEventHandler, DataReceivedEventHandler, bool>(
-                        (path, args, dir, e, o, err, f) =>
-                        {
-                            invokedPath = path;
-                            invokedArgs.AddRange(args);
-                            invokedWorkingDirectory = dir;
-                            environmentVariableBuilder = e;
-                        });
-            }
-
-            var task = new InvokeSteps(invoker.Object);
+            var task = new InvokeSteps();
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
@@ -3043,8 +1702,6 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     })
             };
             task.Properties = new TaskItem[0];
-            task.RunEachTargetSeparately = false;
-            task.SkipNonexistentProjects = false;
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -3060,35 +1717,12 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
             task.StopOnPreStepFailure = true;
-            task.Targets = string.Empty;
-            task.WorkingDirectory = new TaskItem(workingDir);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
-            Assert.AreEqual(4, invokedArgs.Count);
-            Assert.AreEqual("/nodeReuse:false", invokedArgs[0]);
-            Assert.AreEqual("/nologo", invokedArgs[1]);
-            Assert.AreEqual("/verbosity:normal", invokedArgs[2]);
-            Assert.AreEqual(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "\"{0}\"",
-                    scriptPath),
-                invokedArgs[3]);
-
-            invoker.Verify(
-                i => i.Invoke(
-                    It.IsAny<string>(),
-                    It.IsAny<IEnumerable<string>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Action<StringDictionary>>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<DataReceivedEventHandler>(),
-                    It.IsAny<bool>()),
-                Times.Once());
-
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 10);
+            VerifyNumberOfInvocations(1);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 3);
         }
     }
 }

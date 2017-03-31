@@ -12,15 +12,41 @@
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
         Project="$(FileImports)" />
 
-    <Import
-        Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild') AND '$(ExistsSharedTemplateTokens)' != 'true' "
-        Project="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild" />
-
     <Target
         Condition="!Exists('$(FileVcsInfo)')"
         Name="nBuildKit_Shared_Prepare_VcsInfo_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo" />
-        <CallTarget Targets="nBuildKit_Shared_TemplateTokens_Generate" />
+
+        <Copy
+            DestinationFolder="$(DirTemplateGenerators)"
+            SkipUnchangedFiles="true"
+            SourceFiles="$(MSBuildThisFileDirectory)shared.generatetoken.vcsinfo.msbuild" />
+
+        <PropertyGroup>
+            <Locations>
+                DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+                DirNBuildKitMsBuildTasks=$(DirNBuildKitMsBuildTasks);
+                DirWorkspace=$(DirWorkspace);
+                DirUserSettings=$(DirUserSettings);
+            </Locations>
+            <Files>
+                FileImports=$(FileImports);
+            </Files>
+            <DefaultProperties>
+            </DefaultProperties>
+        </PropertyGroup>
+        <InvokeStandaloneMsBuild
+            Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild')"
+            Projects="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild"
+            Properties="$(Locations);$(Files);$(DefaultProperties)"
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            Targets="nBuildKit_Shared_TemplateTokens_Generate"
+            TemporaryDirectory="$(DirBuildTemp)"
+            ToolsVersion="$(MSBuildToolsVersion)"
+            WorkingDirectory="$(DirWorkspace)">
+        </InvokeStandaloneMsBuild>
     </Target>
 
     <Target

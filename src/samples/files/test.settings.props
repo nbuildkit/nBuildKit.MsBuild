@@ -140,7 +140,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Clean;
+                clean;
+                prepare;
+                prepare.clean;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -152,7 +154,8 @@
             <Properties>
             </Properties>
             <Groups>
-                Bootstrap;
+                prepare;
+                prepare.bootstrap;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -163,7 +166,8 @@
             <Properties>
             </Properties>
             <Groups>
-                Bootstrap;
+                prepare;
+                prepare.bootstrap;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -175,9 +179,9 @@
             <Properties>
             </Properties>
             <Groups>
-                NuGet;
-                Prepare;
-                Restore;
+                prepare;
+                prepare.restore;
+                prepare.restore.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -193,7 +197,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.buildserver;
+                prepare.buildserver.vcssetbranch;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -204,7 +210,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.vcsinfo;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -215,7 +223,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.issueids;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -227,7 +237,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.version;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -238,7 +250,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.releasenotes;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -250,8 +264,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -262,8 +277,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.files;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -275,8 +291,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Generate;
-                Prepare;
+                prepare;
+                prepare.generate;
+                prepare.generate.files;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -288,8 +305,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Integration;
-                Pester;
+                test;
+                test.pester;
+                test.pester.integration;
             </Groups>
             <PreSteps>
             </PreSteps>

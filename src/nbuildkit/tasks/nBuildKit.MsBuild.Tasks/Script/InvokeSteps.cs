@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // <copyright company="nBuildKit">
 // Copyright (c) nBuildKit. All rights reserved.
 // Licensed under the Apache License, Version 2.0 license. See LICENCE.md file in the project root for full license information.
@@ -16,14 +16,13 @@ using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core;
-using NBuildKit.MsBuild.Tasks.Core.FileSystem;
 
 namespace NBuildKit.MsBuild.Tasks
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that executes steps for nBuildKit.
     /// </summary>
-    public sealed class InvokeSteps : MsBuildCommandLineToolTask
+    public sealed class InvokeSteps : BaseTask
     {
         private static Hashtable GetStepMetadata(string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)
         {
@@ -63,55 +62,21 @@ namespace NBuildKit.MsBuild.Tasks
         {
             const string MetadataTag = "PreSteps";
             var steps = step.GetMetadata(MetadataTag);
-            return steps.Split(';').Select(s => new TaskItem(s)).ToArray();
+            return steps.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => new TaskItem(s)).ToArray();
         }
 
         private static ITaskItem[] LocalPostSteps(ITaskItem step)
         {
             const string MetadataTag = "PostSteps";
             var steps = step.GetMetadata(MetadataTag);
-            return steps.Split(';').Select(s => new TaskItem(s)).ToArray();
-        }
-
-        private static string MetadataTableToString(Hashtable metadataTable)
-        {
-            var list = new List<string>();
-            foreach (DictionaryEntry entry in metadataTable)
-            {
-                list.Add(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0}={1}",
-                        entry.Key,
-                        EscapingUtilities.UnescapeAll(entry.Value as string)));
-            }
-
-            return string.Join(";", list);
+            return steps.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => new TaskItem(s)).ToArray();
         }
 
         private static IEnumerable<string> StepGroups(ITaskItem step)
         {
             const string MetadataTag = "Groups";
             var groups = step.GetMetadata(MetadataTag);
-            return groups.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => s.Trim());
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InvokeSteps"/> class.
-        /// </summary>
-        public InvokeSteps()
-            : this(null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InvokeSteps"/> class.
-        /// </summary>
-        /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
-        public InvokeSteps(IApplicationInvoker invoker)
-            : base(invoker)
-        {
-            ShowDetailedSummary = true;
+            return groups.ToLower(CultureInfo.InvariantCulture).Split(';');
         }
 
         private void AddStepMetadata(ITaskItem subStep, string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)
@@ -124,14 +89,7 @@ namespace NBuildKit.MsBuild.Tasks
             if (!string.IsNullOrEmpty(stepProperties))
             {
                 Hashtable additionalProjectPropertiesTable = null;
-                var parseResult = PropertyParser.GetTableWithEscaping(
-                    Log,
-                    "AdditionalProperties",
-                    "AdditionalProperties",
-                    stepProperties.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(s => s.Trim()),
-                    out additionalProjectPropertiesTable);
-                if (!parseResult)
+                if (!PropertyParser.GetTableWithEscaping(Log, "AdditionalProperties", "AdditionalProperties", stepProperties.Split(';'), out additionalProjectPropertiesTable))
                 {
                     // Ignore it ...
                 }
@@ -145,7 +103,19 @@ namespace NBuildKit.MsBuild.Tasks
                 }
             }
 
-            subStep.SetMetadata(MetadataTag, MetadataTableToString(stepMetadata));
+            // Turn the hashtable into a properties string again.
+            var builder = new StringBuilder();
+            foreach (DictionaryEntry entry in stepMetadata)
+            {
+                builder.Append(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}={1};",
+                        entry.Key,
+                        EscapingUtilities.UnescapeAll(entry.Value as string)));
+            }
+
+            subStep.SetMetadata(MetadataTag, builder.ToString());
         }
 
         /// <inheritdoc/>
@@ -195,9 +165,6 @@ namespace NBuildKit.MsBuild.Tasks
                             break;
                         }
                     }
-
-                    // Create some additional space in the logs between the stages.
-                    Log.LogMessage(string.Empty);
                 }
                 catch (Exception e)
                 {
@@ -264,7 +231,7 @@ namespace NBuildKit.MsBuild.Tasks
         private bool ExecuteStep(ITaskItem step, bool isFirst, bool isLast)
         {
             var stepResult = true;
-            var stepPath = PathUtilities.GetAbsolutePath(step.ItemSpec);
+            var stepPath = GetAbsolutePath(step.ItemSpec);
             if (PreSteps != null)
             {
                 foreach (var globalPreStep in PreSteps)
@@ -407,18 +374,18 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should fail if a pre-step fails
+        /// Gets or sets a value indicating whether the process should fail if a post-step fails
         /// </summary>
-        public bool FailOnPreStepFailure
+        public bool FailOnPostStepFailure
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should fail if a post-step fails
+        /// Gets or sets a value indicating whether the process should fail if a pre-step fails
         /// </summary>
-        public bool FailOnPostStepFailure
+        public bool FailOnPreStepFailure
         {
             get;
             set;
@@ -450,97 +417,65 @@ namespace NBuildKit.MsBuild.Tasks
 
         private bool InvokeBuildEngine(ITaskItem project)
         {
-            if (project == null)
-            {
-                return false;
-            }
-
             Hashtable propertiesTable;
-            var parseResult = PropertyParser.GetTableWithEscaping(
-                Log,
-                "GlobalProperties",
-                "Properties",
-                Properties.Select(t => t.ItemSpec).ToArray(),
-                out propertiesTable);
-            if (!parseResult)
+            if (!PropertyParser.GetTableWithEscaping(Log, "GlobalProperties", "Properties", Properties.Select(t => t.ItemSpec).ToArray(), out propertiesTable))
             {
                 return false;
             }
 
-            string projectPath = PathUtilities.GetAbsolutePath(project.ItemSpec);
+            string projectPath = GetAbsolutePath(project.ItemSpec);
             if (File.Exists(projectPath))
             {
-                // If the user specified additional properties then add those
-                var projectProperties = project.GetMetadata("Properties");
-                if (!string.IsNullOrEmpty(projectProperties))
+                var toolsVersion = ToolsVersion;
+                if (project != null)
                 {
-                    Hashtable additionalProjectPropertiesTable;
-                    var wasPropertyParseSuccessful = PropertyParser.GetTableWithEscaping(
-                        Log,
-                        "AdditionalProperties",
-                        "AdditionalProperties",
-                        projectProperties.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                            .Select(s => s.Trim().Trim(';')),
-                        out additionalProjectPropertiesTable);
-                    if (!wasPropertyParseSuccessful)
+                    // If the user specified additional properties then add those
+                    var projectProperties = project.GetMetadata("Properties");
+                    if (!string.IsNullOrEmpty(projectProperties))
                     {
-                        return false;
-                    }
-
-                    var combinedTable = new Hashtable(StringComparer.OrdinalIgnoreCase);
-
-                    // First copy in the properties from the global table that not in the additional properties table
-                    if (propertiesTable != null)
-                    {
-                        foreach (DictionaryEntry entry in propertiesTable)
+                        Hashtable additionalProjectPropertiesTable;
+                        if (!PropertyParser.GetTableWithEscaping(Log, "AdditionalProperties", "AdditionalProperties", projectProperties.Split(';'), out additionalProjectPropertiesTable))
                         {
-                            if (!additionalProjectPropertiesTable.Contains(entry.Key))
+                            return false;
+                        }
+
+                        var combinedTable = new Hashtable(StringComparer.OrdinalIgnoreCase);
+
+                        // First copy in the properties from the global table that not in the additional properties table
+                        if (propertiesTable != null)
+                        {
+                            foreach (DictionaryEntry entry in propertiesTable)
                             {
-                                combinedTable.Add(entry.Key, entry.Value);
+                                if (!additionalProjectPropertiesTable.Contains(entry.Key))
+                                {
+                                    combinedTable.Add(entry.Key, entry.Value);
+                                }
                             }
                         }
-                    }
 
-                    // Add all the additional properties
-                    foreach (DictionaryEntry entry in additionalProjectPropertiesTable)
-                    {
-                        combinedTable.Add(entry.Key, entry.Value);
-                    }
+                        // Add all the additional properties
+                        foreach (DictionaryEntry entry in additionalProjectPropertiesTable)
+                        {
+                            combinedTable.Add(entry.Key, entry.Value);
+                        }
 
-                    propertiesTable = combinedTable;
+                        propertiesTable = combinedTable;
+                    }
                 }
 
                 // Send the project off to the build engine. By passing in null to the
                 // first param, we are indicating that the project to build is the same
                 // as the *calling* project file.
-                var arguments = new List<string>();
-                {
-                    foreach (DictionaryEntry entry in propertiesTable)
-                    {
-                        arguments.Add(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "/P:{0}=\"{1}\"",
-                                entry.Key,
-                                EscapingUtilities.UnescapeAll(entry.Value as string).TrimEnd(new[] { '\\' })));
-                    }
+                BuildEngineResult result =
+                    BuildEngine3.BuildProjectFilesInParallel(
+                        new[] { projectPath },
+                        null,
+                        new IDictionary[] { propertiesTable },
+                        new IList<string>[] { new List<string>() },
+                        new[] { toolsVersion },
+                        false);
 
-                    arguments.Add(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "\"{0}\"",
-                            projectPath));
-                }
-
-                Log.LogMessage(
-                    "Building project at: {0}",
-                    projectPath);
-                var exitCode = InvokeMsBuild(arguments);
-
-                // Create some space in the logs between the invocations.
-                Log.LogMessage(string.Empty);
-
-                return exitCode == 0;
+                return result.Result;
             }
             else
             {
@@ -564,6 +499,25 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets the steps that should be executed prior to each step.
         /// </summary>
         public ITaskItem[] PreSteps
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the steps that should be taken for the current process.
+        /// </summary>
+        [Required]
+        public ITaskItem[] Projects
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the properties for the steps.
+        /// </summary>
+        public ITaskItem[] Properties
         {
             get;
             set;
@@ -605,6 +559,16 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether or not the process should stop on the first error or continue.
+        /// Default is false.
+        /// </summary>
+        public bool StopOnFirstFailure
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the process should stop if a pre-step fails
         /// </summary>
         public bool StopOnPreStepFailure
@@ -617,6 +581,15 @@ namespace NBuildKit.MsBuild.Tasks
         /// Gets or sets a value indicating whether the process should stop if a post-step fails
         /// </summary>
         public bool StopOnPostStepFailure
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the version of MsBuild and the build tools that should be used.
+        /// </summary>
+        public string ToolsVersion
         {
             get;
             set;

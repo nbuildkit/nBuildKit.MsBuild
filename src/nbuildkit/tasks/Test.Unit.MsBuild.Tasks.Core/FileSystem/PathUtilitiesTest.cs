@@ -50,21 +50,24 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         }
 
         [Test]
-        public void AppendDirectorySeparatorChar()
+        public void AppendDirectorySeparatorCharToDirectory()
         {
             var pathWithoutSeparator = @"c:\temp";
             var pathWithSeparator = @"c:\temp\";
-            Assert.AreEqual(pathWithSeparator, PathUtilities.AppendDirectorySeparatorChar(pathWithoutSeparator));
-            Assert.AreEqual(pathWithSeparator, PathUtilities.AppendDirectorySeparatorChar(pathWithSeparator));
+            Assert.AreEqual(pathWithSeparator, PathUtilities.AppendDirectorySeparatorCharToDirectory(pathWithoutSeparator));
+            Assert.AreEqual(pathWithSeparator, PathUtilities.AppendDirectorySeparatorCharToDirectory(pathWithSeparator));
         }
 
         [Test]
         public void BaseDirectory()
         {
             var expectedPath = @"c:\temp";
-            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\**\file.txt"));
-            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\**\*.*"));
-            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\**\bin\**\file.txt"));
+            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\file.txt", true));
+            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\"));
+            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp"));
+            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\**\file.txt", true));
+            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\**\*.*", true));
+            Assert.AreEqual(expectedPath, PathUtilities.BaseDirectory(@"c:\temp\**\bin\**\file.txt", true));
         }
 
         [Test]
@@ -90,11 +93,11 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         }
 
         [Test]
-        public void GetRelativeDirectoryPath()
+        public void GetDirectoryPathRelativeToDirectory()
         {
-            Assert.AreEqual(@"temp\", PathUtilities.GetRelativeDirectoryPath(@"c:\temp\", @"c:\"));
-            Assert.AreEqual(@"..\temp\", PathUtilities.GetRelativeDirectoryPath(@"c:\temp\", @"c:\other\"));
-            Assert.AreEqual(@"..\other\temp\", PathUtilities.GetRelativeDirectoryPath(@"c:\other\temp\", @"c:\sub"));
+            Assert.AreEqual(@"temp\", PathUtilities.GetDirectoryPathRelativeToDirectory(@"c:\temp\", @"c:\"));
+            Assert.AreEqual(@"..\temp\", PathUtilities.GetDirectoryPathRelativeToDirectory(@"c:\temp\", @"c:\other\"));
+            Assert.AreEqual(@"..\other\temp\", PathUtilities.GetDirectoryPathRelativeToDirectory(@"c:\other\temp\", @"c:\sub"));
         }
 
         [Test]
@@ -112,9 +115,19 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
             var file1 = Path.Combine(directory, "temp", "file.txt");
             CreateTempFile(file1);
 
-            var file2 = Path.Combine(directory, "other", "temp", "file.txt");
+            var file2 = Path.Combine(directory, "other path", "temp", "file.txt");
             CreateTempFile(file2);
 
+            var file3 = Path.Combine(directory, "file.txt");
+            CreateTempFile(file3);
+
+            Assert.That(
+                PathUtilities.IncludedPaths(file3, directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file3
+                    }));
             Assert.That(
                 PathUtilities.IncludedPaths(file1, directory),
                 Is.EquivalentTo(
@@ -132,7 +145,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 Is.EquivalentTo(
                     new[]
                     {
-                        file1
+                        file1,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths(
@@ -145,6 +158,19 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                     new[]
                     {
                         file1,
+                        file2,
+                        file3,
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0}\\other*\\**\\*.txt",
+                        directory),
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
                         file2
                     }));
             Assert.That(
@@ -155,10 +181,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         directory),
                     directory),
                 Is.EquivalentTo(
-                    new[]
-                    {
-                        file2
-                    }));
+                    new string[0]));
             Assert.That(
                 PathUtilities.IncludedPaths(
                     string.Format(
@@ -184,7 +207,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
             var file2 = Path.Combine(directory, "temp", "other.txt");
             CreateTempFile(file2);
 
-            var file3 = Path.Combine(directory, "other", "temp", "file.txt");
+            var file3 = Path.Combine(directory, "other path", "temp", "file.txt");
             CreateTempFile(file3);
 
             var file4 = Path.Combine(directory, "other", "temp", "other.txt");
@@ -216,7 +239,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         {
                             string.Format(
                                 CultureInfo.InvariantCulture,
-                                @"{0}\other\**\*.*",
+                                @"{0}\other*\**\*.*",
                                 directory)
                         },
                     directory),

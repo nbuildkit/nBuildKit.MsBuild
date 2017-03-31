@@ -140,7 +140,8 @@
             <Properties>
             </Properties>
             <Groups>
-                Bootstrap;
+                prepare;
+                prepare.bootstrap;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -151,7 +152,8 @@
             <Properties>
             </Properties>
             <Groups>
-                Bootstrap;
+                prepare;
+                prepare.bootstrap;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -163,9 +165,9 @@
             <Properties>
             </Properties>
             <Groups>
-                NuGet;
-                Prepare;
-                Restore;
+                prepare;
+                prepare.restore;
+                prepare.restore.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -181,7 +183,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.buildserver;
+                prepare.buildserver.vcssetbranch;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -192,7 +196,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.issueids;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -208,7 +214,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.version;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -221,8 +229,9 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Prepare;
-                Tag;
+                prepare;
+                prepare.vcs;
+                prepare.vcs.tag;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -234,8 +243,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -246,8 +256,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.files;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -261,8 +272,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Tag;
-                Push;
+                deploy;
+                deploy.vcs.tags;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -275,8 +286,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                NuGet;
-                Push;
+                deploy;
+                deploy.package.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -289,8 +300,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Directory;
-                Push;
+                deploy;
+                deploy.package.directory;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -303,8 +314,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Push;
-                SymbolServer;
+                deploy;
+                deploy.package.symbols;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -317,8 +328,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                GitHub;
-                Push;
+                deploy;
+                deploy.github;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -331,8 +342,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Git;
-                Push;
+                deploy;
+                deploy.vcs.git.branch;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -345,8 +356,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Git;
-                Push;
+                deploy;
+                deploy.vcs.git.repository;
             </Groups>
             <PreSteps>
             </PreSteps>

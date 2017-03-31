@@ -379,17 +379,17 @@
         <!--
             The flag that indicates if the input branch is a GitFlow feature branch.
         -->
-        <!-- <IsFeatureBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(feature\/).*'))</IsFeatureBranch> -->
+        <!-- <IsFeatureBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(feature\/).*'))</IsFeatureBranch> -->
 
         <!--
             The flag that indicates if the input branch is a GitFlow release branch.
         -->
-        <!-- <IsReleaseBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(release\/).*'))</IsReleaseBranch> -->
+        <!-- <IsReleaseBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(release\/).*'))</IsReleaseBranch> -->
 
         <!--
             The flag that indicates if the input branch is a GitFlow hotfix branch.
         -->
-        <!-- <IsHotfixBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(hotfix\/).*'))</IsHotfixBranch> -->
+        <!-- <IsHotfixBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(hotfix\/).*'))</IsHotfixBranch> -->
     </PropertyGroup>
     <!--
         The collection of branches that the changes should be merged to. The build will be executed on the last
