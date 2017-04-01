@@ -34,11 +34,11 @@
         <Message Text="Current branch: $(CurrentGitBranch)" />
 
         <Message
-            Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' "
+            Condition=" '$(GitBranchExpected)' != 'UNDEFINED' AND '$(CurrentGitBranch)' != '$(GitBranchExpected)' "
             Text="Not on expected branch, resetting ..." />
         <GitCheckout
             Branch="$(GitBranchExpected)"
-            Condition=" '$(CurrentGitBranch)' != '$(GitBranchExpected)' "
+            Condition=" '$(GitBranchExpected)' != 'UNDEFINED' AND '$(CurrentGitBranch)' != '$(GitBranchExpected)' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)" />
 
@@ -52,11 +52,11 @@
         <Message Text="Current revision: $(GitRevNoCurrentBranch)" />
 
         <Message
-            Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' "
+            Condition=" '$(GitRevNoExpected)' != 'UNDEFINED' AND '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' "
             Text="Not at expected revision, resetting ..." />
         <GitReset
             Commit="$(GitRevNoExpected)"
-            Condition=" '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' "
+            Condition=" '$(GitRevNoExpected)' != 'UNDEFINED' AND '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)" />
     </Target>
