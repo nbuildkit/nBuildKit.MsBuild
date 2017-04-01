@@ -107,11 +107,24 @@
         </ItemGroup>
 
         <!-- Copy files -->
-        <CreateProperty Value="$(RepositoryToPushTo.Substring($(RepositoryToPushTo.LastIndexOf('/'))).TrimStart('/'))">
+        <CreateProperty
+            Condition="$(RepositoryToPushTo.Contains('\'))"
+            Value="$(RepositoryToPushTo.Substring($(RepositoryToPushTo.LastIndexOf('\'))).TrimStart('\'))">
             <Output
                 PropertyName="RepositoryName"
                 TaskParameter="Value" />
         </CreateProperty>
+        <CreateProperty
+            Condition="$(RepositoryToPushTo.Contains('/'))"
+            Value="$(RepositoryToPushTo.Substring($(RepositoryToPushTo.LastIndexOf('/'))).TrimStart('/'))">
+            <Output
+                PropertyName="RepositoryName"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <Error
+            Condition=" '$(RepositoryName)' == '' "
+            Text="Could not determine what the name of the repository was." />
+
         <CreateProperty Value="$(DirBuildTemp)\git\$(RepositoryName)">
             <Output
                 PropertyName="DirRepositoryWorkspace"
@@ -231,7 +244,7 @@
         <GitPush
             Condition=" '$(RepositoryToPushTo)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"
-            Tags="true"
+            PushTags="true"
             Workspace="$(DirRepositoryWorkspace)" />
     </Target>
 </Project>
