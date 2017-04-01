@@ -66,15 +66,27 @@ if (-not (Test-Path $artefactsPath))
     New-Item -Path $artefactsPath -ItemType Directory | Out-Null
 }
 
-Describe 'For the VB.NET test' {
+$branchToTestOn = "release/$($nbuildkitmaximumversion)"
+Describe 'For the VB.NET test against the oldest version' {
 
+    $originalDevelopSha = ''
+    $originalMasterSha = ''
+    $originalReleaseBranchSha = ''
     Context 'the preparation of the workspace' {
         New-Workspace `
             -remoteRepositoryUrl $remoteRepositoryUrl `
             -activeBranch $activeBranch `
+            -gitflowFinishingReleaseVersion $nbuildkitminimumversion `
+            -branchToTestOn $branchToTestOn `
+            -originBranch 'develop' `
             -repositoryLocation $repositoryLocation `
             -workspaceLocation $workspaceLocation `
             -tempLocation $tempLocation
+
+        AppendTo-ReadMe `
+            -text 'Prepare workspace: Adding to the readme' `
+            -commitMessage 'prepare workspace: adding to the readme' `
+            -workspaceLocation $workspaceLocation
 
         It 'has created the local repository' {
             $repositoryLocation | Should Exist
@@ -92,12 +104,16 @@ Describe 'For the VB.NET test' {
             $origin | Should Be $repositoryLocation
         }
 
-        It 'has created a feature branch' {
+        It 'has created a release branch' {
             $currentBranch = Get-CurrentBranch -workspace $workspaceLocation
             $currentBranch | Should Not BeNullOrEmpty
-            $currentBranch.StartsWith('feature/') | Should Be $true
+            $currentBranch.StartsWith('release/') | Should Be $true
         }
     }
+
+    $originalDevelopSha = Get-CurrentCommit -branch 'develop' -workspace $workspaceLocation
+    $originalMasterSha = Get-CurrentCommit -branch 'master' -workspace $workspaceLocation
+    $originalReleaseBranchSha = Get-CurrentCommit -branch $branchToTestOn -workspace $workspaceLocation
 
     Context 'the build executes successfully' {
         $msBuildProperties = @{
@@ -105,6 +121,8 @@ Describe 'For the VB.NET test' {
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
             'LocalNuGetRepository' = $localNuGetFeed
+            'IsOnBuildServer' = 'true'
+            'GitBranchExpected' = $branchToTestOn
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
@@ -141,6 +159,38 @@ Describe 'For the VB.NET test' {
             }
         }
     }
+
+    Context 'the build has performed a merge' {
+        $developSha = Get-CurrentCommit -branch 'develop' -workspace $workspaceLocation
+        $parentCommits = Get-Parents -currentCommitId $developSha -workspace $workspaceLocation
+        It 'the release was merged to develop' {
+            ,$parentCommits | Should BeOfType System.Array
+            ,$parentCommits.Length | Should Be 2
+        }
+
+        It 'the latest develop commit has as parents the release branch and the develop branch' {
+            $parentCommits[0] | Should Be $originalDevelopSha
+            $parentCommits[1] | Should Be $originalReleaseBranchSha
+        }
+
+        It 'the current branch is master' {
+            $currentBranch = Get-CurrentBranch -workspace $workspaceLocation
+            $currentBranch | Should Not BeNullOrEmpty
+            $currentBranch | Should Be 'master'
+        }
+
+        $parentCommits = Get-Parents -workspace $workspaceLocation
+        It 'the current commit is a merge commit' {
+            ,$parentCommits | Should BeOfType System.Array
+            ,$parentCommits.Length | Should Be 2
+        }
+
+        It 'the current commit has as parents the release branch and the master branch' {
+            $parentCommits[0] | Should Be $originalMasterSha
+            $parentCommits[1] | Should Be $originalReleaseBranchSha
+        }
+    }
+
 
     Context 'the build produces a NuGet package' {
         $nugetPackage = Join-Path $workspaceLocation 'build\deploy\nBuildKit.Test.VbNet.Library.1.2.3.nupkg'
@@ -254,7 +304,7 @@ Describe 'For the VB.NET test' {
         if (Test-Path $archive)
         {
             # extract the package
-            $packageUnzipLocation = Join-Path $workspaceLocation 'build\temp\unzip\archive'
+            $packageUnzipLocation = Join-Path $workspaceLocation 'build\temp\unzip\archive\package'
             if (-not (Test-Path $packageUnziplocation))
             {
                 New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
@@ -301,6 +351,30 @@ Describe 'For the VB.NET test' {
         }
     }
 
+    Context 'the build produces a merge archive package' {
+        $archive = Join-Path $workspaceLocation "build\deploy\gitmerge-nBuildKit.Test.VbNet-$($branchToTestOn.Replace('/', '_')).zip"
+
+        It 'in the expected location' {
+            $archive | Should Exist
+        }
+
+        if (Test-Path $archive)
+        {
+            # extract the package
+            $packageUnzipLocation = Join-Path $workspaceLocation 'build\temp\unzip\archive\git'
+            if (-not (Test-Path $packageUnziplocation))
+            {
+                New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
+            }
+            [System.IO.Compression.ZipFile]::ExtractToDirectory($archive, $packageUnzipLocation)
+
+            It 'with the expected files' {
+                (Join-Path $packageUnzipLocation 'vcs.mergeinfo.xml') | Should Exist
+                (Join-Path $packageUnzipLocation '.git') | Should Exist
+            }
+        }
+    }
+
     Context 'the deploy executes successfully' {
         $msBuildProperties = @{
             "FileEnvironment" = (Join-Path $workspaceLocation 'environment.props')
@@ -310,6 +384,9 @@ Describe 'For the VB.NET test' {
             'ArtifactsServerPath' = $artefactsPath
             'NugetFeedPath' = $nugetPath
             'SymbolServerPath' = $symbolsPath
+            'GitRemoteRepository' = $repositoryLocation
+            'IsOnBuildServer' = 'true'
+            'GitBranchExpected' = $branchToTestOn
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
@@ -339,6 +416,38 @@ Describe 'For the VB.NET test' {
     Context 'the deploy pushed to the file system' {
         It 'pushed the archive' {
             (Join-Path $artefactsPath 'nBuildKit.Test.VbNet\1.2.3\nBuildKit.Test.VbNet-1.2.3.zip') | Should Exist
+        }
+    }
+
+    Context 'the deploy pushed to the remote repository' {
+        $tempWorkspace = Join-Path $tempLocation 'verification'
+        Clone-Repository `
+            -url $repositoryLocation `
+            -destination $tempWorkspace
+
+        $workspaceSha = Get-CurrentCommit -branch 'master' -workspace $workspaceLocation
+        $remoteSha = Get-CurrentCommit -branch 'master' -workspace $tempWorkspace
+        It 'pushed the master branch' {
+           $remoteSha | Should Be $workspaceSha
+        }
+
+        $originalWorkingDirectory = $pwd
+        try
+        {
+            Set-Location $tempWorkspace
+
+            Checkout-Branch `
+                -Branch 'develop'
+        }
+        finally
+        {
+            Set-Location $originalWorkingDirectory
+        }
+
+        $workspaceSha = Get-CurrentCommit -branch 'develop' -workspace $workspaceLocation
+        $remoteSha = Get-CurrentCommit -branch 'develop' -workspace $tempWorkspace
+        It 'pushed the develop branch' {
+           $remoteSha | Should Be $workspaceSha
         }
     }
 }

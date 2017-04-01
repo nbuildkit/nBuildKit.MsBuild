@@ -66,15 +66,26 @@ if (-not (Test-Path $artefactsPath))
     New-Item -Path $artefactsPath -ItemType Directory | Out-Null
 }
 
-Describe 'For the C# test' {
+$branchToTestOn = 'feature/test'
+Describe 'For the C# test against the oldest version' {
 
+    $originalDevelopSha = ''
+    $originalFeatureBranchSha = ''
     Context 'the preparation of the workspace' {
         New-Workspace `
             -remoteRepositoryUrl $remoteRepositoryUrl `
             -activeBranch $activeBranch `
+            -gitflowFinishingReleaseVersion $nbuildkitminimumversion `
+            -branchToTestOn $branchToTestOn `
+            -originBranch 'develop' `
             -repositoryLocation $repositoryLocation `
             -workspaceLocation $workspaceLocation `
             -tempLocation $tempLocation
+
+        AppendTo-ReadMe `
+            -text 'Prepare workspace: Adding to the readme' `
+            -commitMessage 'prepare workspace: adding to the readme' `
+            -workspaceLocation $workspaceLocation
 
         It 'has created the local repository' {
             $repositoryLocation | Should Exist
@@ -99,12 +110,16 @@ Describe 'For the C# test' {
         }
     }
 
+    $originalDevelopSha = Get-CurrentCommit -branch 'develop' -workspace $workspaceLocation
+    $originalFeatureBranchSha = Get-CurrentCommit -branch $branchToTestOn -workspace $workspaceLocation
     Context 'the build executes successfully' {
         $msBuildProperties = @{
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
-            'DirUserSettings' = (Join-Path $workspaceLocation 'tools')
+            'DirUserSettings' = 'tools'
             'LocalNuGetRepository' = $localNuGetFeed
+            'IsOnBuildServer' = 'true'
+            'GitBranchExpected' = $branchToTestOn
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
@@ -116,6 +131,25 @@ Describe 'For the C# test' {
         $hasBuild = ($exitCode -eq 0)
         It 'and completes with a zero exit code' {
             $exitCode | Should Be 0
+        }
+    }
+
+    Context 'the build has performed a merge' {
+        It 'the current branch is develop' {
+            $currentBranch = Get-CurrentBranch -workspace $workspaceLocation
+            $currentBranch | Should Not BeNullOrEmpty
+            $currentBranch | Should Be 'develop'
+        }
+
+        $parentCommits = Get-Parents -workspace $workspaceLocation
+        It 'the current commit is a merge commit' {
+            ,$parentCommits | Should BeOfType System.Array
+            ,$parentCommits.Length | Should Be 2
+        }
+
+        It 'the current commit has as parents the feature branch and the develop branch' {
+            $parentCommits[0] | Should Be $originalDevelopSha
+            $parentCommits[1] | Should Be $originalFeatureBranchSha
         }
     }
 
@@ -238,7 +272,7 @@ Describe 'For the C# test' {
         if (Test-Path $archive)
         {
             # extract the package
-            $packageUnzipLocation = Join-Path $workspaceLocation 'build\temp\unzip\archive'
+            $packageUnzipLocation = Join-Path $workspaceLocation 'build\temp\unzip\archive\package'
             if (-not (Test-Path $packageUnziplocation))
             {
                 New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
@@ -285,15 +319,42 @@ Describe 'For the C# test' {
         }
     }
 
+    Context 'the build produces a merge archive package' {
+        $archive = Join-Path $workspaceLocation "build\deploy\gitmerge-nBuildKit.Test.CSharp-$($branchToTestOn.Replace('/', '_')).zip"
+
+        It 'in the expected location' {
+            $archive | Should Exist
+        }
+
+        if (Test-Path $archive)
+        {
+            # extract the package
+            $packageUnzipLocation = Join-Path $workspaceLocation 'build\temp\unzip\archive'
+            if (-not (Test-Path $packageUnziplocation))
+            {
+                New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
+            }
+            [System.IO.Compression.ZipFile]::ExtractToDirectory($archive, $packageUnzipLocation)
+
+            It 'with the expected files' {
+                (Join-Path $packageUnzipLocation 'vcs.mergeinfo.xml') | Should Exist
+                (Join-Path $packageUnzipLocation '.git') | Should Exist
+            }
+        }
+    }
+
     Context 'the deploy executes successfully' {
         $msBuildProperties = @{
             'NBuildKitMinimumVersion' = $nbuildkitminimumversion
             'NBuildKitMaximumVersion' = $nbuildkitmaximumversion
-            'DirUserSettings' = (Join-Path $workspaceLocation 'tools')
+            'DirUserSettings' = 'tools'
             'LocalNuGetRepository' = $localNuGetFeed
             'ArtifactsServerPath' = $artefactsPath
             'NugetFeedPath' = $nugetPath
             'SymbolServerPath' = $symbolsPath
+            'GitRemoteRepository' = $repositoryLocation
+            'IsOnBuildServer' = 'true'
+            'GitBranchExpected' = $branchToTestOn
         }
 
         $exitCode = Invoke-MsBuildFromCommandLine `
@@ -323,6 +384,32 @@ Describe 'For the C# test' {
     Context 'the deploy pushed to the file system' {
         It 'pushed the archive' {
             (Join-Path $artefactsPath 'nBuildKit.Test.CSharp\4.3.2\nBuildKit.Test.CSharp-4.3.2.zip') | Should Exist
+        }
+    }
+
+    Context 'the deploy pushed to the remote repository' {
+        $tempWorkspace = Join-Path $tempLocation 'verification'
+        Clone-Repository `
+            -url $repositoryLocation `
+            -destination $tempWorkspace
+
+        $originalWorkingDirectory = $pwd
+        try
+        {
+            Set-Location $tempWorkspace
+
+            Checkout-Branch `
+                -Branch 'develop'
+        }
+        finally
+        {
+            Set-Location $originalWorkingDirectory
+        }
+
+        $workspaceSha = Get-CurrentCommit -branch 'develop' -workspace $workspaceLocation
+        $remoteSha = Get-CurrentCommit -branch 'develop' -workspace $tempWorkspace
+        It 'pushed the references' {
+           $remoteSha | Should Be $workspaceSha
         }
     }
 }

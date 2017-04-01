@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project
     DefaultTargets="Run"
-    ToolsVersion="11.0"
+    ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Indicate if an error in the pre-step actions should fail the deploy -->
@@ -119,7 +119,7 @@
         $(DeployStepsPrepareTagVcs)        - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
         $(DeployStepsPrepareGetIssueIds)   - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
         $(DeployStepsPrepareCopyNuGet)     - Copies one or more files from a NuGet package.
-        $(DeployStepsPrepareCopyFiles)     - Copies one or more files from the file system or from a NuGet package.
+        $(DeployStepsPrepareCopyFiles)     - Copies one or more files from the file system.
         $(DeployStepsPushToTags)           - Pushes the tags to a remote git repository
         $(DeployStepsPushToNuget)          - Pushes one or more artifacts to a NuGet feed
         $(DeployStepsPushToDirectory)      - Pushes one or more artifacts to a directory
@@ -140,9 +140,9 @@
             <Properties>
             </Properties>
             <Groups>
-                NuGet;
-                Prepare;
-                Restore;
+                prepare;
+                prepare.restore;
+                prepare.restore.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -158,7 +158,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.buildserver;
+                prepare.buildserver.vcssetbranch;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -169,7 +171,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.issueids;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -185,7 +189,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.version;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -199,8 +205,9 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Prepare;
-                Tag;
+                prepare;
+                prepare.vcs;
+                prepare.vcs.tag;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -213,8 +220,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -225,8 +233,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.files;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -241,8 +250,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Tag;
-                Push;
+                deploy;
+                deploy.vcs.tags;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -256,8 +265,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                NuGet;
-                Push;
+                deploy;
+                deploy.package.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -271,8 +280,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Directory;
-                Push;
+                deploy;
+                deploy.package.directory;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -285,8 +294,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Push;
-                SymbolServer;
+                deploy;
+                deploy.package.symbols;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -300,8 +309,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                GitHub;
-                Push;
+                deploy;
+                deploy.github;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -315,8 +324,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Git;
-                Push;
+                deploy;
+                deploy.vcs.git.branch;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -331,8 +340,8 @@
                 Platform=$(Platform);
             </Properties>
             <Groups>
-                Git;
-                Push;
+                deploy;
+                deploy.vcs.git.repository;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -360,6 +369,24 @@
         -->
     </ItemGroup>
 
+    <!--
+        The following item group stores metadata describing the custom deploy steps that are executed in the deploy process.
+        By providing this metadata it is possible for pre- and post-step actions to more clearly determine which step
+        they were attached to.
+    -->
+    <ItemGroup>
+        <!--
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DirWorkspace)\my.deploy.step.msbuild'))">
+            <Description>
+                The description for my cool deploy step
+            </Description>
+            <Id></Id>
+            <Name>My deploy step</Name>
+            <Path>$(DirWorkspace)\my.deploy.step.msbuild</Path>
+        </AvailableStepMetadata>
+        -->
+    </ItemGroup>
+
 
     <!--
         **** PREPARE - COPY FILES ****
@@ -370,7 +397,7 @@
     <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
         <!--
         <FilesToCopy Include="">
-            <Destinations></Destinations>
+            <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
@@ -454,9 +481,9 @@
     </PropertyGroup>
     <ItemGroup>
         <!--
-            <SymbolPackagesToPush
-                Condition=" '$(DirBuildDeploy)' != '' "
-                Include="$(DirBuildDeploy)\*.symbols.nupkg" />
+        <SymbolPackagesToPush
+            Condition=" '$(DirBuildDeploy)' != '' "
+            Include="$(DirBuildDeploy)\*.symbols.nupkg" />
         -->
     </ItemGroup>
 
@@ -536,7 +563,7 @@
         <!--
             The full path to the github-release command line executable.
         -->
-        <!-- <ToolsExternalGitHubReleasePath Condition=" '$(ToolsExternalGitHubReleasePath)' == '' ">github-release.exe</ToolsExternalGitHubReleasePath> -->
+        <!-- <ToolsExternalGitHubReleasePath>github-release.exe</ToolsExternalGitHubReleasePath> -->
     </PropertyGroup>
 
 

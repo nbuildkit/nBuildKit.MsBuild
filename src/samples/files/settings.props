@@ -351,9 +351,11 @@
     <ItemGroup>
         <!--
         <NuGetPackageFiles
+            Condition=" '$(DirWorkspace)' != '' "
             Include="$(DirWorkspace)\packages.config"
             Condition="Exists('$(DirWorkspace)\packages.config')" />
         <NuGetPackageFiles
+            Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\**\packages.config"
             Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config" />
         -->
@@ -366,6 +368,7 @@
     <ItemGroup>
         <!--
         <NpmPackageFiles
+            Condition=" '$(DirWorkspace)' != '' "
             Include="$(DirWorkspace)\**\package.json"
             Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json" />
         -->

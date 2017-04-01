@@ -1,3 +1,32 @@
+function AppendTo-ReadMe
+{
+    [CmdletBinding()]
+    param(
+        [string] $text,
+
+        [string] $commitMessage,
+
+        # The local location where the workspace for the current test can be placed
+        [string] $workspaceLocation
+    )
+
+    $originalWorkingDirectory = $pwd
+    try
+    {
+        Set-Location $workspaceLocation
+
+        Add-Content -Path (Join-Path $workspaceLocation 'README.md') -Value $text
+        Stage-Changes -relativeFilePath 'README.md'
+        New-GitCommit -Message $commitMessage
+
+        Push-ToRemote -origin 'origin'
+    }
+    finally
+    {
+        Set-Location $originalWorkingDirectory
+    }
+}
+
 function New-Workspace
 {
     [CmdletBinding()]
@@ -10,6 +39,15 @@ function New-Workspace
         # according to the gitversion rules in the cloned remote repository. From there the test can make changes
         # to the repository
         [string] $activeBranch,
+
+        # The version for the release branch that should be used when finishing the gitflow on a feature branch.
+        [string] $gitflowFinishingReleaseVersion = '1000.0.0',
+
+        # The branch that should be created to run all the tests on. By default this will be a feature branch
+        [string] $branchToTestOn = 'feature/test',
+
+        # The branch from which the testing branch should be taken.
+        [string] $originBranch = 'develop',
 
         # The local location where the cloned repository can be placed
         [string] $repositoryLocation,
@@ -51,6 +89,7 @@ function New-Workspace
 
             Finish-GitFlow `
                 -branch $activeBranch `
+                -releaseVersion $gitflowFinishingReleaseVersion `
                 @commonParameterSwitches
 
             Push-ToRemote `
@@ -76,8 +115,8 @@ function New-Workspace
         Set-Location $workspaceLocation
 
         New-Branch `
-            -name 'feature/test-nbuildkit' `
-            -source 'develop' `
+            -name $branchToTestOn `
+            -source $originBranch `
             @commonParameterSwitches
     }
     finally
