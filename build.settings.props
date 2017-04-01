@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project
     DefaultTargets="Run"
-    ToolsVersion="11.0"
+    ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <!-- Overrides for the build configuration -->
@@ -147,7 +147,7 @@
         $(BuildStepsPrepareRestoreNpm)                   - Restores all the NPM packages for the project.
         $(BuildStepsPrepareRestoreBower)                 - Restores all the Bower packages for the project.
         $(BuildStepsPrepareCopyNuGet)                    - Copies one or more files from a NuGet package.
-        $(BuildStepsPrepareCopyFiles)                    - Copies one or more files from the file system or from a NuGet package.
+        $(BuildStepsPrepareCopyFiles)                    - Copies one or more files from the file system.
         $(BuildStepsPrepareAssemblyInfo)                 - Updates all existing AssemblyInfo.cs and AssemblyInfo.vb files with the version numbers, company information,
                                                            copyright information and optionally build time and build information.
         $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
@@ -175,7 +175,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Clean;
+                clean;
+                prepare;
+                prepare.clean;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -186,9 +188,9 @@
             <Properties>
             </Properties>
             <Groups>
-                NuGet;
-                Prepare;
-                Restore;
+                prepare;
+                prepare.restore;
+                prepare.restore.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -200,11 +202,15 @@
             The following steps need to be executed on the original branch (i.e. the branch we are interested in
             building.
         -->
-       <BuildStepsToExecute Include="$(BuildStepsPrepareVcsBranch)">
+        <BuildStepsToExecute Include="$(BuildStepsPrepareVcsBranch)">
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.buildserver;
+                prepare.buildserver.vcssetbranch;
+                prepare.vcs;
+                prepare.vcs.vcssetbranch;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -215,7 +221,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.vcsinfo;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -226,7 +234,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.issueids;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -243,7 +253,11 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.buildserver;
+                prepare.buildserver.merge;
+                prepare.vcs;
+                prepare.vcs.merge;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -259,7 +273,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.version;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -269,8 +285,14 @@
         <BuildStepsToExecute
             Condition=" '$(IsGitFlow)' == 'true' AND ('$(IsReleaseBranch)' == 'true' OR '$(IsHotfixBranch)' == 'true') "
             Include="$(BuildStepsPrepareTagVcs)">
+            <Properties>
+            </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.buildserver;
+                prepare.buildserver.tag;
+                prepare.vcs;
+                prepare.vcs.tag;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -282,7 +304,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.get;
+                prepare.get.releasenotes;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -295,9 +319,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Npm;
-                Prepare;
-                Restore;
+                prepare;
+                prepare.restore;
+                prepare.restore.npm;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -308,9 +332,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Bower;
-                Prepare;
-                Restore;
+                prepare;
+                prepare.restore;
+                prepare.restore.bower;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -323,8 +347,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -335,8 +360,9 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.files;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -348,7 +374,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.generate;
+                prepare.generate.assemblyinfo;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -360,7 +388,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Prepare;
+                prepare;
+                prepare.generate;
+                prepare.generate.licenses;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -372,8 +402,9 @@
             <Properties>
             </Properties>
             <Groups>
-                Generate;
-                Prepare;
+                prepare;
+                prepare.generate;
+                prepare.generate.files;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -385,7 +416,8 @@
             <Properties>
             </Properties>
             <Groups>
-                Compile;
+                build;
+                build.visualstudio;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -399,7 +431,9 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                UnitTest;
+                test;
+                test.unittest;
+                test.unittest.nunit;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -413,7 +447,9 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                UnitTest;
+                test;
+                test.unittest;
+                test.unittest.mstest;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -426,7 +462,9 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                UnitTest;
+                test;
+                test.unittest;
+                test.unittest.vstest;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -441,7 +479,9 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Analyze;
+                test;
+                test.analyze;
+                test.analyze.fxcop;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -455,7 +495,8 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Package;
+                build;
+                build.ilmerge;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -469,7 +510,8 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Package;
+                package;
+                package.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -482,7 +524,8 @@
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Package;
+                package;
+                package.zip;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -566,7 +609,7 @@
     <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
         <!--
         <FilesToCopy Include="">
-            <Destinations></Destinations>
+            <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
@@ -888,6 +931,25 @@
 
 
     <!--
+        **** SOURCE ANALYSIS - XML ****
+    -->
+    <ItemGroup>
+        <!--
+            The paths to the XML files that should be validated against the given schema.
+        -->
+        <!--
+        <XmlFilesToValidate
+            Condition=" '$(DirSrc)' != '' "
+            Exclude="$(DirSrc)\**\ignore.xml"
+            Include="$(DirSrc)\**\*.xml">
+            <SchemaFile></SchemaFile>
+            <TargetNamespace></TargetNamespace>
+        </XmlFilesToValidate>
+        -->
+    </ItemGroup>
+
+
+    <!--
         **** BINARY ANALYSIS - FXCOP ****
     -->
     <PropertyGroup>
@@ -1014,75 +1076,66 @@
             The full path to the Visual Studio installation directory
         -->
         <!-- <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 15.0')">C:\Program Files (x86)\Microsoft Visual Studio 15.0</ToolsExternalVisualStudioDir>
-        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 14.0')">C:\Program Files (x86)\Microsoft Visual Studio 14.0</ToolsExternalVisualStudioDir>
-        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0')">C:\Program Files (x86)\Microsoft Visual Studio 12.0</ToolsExternalVisualStudioDir>
-        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0')">C:\Program Files (x86)\Microsoft Visual Studio 11.0</ToolsExternalVisualStudioDir> -->
-
+        <ToolsExternalVisualStudioDir Condition="Exists('C:\Program Files (x86)\Microsoft Visual Studio 14.0')">C:\Program Files (x86)\Microsoft Visual Studio 14.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition="Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0')">C:\Program Files (x86)\Microsoft Visual Studio 12.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition="AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0')">C:\Program Files (x86)\Microsoft Visual Studio 11.0</ToolsExternalVisualStudioDir> -->
         <!--
             The full path to the directory that contains the FxCop command line executable
         -->
-        <!-- <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop')">$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
-        <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
+        <!-- <ToolsExternalFxCopDir Condition="Exists('$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop')">$(ToolsExternalVisualStudioDir)\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
+        <ToolsExternalFxCopDir Condition="Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop</ToolsExternalFxCopDir>
         <ToolsExternalFxCopDir Condition=" '$(ToolsExternalFxCopDir)' == '' ">UNDEFINED</ToolsExternalFxCopDir> -->
-
         <!--
             The full path and version to the ILRepack command line executable. If not defined the packages directory is searched.
         -->
-        <!--<ToolsExternalILRepackPath Condition=" '$(ToolsExternalILRepackPath)' == '' ">UNDEFINED</ToolsExternalILRepackPath>
-        <ToolsExternalILRepackVersion Condition=" '$(ToolsExternalILRepackVersion)' == '' ">2.0.12</ToolsExternalILRepackVersion>-->
-
+        <!--<ToolsExternalILRepackPath>UNDEFINED</ToolsExternalILRepackPath>
+        <ToolsExternalILRepackVersion>2.0.12</ToolsExternalILRepackVersion>-->
         <!--
             The full path to the MsTest command line executable.
         -->
-        <!-- <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
-        <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <!-- <ToolsExternalMsTestPath Condition="Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
+        <ToolsExternalMsTestPath Condition="Exists('C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe')">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\MsTest.exe</ToolsExternalMsTestPath>
         <ToolsExternalMsTestPath Condition=" '$(ToolsExternalMsTestPath)' == '' ">UNDEFINED</ToolsExternalMsTestPath> -->
 
         <!--
             The full path and version to the nUnit command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalNUnitConsolePath Condition=" '$(ToolsExternalNUnitConsolePath)' == '' ">UNDEFINED</ToolsExternalNUnitConsolePath>
-        <ToolsExternalNUnitConsoleVersion Condition=" '$(ToolsExternalNUnitConsoleVersion)' == '' ">2.6.4</ToolsExternalNUnitConsoleVersion> -->
-
+        <!-- <ToolsExternalNUnitConsolePath>UNDEFINED</ToolsExternalNUnitConsolePath>
+        <ToolsExternalNUnitConsoleVersion>2.6.4</ToolsExternalNUnitConsoleVersion> -->
         <!--
             The full path and version to the OpenCover command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalOpenCoverPath Condition=" '$(ToolsExternalOpenCoverPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverPath>
-        <ToolsExternalOpenCoverVersion Condition=" '$(ToolsExternalOpenCoverVersion)' == '' ">4.6.519</ToolsExternalOpenCoverVersion>-->
-
+        <!-- <ToolsExternalOpenCoverPath>UNDEFINED</ToolsExternalOpenCoverPath>
+        <ToolsExternalOpenCoverVersion>4.6.519</ToolsExternalOpenCoverVersion>-->
         <!--
             The full path and version of the OpenCoverToCobertura converter command line executable. If not defined the packages directory is searched.
         -->
-        <!--<ToolsExternalOpenCoverToCoberturaConverterPath Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == '' ">UNDEFINED</ToolsExternalOpenCoverToCoberturaConverterPath>
-        <ToolsExternalOpenCoverToCoberturaConverterVersion Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterVersion)' == '' ">0.2.4</ToolsExternalOpenCoverToCoberturaConverterVersion>-->
-
+        <!--<ToolsExternalOpenCoverToCoberturaConverterPath>UNDEFINED</ToolsExternalOpenCoverToCoberturaConverterPath>
+        <ToolsExternalOpenCoverToCoberturaConverterVersion>0.2.4</ToolsExternalOpenCoverToCoberturaConverterVersion>-->
         <!--
             The full path and version to the ReportGenerator command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalReportGeneratorPath Condition=" '$(ToolsExternalReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalReportGeneratorPath>
-        <ToolsExternalReportGeneratorVersion Condition=" '$(ToolsExternalReportGeneratorVersion)' == '' ">2.4.4</ToolsExternalReportGeneratorVersion>-->
-
+        <!-- <ToolsExternalReportGeneratorPath>UNDEFINED</ToolsExternalReportGeneratorPath>
+        <ToolsExternalReportGeneratorVersion>2.4.4</ToolsExternalReportGeneratorVersion>-->
         <!--
             The full path to the sn.exe command line executable.
         -->
         <!--
-        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\x64\sn.exe</ToolsExternalSnPath>
-        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64\sn.exe</ToolsExternalSnPath>
-        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\sn.exe</ToolsExternalSnPath>
-        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\x64\sn.exe</ToolsExternalSnPath>
-        <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' AND Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition="Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition="Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition="Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v8.1A\bin\NETFX 4.5.1 Tools\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition="Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\x64\sn.exe</ToolsExternalSnPath>
+        <ToolsExternalSnPath Condition="Exists('C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\x64\sn.exe')">C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\x64\sn.exe</ToolsExternalSnPath>
         <ToolsExternalSnPath Condition=" '$(ToolsExternalSnPath)' == '' ">UNDEFINED</ToolsExternalSnPath>
         -->
-
         <!--
             The full path to the VSCoverageToReportGenerator command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalVSCoverageToReportGeneratorPath Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == '' ">UNDEFINED</ToolsExternalVSCoverageToReportGeneratorPath> -->
-
         <!--
             The full path to the VsTest command line executable.
         -->
-        <!-- <ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</ToolsExternalVsTestPath>
+        <!-- <ToolsExternalVsTestPath Condition="Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe')">$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</ToolsExternalVsTestPath>
         <ToolsExternalVsTestPath Condition=" '$(ToolsExternalVsTestPath)' == '' ">UNDEFINED</ToolsExternalVsTestPath> -->
     </PropertyGroup>
 
