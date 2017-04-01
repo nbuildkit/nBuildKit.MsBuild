@@ -22,7 +22,7 @@ function Checkout-Branch
 
     if ($LASTEXITCODE -ne 0)
     {
-        throw "Git checkout failed"
+        throw "Git checkout failed. Output was: $($outputText)"
     }
 }
 
@@ -57,7 +57,7 @@ function Clone-Repository
 
     if ($LASTEXITCODE -ne 0)
     {
-        throw "Git clone failed"
+        throw "Git clone failed. Output was: $($outputText)"
     }
 }
 
@@ -65,7 +65,8 @@ function Finish-GitFlow
 {
     [CmdletBinding()]
     param(
-        [string] $branch
+        [string] $branch,
+        [string] $releaseVersion = '1000.0.0'
     )
 
     $ErrorActionPreference = 'Stop'
@@ -99,7 +100,7 @@ function Finish-GitFlow
                 -name $branch `
                 @commonParameterSwitches
 
-            $defaultReleaseBranch = 'release/10000.0.0'
+            $defaultReleaseBranch = "release/$($releaseVersion)"
             New-Branch `
                 -name $defaultReleaseBranch `
                 -source 'develop' `
@@ -162,6 +163,35 @@ function Get-CurrentBranch
     }
 }
 
+function Get-CurrentCommit
+{
+    [CmdletBinding()]
+    param(
+        [string] $branch = 'HEAD',
+        [string] $workspace
+    )
+
+    $ErrorActionPreference = 'Stop'
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            ErrorAction = "Stop"
+        }
+
+    $currentDirectory = $pwd
+    try
+    {
+        Set-Location $workspace
+
+        $output = & git rev-parse $branch
+        return $output
+    }
+    finally
+    {
+        Set-Location $currentDirectory
+    }
+}
+
 function Get-Origin
 {
     [CmdletBinding()]
@@ -183,6 +213,40 @@ function Get-Origin
 
         $output = & git config --get remote.origin.url
         return $output
+    }
+    finally
+    {
+        Set-Location $currentDirectory
+    }
+}
+
+function Get-Parents
+{
+    [CmdletBinding()]
+    param(
+        [string] $currentCommitId,
+        [string] $workspace
+    )
+
+    $ErrorActionPreference = 'Stop'
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            ErrorAction = "Stop"
+        }
+
+    if ($currentCommitId -eq '')
+    {
+        $currentCommitId = Get-CurrentCommit -workspace $workspace
+    }
+
+    $currentDirectory = $pwd
+    try
+    {
+        Set-Location $workspace
+
+        $output = & git rev-list $currentCommitId --parents -n 1
+        return $output -split ' ' | Select-Object -Last 2
     }
     finally
     {
@@ -216,7 +280,7 @@ function MergeTo-Branch
 
     if ($LASTEXITCODE -ne 0)
     {
-        throw "Git merge failed"
+        throw "Git merge failed. Output was: $($outputText)"
     }
 }
 
@@ -246,7 +310,34 @@ function New-Branch
 
     if ($LASTEXITCODE -ne 0)
     {
-        throw "Git checkout failed"
+        throw "Git new branch failed. Output was: $($outputText)"
+    }
+}
+
+function New-GitCommit
+{
+    [CmdletBinding()]
+    param(
+        [string] $message
+    )
+
+    $ErrorActionPreference = 'Stop'
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            ErrorAction = "Stop"
+        }
+
+    $output = & git commit -m $message 2>&1
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
+
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "Git commit failed. Output was: $($outputText)"
     }
 }
 
@@ -276,7 +367,7 @@ function New-Tag
 
     if ($LASTEXITCODE -ne 0)
     {
-        throw "Git tag failed"
+        throw "Git tag failed. Output was: $($outputText)"
     }
 }
 
@@ -303,7 +394,7 @@ function Push-ToRemote
 
     if ($LASTEXITCODE -ne 0)
     {
-        throw "Git push failed"
+        throw "Git push failed. Output was: $($outputText)"
     }
 }
 
@@ -330,6 +421,33 @@ function Remove-Branch
 
     if ($LASTEXITCODE -ne 0)
     {
-        throw "Git branch failed"
+        throw "Git branch failed. Output was: $($outputText)"
+    }
+}
+
+function Stage-Changes
+{
+    [CmdletBinding()]
+    param(
+        [string] $relativeFilePath
+    )
+
+    $ErrorActionPreference = 'Stop'
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            ErrorAction = "Stop"
+        }
+
+    $output = & git add $relativeFilePath 2>&1
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
+
+    if ($LASTEXITCODE -ne 0)
+    {
+        throw "Git stage failed. Output was: $($outputText)"
     }
 }
