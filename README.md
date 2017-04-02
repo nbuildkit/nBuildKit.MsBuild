@@ -1,16 +1,14 @@
 # nBuildKit
 
-nBuildKit is a collection of tools and scripts that provide an easy way to set-up a complete build and deployment
-for a (.NET) project.
+nBuildKit provides a collection of tools and scripts that provide an easy way to set-up a complete build and deployment
+for a project.
 
 
-## Continuous integration & deployment
+## Status
 
 nBuildKit uses [AppVeyor](http://www.appveyor.com) for the continuous integration and deployment processes.
 
-* __Build:__ [![Build status](https://ci.appveyor.com/api/projects/status/yqpaush2xajbyn74)](https://ci.appveyor.com/project/pvandervelde/nbuildkit)
-
-* __Deployment status:__ [![Build status](https://ci.appveyor.com/api/projects/status/jcp6k51ntktugenm)](https://ci.appveyor.com/project/pvandervelde/nbuildkit-244)
+* __Build:__ [![Build status](https://ci.appveyor.com/api/projects/status/6ue5o5odc8y4480y?svg=true)](https://ci.appveyor.com/project/pvandervelde/nbuildkit-msbuild)
 
 
 ## Set up
@@ -18,36 +16,22 @@ nBuildKit uses [AppVeyor](http://www.appveyor.com) for the continuous integratio
 Currently the only version available provides MsBuild scripts that run the build. In order to use this version take
 the following steps.
 
-* Import the NuGet package as part of the project. Note that it does not need to be imported by a .NET project file as
-  it does not add anything to the projects. Having a packages.config file at the root directory of the repository with
-  the import line for `nBuildKit.MsBuild` will work fine.
-* From the [releases page](https://github.com/pvandervelde/nBuildKit/releases) download the latest
-  `nbuildkit.msbuild.samples.zip` archive.
-* Extract the `settings.props`, `build.msbuild` and `deploy.msbuild` from the ZIP archive and place them
-  in the root directory of the repository.
-* Update the `settings.props` file so that it matches your repository and environment.
-* Execute a build.
+* Download the sample ZIP archive from the [Github releases page](https://github.com/nbuildkit/nBuildKit.MsBuild/releases)
+  or grab the [NuGet package](https://www.nuget.org/packages/nBuildKit.MsBuild.Samples/)
+* Extract the following files:
+  * `entrypoint.msbuild`
+  * `artefacts.settings.props`
+  * `build.settings.props`
+  * `deploy.settings.props`
+  * `settings.props`
+  * `test.settings.props`
+* Also extract the `nuget.config` file if you don't already have one in the root of your repository.
+* [Update the `*.props` files]() so that they matches your repository and environment.
+* Execute a build by calling the following command line:
 
+        msbuild entrypoint.msbuild /t:build
 
-## Installation instructions
-
-The MsBuild libraries are available on [NuGet.org](http://www.nuget.org/packages/nBuildKit.MsBuild/). The ZIP archive containing the sample scripts
-can be found on the [releases page](https://github.com/pvandervelde/nBuildKit/releases).
-
-
-## How to build
-
-To build the project invoke MsBuild on the `build.msbuild` script in the repository root directory. This will package
-the scripts and create the NuGet packages and ZIP archives. Final artifacts will be placed in the `build\deploy` directory.
-
-The build script assumes that:
-
-* The connection to the repository is available so that the version number can be obtained via
-  [GitVersion](https://github.com/GitTools/GitVersion) tool.
-* The [NuGet command line executable](http://dist.nuget.org/win-x86-commandline/latest/nuget.exe) is available
-  from the PATH so that the build can restore all the NuGet packages.
-* The GIT executable is availabe from the PATH so that the build can gather information about the current branch and
-  commit ID.
+During the build process the correct version of the `nBuildKit.MsBuild` packages will be downloaded from [nuget.org](https://www.nuget.org).
 
 
 ## How to contribute
