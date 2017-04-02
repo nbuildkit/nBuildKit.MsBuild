@@ -158,6 +158,8 @@
         $(BuildStepsUnitTestVsTest)                      - Executes the unit tests with VsTest and measures code coverage.
         $(BuildStepsAnalyzeXml)                          - Analyzes one or more XML files based on the provided XSD.
         $(BuildStepsAnalyzeBinariesFxCop)                - Analyzes the binary files with FxCop.
+        $(BuildStepsBuildILMerge)                        - Performs one or more IL merge operations.
+        $(BuildStepsBuildWyam)                           - Builds the documentation in the `doc` folder with Wyam.
         $(BuildStepsPackNuGet)                           - Generates the NuGet packages.
         $(BuildStepsPackZip)                             - Generates one or more ZIP archives.
 
@@ -497,6 +499,24 @@
             <Groups>
                 build;
                 build.ilmerge;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute
+            Condition=" '$(ShouldBuildDocs)' != 'false' "
+            Include="$(BuildStepsBuildWyam)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+            <Groups>
+                build;
+                build.doc;
+                build.doc.wyam;
             </Groups>
             <PreSteps>
             </PreSteps>
