@@ -1,43 +1,112 @@
+<#
+    .SYNOPSIS
+
+    Locates the most recent version of MsBuild.exe
+
+
+    .DESCRIPTION
+
+    The Get-MsBuildPath function returns the path of the latest version of MsBuild.exe
+
+
+    .PARAMETER use32BitMsBuild
+
+    A flag that indicates whether or not the 32-bit version of MsBuild should be prefered.
+#>
 function Get-MsBuildPath
 {
     [CmdletBinding()]
-    param()
-
-    $ErrorActionPreference = 'Stop'
-    $commonParameterSwitches =
-        @{
-            Verbose = $PSBoundParameters.ContainsKey('Verbose');
-            ErrorAction = "Stop"
-        }
-
-    Write-Verbose "Searching for msbuild.exe ..."
-
-    $windows = [Environment]::GetFolderPath([Environment+SpecialFolder]::Windows)
-    $programFilesX86 = [Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFilesX86)
-
-    $potentialMsBuildPaths = @(
-        "$programFilesX86\MSBuild\15.0\Bin\amd64\msbuild.exe",
-        "$programFilesX86\MSBuild\15.0\Bin\msbuild.exe",
-        "$programFilesX86\MSBuild\14.0\Bin\amd64\msbuild.exe",
-        "$programFilesX86\MSBuild\14.0\Bin\msbuild.exe",
-        "$programFilesX86\MSBuild\12.0\Bin\amd64\msbuild.exe",
-        "$programFilesX86\MSBuild\12.0\Bin\msbuild.exe",
-        "$windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe",
-        "$windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe"
+    param(
+        [switch] $use32BitMsBuild
     )
 
-    foreach($path in $potentialMsBuildPaths)
+    $registryPathToMsBuildToolsVersions = 'HKLM:\SOFTWARE\Microsoft\MSBuild\ToolsVersions\'
+    if ($use32BitMsBuild)
     {
-        if (Test-Path $path)
+        # If the 32-bit path exists, use it, otherwise stick with the current path (which will be the 64-bit path on
+        # 64-bit machines, and the 32-bit path on 32-bit machines).
+        $registryPathTo32BitMsBuildToolsVersions = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSBuild\ToolsVersions\'
+        if (Test-Path -Path $registryPathTo32BitMsBuildToolsVersions)
         {
-            Write-Verbose "Found msbuild.exe at: $path"
-            return $path
+            $registryPathToMsBuildToolsVersions = $registryPathTo32BitMsBuildToolsVersions
         }
     }
 
-    throw "Could not locate msbuild.exe"
+    # Get the path to the directory that the latest version of MsBuild is in.
+    $msBuildToolsVersionsStrings = Get-ChildItem -Path $registryPathToMsBuildToolsVersions |
+        Where-Object { $_ -match '[0-9]+\.[0-9]' } |
+        Select-Object -ExpandProperty PsChildName
+
+    $msBuildToolsVersions = @{}
+    $msBuildToolsVersionsStrings |
+        ForEach-Object {
+            $msBuildToolsVersions.Add($_ -as [double], $_)
+        }
+
+    $largestMsBuildToolsVersion = ($msBuildToolsVersions.GetEnumerator() |
+        Sort-Object -Descending -Property Name |
+        Select-Object -First 1).Value
+
+    $registryPathToMsBuildToolsLatestVersion = Join-Path -Path $registryPathToMsBuildToolsVersions -ChildPath ("{0:n1}" -f $largestMsBuildToolsVersion)
+    $msBuildToolsVersionsKeyToUse = Get-Item -Path $registryPathToMsBuildToolsLatestVersion
+    $msBuildDirectoryPath = $msBuildToolsVersionsKeyToUse |
+        Get-ItemProperty -Name 'MSBuildToolsPath' |
+        Select -ExpandProperty 'MSBuildToolsPath'
+
+    if (($msBuildDirectoryPath -eq $null) -or ($msBuildDirectoryPath -eq ''))
+    {
+        throw 'The registry on this system does not appear to contain the path to the MsBuild.exe directory.'
+    }
+
+    # Get the path to the MsBuild executable.
+    $msBuildPath = Join-Path -Path $msBuildDirectoryPath -ChildPath 'msbuild.exe'
+    if(-not (Test-Path $msBuildPath -PathType Leaf))
+    {
+        throw "MsBuild.exe was not found on this system at the path specified in the registry, '$msBuildPath'."
+    }
+
+    return $msBuildPath
 }
 
+<#
+    .SYNOPSIS
+
+    Invokes the latest version of MsBuild.exe with the given parameters.
+
+
+    .DESCRIPTION
+
+    The Invoke-MsBuildFromCommandLine function invokes the latest version of MsBuild.exe with the given parameters.
+
+
+    .PARAMETER scriptToExecute
+
+    The full path to the MsBuild script that should be executed.
+
+
+    .PARAMETER target
+
+    The target that should be executed.
+
+
+    .PARAMETER properties
+
+    The hash table that maps property names to command line property values.
+
+
+    .PARAMETER logPath
+
+    The full path to the log file.
+
+
+    .EXAMPLE
+
+    Invoke-MsBuildFromCommandLine `
+        -scriptToExecute 'c:\temp\myscript.msbuild' `
+        -target 'build' `
+        -properties @{ 'myproperty1' = 'value1'; 'myproperty2' = 'value2' } `
+        -logPath 'c:\temp\logs'
+#>
 function Invoke-MsBuildFromCommandLine
 {
     [CmdletBinding()]
