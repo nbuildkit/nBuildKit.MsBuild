@@ -386,14 +386,14 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+    <ItemGroup>
         <!--
         <FilesToCopy Include="">
             <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+    <ItemGroup>
         <!--
         <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
             <Include>**/*.*</Include>
@@ -489,6 +489,6 @@
         <ExistsTestSettings>true</ExistsTestSettings>
 
         <!-- Defines the version number of the configuration file -->
-        <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
+        <NBuildKitConfigurationVersion>$VersionNBuildKitConfiguration$</NBuildKitConfigurationVersion>
     </PropertyGroup>
 </Project>

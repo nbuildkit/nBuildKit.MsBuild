@@ -155,6 +155,11 @@
             Include="$(DirSrc)\tools\VSCoverageToReportGenerator\nbuildkit.tools.vscoveragetoreportgenerator.nuspec">
             <ShouldBuildSymbols>true</ShouldBuildSymbols>
         </NuGetPackageSpecs>
+        <NuGetPackageSpecs
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\samples\samples.nuspec">
+            <ShouldBuildSymbols>false</ShouldBuildSymbols>
+        </NuGetPackageSpecs>
     </ItemGroup>
 
 

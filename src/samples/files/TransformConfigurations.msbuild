@@ -3,6 +3,15 @@
     ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
+        This is an example of a script file that is used to transform user configuration files (e.g. settings.props,
+        build.settings.props etc.) in to the correct format for nBuildKit.MsBuild.
+
+        The user may want to create the configuration files from their own configurations, either by copying
+        the settings files, transforming them or by getting the settings from a database etc.. This can be achieved
+        by providing a custom script to perform the transformation.
+    -->
+
+    <!--
         Define the expected locations of the settings files so that we can copy / transform them later on.
     -->
     <ItemGroup>
@@ -16,11 +25,6 @@
     </ItemGroup>
 
     <!--
-        The user may want to create the configuration files from their own configurations, either by copying
-        the settings files, transforming them or by getting the settings from a database etc.. This can be achieved
-        by providing a custom script to perform the transformation.
-
-        The script is expected be a custom implementation of the TransformConfigurations.msbuild script.
         The script file can be called anything as long as it contains a target called:
 
             '_Custom_TransformConfigurations'
@@ -37,6 +41,7 @@
 
         The target is expected to create the following files:
 
+            $(DirUserConfiguration)\artefacts.settings.props
             $(DirUserConfiguration)\settings.props
             $(DirUserConfiguration)\build.settings.props
             $(DirUserConfiguration)\deploy.settings.props

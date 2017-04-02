@@ -552,7 +552,7 @@
         The ItemGroup defining the zip files containing a git workspace that should be pushed to a GIT repository.
         All properties allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
-    <ItemGroup Condition=" '@(PushToGitRepositorySpecs)' == '' ">
+    <ItemGroup>
         <!--
         <PushToGitRepositorySpecs
             Condition=" '$(DirBuildDeploy)' != '' "
@@ -576,10 +576,6 @@
 
     <!-- Overrides for the tools paths -->
     <PropertyGroup>
-        <!--
-            The full path to the github-release command line executable.
-        -->
-        <!-- <ToolsExternalGitHubReleasePath>github-release.exe</ToolsExternalGitHubReleasePath> -->
     </PropertyGroup>
 
 
@@ -600,6 +596,6 @@
         <ExistsDeploySettings>true</ExistsDeploySettings>
 
         <!-- Defines the version number of the configuration file -->
-        <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
+        <NBuildKitConfigurationVersion>$VersionNBuildKitConfiguration$</NBuildKitConfigurationVersion>
     </PropertyGroup>
 </Project>
