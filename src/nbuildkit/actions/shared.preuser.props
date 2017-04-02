@@ -223,7 +223,7 @@
         <DirBuildDeploy Condition=" '$(DirBuildDeploy)' == '' ">$(DirBuild)\deploy</DirBuildDeploy>
 
         <!-- The directory that will contain all the documentation files which are generated during the build process -->
-        <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuildDeploy)\doc</DirBuildDoc>
+        <DirBuildDoc Condition=" '$(DirBuildDoc)' == '' ">$(DirBuild)\doc</DirBuildDoc>
 
         <!-- The directory that will contain all the generated build logs during the build process -->
         <DirBuildLogs Condition=" '$(DirBuildLogs)' == '' ">$(DirBuild)\logs</DirBuildLogs>
@@ -236,6 +236,9 @@
 
         <!-- The directory that will contain all the test files generated during the test process -->
         <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
+
+        <!-- The directory that contains the documentation files -->
+        <DirDoc Condition=" '$(DirDoc)' == '' ">$(DirBuild)\doc</DirDoc>
 
         <!-- The directory into which the generated properties files are placed -->
         <DirGeneratedPropertiesFiles Condition=" '$(DirGeneratedPropertiesFiles)' == '' ">$(DirBuildTemp)</DirGeneratedPropertiesFiles>

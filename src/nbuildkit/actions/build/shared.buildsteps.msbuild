@@ -45,6 +45,8 @@
 
         <BuildStepsBuildILMerge>$(MSBuildThisFileDirectory)build.ilmerge.msbuild</BuildStepsBuildILMerge>
 
+        <BuildStepsBuildWyam>$(MSBuildThisFileDirectory)build.wyam.msbuild</BuildStepsBuildWyam>
+
         <BuildStepsPackNuGet>$(MSBuildThisFileDirectory)build.pack.nuget.msbuild</BuildStepsPackNuGet>
         <BuildStepsPackZip>$(MSBuildThisFileDirectory)build.pack.zip.msbuild</BuildStepsPackZip>
     </PropertyGroup>
@@ -248,6 +250,14 @@
             <Id>BuildStepsBuildILMerge</Id>
             <Name>Build - IL merge assemblies</Name>
             <Path>$(BuildStepsBuildILMerge)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsBuildWyam)'))">
+            <Description>
+                Generates documentation pages using wyam.io.
+            </Description>
+            <Id>BuildStepsBuildWyam</Id>
+            <Name>Build - generate documentation with Wyam</Name>
+            <Path>$(BuildStepsBuildWyam)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPackNuGet)'))">
             <Description>
