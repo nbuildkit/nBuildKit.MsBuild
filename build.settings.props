@@ -659,39 +659,57 @@
 
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
+    <PropertyGroup>
+        <!--
+            Replaced all instances of $TOKEN$ with the value for TOKEN. The regular expession
+            is rather mangled because XML doesn't like < and > and MsBuild doesn't
+            like $ (%24), * (%2A), ? (%3F)
+        -->
+        <MsBuildFileReplacementToken>(%3F&lt;token&gt;\%24(?&lt;identifier&gt;\w%2A)\%24)</MsBuildFileReplacementToken>
+    </PropertyGroup>
     <ItemGroup>
         <BuildFilesToGenerate
             Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\tools\vscoveragetoreportgenerator.readme.txt">
-            <Template>$(DirSrc)\readme.txt</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.Tools.VsCoverageToReportGenerator</ReplacementValue>
+            Include="$(DirBuildTemp)\samples\files\entrypoint.msbuild">
+            <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\entrypoint.msbuild</Template>
         </BuildFilesToGenerate>
 
         <BuildFilesToGenerate
             Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\nbuildkit.readme.txt">
-            <Template>$(DirSrc)\readme.txt</Template>
-            <Token>PackageName</Token>
-            <ReplacementValue>nBuildKit.MsBuild</ReplacementValue>
+            Include="$(DirBuildTemp)\samples\files\artefacts.settings.props">
+            <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\artefacts.settings.props</Template>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate
             Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\actions\build\packages.config">
-            <Template>$(DirSrc)\nbuildkit\actions\build\packages.config</Template>
+            Include="$(DirBuildTemp)\samples\files\build.settings.props">
             <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\build.settings.props</Template>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate
             Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\actions\test\packages.config">
-            <Template>$(DirSrc)\nbuildkit\actions\test\packages.config</Template>
+            Include="$(DirBuildTemp)\samples\files\deploy.settings.props">
             <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\deploy.settings.props</Template>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate
             Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\actions\deploy\packages.config">
-            <Template>$(DirSrc)\nbuildkit\actions\deploy\packages.config</Template>
+            Include="$(DirBuildTemp)\samples\files\settings.props">
             <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\settings.props</Template>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\samples\files\test.settings.props">
+            <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\test.settings.props</Template>
         </BuildFilesToGenerate>
     </ItemGroup>
 
@@ -1156,6 +1174,6 @@
         <ExistsBuildSettings>true</ExistsBuildSettings>
 
         <!-- Defines the version number of the configuration file -->
-        <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
+        <NBuildKitConfigurationVersion>0.9</NBuildKitConfigurationVersion>
     </PropertyGroup>
 </Project>

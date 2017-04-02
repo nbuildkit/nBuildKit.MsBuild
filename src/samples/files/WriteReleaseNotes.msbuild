@@ -4,15 +4,11 @@
     ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
-        The full file path to the script that handles the custom formatting of the release notes for
-        the current release.
-
-        The script is expected be a custom implementation of the WriteReleaseNotes.msbuild script.
-        The script file can be called anything as long as it contains a target called:
+        The script file that generates the release notes can be called anything as long as it contains a target called:
 
             '_Custom_WriteReleaseNotesForCurrentRelease'
 
-        The target should process an ItemGroup called 'ReleaseNoteIssues' containing the issue information. The each item in the item
+        This target should process an ItemGroup called 'ReleaseNoteIssues' containing the issue information. The each item in the item
         group describes one issue in the following format:
 
         <item include="ISSUE_NUMBER">

@@ -35,7 +35,7 @@
                 Condition="Exists('$(MSBuildThisFileDirectory)packages.config')"
                 Include="$(MSBuildThisFileDirectory)packages.config" />
             <NuGetPackageFiles
-                Condition=" '$(StageSpecificNuGetPackageFilesToRestore)' != '' "
+                Condition=" '$(StageSpecificNuGetPackageFilesToRestore)' != '' AND Exists('$(StageSpecificNuGetPackageFilesToRestore)')"
                 Include="$(StageSpecificNuGetPackageFilesToRestore)" />
         </ItemGroup>
 

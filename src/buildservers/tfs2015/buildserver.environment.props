@@ -2,13 +2,10 @@
 <Project
     ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <!--
-        Build server flags
-    -->
     <PropertyGroup>
         <!--
             A flag indicating if the current build is running on a TFS build server or not. Note that the presence of TF_BUILD can also indicate that we're on a
-            TFS2015 build server.
+            TFS2013 build server.
         -->
         <IsOnTfs2015BuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' != 'True'  ">false</IsOnTfs2015BuildServer>
         <IsOnTfs2015BuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' == 'True' AND '$(AGENT_ID)' == '' ">false</IsOnTfs2015BuildServer>
@@ -50,7 +47,6 @@
     -->
 
     <PropertyGroup>
-        <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildServerEnvironmentPreSettings>true</ExistsBuildServerEnvironmentPreSettings>
         <VersionBuildServerEnvironmentSettings>1.0.0</VersionBuildServerEnvironmentSettings>
     </PropertyGroup>

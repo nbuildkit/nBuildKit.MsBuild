@@ -410,7 +410,7 @@
 
         Any failure during the branching process will stop the build process.
     -->
-    <ItemGroup Condition=" '@(BranchMergeTarget)' == '' ">
+    <ItemGroup>
         <!-- GITFLOW: If the input branch (GitBranchExpected) is a feature branch then we merge to develop -->
         <!--
         <BranchMergeTarget Include="develop"
@@ -644,67 +644,6 @@
 
     <!-- Overrides for the tools paths -->
     <PropertyGroup>
-        <!--
-            The full path and version of the Bower command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalBowerPath>bower</ToolsExternalBowerPath>
-        <ToolsExternalBowerVersion>1.3.11</ToolsExternalBowerVersion> -->
-
-        <!--
-            The full path to the GIT command line executable. Normally expected to be found via the PATH environment variable.
-        -->
-        <!-- <ToolsExternalGitPath>git.exe</ToolsExternalGitPath> -->
-
-        <!--
-            The full path and version of the GitVersion command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalGitVersionPath>UNDEFINED</ToolsExternalGitVersionPath>
-        <ToolsExternalGitVersionVersion>3.6.4</ToolsExternalGitVersionVersion> -->
-
-        <!--
-            The full path and version of the Node.js command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalNodeJsPath>node</ToolsExternalNodeJsPath>
-        <ToolsExternalNodeJsVersion>4.2.3</ToolsExternalNodeJsVersion> -->
-
-        <!--
-            The full path and version of the NPM command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalNpmPath>npm</ToolsExternalNpmPath>
-        <ToolsExternalNpmVersion>3.5.2</ToolsExternalNpmVersion> -->
-
-        <!--
-            The full path and version of the NTreva command line executable. IF not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalNTrevaPath>UNDEFINED</ToolsExternalNTrevaPath>
-        <ToolsExternalNTrevaVersion>0.4.0</ToolsExternalNTrevaVersion> -->
-
-        <!--
-            The full path to the NuGet command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalNuGetPath>nuget.exe</ToolsExternalNuGetPath> -->
-
-        <!--
-            The full path to the Pester module. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalPesterPath>UNDEFINED</ToolsExternalPesterPath>
-        <ToolsExternalPesterVersion>3.4.3</ToolsExternalPesterVersion> -->
-
-        <!--
-            The full path to the Powershell command line executable.
-        -->
-        <!-- <ToolsExternalPowershellPath>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</ToolsExternalPowershellPath> -->
-
-        <!--
-            The full path and version of the python command line executable. If not defined the packages directory is searched.
-        -->
-        <!-- <ToolsExternalPythonPath>UNDEFINED</ToolsExternalPythonPath>
-        <ToolsExternalPythonVersion>2.7.9</ToolsExternalPythonVersion> -->
-
-        <!--
-            The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable.
-        -->
-        <!-- <ToolsExternalTfsPath>tf.exe</ToolsExternalTfsPath> -->
     </PropertyGroup>
 
 
@@ -724,7 +663,7 @@
         <ExistsSettings>true</ExistsSettings>
 
         <!-- Defines the version number of the configuration file -->
-        <NBuildKitConfigurationVersion>1.0</NBuildKitConfigurationVersion>
+        <NBuildKitConfigurationVersion>$VersionNBuildKitConfiguration$</NBuildKitConfigurationVersion>
     </PropertyGroup>
 
     <!--

@@ -5,7 +5,7 @@
     xmlns:msxsl="urn:schemas-microsoft-com:xslt" exclude-result-prefixes="msxsl"
     xmlns:msbuild="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <xsl:param name="currentVersion" select="'1.0'"/>
+    <xsl:param name="currentVersion" select="'0.9'"/>
 
     <!--
         Update the settings version to the version of the current XSL Transforms

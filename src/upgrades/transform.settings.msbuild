@@ -23,120 +23,47 @@
     <ItemGroup>
         <SettingsFilesToBeTransformed Include="$(DirLocalUserSettings)\*.settings.props" />
         <SettingsFilesToBeTransformed Include="$(DirLocalUserSettings)\settings.props" />
+        <SettingsFilesToBeTransformed Include="$(DirLocalUserSettings)\entrypoint.msbuild" />
     </ItemGroup>
 
-    <Target Name="_Custom_TransformConfigurations">
-        <Message Text="Upgrading the nBuildKit user settings files to the latest version" />
-
-        <!--
-            Copy the Tools-Pipeline default settings as if they were the nBuildKit user settings.
-            The Tools-Pipeline default settings reference the user pipeline settings in the correct
-            order so that we get everything as it should be.
-        -->
-        <ItemGroup>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\artefacts.shared.pre.props">
-                <RenameTo>artefacts.settings.pre.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\artefacts.shared.props">
-                <RenameTo>artefacts.settings.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\artefacts.shared.post.props">
-                <RenameTo>artefacts.settings.post.props</RenameTo>
-            </ToolsPipelineSettings>
-
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\environment.shared.props">
-                <RenameTo>pipeline.environment.props</RenameTo>
-            </ToolsPipelineSettings>
-
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\shared.pre.props" >
-                <RenameTo>settings.pre.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\shared.props" >
-                <RenameTo>settings.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\shared.post.props" >
-                <RenameTo>settings.post.props</RenameTo>
-            </ToolsPipelineSettings>
-
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\build\build.shared.pre.props" >
-                <RenameTo>build.settings.pre.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\build\build.shared.props" >
-                <RenameTo>build.settings.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\build\build.shared.post.props" >
-                <RenameTo>build.settings.post.props</RenameTo>
-            </ToolsPipelineSettings>
-
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\test\test.shared.pre.props" >
-                <RenameTo>test.settings.pre.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\test\test.shared.props" >
-                <RenameTo>test.settings.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\test\test.shared.post.props" >
-                <RenameTo>test.settings.post.props</RenameTo>
-            </ToolsPipelineSettings>
-
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\deploy\deploy.shared.pre.props" >
-                <RenameTo>deploy.settings.pre.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\deploy\deploy.shared.props" >
-                <RenameTo>deploy.settings.props</RenameTo>
-            </ToolsPipelineSettings>
-            <ToolsPipelineSettings Include="$(DirToolsPipeline)\deploy\deploy.shared.post.props" >
-                <RenameTo>deploy.settings.post.props</RenameTo>
-            </ToolsPipelineSettings>
-        </ItemGroup>
-        <Copy
-            Condition="!Exists('$(DirUserConfiguration)\%(ToolsPipelineSettings.RenameTo)') OR $([System.DateTime]::Parse('%(ModifiedTime)').Ticks) &gt; $([System.IO.File]::GetLastWriteTime('$(DirUserConfiguration)\%(ToolsPipelineSettings.RenameTo)').Ticks)"
-            DestinationFiles="$(DirUserConfiguration)\%(ToolsPipelineSettings.RenameTo)"
-            SourceFiles="%(ToolsPipelineSettings.FullPath)" />
-
-        <!--
-            Grab the Tools-Pipeline user settings and transform them to the correct version. Then copy them
-            to the DirUserConfiguration directory.
-        -->
-        <CallTarget Targets="_ToolsPipeline_TransformConfiguration_TransformFile" />
-    </Target>
-
     <Target
-        Name="_ToolsPipeline_TransformConfiguration_TransformFile"
+        Name="_Custom_TransformConfigurations"
         Outputs="%(SettingsFilesToBeTransformed.FullPath)">
+
+        <Message
+            Text="Upgrading the nBuildKit user settings files to the latest version" />
 
         <PropertyGroup>
             <FilePathToTransform>%(SettingsFilesToBeTransformed.FullPath)</FilePathToTransform>
             <FileNameToTransform>%(SettingsFilesToBeTransformed.FileName)</FileNameToTransform>
             <FileNameConfigurationOutput>$(FileNameToTransform)</FileNameConfigurationOutput>
-            <FileTempUserConfiguration>$(DirUserConfiguration)\temp\pipeline\$(FileNameConfigurationOutput).props</FileTempUserConfiguration>
-            <FileUserConfiguration>$(DirUserConfiguration)\$(FileNameConfigurationOutput).props</FileUserConfiguration>
         </PropertyGroup>
 
         <XmlPeek
             Condition="Exists('$(FileUserConfiguration)')"
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="/x:Project/x:PropertyGroup/x:PipelineVersion/text()"
+            Query="/x:Project/x:PropertyGroup/x:NBuildKitConfigurationVersion/text()"
             XmlInputPath="$(FileUserConfiguration)">
             <Output
                 ItemName="VersionExistingConfigurationFile"
                 TaskParameter="Result" />
         </XmlPeek>
         <PropertyGroup>
-            <IsUpToDate Condition=" '$(VersionExistingConfigurationFile)' == '$(VersionPipelineExpected)' ">true</IsUpToDate>
+            <IsUpToDate Condition=" '$(VersionExistingConfigurationFile)' == '$(VersionSettingsExpected)' ">true</IsUpToDate>
             <IsUpToDate Condition=" '$(IsUpToDate)' == '' ">false</IsUpToDate>
         </PropertyGroup>
 
         <XmlPeek
             Condition=" '$(IsUpToDate)' == 'false' "
             Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="/x:Project/x:PropertyGroup/x:PipelineVersion/text()"
+            Query="/x:Project/x:PropertyGroup/x:NBuildKitConfigurationVersion/text()"
             XmlInputPath="$(FilePathToTransform)" >
             <Output
                 ItemName="VersionConfigurationFile"
                 TaskParameter="Result" />
         </XmlPeek>
 
-        <ToolsPipeline_TransformConfiguration_FindXsltFiles
+        <TransformConfiguration_FindXsltFiles
             Condition=" '$(IsUpToDate)' == 'false' "
             Directory="$(MSBuildThisFileDirectory)"
             FileName="$(FileNameConfigurationOutput).xsl"
@@ -144,40 +71,20 @@
             <Output
                 ItemName="TransformationsToApply"
                 TaskParameter="Result" />
-        </ToolsPipeline_TransformConfiguration_FindXsltFiles>
+        </TransformConfiguration_FindXsltFiles>
 
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileTempUserConfiguration)'))">
-            <Output
-                PropertyName="DirToCreate"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <MakeDir
-            Condition="!Exists('$(DirToCreate)') AND '$(IsUpToDate)' == 'false' "
-            Directories="$(DirToCreate)" />
         <XslTransformation
             Condition=" '$(IsUpToDate)' == 'false' AND @(TransformationsToApply) != '' "
-            OutputPaths="$(FileTempUserConfiguration)"
+            OutputPaths="$(FilePathToTransform)"
             UseTrustedSettings="true"
             XmlInputPaths="$(FilePathToTransform)"
             XslInputPath="%(TransformationsToApply.FullPath)" />
-
-        <!--
-            Copy the transformed file if it exists, otherwise copy the original
-        -->
-        <Copy
-            Condition=" '$(IsUpToDate)' == 'false' AND Exists('$(FileTempUserConfiguration)') "
-            DestinationFiles="$(FileUserConfiguration)"
-            SourceFiles="$(FileTempUserConfiguration)" />
-        <Copy
-            Condition=" '$(IsUpToDate)' == 'false' AND !Exists('$(FileTempUserConfiguration)') "
-            DestinationFiles="$(FileUserConfiguration)"
-            SourceFiles="$(FilePathToTransform)" />
     </Target>
 
     <UsingTask
         AssemblyFile="$(MsBuildTasksAssembly)"
         TaskFactory="CodeTaskFactory"
-        TaskName="ToolsPipeline_TransformConfiguration_FindXsltFiles" >
+        TaskName="TransformConfiguration_FindXsltFiles" >
         <ParameterGroup>
             <Directory ParameterType="System.String" Required="true" />
             <FileName ParameterType="System.String" Required="true" />
