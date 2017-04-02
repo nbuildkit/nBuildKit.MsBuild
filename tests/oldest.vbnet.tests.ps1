@@ -1,5 +1,9 @@
 <#
     This file contains the 'verification tests' for the 'C# build' section of the nbuildkit verification test suite.
+
+    The current file verifies that nBuildKit.MsBuild will successfully execute a build and deploy against a workspace
+    which has the oldest supported version of the configuration files.
+
     These tests are executed using Pester (https://github.com/pester/Pester).
 #>
 
@@ -83,7 +87,8 @@ Describe 'For the VB.NET test against the oldest version' {
             -workspaceLocation $workspaceLocation `
             -tempLocation $tempLocation
 
-        AppendTo-ReadMe `
+        Add-CommitToCurrentBranch `
+            -relativeFilePath 'README.md' `
             -text 'Prepare workspace: Adding to the readme' `
             -commitMessage 'prepare workspace: adding to the readme' `
             -workspaceLocation $workspaceLocation
