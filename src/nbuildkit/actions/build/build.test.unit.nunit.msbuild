@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Build_Test_Unit_NUnit_Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildTestUnitNUnit>true</ExistsBuildTestUnitNUnit>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Build_Test_Unit_NUnit_Run">
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_Execute" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GenerateCoberturaReports" />
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths">
+        <Error
+            Condition="!Exists('$(DirPackages)') "
+            Text="The packages directory does not exist. Cannot search for the unit test executables." />
+
+        <NuGetInstall
+            Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="NUnit.Runners"
+            PackageVersion="$(ToolsExternalNUnitConsoleVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' "
+            FileToLocate="nunit-console.exe"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalNUnitConsolePath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalNUnitConsolePath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalNUnitConsolePath)">
+            <Output
+                PropertyName="ToolsExternalNUnitConsolePath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalNUnitConsolePath)') "
+            Importance="low"
+            Text="The NUnit executable was found at: $(ToolsExternalNUnitConsolePath)" />
+        <Error
+            Condition="!Exists('$(ToolsExternalNUnitConsolePath)') "
+            Text="Could not locate the NUnit executable path. Cannot execute unit tests." />
+
+        <NuGetInstall
+            Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="OpenCover"
+            PackageVersion="$(ToolsExternalOpenCoverVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' "
+            FileToLocate="opencover.console.exe"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalOpenCoverPath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalOpenCoverPath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalOpenCoverPath)">
+            <Output
+                PropertyName="ToolsExternalOpenCoverPath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalOpenCoverPath)') "
+            Importance="low"
+            Text="The OpenCover executable was found at: $(ToolsExternalOpenCoverPath)" />
+        <Error
+            Condition="!Exists('$(ToolsExternalOpenCoverPath)') "
+            Text="Could not locate the OpenCover executable path. Cannot execute unit tests." />
+
+        <NuGetInstall
+            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="ReportGenerator"
+            PackageVersion="$(ToolsExternalReportGeneratorVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
+            FileToLocate="ReportGenerator.exe"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalReportGeneratorPath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalReportGeneratorPath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalReportGeneratorPath)">
+            <Output
+                PropertyName="ToolsExternalReportGeneratorPath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalReportGeneratorPath)') "
+            Importance="low"
+            Text="The ReportGenerator executable was found at: $(ToolsExternalReportGeneratorPath)" />
+        <Warning
+            Condition="!Exists('$(ToolsExternalReportGeneratorPath)') "
+            Text="Could not locate the ReportGenerator executable path. Cannot generate the unit test coverage reports." />
+
+        <NuGetInstall
+            Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="OpenCoverToCoberturaConverter"
+            PackageVersion="$(ToolsExternalOpenCoverToCoberturaConverterVersion)"
+            Sources="@(NuGetSources)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
+            FileToLocate="OpenCoverToCoberturaConverter.exe"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalOpenCoverToCoberturaConverterPath)">
+            <Output
+                PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') "
+            Text="The OpenCoverToCoberturaConverter executable was found at: $(ToolsExternalOpenCoverToCoberturaConverterPath)" />
+        <Warning
+            Condition="!Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') "
+            Text="Could not locate the OpenCoverToCoberturaConverter executable path. Cannot convert code coverage reports." />
+    </Target>
+
+    <Target
+        Name="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates">
+        <Message
+            Importance="low"
+            Text="Resolving build templates ..." />
+
+        <TemplateText
+            Template="$(FileReportOpenCoverXml)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileReportOpenCoverXmlExpanded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <TemplateText
+            Template="$(FileReportOpenCoverCsv)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileReportOpenCoverCsvExpanded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <TemplateText
+            Template="$(DirReportOpenCoverCobertura)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="DirReportOpenCoverCoberturaExpanded"
+                TaskParameter="Result" />
+        </TemplateText>
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates"
+        Name="_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace">
+        <CreateProperty
+            Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') "
+            Directories="$(DirToCreate)" />
+
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverCsvExpanded)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') "
+            Directories="$(DirToCreate)" />
+
+        <!-- This directory is always present although users may change the location -->
+        <MakeDir
+            Condition="!Exists('$(DirReportGeneratorOutput)') "
+            Directories="$(DirReportGeneratorOutput)" />
+    </Target>
+
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory">
+        <SortFilesByDirectory Files="@(UnitTestAssemblies)" >
+            <Output
+                ItemName="UnitTestDirectories"
+                TaskParameter="Directories" />
+        </SortFilesByDirectory>
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths;_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace;_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory"
+        Name="_nBuildKit_Build_Test_Unit_NUnit_RunTests"
+        Outputs="%(UnitTestDirectories.Identity)">
+        <!--
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem Include="%(UnitTestDirectories.Files)">
+            <Output
+                ItemName="UnitTestAssembliesForDirectory"
+                TaskParameter="Include" />
+        </CreateItem>
+        <CreateProperty Value="@(UnitTestAssembliesForDirectory->'%22%(FullPath)%22', ' ')">
+            <Output
+                PropertyName="AssembliesToTest"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <Message Text="Executing unit tests for: " />
+        <Message Text="--- %(UnitTestAssembliesForDirectory.FullPath)" />
+        <OpenCover
+            BinDirectory="%(UnitTestDirectories.FullPath)"
+            Condition=" Exists('$(ToolsExternalOpenCoverPath)') "
+            OpenCoverExcludeAttributes="@(OpenCoverIgnoreAttributes)"
+            OpenCoverExe="$(ToolsExternalOpenCoverPath)"
+            OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
+            OpenCoverOutput="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-%(UnitTestDirectories.Index)$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))"
+            UnitTestArguments="/framework:net-$(TargetFrameworkVersion.TrimStart('v')) /result:&quot;nunit-console-%(UnitTestDirectories.Index).xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:multiple $(AssembliesToTest)"
+            UnitTestExe="$(ToolsExternalNUnitConsolePath)" />
+    </Target>
+
+    <PropertyGroup>
+        <FileReportReportGeneratorXmlSummary>$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
+    </PropertyGroup>
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_NUnit_RunTests"
+        Name="_nBuildKit_Build_Test_Unit_NUnit_Execute">
+        <ItemGroup>
+            <FilesReportOpenCoverXml Include="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-*$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))" />
+        </ItemGroup>
+
+        <ReportGenerator
+            Condition="Exists('$(ToolsExternalReportGeneratorPath)') "
+            OpenCoverOutputFiles="@(FilesReportOpenCoverXml)"
+            OutputDirectory="$(DirReportGeneratorOutput)"
+            ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)" />
+
+        <ReportGeneratorOutputToCsv
+            Condition="Exists('$(FileReportReportGeneratorXmlSummary)') "
+            InputFile="$(FileReportReportGeneratorXmlSummary)"
+            OutputFile="$(FileReportOpenCoverCsvExpanded)" />
+    </Target>
+
+    <Target
+        Name="_nBuildKit_Build_Test_Unit_NUnit_GenerateCoberturaReports"
+        Outputs="%(FilesReportOpenCoverXml.Identity)">
+
+        <ItemGroup>
+            <ConverterArguments Include="input">
+                <Value>%(FilesReportOpenCoverXml.Identity)</Value>
+            </ConverterArguments>
+            <ConverterArguments Include="output">
+                <Value>$(DirReportOpenCoverCoberturaExpanded)\cobertura-$([System.IO.Path]::GetFileName('%(FilesReportOpenCoverXml.Identity)'))</Value>
+            </ConverterArguments>
+            <ConverterArguments Include="sources">
+                <Value>$(DirSrc)</Value>
+            </ConverterArguments>
+        </ItemGroup>
+        <ExecWithArguments
+            Arguments="@(ConverterArguments)"
+            ArgumentPrefix="-"
+            ArgumentSeparator=":"
+            Condition="Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') "
+            ToolPath="$(ToolsExternalOpenCoverToCoberturaConverterPath)"
+            WorkingDirectory="$(DirWorkspace)" />
+    </Target>
+ </Project>

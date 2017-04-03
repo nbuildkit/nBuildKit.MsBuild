@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Deploy_PushTo_Directory_Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsDeployPushToDirectory>true</ExistsDeployPushToDirectory>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Deploy_PushTo_Directory_Run">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_Directory_Push" />
+    </Target>
+
+    <Target
+        Name="_nBuildKit_Deploy_PushTo_Directory_Push"
+        Outputs="%(PushToDirectorySpecs.Identity)">
+        <Message
+            Importance="low"
+            Text="Resolving build templates for: %(PushToDirectorySpecs.Identity)" />
+
+        <!-- Process the build templates in the input directories -->
+        <TemplateText
+            Template="%(PushToDirectorySpecs.Identity)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="DirPushToSpecs"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the included files -->
+        <TemplateText
+            Condition=" '%(PushToDirectorySpecs.IncludedFiles)' != '' "
+            Template="%(PushToDirectorySpecs.IncludedFiles)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilesPushToIncluded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the excluded files -->
+        <TemplateText
+            Condition=" '%(PushToDirectorySpecs.ExcludedFiles)' != '' "
+            Template="%(PushToDirectorySpecs.ExcludedFiles)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilesPushToExcluded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!--
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(FilesPushToExcluded.Split(';'))">
+            <Output
+                ItemName="FilesToExcludeFromPush"
+                TaskParameter="Include" />
+        </CreateItem>
+        <CreateItem
+            Exclude="@(FilesToExcludeFromPush -> '%(FullPath)')"
+            Include="$(FilesPushToIncluded.Split(';'))">
+            <Output
+                ItemName="FilesToPush"
+                TaskParameter="Include" />
+        </CreateItem>
+        <Error
+            Condition=" '@(FilesToPush)' == '' "
+            Text="There are no files to be pushed" />
+
+        <MakeDir
+            Condition="!Exists('$(DirPushToSpecs)') "
+            Directories="$(DirPushToSpecs)" />
+        <Copy
+            DestinationFolder="$(DirPushToSpecs)"
+            SourceFiles="@(FilesToPush)" />
+    </Target>
+</Project>

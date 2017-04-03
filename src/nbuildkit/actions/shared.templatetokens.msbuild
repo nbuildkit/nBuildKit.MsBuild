@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedTemplateTokens>true</ExistsSharedTemplateTokens>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Import Project="$(SystemTemplateTokenGenerators)" />
+    <Import
+        Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "
+        Project="$(TemplateTokenGenerators)" />
+
+    <Target Name="nBuildKit_Shared_TemplateTokens_Generate">
+        <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators" />
+        <CallTarget Targets="_nBuildKit_Shared_TemplateTokens_Generate_SpecialVersionParameters" />
+    </Target>
+
+    <Target Name="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators_Prepare">
+        <ItemGroup>
+            <GeneratorTargetsToInvoke Include="$(SystemTemplateTokenGenerators)" />
+            <GeneratorTargetsToInvoke
+                Condition=" '$(TemplateTokenGenerators)' != 'UNDEFINED' "
+                Include="$(TemplateTokenGenerators)" />
+        </ItemGroup>
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators_Prepare"
+        Name="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators"
+        Outputs="%(GeneratorTargetsToInvoke.Identity)">
+        <CreateProperty Value="%(GeneratorTargetsToInvoke.Filename)">
+            <Output
+                PropertyName="TargetsToInvoke"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <CallTarget Targets="$(TargetsToInvoke.Replace(' ', '_').Replace('.', '_'))" />
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Shared_TemplateTokens_Generate_RunGenerators"
+        Name="_nBuildKit_Shared_TemplateTokens_Generate_SpecialVersionParameters"
+        Outputs="$(FileTemplateTokensPretranslatedTokens)">
+
+        <PropertyGroup>
+            <DirectoriesForNBuildKit>
+                DirWorkspace=$(DirWorkspace);
+                DirUserSettings=$(DirUserSettings);
+            </DirectoriesForNBuildKit>
+        </PropertyGroup>
+
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(MSBuildThisFileDirectory)shared.templatetokens.pregenerate.msbuild"
+            Properties="$(DirectoriesForNBuildKit);ShouldGenerateVersionTokens=$(ShouldGenerateVersionTokens)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="False"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+    </Target>
+</Project>

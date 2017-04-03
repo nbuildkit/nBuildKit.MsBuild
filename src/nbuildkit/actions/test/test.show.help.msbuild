@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Test_Show_Help_Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildBinaries>true</ExistsBuildBinaries>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        DependsOnTargets="_nBuildKit_Test_Show_Help_Prepare"
+        Name="nBuildKit_Test_Show_Help_Run">
+
+        <Message Text="nBuildKit - Build system" />
+        <Message Text="Copyright 2014 nBuildKit. Apache License, Version 2.0" />
+        <Message Text=" " />
+        <Message Text="If you are seeing this message then your test process has no test steps configured which means that." />
+        <Message Text="no work will be done when the test runs." />
+        <Message Text=" " />
+        <Message Text="To configure the steps the test process should take when executed you can edit the 'test.settings.props'" />
+        <Message Text="file in the root directory of your repository. This file contains an ItemGroup with 'TestStepsToExecute'" />
+        <Message Text="items. By adding items to that ItemGroup you can control which steps will be taken during the test process." />
+        <Message Text=" " />
+        <Message Text="The currently available test steps are:" />
+        <Message Text=" " />
+
+        <!--
+            Write the name of the build step, then 3 tab characters and then the description followed by a new line.
+        -->
+        <Message Text="@(Text -> '%(Identity)&#xD;&#xA;  %(Description)', '&#xD;&#xA;&#xD;&#xA;')" />
+
+        <Message Text=" " />
+        <Message Text=" " />
+    </Target>
+
+    <Target
+        Name="_nBuildKit_Test_Show_Help_Prepare"
+        Outputs="%(AvailableTestSteps.Identity)">
+        <PropertyGroup>
+            <DescriptionText>%(AvailableTestSteps.Description)</DescriptionText>
+            <Description>$(DescriptionText.Trim())</Description>
+        </PropertyGroup>
+
+        <CreateItem
+            AdditionalMetadata="Description=$(Description)"
+            Include="- %(AvailableTestSteps.Identity)">
+            <Output
+                ItemName="Text"
+                TaskParameter="Include" />
+        </CreateItem>
+    </Target>
+ </Project>

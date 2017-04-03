@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="InvokeStandaloneMsBuild"
+    ToolsVersion="${TOOLS_VERSION}$"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <MsBuildOutputsPath>${OUTPUT_PATH}$</MsBuildOutputsPath>
+        <Projects>${PROJECTS}$</Projects>
+        <Targets>${TARGETS}$</Targets>
+    </PropertyGroup>
+
+    <Target Name="InvokeStandaloneMsBuild">
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(Projects)"
+            Properties=""
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="${RUN_TARGETS_SEPARATELY}$"
+            SkipNonexistentProjects="${SKIP_NONEXISTANT_PROJECTS}$"
+            StopOnFirstFailure="${STOP_ON_FIRST_FAILURE}$"
+            TargetAndPropertyListSeparators=""
+            Targets="$(Targets)"
+            ToolsVersion="${TOOLS_VERSION}$"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+            <Output
+                ItemName="GeneratedAssemblies"
+                TaskParameter="TargetOutputs" />
+        </MSBuild>
+
+        <ItemGroup>
+            <XmlHeader Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
+            <XmlHeader Include="&lt;msbuildresults&gt;" />
+        </ItemGroup>
+        <WriteLinesToFile
+            File="$(MsBuildOutputsPath)"
+            Lines="@(XmlHeader)"
+            Overwrite="true" />
+
+        <WriteLinesToFile
+            File="$(MsBuildOutputsPath)"
+            Lines="@(GeneratedAssemblies -> '&lt;targetoutput&gt;&lt;path&gt;%(Identity)&lt;/path&gt;&lt;project&gt;%(MSBuildSourceProjectFile)&lt;/project&gt;&lt;target&gt;%(MSBuildSourceTargetName)&lt;/target&gt;&lt;/targetoutput&gt;', '&#xD;&#xA;')"
+            Overwrite="false" />
+
+        <ItemGroup>
+            <XmlFooter Include="&lt;/msbuildresults&gt;" />
+        </ItemGroup>
+        <WriteLinesToFile
+            File="$(MsBuildOutputsPath)"
+            Lines="@(XmlFooter)"
+            Overwrite="false" />
+    </Target>
+</Project>

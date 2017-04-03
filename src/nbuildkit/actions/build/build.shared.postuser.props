@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** BUILD STEPS ****
+    -->
+    <ItemGroup>
+        <BuildPreStepsToExecute
+            Condition=" '$(DirHighLevelOverview)' != '' and '$(DirHighLevelOverview)' != 'UNDEFINED' AND '$(FileNameHighLevelOverview)' != '' and '$(FileNameHighLevelOverview)' != 'UNDEFINED' "
+            Include="$(SharedPreStepsWriteOverview)">
+            <Properties>
+            </Properties>
+        </BuildPreStepsToExecute>
+    </ItemGroup>
+    <ItemGroup>
+        <BuildPostStepsToExecute
+            Condition=" '$(DirHighLevelOverview)' != '' and '$(DirHighLevelOverview)' != 'UNDEFINED' AND '$(FileNameHighLevelOverview)' != '' and '$(FileNameHighLevelOverview)' != 'UNDEFINED' "
+            Include="$(SharedPostStepsWriteOverview)">
+            <Properties>
+            </Properties>
+        </BuildPostStepsToExecute>
+    </ItemGroup>
+
+    <ItemGroup Condition=" '@(BuildStepsToExecute)' == '' ">
+        <BuildStepsToExecute Include="$(BuildStepsShowHelp)">
+            <Properties>
+                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importbuildsharedsettings.props;
+                HelpFileSettings=build.settings.props;
+                HelpProcess=build;
+                HelpStepGroup=BuildStepsToExecute;
+            </Properties>
+            <Groups>
+                Help;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+    </ItemGroup>
+
+    <ItemGroup Condition=" '@(BuildFailureStepsToExecute)' == '' ">
+        <!--
+        <BuildFailureStepsToExecute Include="">
+            <Properties>
+            </Properties>
+            <Groups>
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildFailureStepsToExecute>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - WORKSPACE ****
+    -->
+    <!--
+        The list of all files that should be deleted prior to starting the build process.
+
+        If the deletion process fails the build will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <FilesToDelete
+            Condition="Exists('$(FileSemanticVersion)')"
+            Include="$(FileSemanticVersion)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReleaseNotesShort)')"
+            Include="$(FileReleaseNotesShort)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReleaseNotesFull)')"
+            Include="$(FileReleaseNotesFull)" />
+        <FilesToDelete
+            Condition="Exists('$(FileVcsInfo)')"
+            Include="$(FileVcsInfo)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportMsTest)')"
+            Include="$(FileReportMsTest)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportOpenCoverXml)')"
+            Include="$(FileReportOpenCoverXml)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportOpenCoverCsv)')"
+            Include="$(FileReportOpenCoverCsv)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportMoma)')"
+            Include="$(FileReportMoma)" />
+        <FilesToDelete
+            Condition="Exists('$(FileReportFxCop)')"
+            Include="$(FileReportFxCop)" />
+        <FilesToDelete
+            Include="%(BuildFilesToGenerate.FullPath)" />
+        <!--
+            Make sure not to kill the 'DirBuildBootstrap' and 'DirUserConfiguration' folders because those contains the
+            nBuildKit bootstrap and the settings.props files respectively. Both of which we are currently using.
+        -->
+        <FilesToDelete
+            Condition=" '$(DirBuild)' != '' AND Exists('$(DirBuild)')"
+            Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*;$(DirHighLevelOverview)\$(FileNameHighLevelOverview).*"
+            Include="$(DirBuild)\**\*.*" />
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the build process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the build will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <DirectoriesToDelete
+            Condition=" '$(DirBuild)' != '' AND Exists('$(DirBuild)')"
+            Exclude="$(DirBuild);$(DirBuildBootstrap);$(DirUserConfiguration);$(DirHighLevelOverview)"
+            Include="$([System.IO.Directory]::GetDirectories('$(DirBuild)', '*', System.IO.SearchOption.TopDirectoryOnly))" />
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - COPY FILES ****
+    -->
+    <!--
+        Files that should be copied, either from the file system or from a NuGet package.
+    -->
+    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+        <!--
+        <FilesToCopy Include="">
+            <Destination></Destination>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destinations>$(DirBuildTemp)</Destinations>
+        </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
+    -->
+    <!--
+        The list of all assembly info files that should be updated with version and copyright information.
+
+        For additional information see the ShouldGenerateAssemblyXXXX properties below.
+    -->
+    <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.cs" />
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.vb" />
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!--
+        The list of all files that should be generated and their template files.
+
+        The template file may contain zero or more template parameters as indicated at the top of this
+        file. By default template parameters must be enclosed in '${}'. By providing a value for
+        'Expression' it is possible to use a custom regular expression to search for elements to replace,
+        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
+        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
+
+        Only the 'Template' value is required.
+
+        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
+    -->
+    <ItemGroup Condition=" '@(BuildFilesToGenerate)' == '' ">
+        <!--
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\MyOtherFile.txt">
+            <Encoding>UTF-8</Encoding>
+            <Expression>(MyRegex)</Expression>
+            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
+            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
+            <Token>MyAdditionalTemplateParameter</Token>
+        </BuildFilesToGenerate>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** VISUAL STUDIO BUILD ****
+    -->
+    <!--
+        The item group defining the location of the Vistual Studio solutions that should be build.
+        The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
+    -->
+    <ItemGroup Condition=" '@(SolutionsToBuild)' == '' ">
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' AND '$(TestConfiguration)' != '$(ProductionConfiguration)' "
+            Include="$(DirSrc)\*.sln">
+            <Configuration>$(TestConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties></Properties>
+            <GeneratedAssembliesFile></GeneratedAssembliesFile>
+        </SolutionsToBuild>
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\*.sln">
+            <Configuration>$(ProductionConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties></Properties>
+            <GeneratedAssembliesFile></GeneratedAssembliesFile>
+        </SolutionsToBuild>
+    </ItemGroup>
+
+    <ItemGroup Condition=" '@(InternalsVisibleTo)' == '' ">
+        <!--
+        <InternalsVisibleTo Include="MyTestProject">
+            <Projects>
+                MyProject1;
+                MyProject2;
+            </Projects>
+            <KeyFile>$(MyKeyFileReference)</KeyFile>
+        </InternalsVisibleTo>
+        <InternalsVisibleTo Include="SomeExternalAssembly">
+            <Projects>
+                MyProject1;
+                MyProject2;
+            </Projects>
+            <AssemblyFromPackage>SomeExternalAssembly.dll</AssemblyFromPackage>
+        </InternalsVisibleTo>
+        <InternalsVisibleTo Include="SomeOtherExternalAssemblyThatDoesNotExistOnDisk">
+            <Projects>
+                MyProject1;
+                MyProject2;
+            </Projects>
+            <PublicKey>$(TheFullPublicKeyForTheExternalAssemblyThatDoesNotExistOnDisk)</PublicKey>
+        </InternalsVisibleTo>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** UNIT TESTS ****
+    -->
+    <ItemGroup Condition=" '@(UnitTestAssemblies)' == '' ">
+        <!--
+            The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
+            e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
+        -->
+        <UnitTestAssemblies
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
+    </ItemGroup>
+    <ItemGroup Condition=" '@(OpenCoverIgnoreAttributes)' == '' ">
+        <!--
+            The ItemGroup items that define the attributes that indicate code that should be ignored by OpenCover.
+        -->
+        <OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+        <OpenCoverIgnoreAttributes Include="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
+    </ItemGroup>
+    <ItemGroup Condition=" '@(OpenCoverFilters)' == '' ">
+        <!--
+            The ItemGroup items that define the filters used by OpenCover.
+            NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text.
+        -->
+        <OpenCoverFilters Include="+[$(ProductNamespace)]%2A" />
+        <OpenCoverFilters Include="+[$(ProductNamespace).%2A]%2A" />
+        <OpenCoverFilters Include="-[%2A$(UnitTestAssemblyNamePrefix)%2A]%2A" />
+        <OpenCoverFilters Include="-[NUnit]%2A" />
+        <OpenCoverFilters Include="-[NUnit.%2A]%2A" />
+    </ItemGroup>
+
+
+    <!--
+        **** SOURCE ANALYSIS - XML ****
+    -->
+    <ItemGroup Condition=" '@(XmlFilesToValidate)' == '' ">
+        <!--
+            The paths to the XML files that should be validated against the given schema.
+        -->
+        <!--
+        <XmlFilesToValidate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\*.xml"
+            Exclude="$(DirSrc)\**\ignore.xml">
+            <SchemaFile></SchemaFile>
+            <TargetNamespace></TargetNamespace>
+        </XmlFilesToValidate>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** BINARY ANALYSIS - FXCOP ****
+    -->
+    <ItemGroup Condition=" '@(FxCopFiles)' == '' ">
+        <!--
+            The locations of the files that should be analyzed by FxCop.
+        -->
+        <!--
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Exclude="$(DirSrc)\**\bin\$(Configuration)\Test.*.dll"
+            Include="$(DirSrc)\**\bin\$(Configuration)\*.dll">
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
+            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
+            <TargetFramework>4.5</TargetFramework>
+        </FxCopFiles>
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\bin\$(Configuration)\*.exe">
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
+            <RuleSet>$(DirSrc)\codeanalysis.base.ruleset</RuleSet>
+            <TargetFramework>2.0</TargetFramework>
+        </FxCopFiles>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(FxCopReferenceFiles)' == '' ">
+        <!--
+            The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
+            use as reference assemblies.
+        -->
+        <!--
+        <FxCopReferenceFiles Include=""
+                             Exclude="" />
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(FxCopReferenceDirectories)' == '' ">
+        <!--
+            The directory locations that contain the assemblies (not including the .NET framework assemblies) which
+            FxCop should use as reference assemblies
+        -->
+        <!--
+        <FxCopReferenceDirectories Include=""
+                                   Exclude="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PACK - NUGET ****
+    -->
+    <!--
+        The item group defining the (partial) names of the NuGet packages that only contain design time element and should
+        thus not be considered dependencies for the generated NuGet packages, even if they are included in the list
+        of dependencies that should be included.
+
+        By default nBuildkit and nUnit are ignored.
+    -->
+    <ItemGroup Condition=" '@(DesignTimeDependencies)' == '' ">
+        <DesignTimeDependencies Include="nBuildKit" />
+        <DesignTimeDependencies Include="nUnit" />
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <StageSpecificNuGetPackageFilesToRestore>$(DirNBuildKitMsBuildActions)\build\packages.config</StageSpecificNuGetPackageFilesToRestore>
+
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsNBuildKitBuildPostUserSharedSettings>true</ExistsNBuildKitBuildPostUserSharedSettings>
+    </PropertyGroup>
+</Project>

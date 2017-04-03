@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!--
+            A flag indicating if the current build is running on a TFS build server or not. Note that the presence of TF_BUILD can also indicate that we're on a
+            TFS2015 build server.
+        -->
+        <IsOnTfs2013BuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' != 'True'  ">false</IsOnTfs2013BuildServer>
+        <IsOnTfs2013BuildServer Condition=" '$(IsOnTfsBuildServer)' == '' AND '$(TF_BUILD)' == 'True' ">true</IsOnTfs2013BuildServer>
+
+        <!--
+            A flag indicating if the current build is running on the build server or not.
+        -->
+        <IsOnBuildServer Condition=" '$(IsOnTfs2013BuildServer)' != 'true' ">false</IsOnBuildServer>
+        <IsOnBuildServer Condition=" '$(IsOnTfs2013BuildServer)' == 'true' ">true</IsOnBuildServer>
+
+        <!-- Git parameters -->
+        <TfsGitBranchExpectedHeader>LG:refs/heads/</TfsGitBranchExpectedHeader>
+
+        <GitBranchExpected>UNDEFINED</GitBranchExpected>
+        <GitBranchExpected Condition=" '$(IsOnTfs2013BuildServer)' == 'True' AND '$(TF_BUILD_SOURCEGETVERSION)' != '' " >$(TF_BUILD_SOURCEGETVERSION.SubString($(TfsGitBranchExpectedHeader.Length), $([MSBuild]::Subtract($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), $(TfsGitBranchExpectedHeader.Length)))))</GitBranchExpected>
+
+        <GitRevNoExpected>UNDEFINED</GitRevNoExpected>
+        <GitRevNoExpected Condition=" '$(IsOnTfs2013BuildServer)' == 'True' AND '$(TF_BUILD_SOURCEGETVERSION)' != '' ">$(TF_BUILD_SOURCEGETVERSION.SubString($([MSBuild]::Add($(TF_BUILD_SOURCEGETVERSION.LastIndexOf(":")), 1))))</GitRevNoExpected>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <FileBuildServerEnvironmentPreShared>$(MSBuildThisFileDirectory)buildserver.environment.shared.pre.props</FileBuildServerEnvironmentPreShared>
+    </PropertyGroup>
+    <Import
+        Condition="Exists('$(FileBuildServerEnvironmentPreShared)') AND '$(ExistsBuildServerEnvironmentSharedPreSettings)' != 'true' "
+        Project="$(FileBuildServerEnvironmentPreShared)" />
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *     NBUILDKIT SPECIFIC SETTINGS       *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <ExistsBuildServerEnvironmentPreSettings>true</ExistsBuildServerEnvironmentPreSettings>
+        <VersionBuildServerEnvironmentSettings>1.0.0</VersionBuildServerEnvironmentSettings>
+    </PropertyGroup>
+</Project>

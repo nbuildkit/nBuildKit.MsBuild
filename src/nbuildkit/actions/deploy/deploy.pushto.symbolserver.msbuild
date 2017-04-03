@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Deploy_PushTo_SymbolServer_Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsDeployPushToSymbolServer>true</ExistsDeployPushToSymbolServer>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Deploy_PushTo_SymbolServer_Run">
+        <CallTarget
+            Condition=" '$(NuGetSymbolSourceUrl)' != '' AND '$(NuGetSymbolSourceUrl)' != 'UNDEFINED' "
+            Targets="_nBuildKit_Deploy_PushTo_SymbolServer_NuGet" />
+        <CallTarget
+            Condition=" '$(SymbolServerUncPath)' != '' AND '$(SymbolServerUncPath)' != 'UNDEFINED' "
+            Targets="_nBuildKit_Deploy_PushTo_SymbolServer_UncPath" />
+
+        <Error
+            Condition=" ('$(NuGetSymbolSourceUrl)' == '' OR '$(NuGetSymbolSourceUrl)' == 'UNDEFINED') AND ('$(SymbolServerUncPath)' == '' OR '$(SymbolServerUncPath)' == 'UNDEFINED') "
+            Text="No symbol server path defined! Unable to push symbols." />
+    </Target>
+
+    <Target
+        Condition=" '$(NuGetSymbolSourceUrl)' != '' AND '$(NuGetSymbolSourceUrl)' != 'UNDEFINED' "
+        Name="_nBuildKit_Deploy_PushTo_SymbolServer_NuGet">
+        <Error
+            Condition=" '$(ToolsExternalNuGetPath)' == '' "
+            Text="No NuGet executable defined. Will not be able to restore the packages." />
+
+        <CreateProperty
+            Condition=" '$(NuGetSourceUrl)' != '' AND '$(NuGetSourceUrl)' != 'UNDEFINED' "
+            Value="$(NuGetSourceUrl)">
+            <Output
+                PropertyName="NuGetRepositoryToPushTo"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <TemplateText
+            Condition=" '@(SymbolPackagesToPush)' != '' "
+            Template="@(SymbolPackagesToPush)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="SymbolPackagesToPushExpanded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!--
+            Create the ItemGroup dynamically because creating a normal ItemGroup in the target with dynamically
+            created properties fails to expand the wildcards.
+        -->
+        <CreateItem
+            Condition=" '$(SymbolPackagesToPushExpanded)' != '' "
+            Include="$(SymbolPackagesToPushExpanded.Split(';'))">
+            <Output
+                ItemName="NuGetPackagesToPushLocal"
+                TaskParameter="Include" />
+        </CreateItem>
+        <Message
+            Condition=" '@(NuGetPackagesToPushLocal)' != '' "
+            Importance="low"
+            Text="The following symbol packages were specified in the settings file: " />
+        <Message
+            Condition=" '@(NuGetPackagesToPushLocal)' != '' "
+            Importance="low"
+            Text="@(NuGetPackagesToPushLocal)" />
+
+        <Error
+            Condition=" '@(NuGetPackagesToPushLocal)' == '' "
+            Text="There are no symbol packages to be pushed to the symbol server" />
+
+        <Message
+            Importance="low"
+            Text="Pushing: @(NuGetPackagesToPushLocal)" />
+        <NuGetPush
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesToPush="@(NuGetPackagesToPushLocal)"
+            Source="$(NuGetSymbolSourceUrl)" />
+    </Target>
+
+    <Target
+        Condition=" '$(SymbolServerUncPath)' != '' AND '$(SymbolServerUncPath)' != 'UNDEFINED' "
+        Name="_nBuildKit_Deploy_PushTo_SymbolServer_UncPath">
+        <TemplateText
+            Condition=" '@(SymbolPackagesToPush)' != '' "
+            Template="@(SymbolPackagesToPush)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="SymbolPackagesToPushExpanded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!--
+            Create the ItemGroup dynamically because creating a normal ItemGroup in the target with dynamically
+            created properties doesn't expand the wildcards.
+        -->
+        <CreateItem
+            Condition=" '$(SymbolPackagesToPushExpanded)' != '' "
+            Include="$(SymbolPackagesToPushExpanded.Split(';'))">
+            <Output
+                ItemName="SymbolPackagesToPush"
+                TaskParameter="Include" />
+        </CreateItem>
+        <Message
+            Condition=" '@(SymbolPackagesToPush)' != '' "
+            Importance="low"
+            Text="The following symbol packages were specified in the settings file: " />
+        <Message
+            Condition=" '@(SymbolPackagesToPush)' != '' "
+            Importance="low"
+            Text="@(SymbolPackagesToPush)" />
+
+        <Error
+            Condition=" '@(SymbolPackagesToPush)' == '' "
+            Text="There are no files to be pushed to the symbol server" />
+
+        <Copy
+            DestinationFolder="$(SymbolServerUncPath)\"
+            SourceFiles="@(SymbolPackagesToPush)" />
+    </Target>
+</Project>

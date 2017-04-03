@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(MSBuildProjectDirectory)\..</SolutionDir>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8450F57F-6333-4AD6-8833-1048CA754C4B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NBuildKit.MsBuild.Tasks</RootNamespace>
+    <AssemblyName>nBuildKit.MsBuild.Tasks</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ShouldRunAnalyzers Condition=" '$(ShouldRunAnalyzers)' == '' ">true</ShouldRunAnalyzers>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)/base.props" />
+  <ItemGroup>
+    <Reference Include="Consul, Version=0.6.4.7, Culture=neutral, PublicKeyToken=20a6ad9a81df1d95, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Consul.0.6.4.7\lib\net45\Consul.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Nuclei, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.0.9.2\lib\net452\Nuclei.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nuclei.Build, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.Build.0.9.0\lib\net40\Nuclei.Build.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nuclei.Configuration, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.Configuration.0.9.0\lib\net452\Nuclei.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nuclei.Diagnostics, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Nuclei.Diagnostics.0.9.0\lib\net452\Nuclei.Diagnostics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NuGet.Versioning, Version=3.4.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\NuGet.Versioning.3.4.4-rtm-final\lib\net45\NuGet.Versioning.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Abstractions, Version=2.0.0.140, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\System.IO.Abstractions.2.0.0.140\lib\net40\System.IO.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Code\AddOrUpdateAttributeInCode.cs" />
+    <Compile Include="Code\GetProjectsFromVisualStudioSolution.cs" />
+    <Compile Include="Code\ILRepack.cs" />
+    <Compile Include="FileSystem\CopyFilesFromNuGetPackages.cs" />
+    <Compile Include="FileSystem\SearchPackagesDirectoryForNuGetPackage.cs" />
+    <Compile Include="MsBuildCommandLineToolTask.cs" />
+    <Compile Include="MsBuildLog.cs" />
+    <Compile Include="NugetHelpers.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Script\ExecWithArguments.cs" />
+    <Compile Include="Script\InvokeSteps.cs" />
+    <Compile Include="PowershellCommandLineToolTask.cs" />
+    <Compile Include="Script\InvokePowershellCommand.cs" />
+    <Compile Include="Script\InvokePowershellFile.cs" />
+    <Compile Include="Script\InvokeStandaloneMsBuild.cs" />
+    <Compile Include="Templating\GenerateSpecialParameterTemplateTokens.cs" />
+    <Compile Include="Validation\FxCopInvocationProperties.cs" />
+    <Compile Include="Versions\CalculateSemanticVersionWithGitVersion.cs" />
+    <Compile Include="VersionControl\ExtractIssueIdsFromGitCommitMessages.cs" />
+    <Compile Include="Templating\FindAndReplaceInFile.cs" />
+    <Compile Include="Templating\FindAndReplaceInText.cs" />
+    <Compile Include="Validation\FxCopCommandLineToolTask.cs" />
+    <Compile Include="Validation\FxCopViaAssemblies.cs" />
+    <Compile Include="Validation\FxCopViaProject.cs" />
+    <Compile Include="Package\GatherNuGetDependenciesForProject.cs" />
+    <Compile Include="Code\GenerateInternalsVisibleToAttributes.cs" />
+    <Compile Include="GenerateTargetsFile.cs" />
+    <Compile Include="Versions\GetFileVersion.cs" />
+    <Compile Include="Projects\GetIssuesForGitHubMilestone.cs" />
+    <Compile Include="Versions\GetSemanticVersionFromFile.cs" />
+    <Compile Include="FileSystem\GetToolFullPath.cs" />
+    <Compile Include="VersionControl\GetVcsInfoFromFile.cs" />
+    <Compile Include="VersionControl\GitAdd.cs" />
+    <Compile Include="VersionControl\GitCheckout.cs" />
+    <Compile Include="VersionControl\GitClone.cs" />
+    <Compile Include="VersionControl\GitCommandLineToolTask.cs" />
+    <Compile Include="VersionControl\GitCommit.cs" />
+    <Compile Include="VersionControl\GitCurrentBranch.cs" />
+    <Compile Include="VersionControl\GitCurrentRevision.cs" />
+    <Compile Include="Projects\GitHubReleaseCreate.cs" />
+    <Compile Include="Projects\GitHubReleaseUpload.cs" />
+    <Compile Include="VersionControl\GitMerge.cs" />
+    <Compile Include="VersionControl\GitNewFiles.cs" />
+    <Compile Include="VersionControl\GitPush.cs" />
+    <Compile Include="VersionControl\GitReset.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="HtmlEncodeText.cs" />
+    <Compile Include="Script\InvokeNodeTool.cs" />
+    <Compile Include="Testing\InvokePesterOnDirectory.cs" />
+    <Compile Include="Testing\InvokePesterOnFile.cs" />
+    <Compile Include="Groups\IsInCollection.cs" />
+    <Compile Include="Groups\LastItemInGroup.cs" />
+    <Compile Include="Nuclei\AppDomains\AppDomainBuilder.cs" />
+    <Compile Include="Nuclei\AppDomains\AppDomainBuilder.DirectoryBasedResolver.cs" />
+    <Compile Include="Nuclei\AppDomains\AppDomainBuilder.FileBasedResolver.cs" />
+    <Compile Include="Nuclei\AppDomains\AppDomainResolutionPaths.cs" />
+    <Compile Include="Nuclei\AppDomains\IAppDomainAssemblyResolver.cs" />
+    <Compile Include="Nuclei\ExceptionHandling\EventType.cs" />
+    <Compile Include="Nuclei\ExceptionHandling\EventTypeToEventCategoryMap.cs" />
+    <Compile Include="Nuclei\ExceptionHandling\ExceptionFilter.cs" />
+    <Compile Include="Nuclei\ExceptionHandling\ExceptionHandler.cs" />
+    <Compile Include="Nuclei\ExceptionHandling\ExceptionProcessor.cs" />
+    <Compile Include="Nuclei\ExceptionHandling\ExceptionTypeToEventIdMap.cs" />
+    <Compile Include="Nuclei\ExceptionHandling\GuardResult.cs" />
+    <Compile Include="Nuclei\ExceptionHandling\TopLevelExceptionGuard.cs" />
+    <Compile Include="Nuclei\Fusion\AssemblyNameElements.cs" />
+    <Compile Include="Nuclei\Fusion\FusionHelper.cs" />
+    <Compile Include="Package\NuGetCommandLineToolTask.cs" />
+    <Compile Include="Package\NuGetInstall.cs" />
+    <Compile Include="Package\NuGetPack.cs" />
+    <Compile Include="Package\NuGetPush.cs" />
+    <Compile Include="Package\NuGetRestore.cs" />
+    <Compile Include="Testing\OpenCover.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublicKeySignatureFromKeyFile.cs" />
+    <Compile Include="Testing\ReportGenerator.cs" />
+    <Compile Include="Testing\ReportGeneratorOutputToCsv.cs" />
+    <Compile Include="FileSystem\SearchPackagesDirectoryForToolDirectory.cs" />
+    <Compile Include="FileSystem\SearchPackagesDirectoryForToolPath.cs" />
+    <Compile Include="SetEnvironmentVariable.cs" />
+    <Compile Include="FileSystem\SortFilesByDirectory.cs" />
+    <Compile Include="FileSystem\SortItemGroupByKey.cs" />
+    <Compile Include="Templating\TemplateFile.cs" />
+    <Compile Include="Templating\TemplateText.cs" />
+    <Compile Include="Package\Unzip.cs" />
+    <Compile Include="Code\UpdateAttributeInCode.cs" />
+    <Compile Include="Validation\ValidateXmlAgainstSchema.cs" />
+    <Compile Include="Package\Zip.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(ShouldRunAnalyzers)' == 'true' ">
+    <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
+    <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Script\MsBuildTemplate.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\nBuildKit.MsBuild.Tasks.Core\nBuildKit.MsBuild.Tasks.Core.csproj">
+      <Project>{419a1a8e-f3cc-4ce1-9294-6b7fbb7ee96d}</Project>
+      <Name>nBuildKit.MsBuild.Tasks.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

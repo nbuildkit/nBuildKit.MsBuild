@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsFileImports>true</ExistsFileImports>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(MSBuildThisFileDirectory)import.base.props') AND '$(ExistsBaseImports)' != 'true' "
+        Project="$(MSBuildThisFileDirectory)import.base.props" />
+
+    <PropertyGroup>
+        <LoadTemplateTokens Condition=" '$(LoadTemplateTokens)' == '' ">true</LoadTemplateTokens>
+    </PropertyGroup>
+
+    <!-- Import the steps -->
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\shared.deploysteps.msbuild') AND '$(ExistsNBuildKitDeploySteps)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\deploy\shared.deploysteps.msbuild" />
+
+    <!-- Import the settings files -->
+    <PropertyGroup>
+        <DeployPropertyFile>$(DirUserSettings)\deploy.settings.props</DeployPropertyFile>
+    </PropertyGroup>
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.preuser.props') AND '$(ExistsNBuildKitDeployPreUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.preuser.props" />
+    <Import
+        Condition="Exists('$(DeployPropertyFile)') AND '$(ExistsDeploySettings)' != 'true' "
+        Project="$(DeployPropertyFile)" />
+    <Import
+        Condition="Exists('$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.postuser.props') AND '$(ExistsNBuildKitDeployPostUserSharedSettings)' != 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\deploy\deploy.shared.postuser.props" />
+
+
+    <!--
+        Import the environment specific settings for the build server. These settings contain information about the active build server
+        and should only be loaded when a build is running on a build server.
+
+        We check the following locations in order:
+        * A user specified directory as indicated by the $(DirBuildServerSettings)
+        * A user or machine environment variable named NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR
+
+        It is expected that both point to a directory containing the 'buildserver.environment.props' file.
+    -->
+    <PropertyGroup>
+        <FileBuildServerPostSettings Condition=" '$(FileBuildServerPostSettings)' == '' AND '$(DirBuildServerSettings)' != '' AND Exists('$(DirBuildServerSettings)\buildserver.environment.post.props') ">$(DirBuildServerSettings)\buildserver.environment.post.props</FileBuildServerPostSettings>
+        <FileBuildServerPostSettings Condition=" '$(FileBuildServerPostSettings)' == '' AND '$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)' != '' AND Exists('$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.post.props') ">$(NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR)\buildserver.environment.post.props</FileBuildServerPostSettings>
+        <FileBuildServerPostSettings Condition=" '$(FileBuildServerPostSettings)' == '' ">UNDEFINED</FileBuildServerPostSettings>
+    </PropertyGroup>
+    <Import
+        Condition="Exists('$(FileBuildServerPostSettings)') AND '$(ExistsBuildServerEnvironmentPostSettings)' != 'true' "
+        Project="$(FileBuildServerPostSettings)" />
+
+
+    <!-- Import the standard template token files -->
+    <Import
+        Condition=" '$(LoadTemplateTokens)' == 'true' "
+        Project="$(DirNBuildKitMsBuildActions)\templatetokens.*.props" />
+    <Import
+        Condition=" '$(LoadTemplateTokens)' == 'true' "
+        Project="$(DirGeneratedPropertiesFiles)\templatetokens.*.props" />
+</Project>

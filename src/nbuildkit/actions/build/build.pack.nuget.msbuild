@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Build_Pack_NuGet_Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildPackNuGet>true</ExistsBuildPackNuGet>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Build_Pack_NuGet_Run">
+        <CallTarget Targets="_nBuildKit_Build_Pack_NuGet_Pack" />
+    </Target>
+
+    <!--
+        Note that this target is batched through the outputs. This enables MsBuild to run the target multiple times,
+        once for each entry in the NuGetPackagesSpecs ItemGroup.
+    -->
+    <Target
+        Condition=" '@(NuGetPackageSpecs)' != '' "
+        Name="_nBuildKit_Build_Pack_NuGet_Pack"
+        Outputs="%(NuGetPackageSpecs.Identity)">
+        <Message
+            Importance="low"
+            Text="Resolving build templates for: %(NuGetPackageSpecs.Identity)" />
+
+        <!-- Process the build templates in the nuspec file path -->
+        <TemplateText
+            Template="%(NuGetPackageSpecs.Identity)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FileNuGetNuSpec"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the included dependencies -->
+        <TemplateText
+            Condition=" '%(NuGetPackageSpecs.IncludedDependencies)' != '' "
+            Template="%(NuGetPackageSpecs.IncludedDependencies)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilesNuGetDependenciesIncluded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the excluded dependencies -->
+        <TemplateText
+            Condition=" '%(NuGetPackageSpecs.ExcludedDependencies)' != '' "
+            Template="%(NuGetPackageSpecs.ExcludedDependencies)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilesNuGetDependenciesExcluded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <Message
+            Importance="low"
+            Text="Creating NuGet package from: $(FileNuGetNuSpec)" />
+        <MakeDir
+            Condition="!Exists('$(DirBuildDeploy)')"
+            Directories="$(DirBuildDeploy)" />
+
+        <Message
+            Importance="low"
+            Text="Included dependencies: $(FilesNuGetDependenciesIncluded)" />
+        <Message
+            Importance="low"
+            Text="Excluded dependencies: $(FilesNuGetDependenciesExcluded)" />
+
+        <!--
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(FilesNuGetDependenciesExcluded.Split(';'))">
+            <Output
+                ItemName="ExcludedPackageDependencies"
+                TaskParameter="Include" />
+        </CreateItem>
+        <CreateItem
+            Exclude="@(ExcludedPackageDependencies -> '%(FullPath)')"
+            Include="$(FilesNuGetDependenciesIncluded.Split(';'))">
+            <Output
+                ItemName="PackageDependencies"
+                TaskParameter="Include" />
+        </CreateItem>
+
+        <GatherNuGetDependenciesForProject
+            DesignTimePackages="@(DesignTimeDependencies)"
+            NuGetSpec="$(FileNuGetNuSpec)"
+            Packages="@(PackageDependencies)"
+            VersionRangeType="$(NuGetDependencyVersionRangeStrategy)">
+            <Output
+                PropertyName="NuGetDependencies"
+                TaskParameter="Dependencies" />
+        </GatherNuGetDependenciesForProject>
+
+        <ItemGroup>
+            <TemplateTokens Include="Dependencies">
+                <ReplacementValue>$(NuGetDependencies)</ReplacementValue>
+            </TemplateTokens>
+        </ItemGroup>
+
+        <CreateProperty Value="$(DirBuildTemp)\$([System.IO.Path]::GetFileName($(FileNuGetNuSpec)))">
+            <Output
+                PropertyName="FileNuGetNuSpecTokensReplaced"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <!--
+            Replaced all instances of $TOKEN$ with the value for TOKEN. The regular expession
+            is rather mangled because XML doesn't like < and > and MsBuild doesn't
+            like $ (%24), * (%2A), ? (%3F)
+        -->
+        <TemplateFile
+            Condition="Exists('$(FileNuGetNuSpec)')"
+            Encoding="UTF-8"
+            OutputFileName="$(FileNuGetNuSpecTokensReplaced)"
+            SearchExpression="(%3F&lt;token&gt;\%24(?&lt;identifier&gt;\w%2A)\%24)"
+            Template="$(FileNuGetNuSpec)"
+            Tokens="@(TemplateTokens)" />
+        <NuGetPack
+            File="$(FileNuGetNuSpecTokensReplaced)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            OutputDirectory="$(DirBuildDeploy)"
+            ShouldBuildSymbols="%(NuGetPackageSpecs.ShouldBuildSymbols)" />
+    </Target>
+ </Project>

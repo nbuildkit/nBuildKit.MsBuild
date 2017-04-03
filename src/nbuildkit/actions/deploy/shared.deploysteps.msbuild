@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Deploy_Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <!-- Note the current script is not meant to be imported! -->
+        <ExistsNBuildKitDeploySteps>true</ExistsNBuildKitDeploySteps>
+    </PropertyGroup>
+    <PropertyGroup>
+        <DeployStepsShowHelp>$(MSBuildThisFileDirectory)..\shared.show.help.msbuild</DeployStepsShowHelp>
+
+        <DeployStepsPrepareVcsBranch>$(MSBuildThisFileDirectory)..\shared.prepare.vcssetbranch.msbuild</DeployStepsPrepareVcsBranch>
+        <DeployStepsPrepareGetVersion>$(MSBuildThisFileDirectory)..\shared.prepare.getversion.msbuild</DeployStepsPrepareGetVersion>
+        <DeployStepsPrepareTagVcs>$(MSBuildThisFileDirectory)..\shared.prepare.tag.vcs.msbuild</DeployStepsPrepareTagVcs>
+
+        <DeployStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
+        <DeployStepsRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
+
+        <DeployStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</DeployStepsPrepareCopyNuGet>
+        <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</DeployStepsPrepareCopyFiles>
+
+        <DeployStepsPushToTags>$(MSBuildThisFileDirectory)deploy.pushto.tags.msbuild</DeployStepsPushToTags>
+        <DeployStepsPushToNuget>$(MSBuildThisFileDirectory)deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
+        <DeployStepsPushToDirectory>$(MSBuildThisFileDirectory)deploy.pushto.directory.msbuild</DeployStepsPushToDirectory>
+        <DeployStepsPushToSymbolServer>$(MSBuildThisFileDirectory)deploy.pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
+        <DeployStepsPushToGitHubRelease>$(MSBuildThisFileDirectory)deploy.pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
+        <DeployStepsPushToGitBranch>$(MSBuildThisFileDirectory)deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
+        <DeployStepsPushToGitRepository>$(MSBuildThisFileDirectory)deploy.pushto.gitrepository.msbuild</DeployStepsPushToGitRepository>
+    </PropertyGroup>
+    <ItemGroup>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsBuildTargetsAssembly)'))">
+            <Description>
+                Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio solutions so that it is possible to build MsBuild tasks that will be used in the build process.
+            </Description>
+            <Id>DeployStepsBuildTargetsAssembly</Id>
+            <Name>Deploy - compile MsBuild task assembly</Name>
+            <Path>$(DeployStepsBuildTargetsAssembly)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsGenerateTargetsFile)'))">
+            <Description>
+                Generates a targets file for use with an MsBuild tasks assembly.
+            </Description>
+            <Id>DeployStepsGenerateTargetsFile</Id>
+            <Name>Deploy - generate MsBuild targets file</Name>
+            <Path>$DeployStepsGenerateTargetsFile)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareVcsBranch)'))">
+            <Description>
+                When building from a GIT repository on a build server ensures that the current checkout has the same branch name as the remote tracking branch.
+            </Description>
+            <Id>DeployStepsPrepareVcsBranch</Id>
+            <Name>Deploy - prepare VCS state</Name>
+            <Path>$(DeployStepsPrepareVcsBranch)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareGetVersion)'))">
+            <Description>
+                Gathers version information and stores it in a temporary file for use by the rest of the deploy process.
+            </Description>
+            <Id>DeployStepsPrepareGetVersion</Id>
+            <Name>Deploy - gather version numbers</Name>
+            <Path>$(DeployStepsPrepareGetVersion)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareTagVcs)'))">
+            <Description>
+                Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
+            </Description>
+            <Id>DeployStepsPrepareTagVcs</Id>
+            <Name></Name>
+            <Path>$(DeployStepsPrepareTagVcs)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareGetIssueIds)'))">
+            <Description>
+                Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
+            </Description>
+            <Id>DeployStepsPrepareGetIssueIds</Id>
+            <Name>Deploy - get issue IDs</Name>
+            <Path>$(DeployStepsPrepareGetIssueIds)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsRestoreNuGet)'))">
+            <Description>
+                Restores the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally also restores the NuGet packages as specified in the nBuildKit specific 'packages.config' files.
+            </Description>
+            <Id>DeployStepsRestoreNuGet</Id>
+            <Name>Deploy - restore NuGet packages</Name>
+            <Path>$(DeployStepsRestoreNuGet)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyNuGet)'))">
+            <Description>
+                Copies one or more files from a NuGet package.
+            </Description>
+            <Id>DeployStepsPrepareCopyNuGet</Id>
+            <Name>Deploy - copy nuget</Name>
+            <Path>$(DeployStepsPrepareCopyNuGet)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyFiles)'))">
+            <Description>
+                Copies one or more files from the file system.
+            </Description>
+            <Id>DeployStepsPrepareCopyFiles</Id>
+            <Name>Deploy - copy files</Name>
+            <Path>$(DeployStepsPrepareCopyFiles)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToTags)'))">
+            <Description>
+                Pushes the tags to a remote git repository
+            </Description>
+            <Id>DeployStepsPushToTags</Id>
+            <Name>Deploy - push tags to a DVCS</Name>
+            <Path>$(DeployStepsPushToTags)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToNuget)'))">
+            <Description>
+                Pushes one or more artifacts to a NuGet feed
+            </Description>
+            <Id>DeployStepsPushToNuget</Id>
+            <Name>Deploy - push NuGet packages</Name>
+            <Path>$(DeployStepsPushToNuget)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToDirectory)'))">
+            <Description>
+                Pushes one or more artifacts to a directory
+            </Description>
+            <Id>DeployStepsPushToDirectory</Id>
+            <Name>Deploy - copy artefacts to a directory</Name>
+            <Path>$(DeployStepsPushToDirectory)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToSymbolServer)'))">
+            <Description>
+                Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
+            </Description>
+            <Id>DeployStepsPushToSymbolServer</Id>
+            <Name>Deploy - push NuGet symbol packages</Name>
+            <Path>$(DeployStepsPushToSymbolServer)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToGitHubRelease)'))">
+            <Description>
+                Pushes zero or more files to a GitHub release
+            </Description>
+            <Id>DeployStepsPushToGitHubRelease</Id>
+            <Name>Deploy - push to a GitHub release</Name>
+            <Path>$(DeployStepsPushToGitHubRelease)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToGitBranch)'))">
+            <Description>
+                Pushes zero or more files to a Git branch. Any files that currently exist on that branch are removed and replaced by the specified files.
+            </Description>
+            <Id>DeployStepsPushToGitBranch</Id>
+            <Name>Deploy - push a Git branch</Name>
+            <Path>$(DeployStepsPushToGitBranch)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToGitRepository)'))">
+            <Description>
+                Pushes an archived local workspace to a Git repository.
+            </Description>
+            <Id>DeployStepsPushToGitRepository</Id>
+            <Name>Deploy - push all Git branches and tags</Name>
+            <Path>$(DeployStepsPushToGitRepository)</Path>
+        </AvailableStepMetadata>
+    </ItemGroup>
+</Project>

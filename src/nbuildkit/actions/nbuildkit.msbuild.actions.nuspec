@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>nBuildKit.MsBuild.Actions</id>
+        <version>$VersionSemantic$</version>
+        <authors>$CompanyName$</authors>
+        <owners>$CompanyName$</owners>
+        <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+        <projectUrl>$ProductUrl$</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>
+            Provides build scripts and build tasks that can be used to execute the build of a .NET project.
+        </description>
+        <releaseNotes>
+            $ReleaseNotesHtmlEncoded$
+        </releaseNotes>
+        <dependencies>
+            $Dependencies$
+            <dependency
+                id="nBuildKit.Tools.VsCoverageToReportGenerator"
+                version="[$VersionSemantic$, $VersionMajorNext$)" />
+            <dependency
+                id="nBuildKit.MsBuild.Tasks"
+                version="[$VersionSemantic$, $VersionMajorNext$)" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file
+            src="$DirSrc$\nbuildkit\actions\*.msbuild"
+            target="build" />
+        <file
+            src="$DirSrc$\nbuildkit\actions\*.props"
+            target="build" />
+        <file
+            src="$DirSrc$\nbuildkit\actions\template.*.*"
+            target="build" />
+
+        <file
+            src="$DirSrc$\nbuildkit\actions\build\*.msbuild"
+            target="build\build" />
+        <file
+            src="$DirSrc$\nbuildkit\actions\build\*.props"
+            target="build\build" />
+        <file
+            src="$DirSrc$\nbuildkit\actions\build\*.zipspec"
+            target="build\build" />
+
+        <file
+            src="$DirSrc$\nbuildkit\actions\test\*.msbuild"
+            target="build\test" />
+        <file
+            src="$DirSrc$\nbuildkit\actions\test\*.props"
+            target="build\test" />
+
+        <file
+            src="$DirSrc$\nbuildkit\actions\deploy\*.msbuild"
+            target="build\deploy" />
+        <file
+            src="$DirSrc$\nbuildkit\actions\deploy\*.props"
+            target="build\deploy" />
+
+        <file
+            src="$DirBin$\*.dll"
+            target="build/extensions" />
+        <file
+            src="$DirBootstrap$\*.targets"
+            target="build/extensions" />
+
+        <file
+            src="$DirWorkspace$\README.md" />
+        <file
+            src="$DirWorkspace$\LICENSE" />
+    </files>
+</package>

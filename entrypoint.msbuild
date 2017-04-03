@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="11.0"
-         DefaultTargets="Help"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+    DefaultTargets="Help"
+    ToolsVersion="11.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <!-- Directories -->
         <!--
@@ -10,37 +11,132 @@
             means that the workspace directory is the 'MsBuildProjectDirectory' for the current file.
         -->
         <DirWorkspace>$(MSBuildProjectDirectory)</DirWorkspace>
-
         <!--
-            Hard-code the paths to the different directories because we're dog-fooding here so we know exactly
+            The directory in which the configuration files, like settings.props, are located.
+        -->
+        <DirUserSettings>$(DirWorkspace)</DirUserSettings>
+
+        <!-- nBuildKit -->
+        <!--
+            Defines the version number of the entrypoint file
+        -->
+        <NBuildKitConfigurationVersion>0.9</NBuildKitConfigurationVersion>
+        <!--
+            Hard-code the paths to the different directories because we're dog-fooding here we know exactly
             where all the files are.
         -->
-        <DirNBuildKitMsBuildExtensions>$(DirWorkspace)\src\extensions</DirNBuildKitMsBuildExtensions>
-        <DirNBuildKitMsBuildShared>$(DirWorkspace)\src\shared</DirNBuildKitMsBuildShared>
-        <DirNBuildKitMsBuildTemplates>$(DirWorkspace)\src\templates</DirNBuildKitMsBuildTemplates>
+        <DirNBuildKit>$(MSBuildProjectDirectory)\src\nbuildkit</DirNBuildKit>
 
-        <DirMsBuildScripts>$(MSBuildProjectDirectory)</DirMsBuildScripts>
-        <DirNBuildKit>$(DirMsBuildScripts)\src\scripts</DirNBuildKit>
+        <DirNBuildKitMsBuildActions>$(DirNBuildKit)\actions</DirNBuildKitMsBuildActions>
+        <DirNBuildKitMsBuildEntryPoint>$(DirNBuildKit)\entrypoint</DirNBuildKitMsBuildEntryPoint>
+        <DirBuildKitMsBuildExecutors>$(DirNBuildKit)\executors</DirBuildKitMsBuildExecutors>
 
-        <!-- Files -->
+        <DirNBuildKitMsBuildTasks>$(DirWorkspace)\build\bootstrap</DirNBuildKitMsBuildTasks>
+
         <!--
-            The file that contains all the properties for the build and deploy processes.
+            Hard-code the path to the extensions assembly. If it doesn't exist, it will be build.
         -->
-        <SharedPropertyFile>$(DirWorkspace)\settings.props</SharedPropertyFile>
+        <FileNBuildKitExtensionsAssembly>$(DirNBuildKitMsBuildTasks)\nBuildKit.MsBuild.Tasks.dll</FileNBuildKitExtensionsAssembly>
+    </PropertyGroup>
+
+    <!--
+        Collect the standard paths for injection into nBuildKit.
+    -->
+    <PropertyGroup>
+        <Locations>
+            DirUserSettings=$(DirUserSettings);
+            DirNBuildKitMsBuildActions=$(DirNBuildKitMsBuildActions);
+            DirNBuildKitMsBuildTasks=$(DirNBuildKitMsBuildTasks);
+            DirExecutors=$(DirBuildKitMsBuildExecutors);
+        </Locations>
+        <Files>
+            SharedPropertyFile=$(DirWorkspace)\settings.props;
+            ArtefactPropertyFile=$(DirWorkspace)\artefacts.settings.props;
+        </Files>
     </PropertyGroup>
 
     <!--
         Display the help text for the current script and then exit.
     -->
     <Target Name="Help">
-        <Message Text="nBuildKit - Build system" />
-        <Message Text="Copyright 2013 nBuildKit. Apache License, Version 2.0" />
+        <Message Text="nBuildKit (bootstrap edition) - Build system" />
+        <Message Text="Copyright 2014 nBuildKit. Apache License, Version 2.0" />
         <Message Text="" />
         <Message Text="The following targets exist:" />
         <Message Text="" />
-        <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'settings.props' file." />
-        <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'setttings.props' file." />
-        <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'settings.props' file." />
+
+        <Message Text="- Build: Executes the build sequence. Build steps are as defined by the 'BuildStepsToExecute' in the 'build.settings.props' file." />
+        <Message Text="  Additional properties that can be specified are:" />
+        <Message Text="  * DirWorkspace           - The full path to the directory that is the top-level directory in which all the files for the" />
+        <Message Text="                             build, test, deploy stage can be found. During the process there should never be a need to go" />
+        <Message Text="                             any futher up the directory hierarchy to find files." />
+        <Message Text="  * DirUserSettings        - The full path to the directory in which the configuration files, like settings.props, are located." />
+        <Message Text="  * DirBuildServerSettings - The full path to the directory in which the build server specific configuration files are located." />
+        <Message Text="  * GroupsToExecute        - A comma separated list of groups for which the build steps should be executed." />
+        <Message Text="                             Available groups are Clean and the groups defined in the BuildStepsToExecute list." />
+        <Message Text="  * FileEnvironment        - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
+        <Message Text="                             This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="  * UseEnvironmentFrom     - A property that indicates where the environment.props file should be loaded from." />
+        <Message Text="                             Valid options are:" />
+        <Message Text="                             - 'File'      - Load the environment information from the user specified file, if it exists." />
+        <Message Text="                             - 'User'      - Load the environment information from file pointed to by the user environment variable" />
+        <Message Text="                                             NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                             - 'Machine'   - Load the environment information from file pointed to by the machine environment variable" />
+        <Message Text="                                             NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                             - 'Workspace' - Load the environment information from the file in the workspace, if it exists" />
+
+        <Message Text="- Test: Executes the test sequence. Test steps are defined by the 'TestStepsToExecute' in the 'test.settings.props' file." />
+        <Message Text="  Additional properties that can be specified are:" />
+        <Message Text="  * DirWorkspace           - The full path to the directory that is the top-level directory in which all the files for the" />
+        <Message Text="                             build, test, deploy stage can be found. During the process there should never be a need to go" />
+        <Message Text="                             any futher up the directory hierarchy to find files." />
+        <Message Text="  * DirUserSettings        - The full path to the directory in which the configuration files, like settings.props, are located." />
+        <Message Text="  * DirBuildServerSettings - The full path to the directory in which the build server specific configuration files are located." />
+        <Message Text="  * GroupsToExecute        - A comma separated list of groups for which the build steps should be executed." />
+        <Message Text="                             Available groups are Clean and the groups defined in the TestStepsToExecute list." />
+        <Message Text="  * FileEnvironment        - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
+        <Message Text="                             This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="  * UseEnvironmentFrom     - A property that indicates where the environment.props file should be loaded from." />
+        <Message Text="                             Valid options are:" />
+        <Message Text="                             - 'File'      - Load the environment information from the user specified file, if it exists." />
+        <Message Text="                             - 'User'      - Load the environment information from file pointed to by the user environment variable" />
+        <Message Text="                                             NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                             - 'Machine'   - Load the environment information from file pointed to by the machine environment variable" />
+        <Message Text="                                             NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                             - 'Workspace' - Load the environment information from the file in the workspace, if it exists" />
+
+        <Message Text="- Deploy: Executes the deploy sequence. Deploy steps are as defined by the 'DeployStepsToExecute' in the 'deploy.settings.props' file." />
+        <Message Text="  Additional properties that can be specified are:" />
+        <Message Text="  * DirWorkspace           - The full path to the directory that is the top-level directory in which all the files for the" />
+        <Message Text="                             build, test, deploy stage can be found. During the process there should never be a need to go" />
+        <Message Text="                             any futher up the directory hierarchy to find files." />
+        <Message Text="  * DirUserSettings        - The full path to the directory in which the configuration files, like settings.props, are located." />
+        <Message Text="  * DirBuildServerSettings - The full path to the directory in which the build server specific configuration files are located." />
+        <Message Text="  * GroupsToExecute        - A comma separated list of groups for which the build steps should be executed." />
+        <Message Text="                             Available groups are Clean and the groups defined in the DeployStepsToExecute list." />
+        <Message Text="  * FileEnvironment        - The full path to an MsBuild properties file that contains the environment settings for the current environment." />
+        <Message Text="                             This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="  * UseEnvironmentFrom     - A property that indicates where the environment.props file should be loaded from." />
+        <Message Text="                             Valid options are:" />
+        <Message Text="                             - 'File'      - Load the environment information from the user specified file, if it exists." />
+        <Message Text="                             - 'User'      - Load the environment information from file pointed to by the user environment variable" />
+        <Message Text="                                             NBUILDKIT_USER_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                             - 'Machine'   - Load the environment information from file pointed to by the machine environment variable" />
+        <Message Text="                                             NBUILDKIT_MACHINE_ENVIRONMENT_FILE, if it exists" />
+        <Message Text="                             - 'Workspace' - Load the environment information from the file in the workspace, if it exists" />
+
+        <Message Text="" />
+        <Message Text="Additionally the following environment variables may be defined:" />
+        <Message Text="- NBUILDKIT_USER_ENVIRONMENT_FILE        - A user level environment variable that defines the full path to an MsBuild properties file that contains the environment settings." />
+        <Message Text="                                           This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="- NBUILDKIT_MACHINE_ENVIRONMENT_FILE     - A machine level environment variable that defines the full path to an MsBuild properties file that contains the environment settings." />
+        <Message Text="                                           This file should at least contain a property called 'ExistsEnvironmentSettings' for which the value should be set to true." />
+        <Message Text="- NBUILDKIT_BUILDSERVER_ENVIRONMENT_DIR  - A user or machine level environment variable that defines the directory path to an MsBuild properties file that contains the" />
+        <Message Text="                                           environment settings for the build server." />
+        <Message Text="                                           This file should at least contain two properties: One property called 'ExistsBuildServerEnvironmentSettings' for which the" />
+        <Message Text="                                           value should be set to true, and a property called 'VersionBuildServerEnvironmentSettings' for which the value should be set to ." />
+        <Message Text="                                           value should be set to the version of the settings file." />
+
         <Message Text="- Help: Displays this text." />
     </Target>
 
@@ -49,22 +145,16 @@
         script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
         be used to execute the build.
     -->
-    <Target Name="Build">
-        <MSBuild
-            BuildInParallel="False"
-            Projects="$(DirNBuildKit)\build.msbuild"
-            Properties="SharedPropertyFile=$(SharedPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
-            RebaseOutputs="False"
-            RemoveProperties=""
-            RunEachTargetSeparately="True"
-            SkipNonexistentProjects="False"
-            StopOnFirstFailure="True"
-            TargetAndPropertyListSeparators=""
-            Targets=""
-            ToolsVersion="$(MSBuildToolsVersion)"
-            UnloadProjectsOnCompletion="True"
-            UseResultsCache="True">
-        </MSBuild>
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Build"
+        Name="Build">
+        <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitTarget_Build">
+        <PropertyGroup>
+            <TargetToExecute>Build</TargetToExecute>
+        </PropertyGroup>
     </Target>
 
     <!--
@@ -72,11 +162,80 @@
         script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
         be used to execute the tests.
     -->
-    <Target Name="Test">
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Test"
+        Name="Test">
+        <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitTarget_Test">
+        <PropertyGroup>
+            <TargetToExecute>Test</TargetToExecute>
+        </PropertyGroup>
+    </Target>
+
+    <!--
+        Invoke the deploy steps as defined by the 'settings.props' file by invoking the nBuildKit 'deploy.msbuild'
+        script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
+        be used to execute the deploy.
+    -->
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_SetNBuildKitTarget_Deploy"
+        Name="Deploy">
+        <CallTarget Targets="_nBuildKit_EntryPoint_Execute" />
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_SetNBuildKitTarget_Deploy">
+        <PropertyGroup>
+            <TargetToExecute>Deploy</TargetToExecute>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="_nBuildKit_EntryPoint_Bootstrap">
+        <PropertyGroup>
+            <DirNBuildKitExtensionsAssembly>$([System.IO.Path]::GetDirectoryName($(FileNBuildKitExtensionsAssembly)))</DirNBuildKitExtensionsAssembly>
+        </PropertyGroup>
+        <ItemGroup>
+            <BootstrapFilesToDelete Include="$(DirNBuildKitExtensionsAssembly)\**\*.*" />
+            <BootstrapFilesToDelete Include="$(DirWorkspace)\build\configurations\**\*.*" />
+            <BootstrapFilesToDelete Include="$(DirWorkspace)\build\temp\**\*.*" />
+        </ItemGroup>
+        <Delete
+            Condition=" '@(BootstrapFilesToDelete)' != ''"
+            ContinueOnError="True"
+            Files="@(BootstrapFilesToDelete)" />
+
+        <RemoveDir
+            Condition=" '$(DirNBuildKitExtensionsAssembly)' != '' "
+            ContinueOnError="True"
+            Directories="$(DirNBuildKitExtensionsAssembly)" />
+
+        <PropertyGroup>
+            <BootstrapIncludes>
+                FileImports=$(DirNBuildKitMsBuildEntryPoint)\import.build.props;
+            </BootstrapIncludes>
+        </PropertyGroup>
+
         <MSBuild
             BuildInParallel="False"
-            Projects="$(DirNBuildKit)\test.msbuild"
-            Properties="SharedPropertyFile=$(SharedPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
+            Projects="$(DirNBuildKitMsBuildActions)\shared.bootstrap.build.tasks.msbuild"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapIncludes)"
+            RebaseOutputs="False"
+            RemoveProperties=""
+            RunEachTargetSeparately="True"
+            SkipNonexistentProjects="False"
+            StopOnFirstFailure="True"
+            TargetAndPropertyListSeparators=""
+            Targets=""
+            ToolsVersion="$(MSBuildToolsVersion)"
+            UnloadProjectsOnCompletion="True"
+            UseResultsCache="True">
+        </MSBuild>
+
+        <MSBuild
+            BuildInParallel="False"
+            Projects="$(DirNBuildKitMsBuildActions)\shared.bootstrap.generate.targetsfile.msbuild"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapIncludes)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -90,22 +249,20 @@
         </MSBuild>
     </Target>
 
-    <!--
-        Invoke the deploy steps as defined by the 'settings.props' file by invoking the nBuildKit 'deploy.msbuild'
-        script and passing the path to the 'settings.props' file and the version of nBuildKit that is going to
-        be used to execute the deploy.
-    -->    <Target Name="Deploy">
+    <Target
+        DependsOnTargets="_nBuildKit_EntryPoint_Bootstrap"
+        Name="_nBuildKit_EntryPoint_Execute">
         <MSBuild
             BuildInParallel="False"
-            Projects="$(DirNBuildKit)\deploy.msbuild"
-            Properties="SharedPropertyFile=$(SharedPropertyFile);DirNBuildKitMsBuildExtensions=$(DirNBuildKitMsBuildExtensions);DirNBuildKitMsBuildShared=$(DirNBuildKitMsBuildShared);DirNBuildKitMsBuildTemplates=$(DirNBuildKitMsBuildTemplates)"
+            Projects="$(DirNBuildKitMsBuildEntryPoint)\run.msbuild"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
             SkipNonexistentProjects="False"
             StopOnFirstFailure="True"
             TargetAndPropertyListSeparators=""
-            Targets=""
+            Targets="$(TargetToExecute)"
             ToolsVersion="$(MSBuildToolsVersion)"
             UnloadProjectsOnCompletion="True"
             UseResultsCache="True">

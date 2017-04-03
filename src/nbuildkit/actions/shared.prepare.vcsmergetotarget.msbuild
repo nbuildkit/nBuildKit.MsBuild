@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_VcsMergeToTarget_Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ExistsSharedPrepareVcsMergeToTarget>true</ExistsSharedPrepareVcsMergeToTarget>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Condition=" '@(BranchMergeTarget)' != '' "
+        Name="nBuildKit_Shared_Prepare_VcsMergeToTarget_Run">
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Prepare" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Finalize" />
+    </Target>
+
+    <Target
+        Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' "
+        Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Prepare">
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsMergeInfo)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') "
+            Directories="$(DirToCreate)" />
+
+        <ItemGroup>
+            <GitMergeItemsPrepare Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
+            <GitMergeItemsPrepare Include="&lt;merge&gt;" />
+            <GitMergeItemsPrepare Include="    &lt;origin branch=&quot;$(GitBranchExpected)&quot; revision=&quot;$(GitRevNoExpected)&quot; /&gt;" />
+            <GitMergeItemsPrepare Include="    &lt;targets&gt;" />
+        </ItemGroup>
+    </Target>
+
+    <Target
+        Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' "
+        Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge"
+        Outputs="%(BranchMergeTarget.Identity)">
+        <Error
+            Condition=" '$(ToolsExternalGitPath)' == '' "
+            Text="No GIT executable defined. Will not be able to gather the VCS information." />
+
+        <Message Text="Checking out merge target branch: %(BranchMergeTarget.Identity) ..." />
+        <GitCheckout
+            Branch="%(BranchMergeTarget.Identity)"
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)" />
+
+        <GitCurrentBranch
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
+            <Output
+                PropertyName="TargetGitBranch"
+                TaskParameter="CurrentBranch" />
+        </GitCurrentBranch>
+        <GitCurrentRevision
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
+            <Output
+                PropertyName="GitRevNoCurrentBranch"
+                TaskParameter="CurrentRevision" />
+        </GitCurrentRevision>
+        <Message Text="Target branch: $(TargetGitBranch)" />
+        <Message Text="Target revision: $(GitRevNoCurrentBranch)" />
+
+        <Message Text="Merging changes from branch $(GitBranchExpected) to branch %(BranchMergeTarget.Identity) ..." />
+        <GitMerge
+            BranchToMerge="$(GitBranchExpected)"
+            Condition=" '$(GitBranchExpected)' != '%(BranchMergeTarget.Identity)' "
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)" />
+
+        <ItemGroup>
+            <GitMergeItems Include="        &lt;target branch=&quot;%(BranchMergeTarget.Identity)&quot; revision=&quot;$(GitRevNoCurrentBranch)&quot; /&gt;" />
+        </ItemGroup>
+
+        <GitCurrentBranch
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
+            <Output
+                PropertyName="PostMergeBranch"
+                TaskParameter="CurrentBranch" />
+        </GitCurrentBranch>
+        <GitCurrentRevision
+            GitExecutablePath="$(ToolsExternalGitPath)"
+            Workspace="$(DirWorkspace)">
+            <Output
+                PropertyName="PostMergeRevision"
+                TaskParameter="CurrentRevision" />
+        </GitCurrentRevision>
+        <Message Text="Post-merge branch: $(PostMergeBranch)" />
+        <Message Text="Post-merge revision: $(PostMergeRevision)" />
+    </Target>
+
+    <Target
+        Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' "
+        Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_WriteInfo_Finalize">
+
+        <ItemGroup>
+            <GitMergeItemsFinalize Include="    &lt;/targets&gt;" />
+            <GitMergeItemsFinalize Include="&lt;/merge&gt;" />
+        </ItemGroup>
+
+        <WriteLinesToFile
+            File="$(FileVcsMergeInfo)"
+            Lines="@(GitMergeItemsPrepare)"
+            Overwrite="true" />
+
+        <WriteLinesToFile
+            File="$(FileVcsMergeInfo)"
+            Lines="@(GitMergeItems)"
+            Overwrite="false" />
+
+        <WriteLinesToFile
+            File="$(FileVcsMergeInfo)"
+            Lines="@(GitMergeItemsFinalize)"
+            Overwrite="false" />
+    </Target>
+ </Project>

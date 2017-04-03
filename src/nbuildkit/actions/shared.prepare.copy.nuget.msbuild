@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_Copy_FromNuGetPackage"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ExistsSharedPrepareCopyNuGet>true</ExistsSharedPrepareCopyNuGet>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Condition=" '@(NuGetFilesToCopy)' != '' "
+        Name="nBuildKit_Shared_Prepare_Copy_FromNuGetPackage">
+        <CopyFilesFromNuGetPackages
+            Items="@(NuGetFilesToCopy)"
+            PackagesDirectory="$(DirPackages)">
+        </CopyFilesFromNuGetPackages>
+    </Target>
+ </Project>
