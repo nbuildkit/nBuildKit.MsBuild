@@ -317,7 +317,6 @@
             <PostSteps>
             </PostSteps>
         </DeployStepsToExecute>
-        <!--
          <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
@@ -332,7 +331,6 @@
             <PostSteps>
             </PostSteps>
         </DeployStepsToExecute>
-        -->
         <!--
         <DeployStepsToExecute Include="$(DeployStepsPushToGitRepository)">
             <Properties>
@@ -516,16 +514,14 @@
         allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
     <ItemGroup>
-        <!--
         <PushToGitBranchSpecs
             Condition=" '$(DirBuildDeploy)' != '' "
-            Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
+            Include="$(DirBuildDeploy)nbuildkit.msbuild.doc-${VersionSemantic}.zip">
              <Repository>$(GitRemoteRepository)</Repository>
-             <Branch>master</Branch>
+             <Branch>gh-pages</Branch>
              <ExtractZipFiles>true</ExtractZipFiles>
-             <CommitMessage>New changes</CommitMessage>
+             <CommitMessage>Updating the documentation for ${VersionSemantic}</CommitMessage>
         </PushToGitBranchSpecs>
-        -->
     </ItemGroup>
 
 
