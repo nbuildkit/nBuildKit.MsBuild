@@ -171,30 +171,33 @@ function New-Workspace
 
     if ($activeBranch.StartsWith('feature') -or $activeBranch.StartsWith('hotfix') -or $activeBranch.StartsWith('release'))
     {
-        # From the bare clone create a workspace in temp
-        $tempWorkspace = Join-Path $tempLocation 'mergebranches'
-        Clone-Repository `
-            -url $repositoryLocation `
-            -destination $tempWorkspace `
-            @commonParameterSwitches
-
-        $originalWorkingDirectory = $pwd
-        try
+        if (Test-RemoteBranch -url $repositoryLocation -branch $activeBranch)
         {
-            Set-Location $tempWorkspace
-
-            Finish-GitFlow `
-                -branch $activeBranch `
-                -releaseVersion $gitflowFinishingReleaseVersion `
+            # From the bare clone create a workspace in temp
+            $tempWorkspace = Join-Path $tempLocation 'mergebranches'
+            Clone-Repository `
+                -url $repositoryLocation `
+                -destination $tempWorkspace `
                 @commonParameterSwitches
 
-            Push-ToRemote `
-                -origin 'origin' `
-                @commonParameterSwitches
-        }
-        finally
-        {
-            Set-Location $originalWorkingDirectory
+            $originalWorkingDirectory = $pwd
+            try
+            {
+                Set-Location $tempWorkspace
+
+                Finish-GitFlow `
+                    -branch $activeBranch `
+                    -releaseVersion $gitflowFinishingReleaseVersion `
+                    @commonParameterSwitches
+
+                Push-ToRemote `
+                    -origin 'origin' `
+                    @commonParameterSwitches
+            }
+            finally
+            {
+                Set-Location $originalWorkingDirectory
+            }
         }
     }
 
