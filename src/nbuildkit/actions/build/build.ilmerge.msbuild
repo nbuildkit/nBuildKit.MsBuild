@@ -29,7 +29,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="ILRepack"
             PackageVersion="$(ToolsExternalILRepackVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalILRepackPath)' == 'UNDEFINED' "
             FileToLocate="ilrepack.exe"

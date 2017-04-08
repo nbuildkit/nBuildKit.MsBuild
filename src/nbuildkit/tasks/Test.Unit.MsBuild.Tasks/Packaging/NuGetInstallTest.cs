@@ -67,11 +67,13 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
             task.NuGetExecutablePath = new TaskItem(toolPath);
             task.PackageName = "A";
             task.PackagesDirectory = new TaskItem(directory);
+            task.WorkingDirectory = new TaskItem(directory);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
             Assert.AreEqual(toolPath, invokedPath);
+            Assert.AreEqual(directory, invokedWorkingDirectory);
 
             Assert.AreEqual(5, invokedArgs.Count);
             Assert.AreEqual("install \"A\" ", invokedArgs[0]);
@@ -138,11 +140,13 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
             task.NuGetExecutablePath = new TaskItem(toolPath);
             task.PackageName = "A";
             task.PackagesDirectory = new TaskItem(directory);
+            task.WorkingDirectory = new TaskItem(directory);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
             Assert.AreEqual(toolPath, invokedPath);
+            Assert.AreEqual(directory, invokedWorkingDirectory);
 
             Assert.AreEqual(6, invokedArgs.Count);
             Assert.AreEqual("install \"A\" ", invokedArgs[0]);
@@ -210,11 +214,13 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
             task.NuGetExecutablePath = new TaskItem(toolPath);
             task.PackageName = "A";
             task.PackagesDirectory = new TaskItem(directory);
+            task.WorkingDirectory = new TaskItem(directory);
 
             var result = task.Execute();
             Assert.IsFalse(result);
 
             Assert.AreEqual(toolPath, invokedPath);
+            Assert.AreEqual(directory, invokedWorkingDirectory);
 
             Assert.AreEqual(5, invokedArgs.Count);
             Assert.AreEqual("install \"A\" ", invokedArgs[0]);
@@ -285,11 +291,13 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 new TaskItem("Source1"),
                 new TaskItem("Source2")
             };
+            task.WorkingDirectory = new TaskItem(directory);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
             Assert.AreEqual(toolPath, invokedPath);
+            Assert.AreEqual(directory, invokedWorkingDirectory);
 
             Assert.AreEqual(7, invokedArgs.Count);
             Assert.AreEqual("install \"A\" ", invokedArgs[0]);
@@ -358,11 +366,13 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
             task.PackageName = "A";
             task.PackageVersion = "1.2.3";
             task.PackagesDirectory = new TaskItem(directory);
+            task.WorkingDirectory = new TaskItem(directory);
 
             var result = task.Execute();
             Assert.IsTrue(result);
 
             Assert.AreEqual(toolPath, invokedPath);
+            Assert.AreEqual(directory, invokedWorkingDirectory);
 
             Assert.AreEqual(6, invokedArgs.Count);
             Assert.AreEqual("install \"A\" ", invokedArgs[0]);

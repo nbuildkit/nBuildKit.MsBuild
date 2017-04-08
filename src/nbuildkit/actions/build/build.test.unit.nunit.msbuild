@@ -34,7 +34,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="NUnit.Runners"
             PackageVersion="$(ToolsExternalNUnitConsoleVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' "
             FileToLocate="nunit-console.exe"
@@ -65,7 +66,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="OpenCover"
             PackageVersion="$(ToolsExternalOpenCoverVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' "
             FileToLocate="opencover.console.exe"
@@ -96,7 +98,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="ReportGenerator"
             PackageVersion="$(ToolsExternalReportGeneratorVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
             FileToLocate="ReportGenerator.exe"
@@ -127,7 +130,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="OpenCoverToCoberturaConverter"
             PackageVersion="$(ToolsExternalOpenCoverToCoberturaConverterVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
             FileToLocate="OpenCoverToCoberturaConverter.exe"

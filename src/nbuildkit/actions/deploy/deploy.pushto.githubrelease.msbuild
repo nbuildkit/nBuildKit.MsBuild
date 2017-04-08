@@ -39,7 +39,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="github-release"
             PackageVersion="$(ToolsExternalGitHubReleaseVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalGitHubReleasePath)' == 'UNDEFINED' "
             FileToLocate="github-release.exe"

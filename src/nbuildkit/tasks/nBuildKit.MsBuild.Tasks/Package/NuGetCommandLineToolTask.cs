@@ -60,6 +60,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
             var exitCode = InvokeCommandLineTool(
                 NuGetExecutablePath,
                 arguments,
+                WorkingDirectory,
                 standardOutputHandler: standardOutputHandler,
                 standardErrorHandler: standardErrorHandler);
             return exitCode;
@@ -70,6 +71,16 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         /// </summary>
         [Required]
         public ITaskItem NuGetExecutablePath
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the full path to the working directory
+        /// </summary>
+        [Required]
+        public ITaskItem WorkingDirectory
         {
             get;
             set;
