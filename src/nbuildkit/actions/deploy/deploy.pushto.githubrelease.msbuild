@@ -13,9 +13,8 @@
         Project="$(FileImports)" />
 
     <Target
+        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitHubRelease_Push"
         Name="nBuildKit_Deploy_PushTo_GitHubRelease_Run">
-        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion" />
-        <CallTarget Targets="_nBuildKit_Deploy_PushTo_GitHubRelease_Push" />
     </Target>
 
     <Target Name="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion">
@@ -28,8 +27,47 @@
         </GetSemanticVersionFromFile>
     </Target>
 
+    <Target Name="_nBuildKit_Deploy_PushTo_GitHubRelease_GetToolPaths">
+        <Error
+            Condition="!Exists('$(DirPackages)')"
+            Text="The packages directory does not exist. Cannot search for the github-release executable." />
+
+        <NuGetInstall
+            Condition=" '$(ToolsExternalGitHubReleasePath)' == 'UNDEFINED' "
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="github-release"
+            PackageVersion="$(ToolsExternalGitHubReleaseVersion)"
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalGitHubReleasePath)' == 'UNDEFINED' "
+            FileToLocate="github-release.exe"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalGitHubReleasePath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalGitHubReleasePath)' != 'UNDEFINED' "
+            Tool="$(ToolsExternalGitHubReleasePath)">
+            <Output
+                PropertyName="ToolsExternalGitHubReleasePath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalGitHubReleasePath)')"
+            Importance="low"
+            Text="The github-release executable was found at: $(ToolsExternalGitHubReleasePath)" />
+        <Error
+            Condition="!Exists('$(ToolsExternalGitHubReleasePath)')"
+            Text="Could not locate the github-release executable path. Cannot publish release on GitHub." />
+    </Target>
+
     <Target
         Condition=" '@(PushToGitHubReleaseSpecs)' != ''"
+        DependsOnTargets="_nBuildKit_Deploy_PushTo_GitHubRelease_GetVersion;_nBuildKit_Deploy_PushTo_GitHubRelease_GetToolPaths"
         Name="_nBuildKit_Deploy_PushTo_GitHubRelease_Push"
         Outputs="%(PushToGitHubReleaseSpecs.Identity)">
         <Error

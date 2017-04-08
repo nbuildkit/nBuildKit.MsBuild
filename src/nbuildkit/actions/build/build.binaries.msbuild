@@ -58,7 +58,8 @@
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageFile="$(FileSln)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
 
         <!-- Make sure we take all the non-essential whitespace and newlines out of the properties -->
         <PropertyGroup>

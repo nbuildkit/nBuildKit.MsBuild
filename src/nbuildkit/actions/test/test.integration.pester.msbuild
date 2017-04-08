@@ -25,7 +25,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="Pester"
             PackageVersion="$(ToolsExternalPesterVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolDirectory
             Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' "
             FileToLocate="Pester.psm1"

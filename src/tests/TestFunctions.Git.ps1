@@ -819,3 +819,94 @@ function Stage-Changes
         throw "Git stage failed. Output was: $($outputText)"
     }
 }
+
+<#
+    .SYNOPSIS
+
+    Verifies that a given branch exists in the local repository.
+
+
+    .DESCRIPTION
+
+    The Test-LocalBranch function verifies that a given branch eists in the local repository.
+
+
+    .PARAMETER branch
+
+    The name of the branch that should be verified.
+
+
+    .EXAMPLE
+
+    Test-Branch -branch 'feature/myfeature'
+#>
+function Test-LocalBranch
+{
+    [CmdletBinding()]
+    param(
+        [string] $branch
+    )
+
+    $ErrorActionPreference = 'Stop'
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            ErrorAction = "Stop"
+        }
+
+    $output = & git show-ref --verify --quiet "refs/heads/$($branch)" 2>&1
+
+    $outputText = $output | Out-String
+    if ($outputText -ne '')
+    {
+        Write-Verbose $outputText
+    }
+
+    return ($LASTEXITCODE -eq 0)
+}
+
+<#
+    .SYNOPSIS
+
+    Verifies that a given branch exists in the remote repository.
+
+
+    .DESCRIPTION
+
+    The Test-RemoteBranch function verifies that a given branch eists in the remote repository.
+
+
+    .PARAMETER url
+
+    The URL of the repository that should be checked.
+
+
+    .PARAMETER branch
+
+    The name of the branch that should be verified.
+
+
+    .EXAMPLE
+
+    Test-Branch -branch 'feature/myfeature'
+#>
+function Test-RemoteBranch
+{
+    [CmdletBinding()]
+    param(
+        [string] $url,
+        [string] $branch
+    )
+
+    $ErrorActionPreference = 'Stop'
+    $commonParameterSwitches =
+        @{
+            Verbose = $PSBoundParameters.ContainsKey('Verbose');
+            ErrorAction = "Stop"
+        }
+
+    $output = & git ls-remote --heads $url "$branch" 2>&1
+
+    $outputText = $output | Out-String
+    return (($outputText -ne '') -and ($LASTEXITCODE -eq 0))
+}

@@ -37,7 +37,8 @@
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
             PackageName="nBuildKit.Tools.VsCoverageToReportGenerator"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' "
             FileToLocate="VSCoverageToReportGenerator.exe"
@@ -68,7 +69,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="ReportGenerator"
             PackageVersion="$(ToolsExternalReportGeneratorVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
             FileToLocate="ReportGenerator.exe"
@@ -99,7 +101,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="OpenCoverToCoberturaConverter"
             PackageVersion="$(ToolsExternalOpenCoverToCoberturaConverterVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
             FileToLocate="OpenCoverToCoberturaConverter.exe"

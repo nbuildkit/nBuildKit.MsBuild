@@ -113,6 +113,16 @@
     -->
     <PropertyGroup>
         <!--
+            The flag that indicates if the input branch is a Git master branch.
+        -->
+        <IsMasterBranch Condition=" '$(IsMasterBranch)' == '' AND '$(IsGitWorkspace)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(master)%24'))</IsMasterBranch>
+
+        <!--
+            The flag that indicates if the input branch is a Git develop branch.
+        -->
+        <IsDevelopBranch Condition=" '$(IsDevelopBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(develop)%24'))</IsDevelopBranch>
+
+        <!--
             The flag that indicates if the input branch is a GitFlow feature branch.
         -->
         <IsFeatureBranch Condition=" '$(IsFeatureBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(feature\/).*'))</IsFeatureBranch>

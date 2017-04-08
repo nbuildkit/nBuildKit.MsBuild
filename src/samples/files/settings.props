@@ -380,6 +380,16 @@
     -->
     <PropertyGroup>
         <!--
+            The flag that indicates if the input branch is a Git master branch.
+        -->
+        <!-- <IsMasterBranch Condition=" '$(IsMasterBranch)' == '' AND '$(IsGitWorkspace)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(master)%24'))</IsMasterBranch> -->
+
+        <!--
+            The flag that indicates if the input branch is a Git develop branch.
+        -->
+        <!-- <IsDevelopBranch Condition=" '$(IsDevelopBranch)' == '' AND '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(develop)%24'))</IsDevelopBranch> -->
+
+        <!--
             The flag that indicates if the input branch is a GitFlow feature branch.
         -->
         <!-- <IsFeatureBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(feature\/).*'))</IsFeatureBranch> -->
@@ -413,24 +423,29 @@
     <ItemGroup>
         <!-- GITFLOW: If the input branch (GitBranchExpected) is a feature branch then we merge to develop -->
         <!--
-        <BranchMergeTarget Include="develop"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsFeatureBranch)' == 'true' " />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsFeatureBranch)' == 'true' "
+            Include="develop" />
         -->
 
         <!-- GITFLOW: If the input branch (GitBranchExpected) is a release branch then we merge to develop and master -->
         <!--
-        <BranchMergeTarget Include="develop"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
-        <BranchMergeTarget Include="master"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' "
+            Include="develop" />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' "
+            Include="master" />
         -->
 
         <!-- GITFLOW: If the input branch (GitBranchExpected) is a hotfix branch then we merge to develop and master -->
         <!--
-        <BranchMergeTarget Include="develop"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />
-        <BranchMergeTarget Include="master"
-                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' "
+            Include="develop" />
+        <BranchMergeTarget
+            Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' "
+            Include="master" />
         -->
     </ItemGroup>
 
@@ -671,7 +686,7 @@
         NuGet if no package is specified in the packages.config file.
     -->
     <PropertyGroup>
-        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">0.9.0</PackageMinimumVersion>
-        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">0.10.0</PackageMaximumVersion>
+        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">$VersionSemantic$</PackageMinimumVersion>
+        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">$VersionMajor$.$VersionMinorNext$.0</PackageMaximumVersion>
     </PropertyGroup>
 </Project>

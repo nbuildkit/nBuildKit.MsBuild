@@ -153,7 +153,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="GitVersion.CommandLine"
             PackageVersion="$(ToolsExternalGitVersionVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "
             FileToLocate="GitVersion.exe"
@@ -190,7 +191,8 @@
             ExePath="$(ToolsExternalGitVersionPath)"
             LogPath="$(DirBuildLogs)\gitversion.log"
             RemoteRepositoryUri="$(GitRemoteRepository)"
-            UserName="$(GitUserName)">
+            UserName="$(GitUserName)"
+            WorkingDirectory="$(DirWorkspace)">
             <Output
                 PropertyName="VersionMajor"
                 TaskParameter="VersionMajor" />
