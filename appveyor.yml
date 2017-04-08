@@ -26,7 +26,7 @@ branches:
 skip_tags: true
 
 # Start builds on tags only (GitHub and BitBucket)
-skip_non_tags: true
+skip_non_tags: false
 
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
@@ -41,6 +41,10 @@ max_jobs: 1
 
 # Build worker image (VM template)
 image: Visual Studio 2015
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  - git config --global core.autocrlf false
 
 
 #---------------------------------#

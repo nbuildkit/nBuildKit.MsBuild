@@ -259,20 +259,7 @@
             </PostSteps>
         </DeployStepsToExecute>
         -->
-        <DeployStepsToExecute Include="$(DeployStepsPushToNuget)">
-            <Properties>
-                Configuration=$(ProductionConfiguration);
-                Platform=$(Platform);
-            </Properties>
-            <Groups>
-                deploy;
-                deploy.package.nuget;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
-        </DeployStepsToExecute>
+
         <!--
         <DeployStepsToExecute Include="$(DeployStepsPushToDirectory)">
             <Properties>
@@ -288,7 +275,63 @@
             <PostSteps>
             </PostSteps>
         </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPushToSymbolServer)">
+        -->
+
+        <DeployStepsToExecute
+            Condition=" '$(IsMasterBranch)' == 'true' "
+            Include="$(DeployStepsPushToGitHubRelease)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+            <Groups>
+                deploy;
+                deploy.github;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
+         <DeployStepsToExecute
+            Condition=" '$(IsMasterBranch)' == 'true' "
+            Include="$(DeployStepsPushToGitBranch)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+            <Groups>
+                deploy;
+                deploy.vcs.git.branch;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
+        <!--
+        <DeployStepsToExecute
+            Condition=" '$(IsMasterBranch)' == 'true' "
+            Include="$(DeployStepsPushToGitRepository)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+            <Groups>
+                deploy;
+                deploy.vcs.git.repository;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
+        -->
+
+        <!--
+        <DeployStepsToExecute
+            Condition=" '$(IsMasterBranch)' == 'true' "
+            Include="$(DeployStepsPushToSymbolServer)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
@@ -303,45 +346,21 @@
             </PostSteps>
         </DeployStepsToExecute>
         -->
-        <DeployStepsToExecute Include="$(DeployStepsPushToGitHubRelease)">
-            <Properties>
-                Configuration=$(ProductionConfiguration);
-                Platform=$(Platform);
-            </Properties>
-            <Groups>
-                deploy;
-                deploy.github;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
-        </DeployStepsToExecute>
+
         <!--
-         <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
-            <Properties>
-                Configuration=$(ProductionConfiguration);
-                Platform=$(Platform);
-            </Properties>
-            <Groups>
-                deploy;
-                deploy.vcs.git.branch;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
-        </DeployStepsToExecute>
+            The last step is pushing to NuGet because we can't remove packages from NuGet
         -->
         <!--
-        <DeployStepsToExecute Include="$(DeployStepsPushToGitRepository)">
+        <DeployStepsToExecute
+            Condition=" '$(IsMasterBranch)' == 'true' "
+            Include="$(DeployStepsPushToNuget)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
             <Groups>
                 deploy;
-                deploy.vcs.git.repository;
+                deploy.package.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -516,16 +535,14 @@
         allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
     <ItemGroup>
-        <!--
         <PushToGitBranchSpecs
             Condition=" '$(DirBuildDeploy)' != '' "
-            Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
-             <Repository>$(GitRemoteRepository)</Repository>
-             <Branch>master</Branch>
-             <ExtractZipFiles>true</ExtractZipFiles>
-             <CommitMessage>New changes</CommitMessage>
+            Include="$(DirBuildDeploy)\nbuildkit.msbuild.doc-${VersionSemantic}.zip">
+            <Repository>$(GitRemoteRepository)</Repository>
+            <Branch>gh-pages</Branch>
+            <ExtractZipFiles>true</ExtractZipFiles>
+            <CommitMessage>Updating the documentation for ${VersionSemantic}</CommitMessage>
         </PushToGitBranchSpecs>
-        -->
     </ItemGroup>
 
 

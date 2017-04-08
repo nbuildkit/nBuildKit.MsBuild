@@ -91,6 +91,7 @@ namespace NBuildKit.MsBuild.Tasks.Versions
             var exitCode = InvokeCommandLineTool(
                 ExePath,
                 arguments,
+                WorkingDirectory,
                 standardOutputHandler: standardOutputHandler);
             if (exitCode != 0)
             {
@@ -349,6 +350,16 @@ namespace NBuildKit.MsBuild.Tasks.Versions
         /// </summary>
         [Output]
         public string VersionSemanticNuGet
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the full path to the working directory
+        /// </summary>
+        [Required]
+        public ITaskItem WorkingDirectory
         {
             get;
             set;

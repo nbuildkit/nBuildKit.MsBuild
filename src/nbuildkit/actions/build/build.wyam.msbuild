@@ -36,7 +36,8 @@
             PackagesDirectory="$(DirPackages)"
             PackageName="Wyam"
             PackageVersion="$(ToolsExternalWyamVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalWyamPath)' == 'UNDEFINED' "
             FileToLocate="wyam.exe"
