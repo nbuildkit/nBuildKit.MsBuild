@@ -686,7 +686,7 @@
         NuGet if no package is specified in the packages.config file.
     -->
     <PropertyGroup>
-        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">0.9.0</PackageMinimumVersion>
-        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">0.10.0</PackageMaximumVersion>
+        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">$VersionSemantic$</PackageMinimumVersion>
+        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">$VersionMajor$.$VersionMinorNext$.0</PackageMaximumVersion>
     </PropertyGroup>
 </Project>
