@@ -113,6 +113,9 @@
                 PropertyName="DirRepositoryWorkspace"
                 TaskParameter="Value" />
         </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirRepositoryWorkspace)') "
+            Directories="$(DirRepositoryWorkspace)" />
 
         <!-- Clone the repository in the temporary directory -->
         <Message Text="Cloning repository $(RepositoryToPushTo) and switching to branch $(BranchToPushTo) ..." />
