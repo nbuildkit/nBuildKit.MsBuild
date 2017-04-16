@@ -39,7 +39,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
             {
                 if (!string.IsNullOrWhiteSpace(e.Data))
                 {
-                    text.Append(e.Data);
+                    text.AppendLine(e.Data);
                 }
             };
 
