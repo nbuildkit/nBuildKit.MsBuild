@@ -14,9 +14,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
-using NBuildKit.MsBuild.Tasks.Core;
 
-namespace NBuildKit.MsBuild.Tasks
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that invoke MsBuild in a separate process.

@@ -10,9 +10,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using Microsoft.Build.Framework;
-using NBuildKit.MsBuild.Tasks.Core;
 
-namespace NBuildKit.MsBuild.Tasks.VersionControl
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that work with the GIT command line tool.

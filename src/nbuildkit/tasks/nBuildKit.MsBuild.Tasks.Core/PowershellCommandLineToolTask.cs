@@ -11,9 +11,8 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using NBuildKit.MsBuild.Tasks.Core;
 
-namespace NBuildKit.MsBuild.Tasks
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that invoke Powershell.

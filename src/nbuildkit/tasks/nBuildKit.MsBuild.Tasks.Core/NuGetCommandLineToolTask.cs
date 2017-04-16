@@ -7,11 +7,9 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using Microsoft.Build.Framework;
-using NBuildKit.MsBuild.Tasks.Core;
 
-namespace NBuildKit.MsBuild.Tasks.Packaging
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that work with the NuGet command line tool.
