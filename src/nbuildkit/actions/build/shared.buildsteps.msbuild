@@ -27,6 +27,7 @@
 
         <BuildStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</BuildStepsPrepareCopyNuGet>
         <BuildStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</BuildStepsPrepareCopyFiles>
+        <BuildStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</BuildStepsPrepareCopyArchive>
 
         <BuildStepsPrepareAssemblyInfo>$(MSBuildThisFileDirectory)build.prepare.updateassemblyinfo.msbuild</BuildStepsPrepareAssemblyInfo>
         <BuildStepsPrepareGenerateLicenses>$(MSBuildThisFileDirectory)build.prepare.generatelicenses.msbuild</BuildStepsPrepareGenerateLicenses>
@@ -154,6 +155,14 @@
             <Id>BuildStepsPrepareCopyFiles</Id>
             <Name>Build - copy files</Name>
             <Path>$(BuildStepsPrepareCopyFiles)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareCopyArchive)'))">
+            <Description>
+                Copies one or more files from an archive or zip file.
+            </Description>
+            <Id>BuildStepsPrepareCopyArchive</Id>
+            <Name>Build - copy archive</Name>
+            <Path>$(BuildStepsPrepareCopyArchive)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareAssemblyInfo)'))">
             <Description>

@@ -4,62 +4,6 @@
     ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
-        **** DEPLOY STEPS ****
-    -->
-    <ItemGroup Condition=" '@(DeployPreStepsToExecute)' == '' ">
-        <!--
-        <DeployPreStepsToExecute Include="">
-            <Properties>
-            </Properties>
-        </DeployPreStepsToExecute>
-        -->
-    </ItemGroup>
-    <ItemGroup Condition=" '@(DeployPostStepsToExecute)' == '' ">
-        <!--
-        <DeployPostStepsToExecute Include="">
-            <Properties>
-            </Properties>
-        </DeployPostStepsToExecute>
-        -->
-    </ItemGroup>
-    <ItemGroup Condition=" '@(DeployStepsToExecute)' == '' ">
-        <DeployStepsToExecute Include="$(DeployStepsShowHelp)">
-            <Properties>
-                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importdeploysharedsettings.props;
-                HelpFileSettings=deploy.settings.props;
-                HelpProcess=deploy;
-                HelpStepGroup=DeployStepsToExecute;
-            </Properties>
-            <Groups>
-                Help;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
-        </DeployStepsToExecute>
-    </ItemGroup>
-
-    <!--
-        Define the scripts that should be executed when any one of the deploy steps fails.
-
-        Steps can be defined by providing the path to the MsBuild script that should be executed
-        for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
-        that script.
-
-        Any properties defined by the 'Properties' section are pushed up.
-    -->
-    <ItemGroup Condition=" '@(DeployFailureStepsToExecute)' == '' ">
-        <!--
-        <DeployFailureStepsToExecute Include="">
-            <Properties>
-            </Properties>
-        </DeployFailureStepsToExecute>
-        -->
-    </ItemGroup>
-
-
-    <!--
         **** PREPARE - COPY FILES ****
     -->
     <!--
@@ -78,6 +22,13 @@
             <Include>**/*.*</Include>
             <Destinations>$(DirBuildTemp)</Destinations>
         </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(ArchiveFilesToCopy)' == '' ">
+        <!--
+        <ArchiveFilesToCopy Include="">
+            <Destination></Destination>
+        </ArchiveFilesToCopy>
         -->
     </ItemGroup>
 
@@ -193,6 +144,62 @@
             Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
              <Repository>$(GitRemoteRepository)</Repository>
         </PushToGitRepositorySpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** DEPLOY STEPS ****
+    -->
+    <ItemGroup Condition=" '@(DeployPreStepsToExecute)' == '' ">
+        <!--
+        <DeployPreStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployPreStepsToExecute>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(DeployPostStepsToExecute)' == '' ">
+        <!--
+        <DeployPostStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployPostStepsToExecute>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(DeployStepsToExecute)' == '' ">
+        <DeployStepsToExecute Include="$(DeployStepsShowHelp)">
+            <Properties>
+                HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importdeploysharedsettings.props;
+                HelpFileSettings=deploy.settings.props;
+                HelpProcess=deploy;
+                HelpStepGroup=DeployStepsToExecute;
+            </Properties>
+            <Groups>
+                Help;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
+    </ItemGroup>
+
+    <!--
+        Define the scripts that should be executed when any one of the deploy steps fails.
+
+        Steps can be defined by providing the path to the MsBuild script that should be executed
+        for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
+        that script.
+
+        Any properties defined by the 'Properties' section are pushed up.
+    -->
+    <ItemGroup Condition=" '@(DeployFailureStepsToExecute)' == '' ">
+        <!--
+        <DeployFailureStepsToExecute Include="">
+            <Properties>
+            </Properties>
+        </DeployFailureStepsToExecute>
         -->
     </ItemGroup>
 

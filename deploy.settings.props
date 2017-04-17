@@ -198,6 +198,22 @@
             <PostSteps>
             </PostSteps>
         </DeployStepsToExecute>
+
+        <!--
+        <DeployStepsToExecute Include="$(DeployStepsPrepareReleaseNotes)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.get;
+                prepare.get.releasenotes;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
+        -->
         <!--
         <DeployStepsToExecute Include="$(DeployStepsPrepareTagVcs)">
             <Properties>
@@ -516,7 +532,7 @@
     -->
     <ItemGroup>
         <PushToGitHubReleaseSpecs Include="${VersionSemantic}">
-            <Repository>nBuildKit</Repository>
+            <Repository>$(GitHubRepositoryName)</Repository>
             <Description>${ReleaseNotes}</Description>
             <IncludedFiles>
                 $(DirBuildDeploy)\nbuildkit.msbuild.samples-${VersionSemantic}.zip

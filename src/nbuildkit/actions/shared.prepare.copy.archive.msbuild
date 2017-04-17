@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_Copy_FromArchive"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ExistsSharedPrepareCopyArchive>true</ExistsSharedPrepareCopyArchive>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Condition=" '@(ArchiveFilesToCopy)' != '' "
+        Name="nBuildKit_Shared_Prepare_Copy_FromArchive"
+        Outputs="%(ArchiveFilesToCopy.Identity)">
+
+        <PropertyGroup>
+            <DestinationPath>%(ArchiveFilesToCopy.Destination)</DestinationPath>
+        </PropertyGroup>
+
+        <Unzip
+            DestinationDirectory="$(DestinationPath)"
+            InputFileName="%(ArchiveFilesToCopy.FullPath)" />
+    </Target>
+ </Project>

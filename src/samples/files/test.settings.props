@@ -3,6 +3,119 @@
     DefaultTargets="Run"
     ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** PREPARE - WORKSPACE ****
+    -->
+    <!--
+        The list of all files that should be deleted prior to starting the test process.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <FilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the test process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <DirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - COPY FILES ****
+    -->
+    <!--
+        Files that should be copied, either from the file system or from a NuGet package.
+    -->
+    <ItemGroup>
+        <!--
+        <FilesToCopy Include="">
+            <Destination></Destination>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup>
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destinations>$(DirBuildTemp)</Destinations>
+        </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup>
+        <!--
+        <ArchiveFilesToCopy Include="">
+            <Destination></Destination>
+        </ArchiveFilesToCopy>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!--
+        The list of all files that should be generated and their template files.
+
+        The template file may contain zero or more template parameters as indicated at the top of this
+        file. By default template parameters must be enclosed in '${}'. By providing a value for
+        'Expression' it is possible to use a custom regular expression to search for elements to replace,
+        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
+        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
+
+        Only the 'Template' value is required.
+
+        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
+    -->
+    <ItemGroup>
+        <!--<TestFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\MyFile.txt">
+            <<Encoding>UTF-8</Encoding>
+            <Expression>(MyRegex)</Expression>
+            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
+            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
+            <Token>MyAdditionalTemplateParameter</Token>
+        </TestFilesToGenerate>-->
+    </ItemGroup>
+
+
+    <!--
+        **** INTEGRATION - PESTER ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the file into which Pester will write the test results.
+        -->
+        <!-- <FileTestReport>$(DirBuildLogs)\pester.integration.xml</FileTestReport> -->
+    </PropertyGroup>
+    <!--
+        The list of all arguments that should be passed to the Pester test.
+
+        The value elements may contain zero or more template parameters as indicated at the top of this
+        file. Template parameters must be enclosed in '${}'.
+    -->
+    <ItemGroup>
+        <!--
+        <PesterTestArguments Include="">
+            <Value></Value>
+        </PesterTestArguments>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** TEST STEPS ****
+    -->
     <PropertyGroup>
         <!-- Indicate if an error in the pre-step actions should fail the deploy -->
         <!-- <FailTestOnPreStepFailure>false</FailTestOnPreStepFailure> -->
@@ -286,6 +399,19 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyArchive)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.archive;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
             <Properties>
@@ -349,109 +475,6 @@
             <Name>My test step</Name>
             <Path>$(DirWorkspace)\my.test.step.msbuild</Path>
         </AvailableStepMetadata>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - WORKSPACE ****
-    -->
-    <!--
-        The list of all files that should be deleted prior to starting the test process.
-
-        If the deletion process fails the test will continue and a warning will be printed.
-    -->
-    <ItemGroup>
-        <!--
-        <FilesToDelete Include="" />
-        -->
-    </ItemGroup>
-
-    <!--
-        The list of all directories that should be deleted prior to starting the test process.
-        Deleting the directories will also delete all the files contained in these directories.
-
-        If the deletion process fails the test will continue and a warning will be printed.
-    -->
-    <ItemGroup>
-        <!--
-        <DirectoriesToDelete Include="" />
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - COPY FILES ****
-    -->
-    <!--
-        Files that should be copied, either from the file system or from a NuGet package.
-    -->
-    <ItemGroup>
-        <!--
-        <FilesToCopy Include="">
-            <Destination></Destination>
-        </FilesToCopy>
-        -->
-    </ItemGroup>
-    <ItemGroup>
-        <!--
-        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
-            <Include>**/*.*</Include>
-            <Destinations>$(DirBuildTemp)</Destinations>
-        </NuGetFilesToCopy>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - GENERATE FILES ****
-    -->
-    <!--
-        The list of all files that should be generated and their template files.
-
-        The template file may contain zero or more template parameters as indicated at the top of this
-        file. By default template parameters must be enclosed in '${}'. By providing a value for
-        'Expression' it is possible to use a custom regular expression to search for elements to replace,
-        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
-        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
-
-        Only the 'Template' value is required.
-
-        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
-    -->
-    <ItemGroup>
-        <!--<TestFilesToGenerate
-            Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\MyFile.txt">
-            <<Encoding>UTF-8</Encoding>
-            <Expression>(MyRegex)</Expression>
-            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
-            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
-            <Token>MyAdditionalTemplateParameter</Token>
-        </TestFilesToGenerate>-->
-    </ItemGroup>
-
-
-    <!--
-        **** INTEGRATION - PESTER ****
-    -->
-    <PropertyGroup>
-        <!--
-            The full path to the file into which Pester will write the test results.
-        -->
-        <!-- <FileTestReport>$(DirBuildLogs)\pester.integration.xml</FileTestReport> -->
-    </PropertyGroup>
-    <!--
-        The list of all arguments that should be passed to the Pester test.
-
-        The value elements may contain zero or more template parameters as indicated at the top of this
-        file. Template parameters must be enclosed in '${}'.
-    -->
-    <ItemGroup>
-        <!--
-        <PesterTestArguments Include="">
-            <Value></Value>
-        </PesterTestArguments>
         -->
     </ItemGroup>
 

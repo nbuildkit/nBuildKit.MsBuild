@@ -21,6 +21,7 @@
 
         <TestStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</TestStepsPrepareCopyNuGet>
         <TestStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</TestStepsPrepareCopyFiles>
+        <TestStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</TestStepsPrepareCopyArchive>
 
         <TestStepsPrepareGenerateFiles>$(MSBuildThisFileDirectory)test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
 
@@ -114,6 +115,14 @@
             <Id>TestStepsPrepareCopyFiles</Id>
             <Name>Test - copy files</Name>
             <Path>$(TestStepsPrepareCopyFiles)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyArchive)'))">
+            <Description>
+                Copies one or more files from an archive or zip file.
+            </Description>
+            <Id>TestStepsPrepareCopyArchive</Id>
+            <Name>Test - copy archive</Name>
+            <Path>$(TestStepsPrepareCopyArchive)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareGenerateFiles)'))">
             <Description>

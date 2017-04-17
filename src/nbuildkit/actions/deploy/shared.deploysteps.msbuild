@@ -20,6 +20,7 @@
 
         <DeployStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</DeployStepsPrepareCopyNuGet>
         <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</DeployStepsPrepareCopyFiles>
+        <DeployStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</DeployStepsPrepareCopyArchive>
 
         <DeployStepsPushToTags>$(MSBuildThisFileDirectory)deploy.pushto.tags.msbuild</DeployStepsPushToTags>
         <DeployStepsPushToNuget>$(MSBuildThisFileDirectory)deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
@@ -101,6 +102,14 @@
             <Id>DeployStepsPrepareCopyFiles</Id>
             <Name>Deploy - copy files</Name>
             <Path>$(DeployStepsPrepareCopyFiles)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyArchive)'))">
+            <Description>
+                Copies one or more files from an archive or zip file.
+            </Description>
+            <Id>DeployStepsPrepareCopyArchive</Id>
+            <Name>Deploy - copy archive</Name>
+            <Path>$(DeployStepsPrepareCopyArchive)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToTags)'))">
             <Description>
