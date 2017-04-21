@@ -50,6 +50,9 @@
         <NBuildKitErrorIdGitNotFound>NBuildKitActions.FileNotFound.Git</NBuildKitErrorIdGitNotFound>
         <NBuildKitErrorCodeGitNotFound>NBK0111</NBuildKitErrorCodeGitNotFound>
 
+        <NBuildKitErrorIdVcsGitNotOnExpectedBranch>NBuildKitActions.Vcs.Git.NotOnExpectedBranch</NBuildKitErrorIdVcsGitNotOnExpectedBranch>
+        <NBuildKitErrorCodeVcsGitNotOnExpectedBranch>NBK0112</NBuildKitErrorCodeVcsGitNotOnExpectedBranch>
+
         <!-- Build -->
         <NBuildKitErrorIdFxCopNoAssembliesDefined>NBuildKitActions.FxCop.NoAssembliesDefined</NBuildKitErrorIdFxCopNoAssembliesDefined>
         <NBuildKitErrorCodeFxCopNoAssembliesDefined>NBK0201</NBuildKitErrorCodeFxCopNoAssembliesDefined>
@@ -73,7 +76,40 @@
         <NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles>NBK0207</NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles>
 
         <!-- Test -->
+
         <!-- Deploy -->
+        <NBuildKitErrorIdDeployPushToDirectoryNoFiles>NBuildKitActions.Deploy.PushToDirectory.NoFiles</NBuildKitErrorIdDeployPushToDirectoryNoFiles>
+        <NBuildKitErrorCodeDeployPushToDirectoryNoFiles>NBK0401</NBuildKitErrorCodeDeployPushToDirectoryNoFiles>
+
+        <NBuildKitErrorIdDeployPushToGitBranchNoFiles>NBuildKitActions.Deploy.GitBranch.NoFiles</NBuildKitErrorIdDeployPushToGitBranchNoFiles>
+        <NBuildKitErrorCodeDeployPushToGitBranchNoFiles>NBK0402</NBuildKitErrorCodeDeployPushToGitBranchNoFiles>
+
+        <NBuildKitErrorIdDeployPushToGithubNoUserName>NBuildKitActions.Deploy.GitHub.NoUserName</NBuildKitErrorIdDeployPushToGithubNoUserName>
+        <NBuildKitErrorCodeDeployPushToGithubNoUserName>NBK0403</NBuildKitErrorCodeDeployPushToGithubNoUserName>
+
+        <NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>NBuildKitActions.Deploy.GitHub.NoReleaseDescription</NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>
+        <NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>NBK0404</NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>
+
+        <NBuildKitErrorIdDeployPushToGithubNoRepository>NBuildKitActions.Deploy.GitHub.NoRepository</NBuildKitErrorIdDeployPushToGithubNoRepository>
+        <NBuildKitErrorCodeDeployPushToGithubNoRepository>NBK0405</NBuildKitErrorCodeDeployPushToGithubNoRepository>
+
+        <NBuildKitErrorIdDeployPushToGitRepositoryNoFiles>NBuildKitActions.Deploy.GitRepository.NoFiles</NBuildKitErrorIdDeployPushToGitRepositoryNoFiles>
+        <NBuildKitErrorCodeDeployPushToGitRepositoryNoFiles>NBK0406</NBuildKitErrorCodeDeployPushToGitRepositoryNoFiles>
+
+        <NBuildKitErrorIdDeployPushToGitRepositoryNoRepository>NBuildKitActions.Deploy.GitRepository.NoRepository</NBuildKitErrorIdDeployPushToGitRepositoryNoRepository>
+        <NBuildKitErrorCodeDeployPushToGitRepositoryNoRepository>NBK0407</NBuildKitErrorCodeDeployPushToGitRepositoryNoRepository>
+
+        <NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync>NBuildKitActions.Deploy.GitRepository.OutOfSync</NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync>
+        <NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync>NBK0408</NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync>
+
+        <NBuildKitErrorIdDeployPushToNuGetNoFiles>NBuildKitActions.Deploy.NuGet.NoFiles</NBuildKitErrorIdDeployPushToNuGetNoFiles>
+        <NBuildKitErrorCodeDeployPushToNuGetNoFiles>NBK0409</NBuildKitErrorCodeDeployPushToNuGetNoFiles>
+
+        <NBuildKitErrorIdDeployPushToSymbolsNoFiles>NBuildKitActions.Deploy.Symbols.NoFiles</NBuildKitErrorIdDeployPushToSymbolsNoFiles>
+        <NBuildKitErrorCodeDeployPushToSymbolsNoFiles>NBK0410</NBuildKitErrorCodeDeployPushToSymbolsNoFiles>
+
+        <NBuildKitErrorIdDeployPushToSymbolsNoTarget>NBuildKitActions.Deploy.Symbols.NoTarget</NBuildKitErrorIdDeployPushToSymbolsNoTarget>
+        <NBuildKitErrorCodeDeployPushToSymbolsNoTarget>NBK0411</NBuildKitErrorCodeDeployPushToSymbolsNoTarget>
 
         <!-- Tasks -->
     </PropertyGroup>
@@ -134,6 +170,11 @@
             <Description>The file path pointing to the Git command line executable could not be determined.</Description>
         </ErrorInformation>
 
+        <ErrorInformation Include="$(NBuildKitErrorIdVcsGitNotOnExpectedBranch)">
+            <Code>$(NBuildKitErrorCodeVcsGitNotOnExpectedBranch)</Code>
+            <Description>The current Git branch is not the expected branch.</Description>
+        </ErrorInformation>
+
         <!-- Build -->
         <ErrorInformation Include="$(NBuildKitErrorIdFxCopNoAssembliesDefined)">
             <Code>$(NBuildKitErrorCodeFxCopNoAssembliesDefined)</Code>
@@ -165,5 +206,55 @@
             <Code>$(NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles)</Code>
             <Description>No project files seem to be referencing the AssemblyInfo file.</Description>
         </ErrorInformation>
+
+        <!-- Test -->
+
+        <!-- Deploy -->
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToDirectoryNoFiles)">
+            <Code>$(NBuildKitErrorCodeDeployPushToDirectoryNoFiles)</Code>
+            <Description>No files are provided to be pushed to the file server.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGitBranchNoFiles)">
+            <Code>$(NBuildKitErrorCodeDeployPushToGitBranchNoFiles)</Code>
+            <Description>No files are provided to be pushed to the Git branch.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGithubNoUserName)">
+            <Code>$(NBuildKitErrorCodeDeployPushToGithubNoUserName)</Code>
+            <Description>No user name was provided for the push to a GitHub release.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGithubNoReleaseDescription)">
+            <Code>$(NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription)</Code>
+            <Description>No release description was provided for the push to a GitHub release.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGithubNoRepository)">
+            <Code>$(NBuildKitErrorCodeDeployPushToGithubNoRepository)</Code>
+            <Description>No repository name was provided for the push to a GitHub release.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGitRepositoryNoFiles)">
+            <Code>$(NBuildKitErrorCodeDeployPushToGitRepositoryNoFiles)</Code>
+            <Description>No files where provided for the push to a Git repository.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGitRepositoryNoRepository)">
+            <Code>$(NBuildKitErrorCodeDeployPushToGitRepositoryNoRepository)</Code>
+            <Description>No repository URL was provided for the push to a Git repository.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync)">
+            <Code>$(NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync)</Code>
+            <Description>The local repository copy is not in-sync with the server repository.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToNuGetNoFiles)">
+            <Code>$(NBuildKitErrorCodeDeployPushToNuGetNoFiles)</Code>
+            <Description>No files where provided for the push to a NuGet feed.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToSymbolsNoFiles)">
+            <Code>$(NBuildKitErrorCodeDeployPushToSymbolsNoFiles)</Code>
+            <Description>No files where provided for the push to the symbol server.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToSymbolsNoTarget)">
+            <Code>$(NBuildKitErrorCodeDeployPushToSymbolsNoTarget)</Code>
+            <Description>No target location was provided for the push to the symbol server.</Description>
+        </ErrorInformation>
+
+        <!-- Tasks -->
     </ItemGroup>
 </Project>

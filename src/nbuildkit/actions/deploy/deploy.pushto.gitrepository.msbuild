@@ -41,6 +41,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(FilesToPush)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -55,6 +56,7 @@
         </CreateProperty>
         <TemplateText
             Condition=" '$(RepositoryToPushTo)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="$(RepositoryToPushTo)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -77,7 +79,9 @@
                 TaskParameter="Include" />
         </CreateItem>
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToGitRepositoryNoFiles)"
             Condition=" '@(FilesToPush)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToGitRepositoryNoFiles)"
             Text="There are no files to be pushed" />
 
         <PropertyGroup>
@@ -98,6 +102,7 @@
         </ItemGroup>
         <Unzip
             Condition=" '@(FilesToUnzip)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             DestinationDirectory="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)"
             InputFileName="%(FilesToUnzip.FullPath)" />
         <ItemGroup>
@@ -122,7 +127,9 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToGitRepositoryNoRepository)"
             Condition=" '$(RepositoryName)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToGitRepositoryNoRepository)"
             Text="Could not determine what the name of the repository was." />
 
         <CreateProperty Value="$(DirBuildTemp)\git\$(RepositoryName)">
@@ -175,10 +182,12 @@
         <Message Text="Checking out merge target branch: @(OriginBranch) ..." />
         <GitCheckout
             Branch="@(OriginBranch)"
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirRepositoryWorkspace)" />
 
         <GitCurrentRevision
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirRepositoryWorkspace)">
             <Output
@@ -187,6 +196,7 @@
         </GitCurrentRevision>
 
         <GitCurrentRevision
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             RevisionSpec="origin/@(OriginBranch)"
             Workspace="$(DirRepositoryWorkspace)">
@@ -197,7 +207,9 @@
 
         <Message Text="For @(OriginBranch): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync)"
             Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync)"
             Text="For @(OriginBranch) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 
@@ -210,10 +222,12 @@
         <Message Text="Checking out merge target branch: %(TargetBranches.Identity) ..." />
         <GitCheckout
             Branch="%(TargetBranches.Identity)"
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirRepositoryWorkspace)" />
 
         <GitCurrentRevision
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             RevisionSpec="HEAD^"
             Workspace="$(DirRepositoryWorkspace)">
@@ -223,6 +237,7 @@
         </GitCurrentRevision>
 
         <GitCurrentRevision
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             RevisionSpec="origin/%(TargetBranches.Identity)"
             Workspace="$(DirRepositoryWorkspace)">
@@ -232,7 +247,9 @@
         </GitCurrentRevision>
         <Message Text="For %(TargetBranches.Identity): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync)"
             Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync)"
             Text="For %(TargetBranches.Identity) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 
@@ -243,6 +260,7 @@
         <Message Text="Pushing changes from $(FilesToPushIncluded) back to the origin ..." />
         <GitPush
             Condition=" '$(RepositoryToPushTo)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             PushTags="true"
             Workspace="$(DirRepositoryWorkspace)" />

@@ -22,7 +22,9 @@
             Targets="_nBuildKit_Deploy_PushTo_SymbolServer_UncPath" />
 
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToSymbolsNoTarget)"
             Condition=" ('$(NuGetSymbolSourceUrl)' == '' OR '$(NuGetSymbolSourceUrl)' == 'UNDEFINED') AND ('$(SymbolServerUncPath)' == '' OR '$(SymbolServerUncPath)' == 'UNDEFINED') "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToSymbolsNoTarget)"
             Text="No symbol server path defined! Unable to push symbols." />
     </Target>
 
@@ -30,7 +32,9 @@
         Condition=" '$(NuGetSymbolSourceUrl)' != '' AND '$(NuGetSymbolSourceUrl)' != 'UNDEFINED' "
         Name="_nBuildKit_Deploy_PushTo_SymbolServer_NuGet">
         <Error
+            Code="$(NBuildKitErrorCodeNuGetNotFound)"
             Condition=" '$(ToolsExternalNuGetPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdNuGetNotFound)"
             Text="No NuGet executable defined. Will not be able to restore the packages." />
 
         <CreateProperty
@@ -43,6 +47,7 @@
 
         <TemplateText
             Condition=" '@(SymbolPackagesToPush)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="@(SymbolPackagesToPush)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -71,13 +76,16 @@
             Text="@(NuGetPackagesToPushLocal)" />
 
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToSymbolsNoFiles)"
             Condition=" '@(NuGetPackagesToPushLocal)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToSymbolsNoFiles)"
             Text="There are no symbol packages to be pushed to the symbol server" />
 
         <Message
             Importance="low"
             Text="Pushing: @(NuGetPackagesToPushLocal)" />
         <NuGetPush
+            ErrorInformation="@(ErrorInformation)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesToPush="@(NuGetPackagesToPushLocal)"
             Source="$(NuGetSymbolSourceUrl)"
@@ -89,6 +97,7 @@
         Name="_nBuildKit_Deploy_PushTo_SymbolServer_UncPath">
         <TemplateText
             Condition=" '@(SymbolPackagesToPush)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="@(SymbolPackagesToPush)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -117,7 +126,9 @@
             Text="@(SymbolPackagesToPush)" />
 
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToSymbolsNoFiles)"
             Condition=" '@(SymbolPackagesToPush)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToSymbolsNoFiles)"
             Text="There are no files to be pushed to the symbol server" />
 
         <Copy
