@@ -7,6 +7,7 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -19,6 +20,8 @@ namespace NBuildKit.MsBuild.Tasks.Core
     /// </summary>
     public abstract class BaseTask : Task
     {
+        private const string MetadataCodeTag = "Code";
+
         /// <summary>
         /// Gets the verbosity that the current MsBuild instance is running at.
         /// </summary>
@@ -63,6 +66,15 @@ namespace NBuildKit.MsBuild.Tasks.Core
             }
 
             return "normal";
+        }
+
+        /// <summary>
+        /// Gets or sets the collection containing the error codes for the task.
+        /// </summary>
+        public ITaskItem[] ErrorInformation
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -115,6 +127,25 @@ namespace NBuildKit.MsBuild.Tasks.Core
                     path));
 
             return PathUtilities.GetAbsolutePath(path?.ItemSpec, basePath?.ItemSpec);
+        }
+
+        /// <summary>
+        /// Returns the error code for the given ID.
+        /// </summary>
+        /// <param name="errorId">The error ID.</param>
+        /// <returns>The error code that matches the given ID.</returns>
+        protected string ErrorCodeById(string errorId)
+        {
+            var result = string.Empty;
+            if (ErrorInformation != null)
+            {
+                var code = ErrorInformation.Where(t => string.Equals(errorId, t.ItemSpec, StringComparison.OrdinalIgnoreCase))
+                    .Select(t => t.GetMetadata(MetadataCodeTag))
+                    .FirstOrDefault();
+                result = code ?? string.Empty;
+            }
+
+            return result;
         }
     }
 }
