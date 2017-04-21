@@ -20,6 +20,7 @@
     <Target Name="_nBuildKit_Test_Integration_Pester_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -29,6 +30,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolDirectory
             Condition=" '$(ToolsExternalPesterPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="Pester.psm1"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -39,7 +41,9 @@
             Condition="Exists('$(ToolsExternalPesterPath)') "
             Text="The Pester module was found at: $(ToolsExternalPesterPath)" />
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition="!Exists('$(ToolsExternalPesterPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="Could not locate the Pester module path. Cannot execute pester tests." />
     </Target>
 
@@ -49,6 +53,7 @@
 
         <TemplateText
             Condition=" '%(PesterTestArguments.Value)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="%(PesterTestArguments.Value)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -71,6 +76,7 @@
         Name="nBuildKit_Test_Integration_Pester_Run">
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(FileTestReport)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -79,6 +85,7 @@
         </TemplateText>
 
         <InvokePesterOnFile
+            ErrorInformation="@(ErrorInformation)"
             IgnoreErrors="false"
             PesterModulePath="$(ToolsExternalPesterPath)"
             PowershellExePath="$(ToolsExternalPowershellPath)"
