@@ -44,16 +44,20 @@
         Name="_nBuildKit_Shared_Prepare_VcsMergeToTarget_Git_Merge"
         Outputs="%(BranchMergeTarget.Identity)">
         <Error
+            Code="$(NBuildKitErrorCodeGitNotFound)"
             Condition=" '$(ToolsExternalGitPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdGitNotFound)"
             Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
         <Message Text="Checking out merge target branch: %(BranchMergeTarget.Identity) ..." />
         <GitCheckout
             Branch="%(BranchMergeTarget.Identity)"
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)" />
 
         <GitCurrentBranch
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -61,6 +65,7 @@
                 TaskParameter="CurrentBranch" />
         </GitCurrentBranch>
         <GitCurrentRevision
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -74,6 +79,7 @@
         <GitMerge
             BranchToMerge="$(GitBranchExpected)"
             Condition=" '$(GitBranchExpected)' != '%(BranchMergeTarget.Identity)' "
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)" />
 
@@ -82,6 +88,7 @@
         </ItemGroup>
 
         <GitCurrentBranch
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -89,6 +96,7 @@
                 TaskParameter="CurrentBranch" />
         </GitCurrentBranch>
         <GitCurrentRevision
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output

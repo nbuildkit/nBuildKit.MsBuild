@@ -20,6 +20,7 @@
         Condition=" '$(ShouldGenerateVersionTokens)' == 'true' "
         Name="nBuildKit_Shared_TemplateTokens_PreGenerate_Run">
         <GenerateSpecialParameterTemplateTokens
+            ErrorInformation="@(ErrorInformation)"
             PropertyFile="$(FileTemplateTokensPretranslatedTokens)"
             SystemParameters="@(SystemTemplateVersion)"
             Tokens="@(TemplateTokens)"

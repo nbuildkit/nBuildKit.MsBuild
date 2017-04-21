@@ -29,7 +29,9 @@
         Name="_nBuildKit_Shared_Bootstrap_Generate_TargetsFile_Execute"
         Outputs="%(ExtensionAssemblies.Identity)">
         <Error
+            Code="$(NBuildKitErrorCodeBootstrapBuildTargetsFileNotFound)"
             Condition="!Exists('%(ExtensionAssemblies.FullPath)') "
+            HelpKeyword="$(NBuildKitErrorIdBootstrapBuildTargetsFileNotFound)"
             Text="Expected %(ExtensionAssemblies.Identity) to point to a valid path but it does not." />
 
         <PropertyGroup>
@@ -42,6 +44,7 @@
 
         <GenerateTargetsFile
             AssemblyFile="%(ExtensionAssemblies.FullPath)"
+            ErrorInformation="@(ErrorInformation)"
             ExtensionsProperty="%(ExtensionAssemblies.ExistsProperty)"
             TargetsFile="$(FileExtensionsImport)" />
     </Target>

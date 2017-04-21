@@ -27,7 +27,9 @@
     <Target
         Name="_nBuildKit_Shared_Prepare_NuGet_Restore_Packages">
         <Error
+            Code="$(NBuildKitErrorCodeNuGetNotFound)"
             Condition=" '$(ToolsExternalNuGetPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdNuGetNotFound)"
             Text="No NuGet executable defined. Will not be able to restore the packages." />
 
         <ItemGroup>
@@ -45,6 +47,7 @@
             Text="No NuGet package configuration files found to restore packages from." />
         <NuGetRestore
             Condition=" '@(NuGetPackageFiles)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageFile="%(NuGetPackageFiles.FullPath)"

@@ -30,10 +30,14 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <Error
+            Code="$(NBuildKitErrorCodeNuGetNotFound)"
             Condition=" '$(ToolsExternalNuGetPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdNuGetNotFound)"
             Text="No NuGet executable defined. Will not be able to restore the packages." />
         <Error
+            Code="$(NBuildKitErrorCodeBootstrapBuildTaskFileNotFound)"
             Condition="!Exists('$(FileMsBuildTasksProject)') "
+            HelpKeyword="$(NBuildKitErrorIdBootstrapBuildTaskFileNotFound)"
             Text="Expected $(FileMsBuildTasksProject) to point to a valid path but it does not." />
 
         <Message

@@ -53,6 +53,7 @@
 
         <TemplateText
             Condition=" '$(IsFirstStep)' == 'true' "
+            ErrorInformation="@(ErrorInformation)"
             Template="$(ContentHeader)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -61,6 +62,7 @@
         </TemplateText>
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(ContentStep)"
             Tokens="@(TemplateTokens)">
             <Output

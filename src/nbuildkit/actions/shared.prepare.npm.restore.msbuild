@@ -22,6 +22,7 @@
         Name="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -31,6 +32,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="node.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -40,6 +42,7 @@
 
         <GetToolFullPath
             Condition=" '$(ToolsExternalNodeJsPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             Tool="$(ToolsExternalNodeJsPath)">
             <Output
                 PropertyName="ToolsExternalNodeJsPath"
@@ -51,11 +54,14 @@
             Text="The node.js executable was found at: $(ToolsExternalNodeJsPath)" />
 
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition="!Exists('$(ToolsExternalNodeJsPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="Could not locate the Node.js executable path. Cannot execute any of the node.js tools." />
 
         <NuGetInstall
             Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -65,6 +71,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalPythonPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="python.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -73,6 +80,7 @@
         </SearchPackagesDirectoryForToolPath>
         <GetToolFullPath
             Condition=" '$(ToolsExternalPythonPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             Tool="$(ToolsExternalPythonPath)">
             <Output
                 PropertyName="ToolsExternalPythonPath"
@@ -89,6 +97,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -98,6 +107,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalNpmPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="npm-cli.js"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -106,6 +116,7 @@
         </SearchPackagesDirectoryForToolPath>
         <GetToolFullPath
             Condition=" '$(ToolsExternalNpmPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             Tool="$(ToolsExternalNpmPath)">
             <Output
                 PropertyName="ToolsExternalNpmPath"
@@ -117,7 +128,9 @@
             Text="The npm executable was found at: $(ToolsExternalNpmPath)" />
 
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition="!Exists('$(ToolsExternalNpmPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="Could not locate the Npm executable path. Cannot restore the Node.js packages." />
     </Target>
 
@@ -125,7 +138,9 @@
         DependsOnTargets="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths"
         Name="_nBuildKit_Shared_Prepare_Npm_Restore_Packages">
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition=" '$(ToolsExternalNpmPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="No NPM executable defined. Will not be able to restore the packages." />
 
         <Message
@@ -139,6 +154,7 @@
             AdditionalEnvironmentPaths="@(AdditionalEnvironmentPaths)"
             Arguments="install $([System.IO.Path]::GetDirectoryName('%(NpmPackageFiles.FullPath)'))"
             Condition=" '@(NpmPackageFiles)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             IgnoreErrors="true"
             IgnoreExitCode="false"
             NodeExecutablePath="$(ToolsExternalNodeJsPath)"

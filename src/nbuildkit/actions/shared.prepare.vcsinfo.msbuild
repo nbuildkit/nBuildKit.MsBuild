@@ -37,6 +37,7 @@
         </PropertyGroup>
         <InvokeStandaloneMsBuild
             Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild')"
+            ErrorInformation="@(ErrorInformation)"
             Projects="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild"
             Properties="$(Locations);$(Files);$(DefaultProperties)"
             RunEachTargetSeparately="True"
@@ -53,7 +54,9 @@
         Condition="$(IsGitWorkspace)"
         Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo">
         <Error
+            Code="$(NBuildKitErrorCodeGitNotFound)"
             Condition=" '$(ToolsExternalGitPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdGitNotFound)"
             Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsInfo)'))">
@@ -66,6 +69,7 @@
             Directories="$(DirToCreate)" />
 
         <GitCurrentBranch
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -73,6 +77,7 @@
                 TaskParameter="CurrentBranch" />
         </GitCurrentBranch>
         <GitCurrentRevision
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output

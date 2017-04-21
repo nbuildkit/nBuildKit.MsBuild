@@ -22,6 +22,7 @@
         Name="shared_generatetokens_versions_writepropertyfile">
         <GetSemanticVersionFromFile
             Condition="Exists('$(FileSemanticVersion)')"
+            ErrorInformation="@(ErrorInformation)"
             VersionFile="$(FileSemanticVersion)">
             <Output
                 PropertyName="VersionMajor"

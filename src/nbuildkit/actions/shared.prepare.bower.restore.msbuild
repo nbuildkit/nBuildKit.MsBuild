@@ -21,7 +21,9 @@
     <Target
         Name="_nBuildKit_Shared_Prepare_Bower_Restore_Packages">
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition=" '$(ToolsExternalBowerPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="No Bower executable defined. Will not be able to restore the packages." />
 
         <ItemGroup>

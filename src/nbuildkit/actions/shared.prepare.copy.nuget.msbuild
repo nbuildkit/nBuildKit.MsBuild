@@ -15,6 +15,7 @@
         Condition=" '@(NuGetFilesToCopy)' != '' "
         Name="nBuildKit_Shared_Prepare_Copy_FromNuGetPackage">
         <CopyFilesFromNuGetPackages
+            ErrorInformation="@(ErrorInformation)"
             Items="@(NuGetFilesToCopy)"
             PackagesDirectory="$(DirPackages)">
         </CopyFilesFromNuGetPackages>

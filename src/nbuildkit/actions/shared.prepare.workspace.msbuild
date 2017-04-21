@@ -24,6 +24,7 @@
         Name="_nBuildKit_Shared_Prepare_Workspace_Delete_VisualStudioLocation"
         Outputs="%(SolutionsToBuild.Identity)">
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(SolutionsToBuild.FullPath)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -37,6 +38,7 @@
 
         <GetProjectsFromVisualStudioSolution
             Condition="Exists('$(FileSln)')"
+            ErrorInformation="@(ErrorInformation)"
             SolutionFile="$(FileSln)">
             <Output ItemName="ProjectsForSolution" TaskParameter="Projects" />
         </GetProjectsFromVisualStudioSolution>
@@ -57,6 +59,7 @@
         Name="_nBuildKit_Shared_Prepare_Workspace_Clean_VisualStudioLocation"
         Outputs="%(SolutionsToBuild.Identity)">
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(SolutionsToBuild.FullPath)"
             Tokens="@(TemplateTokens)">
             <Output

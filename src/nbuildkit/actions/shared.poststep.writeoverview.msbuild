@@ -52,6 +52,7 @@
         </ItemGroup>
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(ContentStep)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -60,6 +61,7 @@
         </TemplateText>
         <TemplateText
             Condition=" '$(IsLastStep)' == 'true' "
+            ErrorInformation="@(ErrorInformation)"
             Template="$(ContentFooter)"
             Tokens="@(TemplateTokens)">
             <Output
