@@ -13,7 +13,7 @@
     -->
     <ItemGroup>
         <FilesToDelete
-            Condition=" '$(DirBuildTest)' != '' "
+            Condition=" '$(DirBuildTest)' != '' AND Exists('$(DirBuildTest)')"
             Include="$(DirBuildTest)\**\*.*"/>
     </ItemGroup>
 
@@ -25,10 +25,10 @@
     -->
     <ItemGroup>
         <DirectoriesToDelete
-            Condition=" '$(DirBuildTest)' != '' "
+            Condition=" '$(DirBuildTest)' != '' AND Exists('$(DirBuildTest)')"
             Include="$(DirBuildTest)" />
         <DirectoriesToDelete
-            Condition=" '$(DirBuildTemp)' != '' "
+            Condition=" '$(DirBuildTemp)' != '' AND Exists('$(DirBuildTemp)')"
             Include="$(DirBuildTemp)" />
     </ItemGroup>
 

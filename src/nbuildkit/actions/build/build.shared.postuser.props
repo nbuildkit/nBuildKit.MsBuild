@@ -40,15 +40,18 @@
             Condition="Exists('$(FileReportFxCop)')"
             Include="$(FileReportFxCop)" />
         <FilesToDelete
-            Include="%(BuildFilesToGenerate.FullPath)" />
+            Condition=" '@(BuildFilesToGenerate)' != '' "
+            Include="@(BuildFilesToGenerate)" />
         <!--
             Make sure not to kill the 'DirBuildBootstrap' and 'DirUserConfiguration' folders because those contains the
             nBuildKit bootstrap and the settings.props files respectively. Both of which we are currently using.
         -->
+        <!--
         <FilesToDelete
             Condition=" '$(DirBuild)' != '' AND Exists('$(DirBuild)')"
             Exclude="$(DirBuildBootstrap)\**\*.*;$(DirUserConfiguration)\**\*.*;$(DirHighLevelOverview)\$(FileNameHighLevelOverview).*"
             Include="$(DirBuild)\**\*.*" />
+            -->
     </ItemGroup>
 
     <!--
