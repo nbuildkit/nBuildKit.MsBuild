@@ -15,7 +15,9 @@
     <Target
         Name="nBuildKit_Build_Binaries_Run">
         <Error
+            Code="$(NBuildKitErrorCodeBuildVisualStudioNoSolutionsDefined)"
             Condition=" '@(SolutionsToBuild)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdBuildVisualStudioNoSolutionsDefined)"
             Text="Cannot build the Visual Studio solutions or projects because no solutions or projects were specified." />
 
         <CallTarget Targets="_nBuildKit_Build_Binaries_Execute" />
@@ -30,6 +32,7 @@
         Name="nBuildKit_Build_Binaries_Run"
         Outputs="%(SolutionsToBuild.Identity)_%(SolutionsToBuild.Configuration)_%(SolutionsToBuild.Platform)">
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(SolutionsToBuild.FullPath)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -38,10 +41,14 @@
         </TemplateText>
 
         <Error
+            Code="$(NBuildKitErrorCodeNuGetNotFound)"
             Condition=" '$(ToolsExternalNuGetPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdNuGetNotFound)"
             Text="No NuGet executable defined. Will not be able to restore the packages." />
         <Error
+            Code="$(NBuildKitErrorCodeBuildVisualStudioSolutionPathNotFound)"
             Condition="!Exists('$(FileSln)')"
+            HelpKeyword="$(NBuildKitErrorIdBuildVisualStudioSolutionPathNotFound)"
             Text="Expected $(FileSln) to point to a valid path but it does not." />
 
         <Message
@@ -55,6 +62,7 @@
         </CreateProperty>
         <NuGetRestore
             Condition=" '$(FileExtension)' == '.sln'"
+            ErrorInformation="@(ErrorInformation)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageFile="$(FileSln)"

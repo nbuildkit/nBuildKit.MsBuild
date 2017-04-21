@@ -30,6 +30,7 @@
         <Message Text="Resolving build templates for: $(FileReportFxCop)" />
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(FileReportFxCop)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -45,10 +46,14 @@
         DependsOnTargets="_nBuildKit_Build_Analyze_Binaries_FxCop_ReplaceBuildTemplates"
         Name="_nBuildKit_Build_Analyze_Binaries_FxCop_Analyze_WithProject">
         <Error
+            Code="$(NBuildKitErrorCodePackagesDirectoryNotFound)"
             Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == 'UNDEFINED' "
+            HelpKeyword="$(NBuildKitErrorIdPackagesDirectoryNotFound)"
             Text="The packages directory does not exist. Cannot search for the FxCop executable." />
         <Error
+            Code="$(NBuildKitErrorCodeFxCopNoProjectFileDefined)"
             Condition="!Exists('$(FileProjectFxCop)')"
+            HelpKeyword="$(NBuildKitErrorIdFxCopNoProjectFileDefined)"
             Text="The FxCop project file does not exist. Cannot execute analysis of binaries." />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
@@ -62,6 +67,7 @@
 
         <SearchPackagesDirectoryForToolDirectory
             Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="$(FileFxCopCmdExe)"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -72,10 +78,13 @@
             Condition="Exists('$(ToolsExternalFxCopDir)')"
             Text="The FxCop directory was found at: $(ToolsExternalFxCopDir)" />
         <Error
+            Code="$(NBuildKitErrorCodeToolDirectoryNotFound)"
             Condition="!Exists('$(ToolsExternalFxCopDir)')"
+            HelpKeyword="$(NBuildKitErrorIdToolDirectoryNotFound)"
             Text="Could not locate the FxCop executable path. Cannot execute analysis of binaries." />
 
         <FxCopViaProject
+            ErrorInformation="@(ErrorInformation)"
             FxCopDirectory="$(ToolsExternalFxCopDir)"
             OutputFile="$(FileReportFxCopExpanded)"
             ProjectFile="$(FileProjectFxCop)"
@@ -86,10 +95,14 @@
         DependsOnTargets="_nBuildKit_Build_Analyze_Binaries_FxCop_ReplaceBuildTemplates"
         Name="_nBuildKit_Build_Analyze_Binaries_FxCop_Analyze_WithAssemblies">
         <Error
+            Code="$(NBuildKitErrorCodePackagesDirectoryNotFound)"
             Condition="!Exists('$(DirPackages)') AND '$(ToolsExternalFxCopDir)' == 'UNDEFINED' "
+            HelpKeyword="$(NBuildKitErrorIdPackagesDirectoryNotFound)"
             Text="The packages directory does not exist. Cannot search for the FxCop executable." />
         <Error
+            Code="$(NBuildKitErrorCodeFxCopNoAssembliesDefined)"
             Condition=" '@(FxCopFiles)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdFxCopNoAssembliesDefined)"
             Text="There are no assemblies defined. Cannot execute analysis of binaries." />
 
         <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileReportFxCopExpanded)'))">
@@ -103,6 +116,7 @@
 
         <SearchPackagesDirectoryForToolDirectory
             Condition=" '$(ToolsExternalFxCopDir)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="$(FileFxCopCmdExe)"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -114,12 +128,15 @@
             Importance="low"
             Text="The FxCop directory was found at: $(ToolsExternalFxCopDir)" />
         <Error
+            Code="$(NBuildKitErrorCodeToolDirectoryNotFound)"
             Condition="!Exists('$(ToolsExternalFxCopDir)')"
+            HelpKeyword="$(NBuildKitErrorIdToolDirectoryNotFound)"
             Text="Could not locate the FxCop executable path. Cannot execute analysis of binaries." />
 
         <FxCopViaAssemblies
             Assemblies="@(FxCopFiles)"
             Culture="$(FxCopCulture)"
+            ErrorInformation="@(ErrorInformation)"
             FxCopDirectory="$(ToolsExternalFxCopDir)"
             OutputFile="$(FileReportFxCopExpanded)"
             ReferenceDirectories="@(FxCopReferenceDirectories)"
@@ -129,6 +146,9 @@
     </Target>
 
     <Target Name="_nBuildKit_Build_Analyze_Binaries_FxCop_Analyze_OnError">
-        <Error Text="There is no FxCop project defined and there are no assemblies defined for analysis. Cannot execute analysis of binaries." />
+        <Error
+            Code="$(NBuildKitErrorCodeFxCopNoProjectFileOrAssembliesDefined)"
+            HelpKeyword="$(NBuildKitErrorIdFxCopNoProjectFileOrAssembliesDefined)"
+            Text="There is no FxCop project defined and there are no assemblies defined for analysis. Cannot execute analysis of binaries." />
     </Target>
  </Project>

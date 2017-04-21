@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedErrorCodes>true</ExistsSharedErrorCodes>
+    </PropertyGroup>
+
+    <!--
+        This property group defines all the known error IDs.
+    -->
+    <PropertyGroup>
+        <NBuildKitErrorId>
+        <NBuildKitErrorCode>
+
+        <!-- System -->
+        <NBuildKitErrorIdUnknownError>NBuildKitActions.UnknownError</NBuildKitErrorIdUnknownError>
+        <NBuildKitErrorCodeUnknownError>NBK0001</NBuildKitErrorCodeUnknownError>
+
+        <!-- General -->
+        <NBuildKitErrorIdDirectoryNotFound>NBuildKitActions.DirectoryNotFound</NBuildKitErrorIdDirectoryNotFound>
+        <NBuildKitErrorCodeDirectoryNotFound>NBK0101</NBuildKitErrorCodeDirectoryNotFound>
+
+        <NBuildKitErrorIdFileNotFound>NBuildKitActions.FileNotFound</NBuildKitErrorIdFileNotFound>
+        <NBuildKitErrorCodeFileNotFound>NBK0102</NBuildKitErrorCodeFileNotFound>
+
+        <NBuildKitErrorIdBuildDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Build</NBuildKitErrorIdBuildDirectoryNotFound>
+        <NBuildKitErrorCodeBuildDirectoryNotFound>NBK0103</NBuildKitErrorCodeBuildDirectoryNotFound>
+
+        <NBuildKitErrorIdDocDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Doc</NBuildKitErrorIdDocDirectoryNotFound>
+        <NBuildKitErrorCodeDocDirectoryNotFound>NBK0104</NBuildKitErrorCodeDocDirectoryNotFound>
+
+        <NBuildKitErrorIdPackagesDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Packages</NBuildKitErrorIdPackagesDirectoryNotFound>
+        <NBuildKitErrorCodePackagesDirectoryNotFound>NBK0105</NBuildKitErrorCodePackagesDirectoryNotFound>
+
+        <NBuildKitErrorIdSrcDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Src</NBuildKitErrorIdSrcDirectoryNotFound>
+        <NBuildKitErrorCodeSrcDirectoryNotFound>NBK0106</NBuildKitErrorCodeSrcDirectoryNotFound>
+
+        <NBuildKitErrorIdTestDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Test</NBuildKitErrorIdTestDirectoryNotFound>
+        <NBuildKitErrorCodeTestDirectoryNotFound>NBK0107</NBuildKitErrorCodeTestDirectoryNotFound>
+
+        <NBuildKitErrorIdToolDirectoryNotFound>NBuildKitActions.DirectoryNotFound.ExecutableTool</NBuildKitErrorIdToolDirectoryNotFound>
+        <NBuildKitErrorCodeToolDirectoryNotFound>NBK0108</NBuildKitErrorCodeToolDirectoryNotFound>
+
+        <NBuildKitErrorIdToolFileNotFound>NBuildKitActions.FileNotFound.ExecutableTool</NBuildKitErrorIdToolFileNotFound>
+        <NBuildKitErrorCodeToolFileNotFound>NBK0109</NBuildKitErrorCodeToolFileNotFound>
+
+        <NBuildKitErrorIdNuGetNotFound>NBuildKitActions.FileNotFound.NuGet</NBuildKitErrorIdNuGetNotFound>
+        <NBuildKitErrorCodeNuGetNotFound>NBK0110</NBuildKitErrorCodeNuGetNotFound>
+
+        <NBuildKitErrorIdGitNotFound>NBuildKitActions.FileNotFound.Git</NBuildKitErrorIdGitNotFound>
+        <NBuildKitErrorCodeGitNotFound>NBK0111</NBuildKitErrorCodeGitNotFound>
+
+        <!-- Build -->
+        <NBuildKitErrorIdFxCopNoAssembliesDefined>NBuildKitActions.FxCop.NoAssembliesDefined</NBuildKitErrorIdFxCopNoAssembliesDefined>
+        <NBuildKitErrorCodeFxCopNoAssembliesDefined>NBK0201</NBuildKitErrorCodeFxCopNoAssembliesDefined>
+
+        <NBuildKitErrorIdFxCopNoProjectFileDefined>NBuildKitActions.FxCop.NoProjectFileDefined</NBuildKitErrorIdFxCopNoProjectFileDefined>
+        <NBuildKitErrorCodeFxCopNoProjectFileDefined>NBK0202</NBuildKitErrorCodeFxCopNoProjectFileDefined>
+
+        <NBuildKitErrorIdFxCopNoProjectFileOrAssembliesDefined>NBuildKitActions.FxCop.NoProjectFileOrAssembliesDefined</NBuildKitErrorIdFxCopNoProjectFileOrAssembliesDefined>
+        <NBuildKitErrorCodeFxCopNoProjectFileOrAssembliesDefined>NBK0203</NBuildKitErrorCodeFxCopNoProjectFileOrAssembliesDefined>
+
+        <NBuildKitErrorIdBuildVisualStudioNoSolutionsDefined>NBuildKitActions.VisualStudio.NoSolutionsDefined</NBuildKitErrorIdBuildVisualStudioNoSolutionsDefined>
+        <NBuildKitErrorCodeBuildVisualStudioNoSolutionsDefined>NBK0204</NBuildKitErrorCodeBuildVisualStudioNoSolutionsDefined>
+
+        <NBuildKitErrorIdBuildVisualStudioSolutionPathNotFound>NBuildKitActions.VisualStudio.SolutionPathNotFound</NBuildKitErrorIdBuildVisualStudioSolutionPathNotFound>
+        <NBuildKitErrorCodeBuildVisualStudioSolutionPathNotFound>NBK0205</NBuildKitErrorCodeBuildVisualStudioSolutionPathNotFound>
+
+        <NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles>NBuildKitActions.UpdateAssemblyInfo.MultipleProjectFiles</NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles>
+        <NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles>NBK0206</NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles>
+
+        <NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles>NBuildKitActions.UpdateAssemblyInfo.NoProjectFiles</NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles>
+        <NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles>NBK0207</NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles>
+
+        <!-- Test -->
+        <!-- Deploy -->
+
+        <!-- Tasks -->
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- System -->
+        <ErrorInformation Include="$(NBuildKitErrorIdUnknownError)">
+            <Code>$(NBuildKitErrorCodeUnknownError)</Code>
+            <Description>An internal error has occured.</Description>
+        </ErrorInformation>
+
+        <!-- General -->
+        <ErrorInformation Include="$(NBuildKitErrorIdDirectoryNotFound)">
+            <Code>$(NBuildKitErrorCodeDirectoryNotFound)</Code>
+            <Description>The specified directory does not exist.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdFileNotFound)">
+            <Code>$(NBuildKitErrorCodeFileNotFound)</Code>
+            <Description>The specified file does not exist.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdBuildDirectoryNotFound)">
+            <Code>$(NBuildKitErrorCodeBuildDirectoryNotFound)</Code>
+            <Description>The directory containing the build output could not be found.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDocDirectoryNotFound)">
+            <Code>$(NBuildKitErrorCodeDocDirectoryNotFound)</Code>
+            <Description>The directory containing the documentation source files could not be found.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdPackagesDirectoryNotFound)">
+            <Code>$(NBuildKitErrorCodePackagesDirectoryNotFound)</Code>
+            <Description>The directory containing the installed NuGet packages could not be found.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdSrcDirectoryNotFound)">
+            <Code>$(NBuildKitErrorCodeSrcDirectoryNotFound)</Code>
+            <Description>The directory containing the product source files could not be found.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdTestDirectoryNotFound)">
+            <Code>$(NBuildKitErrorCodeTestDirectoryNotFound)</Code>
+            <Description>The directory containing the test files could not be found.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdToolDirectoryNotFound)">
+            <Code>$(NBuildKitErrorCodeToolDirectoryNotFound)</Code>
+            <Description>The directory containing a selected build tool could not be determined.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdToolFileNotFound)">
+            <Code>$(NBuildKitErrorCodeToolFileNotFound)</Code>
+            <Description>The file path pointing to a selected build tool could not be determined.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdNuGetNotFound)">
+            <Code>$(NBuildKitErrorCodeNuGetNotFound)</Code>
+            <Description>The file path pointing to the NuGet command line executable could not be determined.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdGitNotFound)">
+            <Code>$(NBuildKitErrorCodeGitNotFound)</Code>
+            <Description>The file path pointing to the Git command line executable could not be determined.</Description>
+        </ErrorInformation>
+
+        <!-- Build -->
+        <ErrorInformation Include="$(NBuildKitErrorIdFxCopNoAssembliesDefined)">
+            <Code>$(NBuildKitErrorCodeFxCopNoAssembliesDefined)</Code>
+            <Description>No assemblies were provided for FxCop to analyze.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdFxCopNoProjectFileDefined)">
+            <Code>$(NBuildKitErrorCodeFxCopNoProjectFileDefined)</Code>
+            <Description>No project file was provided for FxCop.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdFxCopNoProjectFileOrAssembliesDefined)">
+            <Code>$(NBuildKitErrorCodeFxCopNoProjectFileOrAssembliesDefined)</Code>
+            <Description>No project file was provided for FxCop.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdBuildVisualStudioNoSolutionsDefined)">
+            <Code>$(NBuildKitErrorCodeBuildVisualStudioNoSolutionsDefined)</Code>
+            <Description>No Visual Studio solutions were selected for compilation.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdBuildVisualStudioSolutionPathNotFound)">
+            <Code>$(NBuildKitErrorCodeBuildVisualStudioSolutionPathNotFound)</Code>
+            <Description>The provided file path should point to a Visual Studio solution but the path does not exist.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles)">
+            <Code>$(NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles)</Code>
+            <Description>Multiple project files may be referencing the same AssemblyInfo file.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles)">
+            <Code>$(NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles)</Code>
+            <Description>No project files seem to be referencing the AssemblyInfo file.</Description>
+        </ErrorInformation>
+    </ItemGroup>
+</Project>

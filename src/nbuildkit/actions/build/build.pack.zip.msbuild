@@ -30,6 +30,7 @@
             Directories="$(DirBuildDeploy)" />
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(ArchivePackageSpecs.Identity)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -50,11 +51,13 @@
 
         <TemplateFile
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             OutputFileName="$(FileGeneratedArchiveSpec)"
             Template="$(FileArchiveSpec)"
             Tokens="@(TemplateTokens)" />
 
         <Zip
+            ErrorInformation="@(ErrorInformation)"
             File="$(FileGeneratedArchiveSpec)"
             OutputDirectory="$(DirBuildDeploy)"
             OverwriteExistingFiles="true"
