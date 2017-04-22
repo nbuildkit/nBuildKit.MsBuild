@@ -195,7 +195,16 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 msbuildPath = _potentialMsBuildPaths.FirstOrDefault();
                 if (string.IsNullOrEmpty(msbuildPath))
                 {
-                    Log.LogError("Could not locate a suitable version of MsBuild.");
+                    Log.LogError(
+                        string.Empty,
+                        ErrorCodeById(ErrorIdApplicationPathNotFound),
+                        ErrorIdApplicationPathNotFound,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "Could not locate a suitable version of MsBuild.");
                     return 9009; // Generally this seems to be the exit code presented when the executable cannot be found.
                 }
             }
@@ -208,11 +217,17 @@ namespace NBuildKit.MsBuild.Tasks.Core
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        Path.GetFileName(msbuildPath),
-                        exitCode));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    Path.GetFileName(msbuildPath),
+                    exitCode);
             }
 
             return exitCode;

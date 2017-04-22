@@ -87,11 +87,17 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        Path.GetFileName(NuGetExecutablePath.ItemSpec),
-                        exitCode));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    Path.GetFileName(NuGetExecutablePath.ItemSpec),
+                    exitCode);
                 return false;
             }
 

@@ -48,7 +48,16 @@ namespace NBuildKit.MsBuild.Tasks.Core
                         }
                         else
                         {
-                            Log.LogError(e.Data);
+                            Log.LogError(
+                                string.Empty,
+                                ErrorCodeById(ErrorIdApplicationErrorStream),
+                                ErrorIdApplicationErrorStream,
+                                string.Empty,
+                                0,
+                                0,
+                                0,
+                                0,
+                                e.Data);
                         }
                     }
                 };
@@ -101,7 +110,16 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 }
                 else
                 {
-                    Log.LogError(text);
+                    Log.LogError(
+                        string.Empty,
+                        ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                        ErrorIdApplicationNonzeroExitCode,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        text);
                 }
             }
         }

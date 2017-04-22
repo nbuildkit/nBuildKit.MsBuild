@@ -207,9 +207,9 @@
 
         <Message Text="For @(OriginBranch): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
         <Error
-            Code="$(NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync)"
+            Code="$(NBuildKitErrorCodeVcsGitOutOfSync)"
             Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' "
-            HelpKeyword="$(NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync)"
+            HelpKeyword="$(NBuildKitErrorIdVcsGitOutOfSync)"
             Text="For @(OriginBranch) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 
@@ -247,9 +247,9 @@
         </GitCurrentRevision>
         <Message Text="For %(TargetBranches.Identity): the expected revision is [$(GitRevNoLocalBranch)], the current server revision is [$(GitRevNoServerBranch)]" />
         <Error
-            Code="$(NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync)"
+            Code="$(NBuildKitErrorCodeVcsGitOutOfSync)"
             Condition=" '$(GitRevNoLocalBranch)' != '$(GitRevNoServerBranch)' "
-            HelpKeyword="$(NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync)"
+            HelpKeyword="$(NBuildKitErrorIdVcsGitOutOfSync)"
             Text="For %(TargetBranches.Identity) the local branch revision [$(GitRevNoLocalBranch)] is not the same as the server branch revision [$(GitRevNoServerBranch)]" />
     </Target>
 

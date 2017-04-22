@@ -45,13 +45,32 @@ namespace NBuildKit.MsBuild.Tasks.Code
             var filePath = GetAbsolutePath(InputFile);
             if (string.IsNullOrEmpty(filePath))
             {
-                Log.LogError("No input file provided");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "No input file provided");
                 return false;
             }
 
             if (!File.Exists(filePath))
             {
-                Log.LogError("Input File '{0}' cannot be found", InputFile);
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Input File '{0}' cannot be found",
+                    InputFile);
                 return false;
             }
 

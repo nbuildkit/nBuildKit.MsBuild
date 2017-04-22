@@ -231,7 +231,9 @@
         DependsOnTargets="EntryPoint_LocateEntryPoint"
         Name="EntryPoint_Execute">
         <Error
+            Code="NBKEP0100"
             Condition=" '$(DirEntryPointPackage)' == '' OR !Exists('$(DirEntryPointPackage)')"
+            HelpKeyword="NBuildKitEntryPoint.PackageNotFound"
             Text="Could not determine the location of the $(PackageNameEntryPoint) NuGet package. The file was expected to be in '$(DirPackages)\$(PackageNameEntryPoint).&lt;VERSION&gt;' directory, but that directory does not exist. Cannot start build." />
 
         <MSBuild
@@ -260,7 +262,9 @@
         <Message Text="DirEntryPointPackage after search: $(DirEntryPointPackage)" />
 
         <Error
+            Code="NBKEP0101"
             Condition="!Exists('$(DirEntryPointPackage)')"
+            HelpKeyword="NBuildKitEntryPoint.NBuildKitNotFound"
             Text="Unable to find the nBuildKit directory." />
     </Target>
 

@@ -54,11 +54,17 @@ namespace NBuildKit.MsBuild.Tasks
                     if (exitCode != 0)
                     {
                         Log.LogError(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "{0} exited with a non-zero exit code while trying to extract the public key file from the complete key file. Exit code was: {1}",
-                                Path.GetFileName(snExeFileName),
-                                exitCode));
+                            string.Empty,
+                            ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                            ErrorIdApplicationNonzeroExitCode,
+                            string.Empty,
+                            0,
+                            0,
+                            0,
+                            0,
+                            "{0} exited with a non-zero exit code while trying to extract the public key file from the complete key file. Exit code was: {1}",
+                            Path.GetFileName(snExeFileName),
+                            exitCode);
                         return false;
                     }
                 }
@@ -82,11 +88,17 @@ namespace NBuildKit.MsBuild.Tasks
                     if (exitCode != 0)
                     {
                         Log.LogError(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "{0} exited with a non-zero exit code while trying to extract the public key from the public key file. Exit code was: {1}",
-                                Path.GetFileName(snExeFileName),
-                                exitCode));
+                            string.Empty,
+                            ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                            ErrorIdApplicationNonzeroExitCode,
+                            string.Empty,
+                            0,
+                            0,
+                            0,
+                            0,
+                            "{0} exited with a non-zero exit code while trying to extract the public key from the public key file. Exit code was: {1}",
+                            Path.GetFileName(snExeFileName),
+                            exitCode);
                         return false;
                     }
                 }

@@ -59,39 +59,27 @@ namespace NBuildKit.MsBuild.Tasks.Projects
             }
 
             Log.LogMessage(MessageImportance.Normal, "Creating release on GitHub");
-
-            DataReceivedEventHandler standardOutputHandler =
-                (s, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
-                    {
-                        Log.LogMessage(MessageImportance.Normal, e.Data);
-                    }
-                };
-            DataReceivedEventHandler standardErrorHandler =
-                (s, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
-                    {
-                        Log.LogError(e.Data);
-                    }
-                };
-
             var exitCode = InvokeCommandLineTool(
                 GitHubReleasePath,
                 arguments,
                 WorkingDirectory,
-                standardOutputHandler: standardOutputHandler,
-                standardErrorHandler: standardErrorHandler);
+                standardOutputHandler: DefaultDataHandler,
+                standardErrorHandler: DefaultErrorHandler);
 
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        Path.GetFileName(GetFullToolPath(GitHubReleasePath)),
-                        exitCode));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    Path.GetFileName(GetFullToolPath(GitHubReleasePath)),
+                    exitCode);
                 return false;
             }
 

@@ -47,20 +47,12 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 };
             }
 
-            DataReceivedEventHandler standardErrorHandler = (s, e) =>
-            {
-                if (!string.IsNullOrWhiteSpace(e.Data))
-                {
-                    Log.LogError(e.Data);
-                }
-            };
-
             var exitCode = InvokeCommandLineTool(
                 NuGetExecutablePath,
                 arguments,
                 WorkingDirectory,
                 standardOutputHandler: standardOutputHandler,
-                standardErrorHandler: standardErrorHandler);
+                standardErrorHandler: DefaultErrorHandler);
             return exitCode;
         }
 

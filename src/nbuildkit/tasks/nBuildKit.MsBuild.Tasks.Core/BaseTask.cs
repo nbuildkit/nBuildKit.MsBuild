@@ -20,6 +20,16 @@ namespace NBuildKit.MsBuild.Tasks.Core
     /// </summary>
     public abstract class BaseTask : Task
     {
+        /// <summary>
+        /// Defines the error ID for an error that occurs when a file cannot be loaded.
+        /// </summary>
+        protected const string ErrorIdFileLoad = "NBuildKit.FileLoad";
+
+        /// <summary>
+        /// Defines the error ID for an error that occurs when a file cannot be found.
+        /// </summary>
+        protected const string ErrorIdFileNotFound = "NBuildKit.FileNotFound";
+
         private const string MetadataCodeTag = "Code";
 
         /// <summary>
@@ -66,6 +76,25 @@ namespace NBuildKit.MsBuild.Tasks.Core
             }
 
             return "normal";
+        }
+
+        /// <summary>
+        /// Returns the error code for the given ID.
+        /// </summary>
+        /// <param name="errorId">The error ID.</param>
+        /// <returns>The error code that matches the given ID.</returns>
+        protected string ErrorCodeById(string errorId)
+        {
+            var result = string.Empty;
+            if (ErrorInformation != null)
+            {
+                var code = ErrorInformation.Where(t => string.Equals(errorId, t.ItemSpec, StringComparison.OrdinalIgnoreCase))
+                    .Select(t => t.GetMetadata(MetadataCodeTag))
+                    .FirstOrDefault();
+                result = code ?? string.Empty;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -127,25 +156,6 @@ namespace NBuildKit.MsBuild.Tasks.Core
                     path));
 
             return PathUtilities.GetAbsolutePath(path?.ItemSpec, basePath?.ItemSpec);
-        }
-
-        /// <summary>
-        /// Returns the error code for the given ID.
-        /// </summary>
-        /// <param name="errorId">The error ID.</param>
-        /// <returns>The error code that matches the given ID.</returns>
-        protected string ErrorCodeById(string errorId)
-        {
-            var result = string.Empty;
-            if (ErrorInformation != null)
-            {
-                var code = ErrorInformation.Where(t => string.Equals(errorId, t.ItemSpec, StringComparison.OrdinalIgnoreCase))
-                    .Select(t => t.GetMetadata(MetadataCodeTag))
-                    .FirstOrDefault();
-                result = code ?? string.Empty;
-            }
-
-            return result;
         }
     }
 }

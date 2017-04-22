@@ -13,117 +13,213 @@
     -->
     <PropertyGroup>
         <!-- System -->
-        <NBuildKitErrorIdUnknownError>NBuildKitActions.UnknownError</NBuildKitErrorIdUnknownError>
+        <!-- Error codes from 0001 to 0099 -->
+        <NBuildKitErrorIdUnknownError>NBuildKit.UnknownError</NBuildKitErrorIdUnknownError>
         <NBuildKitErrorCodeUnknownError>NBK0001</NBuildKitErrorCodeUnknownError>
 
-        <!-- General -->
-        <NBuildKitErrorIdDirectoryNotFound>NBuildKitActions.DirectoryNotFound</NBuildKitErrorIdDirectoryNotFound>
-        <NBuildKitErrorCodeDirectoryNotFound>NBK0101</NBuildKitErrorCodeDirectoryNotFound>
+        <NBuildKitErrorIdStepsFailure>NBuildKit.Steps.Failure</NBuildKitErrorIdStepsFailure>
+        <NBuildKitErrorCodeStepsFailure>NBK0021</NBuildKitErrorCodeStepsFailure>
 
-        <NBuildKitErrorIdFileNotFound>NBuildKitActions.FileNotFound</NBuildKitErrorIdFileNotFound>
-        <NBuildKitErrorCodeFileNotFound>NBK0102</NBuildKitErrorCodeFileNotFound>
+        <NBuildKitErrorIdStepsPreStepFailure>NBuildKit.Steps.PreStep</NBuildKitErrorIdStepsPreStepFailure>
+        <NBuildKitErrorCodeStepsPreStepFailure>NBK0022</NBuildKitErrorCodeStepsPreStepFailure>
 
-        <NBuildKitErrorIdBuildDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Build</NBuildKitErrorIdBuildDirectoryNotFound>
-        <NBuildKitErrorCodeBuildDirectoryNotFound>NBK0103</NBuildKitErrorCodeBuildDirectoryNotFound>
+        <NBuildKitErrorIdStepsPostStepFailure>NBuildKit.Steps.PostStep</NBuildKitErrorIdStepsPostStepFailure>
+        <NBuildKitErrorCodeStepsPostStepFailure>NBK0023</NBuildKitErrorCodeStepsPostStepFailure>
 
-        <NBuildKitErrorIdDocDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Doc</NBuildKitErrorIdDocDirectoryNotFound>
-        <NBuildKitErrorCodeDocDirectoryNotFound>NBK0104</NBuildKitErrorCodeDocDirectoryNotFound>
+        <NBuildKitErrorIdStepsInvalidConfiguration>NBuildKit.Steps.InvalidConfiguration</NBuildKitErrorIdStepsInvalidConfiguration>
+        <NBuildKitErrorCodeStepsInvalidConfiguration>NBK0024</NBuildKitErrorCodeStepsInvalidConfiguration>
 
-        <NBuildKitErrorIdPackagesDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Packages</NBuildKitErrorIdPackagesDirectoryNotFound>
-        <NBuildKitErrorCodePackagesDirectoryNotFound>NBK0105</NBuildKitErrorCodePackagesDirectoryNotFound>
 
-        <NBuildKitErrorIdSrcDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Src</NBuildKitErrorIdSrcDirectoryNotFound>
-        <NBuildKitErrorCodeSrcDirectoryNotFound>NBK0106</NBuildKitErrorCodeSrcDirectoryNotFound>
+        <!-- IO -->
+        <!-- Directories -->
+        <!-- Error codes from 0100 to 0299 -->
+        <NBuildKitErrorIdDirectoryNotFound>NBuildKit.DirectoryNotFound</NBuildKitErrorIdDirectoryNotFound>
+        <NBuildKitErrorCodeDirectoryNotFound>NBK0100</NBuildKitErrorCodeDirectoryNotFound>
 
-        <NBuildKitErrorIdTestDirectoryNotFound>NBuildKitActions.DirectoryNotFound.Test</NBuildKitErrorIdTestDirectoryNotFound>
-        <NBuildKitErrorCodeTestDirectoryNotFound>NBK0107</NBuildKitErrorCodeTestDirectoryNotFound>
+        <!-- Executable tool directory issues: Error codes from 0120 to 0139 -->
+        <NBuildKitErrorIdToolDirectoryNotFound>NBuildKit.DirectoryNotFound.ExecutableTool</NBuildKitErrorIdToolDirectoryNotFound>
+        <NBuildKitErrorCodeToolDirectoryNotFound>NBK0120</NBuildKitErrorCodeToolDirectoryNotFound>
 
-        <NBuildKitErrorIdToolDirectoryNotFound>NBuildKitActions.DirectoryNotFound.ExecutableTool</NBuildKitErrorIdToolDirectoryNotFound>
-        <NBuildKitErrorCodeToolDirectoryNotFound>NBK0108</NBuildKitErrorCodeToolDirectoryNotFound>
+        <!-- nBuildKit defined directory issues: Error codes from 0140 to 0159 -->
+        <NBuildKitErrorIdBuildDirectoryNotFound>NBuildKit.DirectoryNotFound.Build</NBuildKitErrorIdBuildDirectoryNotFound>
+        <NBuildKitErrorCodeBuildDirectoryNotFound>NBK0141</NBuildKitErrorCodeBuildDirectoryNotFound>
 
-        <NBuildKitErrorIdToolFileNotFound>NBuildKitActions.FileNotFound.ExecutableTool</NBuildKitErrorIdToolFileNotFound>
-        <NBuildKitErrorCodeToolFileNotFound>NBK0109</NBuildKitErrorCodeToolFileNotFound>
+        <NBuildKitErrorIdDocDirectoryNotFound>NBuildKit.DirectoryNotFound.Doc</NBuildKitErrorIdDocDirectoryNotFound>
+        <NBuildKitErrorCodeDocDirectoryNotFound>NBK0142</NBuildKitErrorCodeDocDirectoryNotFound>
 
-        <NBuildKitErrorIdNuGetNotFound>NBuildKitActions.FileNotFound.NuGet</NBuildKitErrorIdNuGetNotFound>
-        <NBuildKitErrorCodeNuGetNotFound>NBK0110</NBuildKitErrorCodeNuGetNotFound>
+        <NBuildKitErrorIdPackagesDirectoryNotFound>NBuildKit.DirectoryNotFound.Packages</NBuildKitErrorIdPackagesDirectoryNotFound>
+        <NBuildKitErrorCodePackagesDirectoryNotFound>NBK0143</NBuildKitErrorCodePackagesDirectoryNotFound>
 
-        <NBuildKitErrorIdGitNotFound>NBuildKitActions.FileNotFound.Git</NBuildKitErrorIdGitNotFound>
-        <NBuildKitErrorCodeGitNotFound>NBK0111</NBuildKitErrorCodeGitNotFound>
+        <NBuildKitErrorIdSrcDirectoryNotFound>NBuildKit.DirectoryNotFound.Src</NBuildKitErrorIdSrcDirectoryNotFound>
+        <NBuildKitErrorCodeSrcDirectoryNotFound>NBK0144</NBuildKitErrorCodeSrcDirectoryNotFound>
 
-        <NBuildKitErrorIdVcsGitNotOnExpectedBranch>NBuildKitActions.Vcs.Git.NotOnExpectedBranch</NBuildKitErrorIdVcsGitNotOnExpectedBranch>
-        <NBuildKitErrorCodeVcsGitNotOnExpectedBranch>NBK0112</NBuildKitErrorCodeVcsGitNotOnExpectedBranch>
+        <NBuildKitErrorIdTestDirectoryNotFound>NBuildKit.DirectoryNotFound.Test</NBuildKitErrorIdTestDirectoryNotFound>
+        <NBuildKitErrorCodeTestDirectoryNotFound>NBK0145</NBuildKitErrorCodeTestDirectoryNotFound>
 
-        <NBuildKitErrorIdBootstrapBuildTaskFileNotFound>NBuildKitActions.Bootstrap.BuildTask.FileNotFound</NBuildKitErrorIdBootstrapBuildTaskFileNotFound>
-        <NBuildKitErrorCodeBootstrapBuildTaskFileNotFound>NBK0113</NBuildKitErrorCodeBootstrapBuildTaskFileNotFound>
 
-        <NBuildKitErrorIdBootstrapBuildTargetsFileNotFound>NBuildKitActions.Bootstrap.BuildTargets.FileNotFound</NBuildKitErrorIdBootstrapBuildTargetsFileNotFound>
-        <NBuildKitErrorCodeBootstrapBuildTargetsFileNotFound>NBK0114</NBuildKitErrorCodeBootstrapBuildTargetsFileNotFound>
+        <!-- Files -->
+        <!-- Error codes from 0300 to 0499 -->
+        <NBuildKitErrorIdFileNotFound>NBuildKit.FileNotFound</NBuildKitErrorIdFileNotFound>
+        <NBuildKitErrorCodeFileNotFound>NBK0300</NBuildKitErrorCodeFileNotFound>
 
-        <NBuildKitErrorIdPrepareGetIssuesUnknownBranch>NBuildKitActions.Prepare.GetIssues.UnknownBranch</NBuildKitErrorIdPrepareGetIssuesUnknownBranch>
-        <NBuildKitErrorCodePrepareGetIssuesUnknownBranch>NBK0115</NBuildKitErrorCodePrepareGetIssuesUnknownBranch>
+        <NBuildKitErrorIdFileLoad>NBuildKit.FileLoad</NBuildKitErrorIdFileLoad>
+        <NBuildKitErrorCodeFileLoad>NBK0310</NBuildKitErrorCodeFileLoad>
 
-        <NBuildKitErrorIdGetVersionFileMissing>NBuildKitActions.GetVersion.FileMissing</NBuildKitErrorIdGetVersionFileMissing>
-        <NBuildKitErrorCodeGetVersionFileMissing>NBK0116</NBuildKitErrorCodeGetVersionFileMissing>
+        <!-- Executable tool file issues: Error codes from 0320 to 0339 -->
+        <NBuildKitErrorIdToolFileNotFound>NBuildKit.FileNotFound.ExecutableTool</NBuildKitErrorIdToolFileNotFound>
+        <NBuildKitErrorCodeToolFileNotFound>NBK0320</NBuildKitErrorCodeToolFileNotFound>
+
+        <NBuildKitErrorIdNuGetNotFound>NBuildKit.FileNotFound.NuGet</NBuildKitErrorIdNuGetNotFound>
+        <NBuildKitErrorCodeNuGetNotFound>NBK0321</NBuildKitErrorCodeNuGetNotFound>
+
+        <NBuildKitErrorIdGitNotFound>NBuildKit.FileNotFound.Git</NBuildKitErrorIdGitNotFound>
+        <NBuildKitErrorCodeGitNotFound>NBK0322</NBuildKitErrorCodeGitNotFound>
+
+        <!-- Bootstrap file issues: Error codes from 0340 to 0359 -->
+        <NBuildKitErrorIdBootstrapBuildTaskFileNotFound>NBuildKit.Bootstrap.BuildTask.FileNotFound</NBuildKitErrorIdBootstrapBuildTaskFileNotFound>
+        <NBuildKitErrorCodeBootstrapBuildTaskFileNotFound>NBK0340</NBuildKitErrorCodeBootstrapBuildTaskFileNotFound>
+
+        <NBuildKitErrorIdBootstrapBuildTargetsFileNotFound>NBuildKit.Bootstrap.BuildTargets.FileNotFound</NBuildKitErrorIdBootstrapBuildTargetsFileNotFound>
+        <NBuildKitErrorCodeBootstrapBuildTargetsFileNotFound>NBK0350</NBuildKitErrorCodeBootstrapBuildTargetsFileNotFound>
+
+        <NBuildKitErrorIdTasksGenerateTargetsFailedToLoadAssembly>NBuildKit.GenerateTargets.FailedToLoadAssembly</NBuildKitErrorIdTasksGenerateTargetsFailedToLoadAssembly>
+        <NBuildKitErrorCodeTasksGenerateTargetsFailedToLoadAssembly>NBK0355</NBuildKitErrorCodeTasksGenerateTargetsFailedToLoadAssembly>
+
+        <NBuildKitErrorIdTasksGenerateTargetsFailedToLoadTypes>NBuildKit.GenerateTargets.FailedToLoadTypes</NBuildKitErrorIdTasksGenerateTargetsFailedToLoadTypes>
+        <NBuildKitErrorCodeTasksGenerateTargetsFailedToLoadTypes>NBK0356</NBuildKitErrorCodeTasksGenerateTargetsFailedToLoadTypes>
+
+        <NBuildKitErrorIdTasksGenerateTargetsFailedToSaveFile>NBuildKit.GenerateTargets.FailedToSaveFile</NBuildKitErrorIdTasksGenerateTargetsFailedToSaveFile>
+        <NBuildKitErrorCodeTasksGenerateTargetsFailedToSaveFile>NBK0357</NBuildKitErrorCodeTasksGenerateTargetsFailedToSaveFile>
+
+
+        <!-- Application interaction -->
+        <!-- Error codes from 0500 to 0699 -->
+        <NBuildKitErrorIdTasksApplicationNonzeroExitCode>NBuildKit.Application.NonzeroExitCode</NBuildKitErrorIdTasksApplicationNonzeroExitCode>
+        <NBuildKitErrorCodeTasksApplicationNonzeroExitCode>NBK0501</NBuildKitErrorCodeTasksApplicationNonzeroExitCode>
+
+        <NBuildKitErrorIdTasksApplicationWroteToErrorStream>NBuildKit.Application.WroteToErrorStream</NBuildKitErrorIdTasksApplicationWroteToErrorStream>
+        <NBuildKitErrorCodeTasksApplicationWroteToErrorStream>NBK0502</NBuildKitErrorCodeTasksApplicationWroteToErrorStream>
+
+        <NBuildKitErrorIdTasksApplicationMissingArgument>NBuildKit.Application.MissingArgument</NBuildKitErrorIdTasksApplicationMissingArgument>
+        <NBuildKitErrorCodeTasksApplicationMissingArgument>NBK0503</NBuildKitErrorCodeTasksApplicationMissingArgument>
+
+        <NBuildKitErrorIdTasksApplicationInvalidArgument>NBuildKit.Application.InvalidArgument</NBuildKitErrorIdTasksApplicationInvalidArgument>
+        <NBuildKitErrorCodeTasksApplicationInvalidArgument>NBK0504</NBuildKitErrorCodeTasksApplicationInvalidArgument>
+
+
+        <!-- VCS -->
+        <!-- Error codes from 0700 to 0899 -->
+        <!-- Git issues: Error codes from 0750 to 799 -->
+        <NBuildKitErrorIdVcsGitOutOfSync>NBuildKit.Vcs.Git.OutOfSync</NBuildKitErrorIdVcsGitOutOfSync>
+        <NBuildKitErrorCodeVcsGitOutOfSync>NBK0760</NBuildKitErrorCodeVcsGitOutOfSync>
+
+        <NBuildKitErrorIdVcsGitNotOnExpectedBranch>NBuildKit.Vcs.Git.NotOnExpectedBranch</NBuildKitErrorIdVcsGitNotOnExpectedBranch>
+        <NBuildKitErrorCodeVcsGitNotOnExpectedBranch>NBK0775</NBuildKitErrorCodeVcsGitNotOnExpectedBranch>
+
+        <NBuildKitErrorIdDeployPushToGitRepositoryNoFiles>NBuildKit.Deploy.GitRepository.NoFiles</NBuildKitErrorIdDeployPushToGitRepositoryNoFiles>
+        <NBuildKitErrorCodeDeployPushToGitRepositoryNoFiles>NBK0781</NBuildKitErrorCodeDeployPushToGitRepositoryNoFiles>
+
+        <NBuildKitErrorIdDeployPushToGitRepositoryNoRepository>NBuildKit.Deploy.GitRepository.NoRepository</NBuildKitErrorIdDeployPushToGitRepositoryNoRepository>
+        <NBuildKitErrorCodeDeployPushToGitRepositoryNoRepository>NBK0782</NBuildKitErrorCodeDeployPushToGitRepositoryNoRepository>
+
+        <NBuildKitErrorIdDeployPushToGitBranchNoFiles>NBuildKit.Deploy.GitBranch.NoFiles</NBuildKitErrorIdDeployPushToGitBranchNoFiles>
+        <NBuildKitErrorCodeDeployPushToGitBranchNoFiles>NBK0791</NBuildKitErrorCodeDeployPushToGitBranchNoFiles>
+
+
+        <!-- Work items / Issues -->
+        <!-- Error codes from 0900 to 1099 -->
+        <!-- Vcs issues: Error codes from 0950 to 969 -->
+        <NBuildKitErrorIdPrepareGetIssuesUnknownBranch>NBuildKit.Prepare.GetIssues.UnknownBranch</NBuildKitErrorIdPrepareGetIssuesUnknownBranch>
+        <NBuildKitErrorCodePrepareGetIssuesUnknownBranch>NBK0955</NBuildKitErrorCodePrepareGetIssuesUnknownBranch>
+
+        <!-- Github issues: Error codes from 1000 to 1019 -->
+        <NBuildKitErrorIdPrepareGetIssuesGitHubNoMilestone>NBuildKit.Prepare.GetIssues.GitHub.NoMilestone</NBuildKitErrorIdPrepareGetIssuesGitHubNoMilestone>
+        <NBuildKitErrorCodePrepareGetIssuesGitHubNoMilestone>NBK1001</NBuildKitErrorCodePrepareGetIssuesGitHubNoMilestone>
+
+
+        <!-- Versions -->
+        <!-- Error codes from 1100 to 1299 -->
+        <NBuildKitErrorIdGetVersionFileMissing>NBuildKit.GetVersion.FileMissing</NBuildKitErrorIdGetVersionFileMissing>
+        <NBuildKitErrorCodeGetVersionFileMissing>NBK1150</NBuildKitErrorCodeGetVersionFileMissing>
+
+        <NBuildKitErrorIdGetVersionGitVersionInvalidOutput>NBuildKit.GetVersion.GitVersion.InvalidOutput</NBuildKitErrorIdGetVersionGitVersionInvalidOutput>
+        <NBuildKitErrorCodeGetVersionGitVersionInvalidOutput>NBK1161</NBuildKitErrorCodeGetVersionGitVersionInvalidOutput>
+
+
+        <!-- Generate files -->
+        <!-- Error codes from 1300 to 1499 -->
+        <NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles>NBuildKit.UpdateAssemblyInfo.MultipleProjectFiles</NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles>
+        <NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles>NBK1351</NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles>
+
+        <NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles>NBuildKit.UpdateAssemblyInfo.NoProjectFiles</NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles>
+        <NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles>NBK1352</NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles>
+
+        <NBuildKitErrorIdTasksGenerateInternalsVisibleToNoFiles>NBuildKit.GenerateInternalsVisibleTo.NoFiles</NBuildKitErrorIdTasksGenerateInternalsVisibleToNoFiles>
+        <NBuildKitErrorCodeTasksGenerateInternalsVisibleToFailedToNoFiles>NBK1365</NBuildKitErrorCodeTasksGenerateInternalsVisibleToFailedToNoFiles>
+
+        <NBuildKitErrorIdTasksGenerateInternalsVisibleToFailedToExtractPublicKey>NBuildKit.GenerateInternalsVisibleTo.FailedToExtractPublicKey</NBuildKitErrorIdTasksGenerateInternalsVisibleToFailedToExtractPublicKey>
+        <NBuildKitErrorCodeTasksGenerateInternalsVisibleToFailedToExtractPublicKey>NBK1366</NBuildKitErrorCodeTasksGenerateInternalsVisibleToFailedToExtractPublicKey>
+
+
+        <!-- Analysis -->
+        <!-- Error codes from 1500 to 1699 -->
+        <NBuildKitErrorIdFxCopNoProjectFileOrAssembliesDefined>NBuildKit.FxCop.NoProjectFileOrAssembliesDefined</NBuildKitErrorIdFxCopNoProjectFileOrAssembliesDefined>
+        <NBuildKitErrorCodeFxCopNoProjectFileOrAssembliesDefined>NBK1521</NBuildKitErrorCodeFxCopNoProjectFileOrAssembliesDefined>
+
+        <NBuildKitErrorIdFxCopNoAssembliesDefined>NBuildKit.FxCop.NoAssembliesDefined</NBuildKitErrorIdFxCopNoAssembliesDefined>
+        <NBuildKitErrorCodeFxCopNoAssembliesDefined>NBK1522</NBuildKitErrorCodeFxCopNoAssembliesDefined>
+
+        <NBuildKitErrorIdFxCopNoProjectFileDefined>NBuildKit.FxCop.NoProjectFileDefined</NBuildKitErrorIdFxCopNoProjectFileDefined>
+        <NBuildKitErrorCodeFxCopNoProjectFileDefined>NBK1523</NBuildKitErrorCodeFxCopNoProjectFileDefined>
+
+        <NBuildKitErrorIdXmlValidationError>NBuildKit.XmlValidation.ValidationError</NBuildKitErrorIdXmlValidationError>
+        <NBuildKitErrorCodeXmlValidationError>NBK1531</NBuildKitErrorCodeXmlValidationError>
+
 
         <!-- Build -->
-        <NBuildKitErrorIdFxCopNoAssembliesDefined>NBuildKitActions.FxCop.NoAssembliesDefined</NBuildKitErrorIdFxCopNoAssembliesDefined>
-        <NBuildKitErrorCodeFxCopNoAssembliesDefined>NBK0201</NBuildKitErrorCodeFxCopNoAssembliesDefined>
+        <!-- Error codes from 1700 to 1899 -->
+        <NBuildKitErrorIdBuildVisualStudioNoSolutionsDefined>NBuildKit.VisualStudio.NoSolutionsDefined</NBuildKitErrorIdBuildVisualStudioNoSolutionsDefined>
+        <NBuildKitErrorCodeBuildVisualStudioNoSolutionsDefined>NBK1721</NBuildKitErrorCodeBuildVisualStudioNoSolutionsDefined>
 
-        <NBuildKitErrorIdFxCopNoProjectFileDefined>NBuildKitActions.FxCop.NoProjectFileDefined</NBuildKitErrorIdFxCopNoProjectFileDefined>
-        <NBuildKitErrorCodeFxCopNoProjectFileDefined>NBK0202</NBuildKitErrorCodeFxCopNoProjectFileDefined>
+        <NBuildKitErrorIdBuildVisualStudioSolutionPathNotFound>NBuildKit.VisualStudio.SolutionPathNotFound</NBuildKitErrorIdBuildVisualStudioSolutionPathNotFound>
+        <NBuildKitErrorCodeBuildVisualStudioSolutionPathNotFound>NBK1722</NBuildKitErrorCodeBuildVisualStudioSolutionPathNotFound>
 
-        <NBuildKitErrorIdFxCopNoProjectFileOrAssembliesDefined>NBuildKitActions.FxCop.NoProjectFileOrAssembliesDefined</NBuildKitErrorIdFxCopNoProjectFileOrAssembliesDefined>
-        <NBuildKitErrorCodeFxCopNoProjectFileOrAssembliesDefined>NBK0203</NBuildKitErrorCodeFxCopNoProjectFileOrAssembliesDefined>
 
-        <NBuildKitErrorIdBuildVisualStudioNoSolutionsDefined>NBuildKitActions.VisualStudio.NoSolutionsDefined</NBuildKitErrorIdBuildVisualStudioNoSolutionsDefined>
-        <NBuildKitErrorCodeBuildVisualStudioNoSolutionsDefined>NBK0204</NBuildKitErrorCodeBuildVisualStudioNoSolutionsDefined>
+        <!-- Unit tests -->
+        <!-- Error codes from 1900 to 2099 -->
 
-        <NBuildKitErrorIdBuildVisualStudioSolutionPathNotFound>NBuildKitActions.VisualStudio.SolutionPathNotFound</NBuildKitErrorIdBuildVisualStudioSolutionPathNotFound>
-        <NBuildKitErrorCodeBuildVisualStudioSolutionPathNotFound>NBK0205</NBuildKitErrorCodeBuildVisualStudioSolutionPathNotFound>
 
-        <NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles>NBuildKitActions.UpdateAssemblyInfo.MultipleProjectFiles</NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles>
-        <NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles>NBK0206</NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles>
-
-        <NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles>NBuildKitActions.UpdateAssemblyInfo.NoProjectFiles</NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles>
-        <NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles>NBK0207</NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles>
-
-        <!-- Test -->
+        <!-- Packaging -->
+        <!-- Error codes from 2100 to 2299 -->
 
         <!-- Deploy -->
-        <NBuildKitErrorIdDeployPushToDirectoryNoFiles>NBuildKitActions.Deploy.PushToDirectory.NoFiles</NBuildKitErrorIdDeployPushToDirectoryNoFiles>
-        <NBuildKitErrorCodeDeployPushToDirectoryNoFiles>NBK0401</NBuildKitErrorCodeDeployPushToDirectoryNoFiles>
+        <!-- Error codes from 2300 to 2499 -->
+        <!-- Push to remote file system: Error codes from 2320 to 2349 -->
+        <NBuildKitErrorIdDeployPushToDirectoryNoFiles>NBuildKit.Deploy.PushToDirectory.NoFiles</NBuildKitErrorIdDeployPushToDirectoryNoFiles>
+        <NBuildKitErrorCodeDeployPushToDirectoryNoFiles>NBK2321</NBuildKitErrorCodeDeployPushToDirectoryNoFiles>
 
-        <NBuildKitErrorIdDeployPushToGitBranchNoFiles>NBuildKitActions.Deploy.GitBranch.NoFiles</NBuildKitErrorIdDeployPushToGitBranchNoFiles>
-        <NBuildKitErrorCodeDeployPushToGitBranchNoFiles>NBK0402</NBuildKitErrorCodeDeployPushToGitBranchNoFiles>
+        <!-- Push to package feed: Error codes from 2350 to 2399 -->
+        <NBuildKitErrorIdDeployPushToNuGetNoTarget>NBuildKit.Deploy.NuGet.NoTarget</NBuildKitErrorIdDeployPushToNuGetNoTarget>
+        <NBuildKitErrorCodeDeployPushToNuGetNoTarget>NBK2361</NBuildKitErrorCodeDeployPushToNuGetNoTarget>
 
-        <NBuildKitErrorIdDeployPushToGithubNoUserName>NBuildKitActions.Deploy.GitHub.NoUserName</NBuildKitErrorIdDeployPushToGithubNoUserName>
-        <NBuildKitErrorCodeDeployPushToGithubNoUserName>NBK0403</NBuildKitErrorCodeDeployPushToGithubNoUserName>
+        <NBuildKitErrorIdDeployPushToNuGetNoFiles>NBuildKit.Deploy.NuGet.NoFiles</NBuildKitErrorIdDeployPushToNuGetNoFiles>
+        <NBuildKitErrorCodeDeployPushToNuGetNoFiles>NBK2362</NBuildKitErrorCodeDeployPushToNuGetNoFiles>
 
-        <NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>NBuildKitActions.Deploy.GitHub.NoReleaseDescription</NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>
-        <NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>NBK0404</NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>
+        <NBuildKitErrorIdDeployPushToSymbolsNoTarget>NBuildKit.Deploy.Symbols.NoTarget</NBuildKitErrorIdDeployPushToSymbolsNoTarget>
+        <NBuildKitErrorCodeDeployPushToSymbolsNoTarget>NBK2371</NBuildKitErrorCodeDeployPushToSymbolsNoTarget>
 
-        <NBuildKitErrorIdDeployPushToGithubNoRepository>NBuildKitActions.Deploy.GitHub.NoRepository</NBuildKitErrorIdDeployPushToGithubNoRepository>
-        <NBuildKitErrorCodeDeployPushToGithubNoRepository>NBK0405</NBuildKitErrorCodeDeployPushToGithubNoRepository>
+        <NBuildKitErrorIdDeployPushToSymbolsNoFiles>NBuildKit.Deploy.Symbols.NoFiles</NBuildKitErrorIdDeployPushToSymbolsNoFiles>
+        <NBuildKitErrorCodeDeployPushToSymbolsNoFiles>NBK2372</NBuildKitErrorCodeDeployPushToSymbolsNoFiles>
 
-        <NBuildKitErrorIdDeployPushToGitRepositoryNoFiles>NBuildKitActions.Deploy.GitRepository.NoFiles</NBuildKitErrorIdDeployPushToGitRepositoryNoFiles>
-        <NBuildKitErrorCodeDeployPushToGitRepositoryNoFiles>NBK0406</NBuildKitErrorCodeDeployPushToGitRepositoryNoFiles>
+        <!-- Push to GitHub: Error codes from 2400 to 2419 -->
+        <NBuildKitErrorIdDeployPushToGithubNoRepository>NBuildKit.Deploy.GitHub.NoRepository</NBuildKitErrorIdDeployPushToGithubNoRepository>
+        <NBuildKitErrorCodeDeployPushToGithubNoRepository>NBK2411</NBuildKitErrorCodeDeployPushToGithubNoRepository>
 
-        <NBuildKitErrorIdDeployPushToGitRepositoryNoRepository>NBuildKitActions.Deploy.GitRepository.NoRepository</NBuildKitErrorIdDeployPushToGitRepositoryNoRepository>
-        <NBuildKitErrorCodeDeployPushToGitRepositoryNoRepository>NBK0407</NBuildKitErrorCodeDeployPushToGitRepositoryNoRepository>
+        <NBuildKitErrorIdDeployPushToGithubNoUserName>NBuildKit.Deploy.GitHub.NoUserName</NBuildKitErrorIdDeployPushToGithubNoUserName>
+        <NBuildKitErrorCodeDeployPushToGithubNoUserName>NBK2412</NBuildKitErrorCodeDeployPushToGithubNoUserName>
 
-        <NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync>NBuildKitActions.Deploy.GitRepository.OutOfSync</NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync>
-        <NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync>NBK0408</NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync>
-
-        <NBuildKitErrorIdDeployPushToNuGetNoFiles>NBuildKitActions.Deploy.NuGet.NoFiles</NBuildKitErrorIdDeployPushToNuGetNoFiles>
-        <NBuildKitErrorCodeDeployPushToNuGetNoFiles>NBK0409</NBuildKitErrorCodeDeployPushToNuGetNoFiles>
-
-        <NBuildKitErrorIdDeployPushToSymbolsNoFiles>NBuildKitActions.Deploy.Symbols.NoFiles</NBuildKitErrorIdDeployPushToSymbolsNoFiles>
-        <NBuildKitErrorCodeDeployPushToSymbolsNoFiles>NBK0410</NBuildKitErrorCodeDeployPushToSymbolsNoFiles>
-
-        <NBuildKitErrorIdDeployPushToSymbolsNoTarget>NBuildKitActions.Deploy.Symbols.NoTarget</NBuildKitErrorIdDeployPushToSymbolsNoTarget>
-        <NBuildKitErrorCodeDeployPushToSymbolsNoTarget>NBK0411</NBuildKitErrorCodeDeployPushToSymbolsNoTarget>
-
-        <!-- Tasks -->
+        <NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>NBuildKit.Deploy.GitHub.NoReleaseDescription</NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>
+        <NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>NBK2416</NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>
     </PropertyGroup>
 
     <ItemGroup>
@@ -133,159 +229,94 @@
             <Description>An internal error has occured.</Description>
         </ErrorInformation>
 
-        <!-- General -->
+        <ErrorInformation Include="$(NBuildKitErrorIdStepsFailure)">
+            <Code>$(NBuildKitErrorCodeStepsFailure)</Code>
+            <Description>An error occured while executing the build, test or deploy steps.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdStepsPreStepFailure)">
+            <Code>$(NBuildKitErrorCodeStepsPreStepFailure)</Code>
+            <Description>An error occured while executing a pre-step.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdStepsPostStepFailure)">
+            <Code>$(NBuildKitErrorCodeStepsPostStepFailure)</Code>
+            <Description>An error occured while executing a post-step.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdStepsInvalidConfiguration)">
+            <Code>$(NBuildKitErrorCodeStepsInvalidConfiguration)</Code>
+            <Description>The configuration of the steps to execute is not valid.</Description>
+        </ErrorInformation>
+
         <ErrorInformation Include="$(NBuildKitErrorIdDirectoryNotFound)">
             <Code>$(NBuildKitErrorCodeDirectoryNotFound)</Code>
             <Description>The specified directory does not exist.</Description>
         </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdFileNotFound)">
-            <Code>$(NBuildKitErrorCodeFileNotFound)</Code>
-            <Description>The specified file does not exist.</Description>
-        </ErrorInformation>
-
-        <ErrorInformation Include="$(NBuildKitErrorIdBuildDirectoryNotFound)">
-            <Code>$(NBuildKitErrorCodeBuildDirectoryNotFound)</Code>
-            <Description>The directory containing the build output could not be found.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDocDirectoryNotFound)">
-            <Code>$(NBuildKitErrorCodeDocDirectoryNotFound)</Code>
-            <Description>The directory containing the documentation source files could not be found.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdPackagesDirectoryNotFound)">
-            <Code>$(NBuildKitErrorCodePackagesDirectoryNotFound)</Code>
-            <Description>The directory containing the installed NuGet packages could not be found.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdSrcDirectoryNotFound)">
-            <Code>$(NBuildKitErrorCodeSrcDirectoryNotFound)</Code>
-            <Description>The directory containing the product source files could not be found.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdTestDirectoryNotFound)">
-            <Code>$(NBuildKitErrorCodeTestDirectoryNotFound)</Code>
-            <Description>The directory containing the test files could not be found.</Description>
-        </ErrorInformation>
-
         <ErrorInformation Include="$(NBuildKitErrorIdToolDirectoryNotFound)">
             <Code>$(NBuildKitErrorCodeToolDirectoryNotFound)</Code>
             <Description>The directory containing a selected build tool could not be determined.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdFileNotFound)">
+            <Code>$(NBuildKitErrorCodeFileNotFound)</Code>
+            <Description>The specified file does not exist.</Description>
         </ErrorInformation>
         <ErrorInformation Include="$(NBuildKitErrorIdToolFileNotFound)">
             <Code>$(NBuildKitErrorCodeToolFileNotFound)</Code>
             <Description>The file path pointing to a selected build tool could not be determined.</Description>
         </ErrorInformation>
 
-        <ErrorInformation Include="$(NBuildKitErrorIdNuGetNotFound)">
-            <Code>$(NBuildKitErrorCodeNuGetNotFound)</Code>
-            <Description>The file path pointing to the NuGet command line executable could not be determined.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdGitNotFound)">
-            <Code>$(NBuildKitErrorCodeGitNotFound)</Code>
-            <Description>The file path pointing to the Git command line executable could not be determined.</Description>
+        <ErrorInformation Include="$(NBuildKitErrorIdFileLoad)">
+            <Code>$(NBuildKitErrorCodeFileLoad)</Code>
+            <Description>The file could not be loaded.</Description>
         </ErrorInformation>
 
-        <ErrorInformation Include="$(NBuildKitErrorIdVcsGitNotOnExpectedBranch)">
-            <Code>$(NBuildKitErrorCodeVcsGitNotOnExpectedBranch)</Code>
-            <Description>The current Git branch is not the expected branch.</Description>
+        <ErrorInformation Include="$(NBuildKitErrorIdTasksApplicationNonzeroExitCode)">
+            <Code>$(NBuildKitErrorCodeTasksApplicationNonzeroExitCode)</Code>
+            <Description>The target application exited with a non-zero exit code.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdTasksApplicationWroteToErrorStream)">
+            <Code>$(NBuildKitErrorCodeTasksApplicationWroteToErrorStream)</Code>
+            <Description>The target application wrote to the error stream.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdTasksApplicationMissingArgument)">
+            <Code>$(NBuildKitErrorCodeTasksApplicationMissingArgument)</Code>
+            <Description>The invocation of the target application requires additional arguments.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdTasksApplicationInvalidArgument)">
+            <Code>$(NBuildKitErrorCodeTasksApplicationInvalidArgument)</Code>
+            <Description>The target application was provided with at least one invalid argument.</Description>
         </ErrorInformation>
 
-        <ErrorInformation Include="$(NBuildKitErrorIdBootstrapBuildTaskFileNotFound)">
-            <Code>$(NBuildKitErrorCodeBootstrapBuildTaskFileNotFound)</Code>
-            <Description>The project file containing the tasks to bootstrap could not be found.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdBootstrapBuildTargetsFileNotFound)">
-            <Code>$(NBuildKitErrorCodeBootstrapBuildTargetsFileNotFound)</Code>
-            <Description>The tasks assembly could not be found.</Description>
+        <ErrorInformation Include="$(NBuildKitErrorIdGetVersionGitVersionInvalidOutput)">
+            <Code>$(NBuildKitErrorCodeGetVersionGitVersionInvalidOutput)</Code>
+            <Description>The output from GitVersion did not contain all the required information.</Description>
         </ErrorInformation>
 
-        <ErrorInformation Include="$(NBuildKitErrorIdPrepareGetIssuesUnknownBranch)">
-            <Code>$(NBuildKitErrorCodePrepareGetIssuesUnknownBranch)</Code>
-            <Description>Could not determine relative to which branch the commit messages should be examined.</Description>
+        <ErrorInformation Include="$(NBuildKitErrorIdTasksGenerateTargetsFailedToLoadAssembly)">
+            <Code>$(NBuildKitErrorCodeTasksGenerateTargetsFailedToLoadAssembly)</Code>
+            <Description>The target application wrote to the error stream.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdTasksGenerateTargetsFailedToLoadTypes)">
+            <Code>$(NBuildKitErrorCodeTasksGenerateTargetsFailedToLoadTypes)</Code>
+            <Description>Failed to load the targets assembly.</Description>
         </ErrorInformation>
 
-        <ErrorInformation Include="$(NBuildKitErrorIdGetVersionFileMissing)">
-            <Code>$(NBuildKitErrorCodeGetVersionFileMissing)</Code>
-            <Description>Could not find the file containing the version information.</Description>
+        <ErrorInformation Include="$(NBuildKitErrorIdTasksGenerateInternalsVisibleToNoFiles)">
+            <Code>$(NBuildKitErrorCodeTasksGenerateInternalsVisibleToFailedToNoFiles)</Code>
+            <Description>No AssemblyInfo files were provided to up date.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdTasksGenerateTargetsFailedToSaveFile)">
+            <Code>$(NBuildKitErrorCodeTasksGenerateTargetsFailedToSaveFile)</Code>
+            <Description>Failed to load the task types from the targets assembly.</Description>
         </ErrorInformation>
 
-        <!-- Build -->
-        <ErrorInformation Include="$(NBuildKitErrorIdFxCopNoAssembliesDefined)">
-            <Code>$(NBuildKitErrorCodeFxCopNoAssembliesDefined)</Code>
-            <Description>No assemblies were provided for FxCop to analyze.</Description>
-        </ErrorInformation>
         <ErrorInformation Include="$(NBuildKitErrorIdFxCopNoProjectFileDefined)">
             <Code>$(NBuildKitErrorCodeFxCopNoProjectFileDefined)</Code>
             <Description>No project file was provided for FxCop.</Description>
         </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdFxCopNoProjectFileOrAssembliesDefined)">
-            <Code>$(NBuildKitErrorCodeFxCopNoProjectFileOrAssembliesDefined)</Code>
-            <Description>No project file was provided for FxCop.</Description>
-        </ErrorInformation>
 
-        <ErrorInformation Include="$(NBuildKitErrorIdBuildVisualStudioNoSolutionsDefined)">
-            <Code>$(NBuildKitErrorCodeBuildVisualStudioNoSolutionsDefined)</Code>
-            <Description>No Visual Studio solutions were selected for compilation.</Description>
+        <ErrorInformation Include="$(NBuildKitErrorIdXmlValidationError)">
+            <Code>$(NBuildKitErrorCodeXmlValidationError)</Code>
+            <Description>A validation error occured while validation the XML file.</Description>
         </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdBuildVisualStudioSolutionPathNotFound)">
-            <Code>$(NBuildKitErrorCodeBuildVisualStudioSolutionPathNotFound)</Code>
-            <Description>The provided file path should point to a Visual Studio solution but the path does not exist.</Description>
-        </ErrorInformation>
-
-        <ErrorInformation Include="$(NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles)">
-            <Code>$(NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles)</Code>
-            <Description>Multiple project files may be referencing the same AssemblyInfo file.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles)">
-            <Code>$(NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles)</Code>
-            <Description>No project files seem to be referencing the AssemblyInfo file.</Description>
-        </ErrorInformation>
-
-        <!-- Test -->
-
-        <!-- Deploy -->
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToDirectoryNoFiles)">
-            <Code>$(NBuildKitErrorCodeDeployPushToDirectoryNoFiles)</Code>
-            <Description>No files are provided to be pushed to the file server.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGitBranchNoFiles)">
-            <Code>$(NBuildKitErrorCodeDeployPushToGitBranchNoFiles)</Code>
-            <Description>No files are provided to be pushed to the Git branch.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGithubNoUserName)">
-            <Code>$(NBuildKitErrorCodeDeployPushToGithubNoUserName)</Code>
-            <Description>No user name was provided for the push to a GitHub release.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGithubNoReleaseDescription)">
-            <Code>$(NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription)</Code>
-            <Description>No release description was provided for the push to a GitHub release.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGithubNoRepository)">
-            <Code>$(NBuildKitErrorCodeDeployPushToGithubNoRepository)</Code>
-            <Description>No repository name was provided for the push to a GitHub release.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGitRepositoryNoFiles)">
-            <Code>$(NBuildKitErrorCodeDeployPushToGitRepositoryNoFiles)</Code>
-            <Description>No files where provided for the push to a Git repository.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGitRepositoryNoRepository)">
-            <Code>$(NBuildKitErrorCodeDeployPushToGitRepositoryNoRepository)</Code>
-            <Description>No repository URL was provided for the push to a Git repository.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToGitRepositoryOutOfSync)">
-            <Code>$(NBuildKitErrorCodeDeployPushToGitRepositoryOutOfSync)</Code>
-            <Description>The local repository copy is not in-sync with the server repository.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToNuGetNoFiles)">
-            <Code>$(NBuildKitErrorCodeDeployPushToNuGetNoFiles)</Code>
-            <Description>No files where provided for the push to a NuGet feed.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToSymbolsNoFiles)">
-            <Code>$(NBuildKitErrorCodeDeployPushToSymbolsNoFiles)</Code>
-            <Description>No files where provided for the push to the symbol server.</Description>
-        </ErrorInformation>
-        <ErrorInformation Include="$(NBuildKitErrorIdDeployPushToSymbolsNoTarget)">
-            <Code>$(NBuildKitErrorCodeDeployPushToSymbolsNoTarget)</Code>
-            <Description>No target location was provided for the push to the symbol server.</Description>
-        </ErrorInformation>
-
-        <!-- Tasks -->
     </ItemGroup>
 </Project>

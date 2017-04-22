@@ -24,6 +24,11 @@ namespace NBuildKit.MsBuild.Tasks
     /// </summary>
     public sealed class InvokeSteps : BaseTask
     {
+        private const string ErrorIdInvalidConfiguration = "NBuildKit.Steps.InvalidConfiguration";
+        private const string ErrorIdPostStepFailure = "NBuildKit.Steps.PostStep";
+        private const string ErrorIdPreStepFailure = "NBuildKit.Steps.PreStep";
+        private const string ErrorIdStepFailure = "NBuildKit.Steps.Failure";
+
         private static Hashtable GetStepMetadata(string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)
         {
             const string MetadataTagDescription = "Description";
@@ -170,6 +175,14 @@ namespace NBuildKit.MsBuild.Tasks
                 {
                     hasFailed = true;
                     Log.LogError(
+                        string.Empty,
+                        ErrorCodeById(ErrorIdStepFailure),
+                        ErrorIdStepFailure,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
                         "Execution of steps failed with exception. Exception was: {0}",
                         e);
                 }
@@ -246,6 +259,14 @@ namespace NBuildKit.MsBuild.Tasks
                             {
                                 stepResult = false;
                                 Log.LogError(
+                                    string.Empty,
+                                    ErrorCodeById(ErrorIdPreStepFailure),
+                                    ErrorIdPreStepFailure,
+                                    string.Empty,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
                                     "Failed while executing global pre-step action from '{0}'",
                                     globalPreStep.ItemSpec);
                             }
@@ -280,6 +301,14 @@ namespace NBuildKit.MsBuild.Tasks
                             {
                                 stepResult = false;
                                 Log.LogError(
+                                    string.Empty,
+                                    ErrorCodeById(ErrorIdPreStepFailure),
+                                    ErrorIdPreStepFailure,
+                                    string.Empty,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
                                     "Failed while executing step specific pre-step action from '{0}'",
                                     localPreStep.ItemSpec);
                             }
@@ -318,6 +347,14 @@ namespace NBuildKit.MsBuild.Tasks
                             {
                                 stepResult = false;
                                 Log.LogError(
+                                    string.Empty,
+                                    ErrorCodeById(ErrorIdPostStepFailure),
+                                    ErrorIdPostStepFailure,
+                                    string.Empty,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
                                     "Failed while executing step specific post-step action from '{0}'",
                                     localPostStep.ItemSpec);
                             }
@@ -351,6 +388,14 @@ namespace NBuildKit.MsBuild.Tasks
                             {
                                 stepResult = false;
                                 Log.LogError(
+                                    string.Empty,
+                                    ErrorCodeById(ErrorIdPostStepFailure),
+                                    ErrorIdPostStepFailure,
+                                    string.Empty,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
                                     "Failed while executing global post-step action from '{0}'",
                                     globalPostStep.ItemSpec);
                             }
@@ -480,6 +525,14 @@ namespace NBuildKit.MsBuild.Tasks
             else
             {
                 Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
                     "MsBuild script file expected to be at '{0}' but could not be found",
                     projectPath);
                 return false;
@@ -540,10 +593,16 @@ namespace NBuildKit.MsBuild.Tasks
             catch (Exception e)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Failed to determine if the collection contains any of the items. Error was: {0}",
-                        e));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdInvalidConfiguration),
+                    ErrorIdInvalidConfiguration,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Failed to determine if the collection contains any of the items. Error was: {0}",
+                    e);
                 return false;
             }
         }

@@ -25,7 +25,17 @@ namespace NBuildKit.MsBuild.Tasks.Templating
             var inputFile = GetAbsolutePath(Input);
             if (!System.IO.File.Exists(inputFile))
             {
-                Log.LogError("Input File '{0}' cannot be found", inputFile);
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Input File '{0}' cannot be found",
+                    inputFile);
             }
             else
             {

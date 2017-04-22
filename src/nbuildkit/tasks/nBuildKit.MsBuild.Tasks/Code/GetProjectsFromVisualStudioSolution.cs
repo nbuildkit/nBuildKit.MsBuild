@@ -164,13 +164,30 @@ namespace NBuildKit.MsBuild.Tasks.Code
             var solutionPath = GetAbsolutePath(SolutionFile);
             if (string.IsNullOrEmpty(solutionPath))
             {
-                Log.LogError("No solution file path provided.");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "No solution file path provided.");
                 return false;
             }
 
             if (!File.Exists(solutionPath))
             {
                 Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
                     "Expected the solution to be at: '{0}' but no such file exists",
                     solutionPath);
                 return false;

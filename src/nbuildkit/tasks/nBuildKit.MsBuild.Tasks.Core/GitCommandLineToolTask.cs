@@ -47,12 +47,20 @@ namespace NBuildKit.MsBuild.Tasks.Core
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
-                        exitCode));
-                Log.LogError(string.Format(CultureInfo.InvariantCulture, "Output was: {0}", text));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
+                    exitCode);
+                Log.LogWarning(
+                    "Output was: {0}",
+                    text);
             }
 
             return text.ToString();
@@ -107,11 +115,17 @@ namespace NBuildKit.MsBuild.Tasks.Core
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
-                        exitCode));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
+                    exitCode);
             }
 
             return exitCode;

@@ -41,7 +41,16 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         {
             if ((OpenCoverOutputFiles == null) || (OpenCoverOutputFiles.Length == 0))
             {
-                Log.LogError("At least one open cover output file has to be specified");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationMissingArgument),
+                    ErrorIdApplicationMissingArgument,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "At least one open cover output file has to be specified");
                 return false;
             }
 
@@ -67,7 +76,16 @@ namespace NBuildKit.MsBuild.Tasks.Testing
 
                 if (reportFileBuilder.Length == 0)
                 {
-                    Log.LogError("At least one valid open cover output file has to be specified");
+                    Log.LogError(
+                        string.Empty,
+                        ErrorCodeById(ErrorIdApplicationMissingArgument),
+                        ErrorIdApplicationMissingArgument,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "At least one valid open cover output file has to be specified");
                     return false;
                 }
 
@@ -86,11 +104,17 @@ namespace NBuildKit.MsBuild.Tasks.Testing
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        Path.GetFileName(GetFullToolPath(ReportGeneratorExe)),
-                        exitCode));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    Path.GetFileName(GetFullToolPath(ReportGeneratorExe)),
+                    exitCode);
                 return false;
             }
 
