@@ -30,6 +30,11 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// </summary>
         protected const string ErrorIdFileNotFound = "NBuildKit.FileNotFound";
 
+        /// <summary>
+        /// Defines the error ID for an error that occurs when a file cannot be read.
+        /// </summary>
+        protected const string ErrorIdFileRead = "NBuildKit.FileRead";
+
         private const string MetadataCodeTag = "Code";
 
         /// <summary>
