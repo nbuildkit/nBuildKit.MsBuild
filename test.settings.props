@@ -7,6 +7,181 @@
         <VersionNBuildKitOldestSupported>0.9.0</VersionNBuildKitOldestSupported>
     </PropertyGroup>
 
+
+    <!--
+        **** PREPARE - WORKSPACE ****
+    -->
+        <!--
+        The list of all files that should be deleted prior to starting the test process.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <FilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the test process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <DirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - COPY FILES ****
+    -->
+    <!--
+        Files that should be copied, either from the file system or from a NuGet package.
+    -->
+    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+        <!--
+        <FilesToCopy Include="">
+            <Destination></Destination>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destinations>$(DirBuildTemp)</Destinations>
+        </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!--
+        The list of all files that should be generated and their template files.
+
+        The template file may contain zero or more template parameters as indicated at the top of this
+        file. By default template parameters must be enclosed in '${}'. By providing a value for
+        'Expression' it is possible to use a custom regular expression to search for elements to replace,
+        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
+        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
+
+        Only the 'Template' value is required.
+
+        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
+    -->
+    <ItemGroup>
+        <!--<TestFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\MyFile.txt">
+            <<Encoding>UTF-8</Encoding>
+            <Expression>(MyRegex)</Expression>
+            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
+            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
+            <Token>MyAdditionalTemplateParameter</Token>
+        </TestFilesToGenerate>-->
+    </ItemGroup>
+
+
+    <!--
+        **** INTEGRATION - PESTER ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the file into which Pester will write the test results.
+        -->
+        <FileTestReport>$(DirBuildLogs)\$(NameTestRepository).xml</FileTestReport>
+
+        <!--
+            Defines the active branch in the remote repository on which the test will be executed.
+        -->
+        <BranchActiveTest>feature/inprogress</BranchActiveTest>
+
+        <!--
+             The full path to the directory into which the bare repository will be cloned. $(DirTestLocal) will be
+             provided as a property on the test step.
+        -->
+        <DirTestRepository>$(DirTestLocal)\repo</DirTestRepository>
+        <!--
+             The full path to the directory into which the working version of the repository will be cloned.
+             $(DirTestLocal) will be  provided as a property on the test step.
+        -->
+        <DirTestWorkspace>$(DirTestLocal)\workspace</DirTestWorkspace>
+        <!--
+             The full path to the directory into which the temporary files and directories for the test can
+             be dropped. $(DirTestLocal) will be provided as a property on the test step.
+        -->
+        <DirTestTemp>$(DirTestLocal)\temp</DirTestTemp>
+
+        <!--
+             The full path to the directory into which the artefacts will be published after the build.
+             $(DirTestLocal) will be provided as a property on the test step.
+        -->
+        <DirTestDropArtefacts>$(DirTestLocal)\drop\artefacts</DirTestDropArtefacts>
+        <!--
+             The full path to the directory into which nuget packages will be published after the build.
+             $(DirTestLocal) will be provided as a property on the test step.
+        -->
+        <DirTestDropNuGet>$(DirTestLocal)\drop\nuget</DirTestDropNuGet>
+        <!--
+             The full path to the directory into which nuget symbol packages will be published after the build.
+             $(DirTestLocal) will be  provided as a property on the test step.
+        -->
+        <DirTestDropSymbols>$(DirTestLocal)\drop\symbols</DirTestDropSymbols>
+    </PropertyGroup>
+    <!--
+        The list of all arguments that should be passed to the Pester test.
+
+        The value elements may contain zero or more template parameters as indicated at the top of this
+        file. Template parameters must be enclosed in '${}'.
+    -->
+    <ItemGroup>
+        <PesterTestArguments Include="nbuildkitminimumversion">
+            <Value>${VersionSemantic}</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="nbuildkitmaximumversion">
+            <Value>${VersionMajorNext}.0.0</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="localNuGetFeed">
+            <Value>$(DirBuildDeploy)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="remoteRepositoryUrl">
+            <Value>http://github.com/$(GitHubUserName)/$(NameTestRepository)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="activeBranch">
+            <Value>$(BranchActiveTest)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="repositoryLocation">
+            <Value>$(DirTestRepository)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="workspaceLocation">
+            <Value>$(DirTestWorkspace)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="nugetPath">
+            <Value>$(DirTestDropNuGet)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="symbolsPath">
+            <Value>$(DirTestDropSymbols)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="artefactsPath">
+            <Value>$(DirTestDropArtefacts)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="logLocation">
+            <Value>$(DirBuildLogs)</Value>
+        </PesterTestArguments>
+        <PesterTestArguments Include="tempLocation">
+            <Value>$(DirTestTemp)</Value>
+        </PesterTestArguments>
+    </ItemGroup>
+
+
+    <!--
+        **** TEST STEPS ****
+    -->
     <PropertyGroup>
         <!-- Indicate if an error in the pre-step actions should fail the deploy -->
         <!-- <FailTestOnPreStepFailure>false</FailTestOnPreStepFailure> -->
@@ -89,49 +264,6 @@
 
         The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
         determines in which order the test steps are executed.
-
-        The following test steps are by default provided through the given properties:
-        $(TestStepsPrepareWorkspace)     - Clears the existing build artifacts from the workspace and creates the required directories. Clearing the
-                                           existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
-        $(TestStepsBuildTargetsAssembly) - Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio
-                                           solutions so that it is possible to build MsBuild tasks that will be used in the build process.
-        $(TestStepsGenerateTargetsFile)  - Generates a targets file for use with an MsBuild tasks assembly.
-        $(TestStepsPrepareRestoreNuGet)  - Restores the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally
-                                           also restores the NuGet packages as specified in the nBuildKit specific 'packages.config' files.
-        $(TestStepsPrepareVcsBranch)     - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
-                                           name as the remote tracking branch.
-        $(TestStepsPrepareGetVersion)    - Gathers version information and stores it in a temporary file for use by the rest of the test process.
-                                           Currently supported methods of gathering version information are using (in order):
-                                           - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
-                                             in the 'ScriptGetVersion' property. The task should output:
-                                             - VersionMajor
-                                             - VersionMinor
-                                             - VersionPatch
-                                             - VersionBuild
-                                             - VersionPreRelease
-                                             - VersionSemantic
-                                             - VersionSemanticFull
-                                             - VersionSemanticNuget
-                                           - The version stored in an 'version.xml' file which contains an MsBuild property group with
-                                             the properties:
-                                             - BuildNumber
-                                             - VersionMajor
-                                             - VersionMinor
-                                             - VersionPatch
-                                             - VersionBuild
-                                             - VersionPreRelease
-                                             - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
-                                             - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
-        $(TestStepsPrepareGetIssueIds)   - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
-        $(TestStepsPrepareReleaseNotes)  - Gathers the release notes and stores them for later use during the test process. Release notes
-                                           are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
-                                           currently allows gathering release notes from GitHub, Jira and YouTrack
-        $(TestStepsPrepareVcsInfo)       - Stores the Version Control System (VCS) information in a file for later use.
-                                           Currently supported version control systems is GIT
-        $(TestStepsPrepareCopyNuGet)     - Copies one or more files from a NuGet package.
-        $(TestStepsPrepareCopyFiles)     - Copies one or more files from the file system.
-        $(TestStepsPrepareGenerateFiles) - Generates one or more files from a set of template files.
-        $(TestStepsIntegrationPester)    - Runs Pester on a specified test script file.
 
         Additional test steps can be defined by providing the path to the MsBuild script that should be executed
         for that step, e.g. adding a test step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
@@ -366,177 +498,6 @@
             </Properties>
         </TestFailureStepsToExecute>
         -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - WORKSPACE ****
-    -->
-        <!--
-        The list of all files that should be deleted prior to starting the test process.
-
-        If the deletion process fails the test will continue and a warning will be printed.
-    -->
-    <ItemGroup>
-        <!--
-        <FilesToDelete Include="" />
-        -->
-    </ItemGroup>
-
-    <!--
-        The list of all directories that should be deleted prior to starting the test process.
-        Deleting the directories will also delete all the files contained in these directories.
-
-        If the deletion process fails the test will continue and a warning will be printed.
-    -->
-    <ItemGroup>
-        <!--
-        <DirectoriesToDelete Include="" />
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - COPY FILES ****
-    -->
-    <!--
-        Files that should be copied, either from the file system or from a NuGet package.
-    -->
-    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
-        <!--
-        <FilesToCopy Include="">
-            <Destination></Destination>
-        </FilesToCopy>
-        -->
-    </ItemGroup>
-    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
-        <!--
-        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
-            <Include>**/*.*</Include>
-            <Destinations>$(DirBuildTemp)</Destinations>
-        </NuGetFilesToCopy>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - GENERATE FILES ****
-    -->
-    <!--
-        The list of all files that should be generated and their template files.
-
-        The template file may contain zero or more template parameters as indicated at the top of this
-        file. By default template parameters must be enclosed in '${}'. By providing a value for
-        'Expression' it is possible to use a custom regular expression to search for elements to replace,
-        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
-        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
-
-        Only the 'Template' value is required.
-
-        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
-    -->
-    <ItemGroup>
-        <!--<TestFilesToGenerate
-            Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\MyFile.txt">
-            <<Encoding>UTF-8</Encoding>
-            <Expression>(MyRegex)</Expression>
-            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
-            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
-            <Token>MyAdditionalTemplateParameter</Token>
-        </TestFilesToGenerate>-->
-    </ItemGroup>
-
-
-    <!--
-        **** INTEGRATION - PESTER ****
-    -->
-    <PropertyGroup>
-        <!--
-            The full path to the file into which Pester will write the test results.
-        -->
-        <FileTestReport>$(DirBuildLogs)\$(NameTestRepository).xml</FileTestReport>
-
-        <!--
-            Defines the active branch in the remote repository on which the test will be executed.
-        -->
-        <BranchActiveTest>feature/inprogress</BranchActiveTest>
-
-        <!--
-             The full path to the directory into which the bare repository will be cloned. $(DirTestLocal) will be
-             provided as a property on the test step.
-        -->
-        <DirTestRepository>$(DirTestLocal)\repo</DirTestRepository>
-        <!--
-             The full path to the directory into which the working version of the repository will be cloned.
-             $(DirTestLocal) will be  provided as a property on the test step.
-        -->
-        <DirTestWorkspace>$(DirTestLocal)\workspace</DirTestWorkspace>
-        <!--
-             The full path to the directory into which the temporary files and directories for the test can
-             be dropped. $(DirTestLocal) will be provided as a property on the test step.
-        -->
-        <DirTestTemp>$(DirTestLocal)\temp</DirTestTemp>
-
-        <!--
-             The full path to the directory into which the artefacts will be published after the build.
-             $(DirTestLocal) will be provided as a property on the test step.
-        -->
-        <DirTestDropArtefacts>$(DirTestLocal)\drop\artefacts</DirTestDropArtefacts>
-        <!--
-             The full path to the directory into which nuget packages will be published after the build.
-             $(DirTestLocal) will be provided as a property on the test step.
-        -->
-        <DirTestDropNuGet>$(DirTestLocal)\drop\nuget</DirTestDropNuGet>
-        <!--
-             The full path to the directory into which nuget symbol packages will be published after the build.
-             $(DirTestLocal) will be  provided as a property on the test step.
-        -->
-        <DirTestDropSymbols>$(DirTestLocal)\drop\symbols</DirTestDropSymbols>
-    </PropertyGroup>
-    <!--
-        The list of all arguments that should be passed to the Pester test.
-
-        The value elements may contain zero or more template parameters as indicated at the top of this
-        file. Template parameters must be enclosed in '${}'.
-    -->
-    <ItemGroup>
-        <PesterTestArguments Include="nbuildkitminimumversion">
-            <Value>${VersionSemantic}</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="nbuildkitmaximumversion">
-            <Value>${VersionMajorNext}.0.0</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="localNuGetFeed">
-            <Value>$(DirBuildDeploy)</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="remoteRepositoryUrl">
-            <Value>http://github.com/$(GitHubUserName)/$(NameTestRepository)</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="activeBranch">
-            <Value>$(BranchActiveTest)</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="repositoryLocation">
-            <Value>$(DirTestRepository)</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="workspaceLocation">
-            <Value>$(DirTestWorkspace)</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="nugetPath">
-            <Value>$(DirTestDropNuGet)</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="symbolsPath">
-            <Value>$(DirTestDropSymbols)</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="artefactsPath">
-            <Value>$(DirTestDropArtefacts)</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="logLocation">
-            <Value>$(DirBuildLogs)</Value>
-        </PesterTestArguments>
-        <PesterTestArguments Include="tempLocation">
-            <Value>$(DirTestTemp)</Value>
-        </PesterTestArguments>
     </ItemGroup>
 
 
