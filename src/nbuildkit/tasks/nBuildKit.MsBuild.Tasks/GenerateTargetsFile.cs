@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -72,10 +73,15 @@ namespace NBuildKit.MsBuild.Tasks
             return AppDomainBuilder.Assemble(
                 "nBuildKit.MsBuild Task scanning AppDomain",
                 AppDomainResolutionPaths.WithFilesAndDirectories(
-                    Assembly.GetExecutingAssembly().LocalDirectoryPath(),
-                    new List<string>(),
+                    Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName),
                     new List<string>
                     {
+                        // the nBuildKit task assembly
+                        Assembly.GetExecutingAssembly().LocalFilePath(),
+                    },
+                    new List<string>
+                    {
+                        // The directory in which the newly created task assembly lives
                         applicationBase
                     }));
         }
