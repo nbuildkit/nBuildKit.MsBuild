@@ -18,13 +18,6 @@
         Condition=" '@(FilesToCopy)' != '' "
         Name="nBuildKit_Shared_Prepare_Copy_FromFileSystem"
         Outputs="%(FilesToCopy.Identity)">
-        <CreateItem
-            Include="%(FilesToCopy.Identity)">
-            <Output
-                ItemName="FilesToCopyToDestination"
-                TaskParameter="Include" />
-        </CreateItem>
-
         <PropertyGroup>
             <DestinationPath>%(FilesToCopy.Destination)</DestinationPath>
         </PropertyGroup>
@@ -34,8 +27,8 @@
             Directories="$(DestinationPath)" />
 
         <Copy
-            SourceFiles="@(FilesToCopyToDestination)"
-            DestinationFiles="@(FilesToCopyToDestination->'$(DestinationPath)\%(RecursiveDir)%(Filename)%(Extension)')"
+            SourceFiles="@(FilesToCopy)"
+            DestinationFiles="@(FilesToCopy->'$(DestinationPath)\%(RecursiveDir)%(Filename)%(Extension)')"
             OverwriteReadOnlyFiles="True"
             Retries="5"
             RetryDelayMilliseconds="1000"
