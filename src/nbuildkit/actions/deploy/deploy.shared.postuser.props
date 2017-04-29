@@ -9,14 +9,14 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' AND '@(FilesToCopy)' == '' ">
         <!--
         <FilesToCopy Include="">
             <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' AND '@(NuGetFilesToCopy)' == '' ">
         <!--
         <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
             <Include>**/*.*</Include>
@@ -24,7 +24,7 @@
         </NuGetFilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(ArchiveFilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' AND '@(ArchiveFilesToCopy)' == '' ">
         <!--
         <ArchiveFilesToCopy Include="">
             <Destination></Destination>
@@ -45,7 +45,7 @@
         The PushToDirectorySpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates,
         e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
     -->
-    <ItemGroup Condition=" '@(PushToDirectorySpecs)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadPushToDirectorySpecs)' == 'true' AND '@(PushToDirectorySpecs)' == '' ">
         <!--
         <PushToDirectorySpecs Include="\\MyServer\${ProductNameInFilePath}\${VersionSemantic}">
             <IncludedFiles>
@@ -65,7 +65,7 @@
         The ItemGroup defining which packages should be pushed up to the NuGet package source.
         Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.nupkg.
     -->
-    <ItemGroup Condition=" '@(NuGetPackagesToPush)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetPackagesToPush)' == 'true' AND '@(NuGetPackagesToPush)' == '' ">
         <NuGetPackagesToPush
             Condition=" '$(DirBuildDeploy)' != '' "
             Exclude="$(DirBuildDeploy)\*.symbols.nupkg"
@@ -80,7 +80,7 @@
         The ItemGroup defining which symbol packages should be pushed up to the symbol server.
         Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.symbols.nupkg.
     -->
-    <ItemGroup Condition=" '@(SymbolPackagesToPush)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadSymbolPackagesToPush)' == 'true' AND '@(SymbolPackagesToPush)' == '' ">
         <SymbolPackagesToPush
             Condition=" '$(DirBuildDeploy)' != '' "
             Include="$(DirBuildDeploy)\*.symbols.nupkg" />
@@ -94,7 +94,7 @@
         The ItemGroup defining the files that should be pushed to a GitHub release. All properties
         except for the Repository allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
-    <ItemGroup Condition=" '@(PushToGitHubReleaseSpecs)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadPushToGitHubReleaseSpecs)' == 'true' AND '@(PushToGitHubReleaseSpecs)' == '' ">
         <!--
         <PushToGitHubReleaseSpecs Include="${VersionSemantic} - My release">
              <Repository>MyCoolProject</Repository>
@@ -116,7 +116,7 @@
         The ItemGroup defining the files that should be pushed to a GIT branch. All properties
         allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
-    <ItemGroup Condition=" '@(PushToGitBranchSpecs)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadPushToGitBranchSpecs)' == 'true' AND '@(PushToGitBranchSpecs)' == '' ">
         <!--
         <PushToGitBranchSpecs
             Condition=" '$(DirBuildDeploy)' != '' "
@@ -137,7 +137,7 @@
         The ItemGroup defining the zip files containing a git workspace that should be pushed to a GIT repository.
         All properties allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
-    <ItemGroup Condition=" '@(PushToGitRepositorySpecs)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadPushToGitRepositorySpecs)' == 'true' AND '@(PushToGitRepositorySpecs)' == '' ">
         <!--
         <PushToGitRepositorySpecs
             Condition=" '$(DirBuildDeploy)' != '' "
@@ -151,7 +151,7 @@
     <!--
         **** DEPLOY STEPS ****
     -->
-    <ItemGroup Condition=" '@(DeployPreStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadDeployPreStepsToExecute)' == 'true' AND '@(DeployPreStepsToExecute)' == '' ">
         <!--
         <DeployPreStepsToExecute Include="">
             <Properties>
@@ -159,7 +159,7 @@
         </DeployPreStepsToExecute>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(DeployPostStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadDeployPostStepsToExecute)' == 'true' AND '@(DeployPostStepsToExecute)' == '' ">
         <!--
         <DeployPostStepsToExecute Include="">
             <Properties>
@@ -167,7 +167,7 @@
         </DeployPostStepsToExecute>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(DeployStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadDeployStepsToExecute)' == 'true' AND '@(DeployStepsToExecute)' == '' ">
         <DeployStepsToExecute Include="$(DeployStepsShowHelp)">
             <Properties>
                 HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importdeploysharedsettings.props;
@@ -194,7 +194,7 @@
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup Condition=" '@(DeployFailureStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadDeployFailureStepsToExecute)' == 'true' AND '@(DeployFailureStepsToExecute)' == '' ">
         <!--
         <DeployFailureStepsToExecute Include="">
             <Properties>

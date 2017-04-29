@@ -16,7 +16,7 @@
 
         If the deletion process fails the test will continue and a warning will be printed.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToDelete)' == 'true' ">
         <!--
         <FilesToDelete Include="" />
         -->
@@ -28,7 +28,7 @@
 
         If the deletion process fails the test will continue and a warning will be printed.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDirectoriesToDelete)' == 'true' ">
         <!--
         <DirectoriesToDelete Include="" />
         -->
@@ -41,19 +41,26 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
         <!--
         <FilesToCopy Include="">
             <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' ">
         <!--
         <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
             <Include>**/*.*</Include>
             <Destinations>$(DirBuildTemp)</Destinations>
         </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
+        <!--
+        <ArchiveFilesToCopy Include="">
+            <Destination></Destination>
+        </ArchiveFilesToCopy>
         -->
     </ItemGroup>
 
@@ -74,7 +81,7 @@
 
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadTestFilesToGenerate)' == 'true' ">
         <!--<TestFilesToGenerate
             Condition=" '$(DirBuildTemp)' != '' "
             Include="$(DirBuildTemp)\MyFile.txt">
@@ -139,7 +146,7 @@
         The value elements may contain zero or more template parameters as indicated at the top of this
         file. Template parameters must be enclosed in '${}'.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadPesterTestArguments)' == 'true' ">
         <PesterTestArguments Include="nbuildkitminimumversion">
             <Value>${VersionSemantic}</Value>
         </PesterTestArguments>
@@ -209,7 +216,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadTestPreStepsToExecute)' == 'true' ">
         <!--
         <TestPreStepsToExecute Include="">
             <Properties>
@@ -231,7 +238,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadTestPostStepsToExecute)' == 'true' ">
         <!--
         <TestPostStepsToExecute Include="">
             <Properties>
@@ -271,7 +278,7 @@
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadTestStepsToExecute)' == 'true' ">
         <TestStepsToExecute Include="$(TestStepsPrepareWorkspace)">
             <Properties>
             </Properties>
@@ -403,6 +410,19 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyArchive)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.archive;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
             <Properties>
@@ -491,7 +511,7 @@
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadTestFailureStepsToExecute)' == 'true' ">
         <!--
         <TestFailureStepsToExecute Include="">
             <Properties>

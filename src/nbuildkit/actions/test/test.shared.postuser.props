@@ -11,7 +11,7 @@
 
         If the deletion process fails the test will continue and a warning will be printed.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToDelete)' == 'true' ">
         <FilesToDelete
             Condition=" '$(DirBuildTest)' != '' AND Exists('$(DirBuildTest)')"
             Include="$(DirBuildTest)\**\*.*"/>
@@ -23,7 +23,7 @@
 
         If the deletion process fails the test will continue and a warning will be printed.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDirectoriesToDelete)' == 'true' ">
         <DirectoriesToDelete
             Condition=" '$(DirBuildTest)' != '' AND Exists('$(DirBuildTest)')"
             Include="$(DirBuildTest)" />
@@ -39,14 +39,14 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' AND '@(FilesToCopy)' == '' ">
         <!--
         <FilesToCopy Include="">
             <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' AND '@(NuGetFilesToCopy)' == '' ">
         <!--
         <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
             <Include>**/*.*</Include>
@@ -54,7 +54,7 @@
         </NuGetFilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(ArchiveFilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' AND '@(ArchiveFilesToCopy)' == '' ">
         <!--
         <ArchiveFilesToCopy Include="">
             <Destination></Destination>
@@ -79,7 +79,7 @@
 
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
-    <ItemGroup Condition=" '@(TestFilesToGenerate)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadTestFilesToGenerate)' == 'true' AND '@(TestFilesToGenerate)' == '' ">
         <!--
         <TestFilesToGenerate Include="$(DirBuildTemp)\MyOtherFile.txt">
             <Encoding>UTF-8</Encoding>
@@ -98,7 +98,7 @@
     <!--
         The list of all arguments that should be passed to the Pester test.
     -->
-    <ItemGroup Condition=" '@(PesterTestArguments)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadPesterTestArguments)' == 'true' AND '@(PesterTestArguments)' == '' ">
         <!--
         <PesterTestArguments Include="">
             <Value></Value>
@@ -110,7 +110,7 @@
     <!--
         **** TEST STEPS ****
     -->
-    <ItemGroup Condition=" '@(TestPreStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadTestPreStepsToExecute)' == 'true' AND '@(TestPreStepsToExecute)' == '' ">
         <!--
         <TestPreStepsToExecute Include="">
             <Properties>
@@ -118,7 +118,7 @@
         </TestPreStepsToExecute>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(TestPostStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadTestPostStepsToExecute)' == 'true' AND '@(TestPostStepsToExecute)' == '' ">
         <!--
         <TestPostStepsToExecute Include="">
             <Properties>
@@ -126,7 +126,7 @@
         </TestPostStepsToExecute>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(TestStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadTestStepsToExecute)' == 'true' AND '@(TestStepsToExecute)' == '' ">
         <TestStepsToExecute Include="$(TestStepsShowHelp)">
            <Properties>
                 HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importtestsharedsettings.props;
@@ -153,7 +153,7 @@
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup Condition=" '@(TestFailureStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadTestFailureStepsToExecute)' == 'true' AND '@(TestFailureStepsToExecute)' == '' ">
         <!--
         <TestFailureStepsToExecute Include="">
             <Properties>

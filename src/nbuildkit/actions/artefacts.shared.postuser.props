@@ -10,7 +10,7 @@
         The collection of all Visual Studio projects that contain MsBuild tasks for nBuildKit. These will be
         compiled and placed in a bootstrap directory so that the nBuildKit build can use them.
     -->
-    <ItemGroup Condition=" '@(MsBuildTasksProjectsToBuild)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadMsBuildTasksProjectsToBuild)' == 'true' AND '@(MsBuildTasksProjectsToBuild)' == '' ">
         <!--
         <MsBuildTasksProjectsToBuild
             Condition=" '$(DirSrc)' != '' "
@@ -34,7 +34,7 @@
     <!--
         The collection that contains all the assembly files that contain custom MsBuild Task definitions.
     -->
-    <ItemGroup Condition=" '@(ExtensionAssemblies)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadExtensionAssemblies)' == 'true' AND '@(ExtensionAssemblies)' == '' ">
         <!--
         <ExtensionAssemblies Include="$(DirBuildBootstrap)\*.Tasks.dll">
             <ExistsProperty>MyPropertyName</ExistsProperty>
@@ -49,7 +49,7 @@
     <!--
         The item group defining which assemblies should be IL merged.
     -->
-    <ItemGroup Condition=" '@(AssembliesToMerge)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadAssembliesToMerge)' == 'true' AND '@(AssembliesToMerge)' == '' ">
         <!--
         <AssembliesToMerge Include="">
             <Assemblies></Assemblies>
@@ -74,7 +74,7 @@
 
         All file paths allow build templates, e.g. $(DirSrc)\${ProductName}\myproject.nuspec.
     -->
-    <ItemGroup Condition=" '@(NuGetPackageSpecs)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetPackageSpecs)' == 'true' AND '@(NuGetPackageSpecs)' == '' ">
         <!--
         <NuGetPackageSpecs
             Condition=" '$(DirSrc)' != '' "
@@ -97,7 +97,7 @@
         The item group defining the location and contents of the archive files that are generated during the build
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadArchivePackageSpecs)' == 'true' ">
         <ArchivePackageSpecs
             Condition="'$(DirWorkspace)' != '' AND '$(DirBuild)' != '' AND Exists('$(DirWorkspace)') AND '@(ArchivePackageSpecs)' == '' "
             Exclude="$(DirBuild)\**\*.zipspec;$(DirPackages)\**\*.zipspec"

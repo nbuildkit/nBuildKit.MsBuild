@@ -27,7 +27,7 @@
 
         <TestStepsIntegrationPester>$(MSBuildThisFileDirectory)test.integration.pester.msbuild</TestStepsIntegrationPester>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadAvailableStepMetadata)' == 'true' ">
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareWorkspace)'))">
             <Description>
                 Clears the existing build artifacts from the workspace and creates the required directories. Clearing the existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.

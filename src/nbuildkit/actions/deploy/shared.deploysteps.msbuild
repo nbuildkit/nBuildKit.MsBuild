@@ -30,7 +30,7 @@
         <DeployStepsPushToGitBranch>$(MSBuildThisFileDirectory)deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
         <DeployStepsPushToGitRepository>$(MSBuildThisFileDirectory)deploy.pushto.gitrepository.msbuild</DeployStepsPushToGitRepository>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadAvailableStepMetadata)' == 'true' ">
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsBuildTargetsAssembly)'))">
             <Description>
                 Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio solutions so that it is possible to build MsBuild tasks that will be used in the build process.

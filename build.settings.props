@@ -29,7 +29,7 @@
 
         If the deletion process fails the build will continue and a warning will be printed.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToDelete)' == 'true' ">
         <!--
         <FilesToDelete Include="" />
         -->
@@ -41,7 +41,7 @@
 
         If the deletion process fails the build will continue and a warning will be printed.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDirectoriesToDelete)' == 'true' ">
         <!--
         <DirectoriesToDelete Include="" />
         -->
@@ -54,19 +54,26 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
         <!--
         <FilesToCopy Include="">
             <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' ">
         <!--
         <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
             <Include>**/*.*</Include>
             <Destinations>$(DirBuildTemp)</Destinations>
         </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
+        <!--
+        <ArchiveFilesToCopy Include="">
+            <Destination></Destination>
+        </ArchiveFilesToCopy>
         -->
     </ItemGroup>
 
@@ -79,7 +86,7 @@
 
         For additional information see the ShouldGenerateAssemblyXXXX properties below.
     -->
-    <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadAssemblyInfoFilesToUpdate)' == 'true' ">
         <!--
         <AssemblyInfoFilesToUpdate
             Condition=" '$(DirSrc)' != '' "
@@ -115,7 +122,7 @@
         -->
         <MsBuildFileReplacementToken>(%3F&lt;token&gt;\%24(?&lt;identifier&gt;\w%2A)\%24)</MsBuildFileReplacementToken>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildFilesToGenerate)' == 'true' ">
         <BuildFilesToGenerate
             Condition=" '$(DirBuildTemp)' != '' "
             Include="$(DirBuildTemp)\samples\files\entrypoint.msbuild">
@@ -169,7 +176,7 @@
         The item group defining the location of the Vistual Studio solutions that should be build.
         The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadSolutionsToBuild)' == 'true' ">
         <SolutionsToBuild
             Condition=" '$(DirSrc)' != '' AND '$(TestConfiguration)' != '$(ProductionConfiguration)' "
             Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
@@ -287,7 +294,7 @@
         -->
         <!-- <InternalsVisibletoCompilerConstants>INTERNALS_VISIBLE_TO</InternalsVisibletoCompilerConstants> -->
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadInternalsVisibleTo)' == 'true' ">
         <InternalsVisibleTo Include="Test.Unit.MsBuild.Tasks">
             <Projects>
                 nBuildKit.MsBuild.Tasks
@@ -363,7 +370,7 @@
         -->
         <DirReportOpenCoverCobertura>$(DirBuildLogs)</DirReportOpenCoverCobertura>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadUnitTestAssemblies)' == 'true' ">
         <!--
             The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
             e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
@@ -372,14 +379,14 @@
             Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\nBuildKit\tasks\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
     </ItemGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadOpenCoverIgnoreAttributes)' == 'true' ">
         <!--
             The ItemGroup items that define the attributes that indicate code that should be ignored by OpenCover.
         -->
         <!--<OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />-->
         <!--<OpenCoverIgnoreAttributes Include="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />-->
     </ItemGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadOpenCoverFilters)' == 'true' ">
         <!--
             The ItemGroup items that define the filters used by OpenCover.
             NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text.
@@ -399,7 +406,7 @@
     <!--
         **** SOURCE ANALYSIS - XML ****
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadXmlFilesToValidate)' == 'true' ">
         <!--
             The paths to the XML files that should be validated against the given schema.
         -->
@@ -445,7 +452,7 @@
         -->
         <FxCopWarningsAsErrors>true</FxCopWarningsAsErrors>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFxCopFiles)' == 'true' ">
         <!--
             The locations of the files that should be analyzed by FxCop.
         -->
@@ -471,7 +478,7 @@
             <TargetFramework>4.5</TargetFramework>
         </FxCopFiles>
     </ItemGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFxCopReferenceFiles)' == 'true' ">
         <!--
             The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
             use as reference assemblies.
@@ -481,7 +488,7 @@
                              Exclude="" />
         -->
     </ItemGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFxCopReferenceDirectories)' == 'true' ">
         <!--
             The directory locations that contain the assemblies (not including the .NET framework assemblies) which
             FxCop should use as reference assemblies
@@ -518,7 +525,7 @@
 
         By default nBuildkit and nUnit are ignored.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDesignTimeDependencies)' == 'true' ">
         <DesignTimeDependencies Include="nBuildKit" />
         <DesignTimeDependencies Include="nUnit" />
         <DesignTimeDependencies Include="StyleCop.Analyzers" />
@@ -555,7 +562,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given build step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildPreStepsToExecute)' == 'true' ">
         <!--
         <BuildPreStepsToExecute Include="">
             <Properties>
@@ -577,7 +584,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given build step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildPostStepsToExecute)' == 'true' ">
         <!--
         <BuildPostStepsToExecute Include="">
             <Properties>
@@ -613,7 +620,7 @@
         Custom build steps may chose to add metadata to the 'AvailableStepMetadata' ItemGroup. This ItemGroup contains metadata describing
         all known steps.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildStepsToExecute)' == 'true' ">
         <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
             <Properties>
             </Properties>
@@ -812,6 +819,19 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareCopyArchive)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.archive;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
 
         <BuildStepsToExecute Include="$(BuildStepsPrepareAssemblyInfo)">
             <Properties>
@@ -1004,7 +1024,7 @@
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildFailureStepsToExecute)' == 'true' ">
         <!--
         <BuildFailureStepsToExecute Include="">
             <Properties>
@@ -1020,7 +1040,7 @@
         By providing this metadata it is possible for pre- and post-step actions to more clearly determine which step
         they were attached to.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadAvailableStepMetadata)' == 'true' ">
         <!--
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DirWorkspace)\my.build.step.msbuild'))">
             <Description>

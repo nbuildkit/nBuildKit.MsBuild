@@ -86,7 +86,7 @@
     <!--
         **** PREPARE - NUGET RESTORE ****
     -->
-    <ItemGroup Condition=" '@(NuGetPackageFiles)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetPackageFiles)' == 'true' AND '@(NuGetPackageFiles)' == '' ">
         <NuGetPackageFiles
             Condition="Exists('$(DirWorkspace)\packages.config')"
             Include="$(DirWorkspace)\packages.config" />
@@ -100,7 +100,7 @@
     <!--
         **** PREPARE - NPM RESTORE ****
     -->
-    <ItemGroup Condition=" '@(NpmPackageFiles)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNpmPackageFiles)' == 'true' AND '@(NpmPackageFiles)' == '' ">
         <NpmPackageFiles
             Condition=" '$(DirWorkspace)' != '' "
             Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json"

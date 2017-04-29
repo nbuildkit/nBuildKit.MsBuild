@@ -11,7 +11,7 @@
 
         If the deletion process fails the build will continue and a warning will be printed.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToDelete)' == 'true' ">
         <FilesToDelete
             Condition="Exists('$(FileSemanticVersion)')"
             Include="$(FileSemanticVersion)" />
@@ -60,7 +60,7 @@
 
         If the deletion process fails the build will continue and a warning will be printed.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDirectoriesToDelete)' == 'true' ">
         <DirectoriesToDelete
             Condition=" '$(DirBuild)' != '' AND Exists('$(DirBuild)')"
             Exclude="$(DirBuild);$(DirBuildBootstrap);$(DirUserConfiguration);$(DirHighLevelOverview)"
@@ -74,14 +74,14 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' AND '@(FilesToCopy)' == '' ">
         <!--
         <FilesToCopy Include="">
             <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' AND '@(NuGetFilesToCopy)' == '' ">
         <!--
         <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
             <Include>**/*.*</Include>
@@ -89,7 +89,7 @@
         </NuGetFilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(ArchiveFilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' AND '@(ArchiveFilesToCopy)' == '' ">
         <!--
         <ArchiveFilesToCopy Include="">
             <Destination></Destination>
@@ -106,7 +106,7 @@
 
         For additional information see the ShouldGenerateAssemblyXXXX properties below.
     -->
-    <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadAssemblyInfoFilesToUpdate)' == 'true' AND '@(AssemblyInfoFilesToUpdate)' == '' ">
         <AssemblyInfoFilesToUpdate
             Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\**\AssemblyInfo.cs" />
@@ -132,7 +132,7 @@
 
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
-    <ItemGroup Condition=" '@(BuildFilesToGenerate)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadBuildFilesToGenerate)' == 'true' AND '@(BuildFilesToGenerate)' == '' ">
         <!--
         <BuildFilesToGenerate
             Condition=" '$(DirBuildTemp)' != '' "
@@ -154,7 +154,7 @@
         The item group defining the location of the Vistual Studio solutions that should be build.
         The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
     -->
-    <ItemGroup Condition=" '@(SolutionsToBuild)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadSolutionsToBuild)' == 'true' AND '@(SolutionsToBuild)' == '' ">
         <SolutionsToBuild
             Condition=" '$(DirSrc)' != '' AND '$(TestConfiguration)' != '$(ProductionConfiguration)' "
             Include="$(DirSrc)\*.sln">
@@ -175,7 +175,7 @@
         </SolutionsToBuild>
     </ItemGroup>
 
-    <ItemGroup Condition=" '@(InternalsVisibleTo)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadInternalsVisibleTo)' == 'true' AND '@(InternalsVisibleTo)' == '' ">
         <!--
         <InternalsVisibleTo Include="MyTestProject">
             <Projects>
@@ -205,7 +205,7 @@
     <!--
         **** UNIT TESTS ****
     -->
-    <ItemGroup Condition=" '@(UnitTestAssemblies)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadUnitTestAssemblies)' == 'true' AND '@(UnitTestAssemblies)' == '' ">
         <!--
             The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
             e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
@@ -214,14 +214,14 @@
             Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
     </ItemGroup>
-    <ItemGroup Condition=" '@(OpenCoverIgnoreAttributes)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadOpenCoverIgnoreAttributes)' == 'true' AND '@(OpenCoverIgnoreAttributes)' == '' ">
         <!--
             The ItemGroup items that define the attributes that indicate code that should be ignored by OpenCover.
         -->
         <OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
         <OpenCoverIgnoreAttributes Include="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
     </ItemGroup>
-    <ItemGroup Condition=" '@(OpenCoverFilters)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadOpenCoverFilters)' == 'true' AND '@(OpenCoverFilters)' == '' ">
         <!--
             The ItemGroup items that define the filters used by OpenCover.
             NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text.
@@ -237,7 +237,7 @@
     <!--
         **** SOURCE ANALYSIS - XML ****
     -->
-    <ItemGroup Condition=" '@(XmlFilesToValidate)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadXmlFilesToValidate)' == 'true' AND '@(XmlFilesToValidate)' == '' ">
         <!--
             The paths to the XML files that should be validated against the given schema.
         -->
@@ -256,7 +256,7 @@
     <!--
         **** BINARY ANALYSIS - FXCOP ****
     -->
-    <ItemGroup Condition=" '@(FxCopFiles)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadFxCopFiles)' == 'true' AND '@(FxCopFiles)' == '' ">
         <!--
             The locations of the files that should be analyzed by FxCop.
         -->
@@ -278,7 +278,7 @@
         </FxCopFiles>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(FxCopReferenceFiles)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadFxCopReferenceFiles)' == 'true' AND '@(FxCopReferenceFiles)' == '' ">
         <!--
             The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
             use as reference assemblies.
@@ -288,7 +288,7 @@
                              Exclude="" />
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(FxCopReferenceDirectories)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadFxCopReferenceDirectories)' == 'true' AND '@(FxCopReferenceDirectories)' == '' ">
         <!--
             The directory locations that contain the assemblies (not including the .NET framework assemblies) which
             FxCop should use as reference assemblies
@@ -310,7 +310,7 @@
 
         By default nBuildkit and nUnit are ignored.
     -->
-    <ItemGroup Condition=" '@(DesignTimeDependencies)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadDesignTimeDependencies)' == 'true' AND '@(DesignTimeDependencies)' == '' ">
         <DesignTimeDependencies Include="nBuildKit" />
         <DesignTimeDependencies Include="nUnit" />
     </ItemGroup>
@@ -319,7 +319,7 @@
     <!--
         **** BUILD STEPS ****
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildPreStepsToExecute)' == 'true' ">
         <BuildPreStepsToExecute
             Condition=" '$(DirHighLevelOverview)' != '' and '$(DirHighLevelOverview)' != 'UNDEFINED' AND '$(FileNameHighLevelOverview)' != '' and '$(FileNameHighLevelOverview)' != 'UNDEFINED' "
             Include="$(SharedPreStepsWriteOverview)">
@@ -327,7 +327,7 @@
             </Properties>
         </BuildPreStepsToExecute>
     </ItemGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildPostStepsToExecute)' == 'true' ">
         <BuildPostStepsToExecute
             Condition=" '$(DirHighLevelOverview)' != '' and '$(DirHighLevelOverview)' != 'UNDEFINED' AND '$(FileNameHighLevelOverview)' != '' and '$(FileNameHighLevelOverview)' != 'UNDEFINED' "
             Include="$(SharedPostStepsWriteOverview)">
@@ -336,7 +336,7 @@
         </BuildPostStepsToExecute>
     </ItemGroup>
 
-    <ItemGroup Condition=" '@(BuildStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadBuildStepsToExecute)' == 'true' AND '@(BuildStepsToExecute)' == '' ">
         <BuildStepsToExecute Include="$(BuildStepsShowHelp)">
             <Properties>
                 HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importbuildsharedsettings.props;
@@ -354,7 +354,7 @@
         </BuildStepsToExecute>
     </ItemGroup>
 
-    <ItemGroup Condition=" '@(BuildFailureStepsToExecute)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadBuildFailureStepsToExecute)' == 'true' AND '@(BuildFailureStepsToExecute)' == '' ">
         <!--
         <BuildFailureStepsToExecute Include="">
             <Properties>

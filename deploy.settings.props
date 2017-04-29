@@ -9,19 +9,26 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
         <!--
         <FilesToCopy Include="">
             <Destination></Destination>
         </FilesToCopy>
         -->
     </ItemGroup>
-    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' ">
         <!--
         <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
             <Include>**/*.*</Include>
             <Destinations>$(DirBuildTemp)</Destinations>
         </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
+        <!--
+        <ArchiveFilesToCopy Include="">
+            <Destination></Destination>
+        </ArchiveFilesToCopy>
         -->
     </ItemGroup>
 
@@ -38,7 +45,7 @@
         The PushToDirectorySpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates,
         e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadPushToDirectorySpecs)' == 'true' ">
         <!--<PushToDirectorySpecs Include="\\MyServer\${ProductNameInFilePath}\${VersionSemantic}">
             <IncludedFiles>
                 $(DirBuildDeploy)\myfile.zip
@@ -64,7 +71,7 @@
         The ItemGroup defining which packages should be pushed up to the NuGet package source.
         Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.nupkg.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadNuGetPackagesToPush)' == 'true' ">
         <!--
         <NuGetPackagesToPush
             Condition=" '$(DirBuildDeploy)' != '' "
@@ -94,7 +101,7 @@
         -->
         <!--<SymbolServerUncPath>UNDEFINED</SymbolServerUncPath>-->
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadSymbolPackagesToPush)' == 'true' ">
         <!--
         <SymbolPackagesToPush
             Condition=" '$(DirBuildDeploy)' != '' "
@@ -110,7 +117,7 @@
         The ItemGroup defining the files that should be pushed to a GitHub release. All properties
         except for the Repository allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadPushToGitHubReleaseSpecs)' == 'true' ">
         <PushToGitHubReleaseSpecs Include="${VersionSemantic}">
             <Repository>$(GitHubRepositoryName)</Repository>
             <Description>${ReleaseNotes}</Description>
@@ -130,7 +137,7 @@
         The ItemGroup defining the files that should be pushed to a GIT branch. All properties
         allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadPushToGitBranchSpecs)' == 'true' ">
         <PushToGitBranchSpecs
             Condition=" '$(DirBuildDeploy)' != '' "
             Include="$(DirBuildDeploy)\nbuildkit.msbuild.doc-${VersionSemantic}.zip">
@@ -149,7 +156,7 @@
         The ItemGroup defining the zip files containing a git workspace that should be pushed to a GIT repository.
         All properties allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
     -->
-    <ItemGroup Condition=" '@(PushToGitRepositorySpecs)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadPushToGitRepositorySpecs)' == 'true' ">
         <!--
         <PushToGitRepositorySpecs
             Condition=" '$(DirBuildDeploy)' != '' "
@@ -190,7 +197,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDeployPreStepsToExecute)' == 'true' ">
         <!--
         <DeployPreStepsToExecute Include="">
             <Properties>
@@ -212,7 +219,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDeployPostStepsToExecute)' == 'true' ">
         <!--
         <DeployPostStepsToExecute Include="">
             <Properties>
@@ -252,7 +259,7 @@
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDeployStepsToExecute)' == 'true' ">
         <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
             <Properties>
             </Properties>
@@ -369,6 +376,19 @@
                 prepare;
                 prepare.copy;
                 prepare.copy.files;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyArchive)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.archive;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -512,7 +532,7 @@
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDeployFailureStepsToExecute)' == 'true' ">
         <!--
         <DeployFailureStepsToExecute Include="">
             <Properties>
@@ -526,7 +546,7 @@
         By providing this metadata it is possible for pre- and post-step actions to more clearly determine which step
         they were attached to.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadAvailableStepMetadata)' == 'true' ">
         <!--
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DirWorkspace)\my.deploy.step.msbuild'))">
             <Description>
