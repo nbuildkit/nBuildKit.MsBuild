@@ -31,7 +31,7 @@ for a project.
 [docs-usage]:                      http://nbuildkit.github.io/nBuildKit.MsBuild/usage
 [github-release-badge]:            https://img.shields.io/github/release/nbuildkit/nbuildkit.msbuild.svg
 [github-release]:                  https://github.com/GitTools/GitVersion/releases/latest
-[gitter-badge]:                    https://gitter.im/nbuildkit/nBuildKit.MsBuild?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[gitter-badge]:                    https://badges.gitter.im/Join+Chat.svg
 [gitter]:                          https://gitter.im/nbuildkit/nbuildkit.msbuild
 [nuget-actions-badge]:             https://img.shields.io/nuget/v/nBuildKit.MsBuild.Actions.svg
 [nuget-actions]:                   https://www.nuget.org/packages/nBuildKit.MsBuild.Actions/
@@ -43,7 +43,7 @@ for a project.
 [nuget-buildserver.tfs2015]:       https://www.nuget.org/packages/nBuildKit.MsBuild.BuildServer.Tfs2015/
 [nuget-entrypoint-badge]:          https://img.shields.io/nuget/v/nBuildKit.MsBuild.EntryPoint.svg
 [nuget-entrypoint]:                https://www.nuget.org/packages/nBuildKit.MsBuild.EntryPoint/
-[nuget-executors-badge]:           https://img.shields.io/nuget/v/nBuildKit.MsBuild.Executor.svg
+[nuget-executors-badge]:           https://img.shields.io/nuget/v/nBuildKit.MsBuild.Executors.svg
 [nuget-executors]:                 https://www.nuget.org/packages/nBuildKit.MsBuild.Executors/
 [nuget-tasks-badge]:               https://img.shields.io/nuget/v/nBuildKit.MsBuild.Tasks.svg
 [nuget-tasks]:                     https://www.nuget.org/packages/nBuildKit.MsBuild.Tasks/
