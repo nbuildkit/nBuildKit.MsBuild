@@ -26,6 +26,7 @@
         <BuildStepsPrepareRestoreBower>$(MSBuildThisFileDirectory)..\shared.prepare.bower.restore.msbuild</BuildStepsPrepareRestoreBower>
 
         <BuildStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</BuildStepsPrepareCopyNuGet>
+        <BuildStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</BuildStepsPrepareCopyHttp>
         <BuildStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</BuildStepsPrepareCopyFiles>
         <BuildStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</BuildStepsPrepareCopyArchive>
 
@@ -142,11 +143,19 @@
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareCopyNuGet)'))">
             <Description>
-                Copies one or more files from from a NuGet package.
+                Copies one or more files from a NuGet package.
             </Description>
             <Id>BuildStepsPrepareCopyNuGet</Id>
             <Name>Build - copy nuget</Name>
             <Path>$(BuildStepsPrepareCopyNuGet)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareCopyHttp)'))">
+            <Description>
+                Copies one or more files from a set of URLs.
+            </Description>
+            <Id>BuildStepsPrepareCopyHttp</Id>
+            <Name>Build - copy from URL</Name>
+            <Path>$(BuildStepsPrepareCopyHttp)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareCopyFiles)'))">
             <Description>

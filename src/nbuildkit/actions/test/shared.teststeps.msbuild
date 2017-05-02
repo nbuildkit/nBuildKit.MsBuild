@@ -20,6 +20,7 @@
         <TestStepsPrepareVcsInfo>$(MSBuildThisFileDirectory)..\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
 
         <TestStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</TestStepsPrepareCopyNuGet>
+        <TestStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</TestStepsPrepareCopyHttp>
         <TestStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</TestStepsPrepareCopyFiles>
         <TestStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</TestStepsPrepareCopyArchive>
 
@@ -107,6 +108,14 @@
             <Id>TestStepsPrepareCopyNuGet</Id>
             <Name>Test - copy nuget</Name>
             <Path>$(TestStepsPrepareCopyNuGet)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyHttp)'))">
+            <Description>
+                Copies one or more files from a set of URLs.
+            </Description>
+            <Id>TestStepsPrepareCopyHttp</Id>
+            <Name>Test - copy from URL</Name>
+            <Path>$(TestStepsPrepareCopyHttp)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyFiles)'))">
             <Description>

@@ -6,22 +6,30 @@
     <!--
         **** PREPARE - COPY FILES ****
     -->
-    <!--
-        Files that should be copied, either from the file system or from a NuGet package.
-    -->
-    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' AND '@(FilesToCopy)' == '' ">
-        <!--
-        <FilesToCopy Include="">
-            <Destination></Destination>
-        </FilesToCopy>
-        -->
-    </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' AND '@(NuGetFilesToCopy)' == '' ">
         <!--
         <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
             <Include>**/*.*</Include>
             <Destinations>$(DirBuildTemp)</Destinations>
         </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadHttpFilesToCopy)' == 'true' AND '@(HttpFilesToCopy)' == '' ">
+        <!--
+        <HttpFilesToCopy Include="">
+            <Destination></Destination>
+            <Password></Password>
+            <UseDefaultCredentials></UseDefaultCredentials>
+            <UserName></UserName>
+            <Unzip></Unzip>
+        </HttpFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' AND '@(FilesToCopy)' == '' ">
+        <!--
+        <FilesToCopy Include="">
+            <Destination></Destination>
+        </FilesToCopy>
         -->
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' AND '@(ArchiveFilesToCopy)' == '' ">

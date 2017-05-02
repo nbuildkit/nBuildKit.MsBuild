@@ -19,6 +19,7 @@
         <DeployStepsRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
 
         <DeployStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</DeployStepsPrepareCopyNuGet>
+        <DeployStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</DeployStepsPrepareCopyHttp>
         <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</DeployStepsPrepareCopyFiles>
         <DeployStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</DeployStepsPrepareCopyArchive>
 
@@ -94,6 +95,14 @@
             <Id>DeployStepsPrepareCopyNuGet</Id>
             <Name>Deploy - copy nuget</Name>
             <Path>$(DeployStepsPrepareCopyNuGet)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyHttp)'))">
+            <Description>
+                Copies one or more files from a set of URLs.
+            </Description>
+            <Id>DeployStepsPrepareCopyHttp</Id>
+            <Name>Deploy - copy from URL</Name>
+            <Path>$(DeployStepsPrepareCopyHttp)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyFiles)'))">
             <Description>
