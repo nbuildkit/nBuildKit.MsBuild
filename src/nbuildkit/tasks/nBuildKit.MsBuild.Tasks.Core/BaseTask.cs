@@ -21,6 +21,11 @@ namespace NBuildKit.MsBuild.Tasks.Core
     public abstract class BaseTask : Task
     {
         /// <summary>
+        /// Defines the error ID for an error that occurs when a directory cannot be found.
+        /// </summary>
+        protected const string ErrorIdDirectoryNotFound = "NBuildKit.DirectoryNotFound";
+
+        /// <summary>
         /// Defines the error ID for an error that occurs when a file cannot be loaded.
         /// </summary>
         protected const string ErrorIdFileLoad = "NBuildKit.FileLoad";
