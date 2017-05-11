@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Net;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Web
@@ -136,6 +137,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                         source,
                         targetPath);
                     client.DownloadFile(source, targetPath);
+                    OutputPath = new TaskItem(targetPath);
                 }
                 catch (WebException e)
                 {
@@ -174,6 +176,16 @@ namespace NBuildKit.MsBuild.Tasks.Web
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets or sets the path to the location of the downloaded file on the local file system.
+        /// </summary>
+        [Output]
+        public ITaskItem OutputPath
+        {
+            get;
+            set;
         }
 
         /// <summary>
