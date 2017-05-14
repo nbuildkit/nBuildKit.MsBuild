@@ -116,12 +116,18 @@ namespace NBuildKit.MsBuild.Tasks.Code
 
             if (exitCode != 0)
             {
-                var text = string.Format(
-                    CultureInfo.InvariantCulture,
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
                     "{0} exited with a non-zero exit code. Exit code was: {1}",
                     Path.GetFileName(ILRepackExe.ItemSpec),
                     exitCode);
-                Log.LogError(text);
             }
 
             return !Log.HasLoggedErrors;

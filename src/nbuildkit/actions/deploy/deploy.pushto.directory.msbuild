@@ -7,6 +7,12 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsDeployPushToDirectory>true</ExistsDeployPushToDirectory>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadPushToDirectorySpecs>true</ShouldLoadPushToDirectorySpecs>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -26,6 +32,7 @@
 
         <!-- Process the build templates in the input directories -->
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(PushToDirectorySpecs.Identity)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -36,6 +43,7 @@
         <!-- Process the build templates in the included files -->
         <TemplateText
             Condition=" '%(PushToDirectorySpecs.IncludedFiles)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="%(PushToDirectorySpecs.IncludedFiles)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -46,6 +54,7 @@
         <!-- Process the build templates in the excluded files -->
         <TemplateText
             Condition=" '%(PushToDirectorySpecs.ExcludedFiles)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="%(PushToDirectorySpecs.ExcludedFiles)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -71,7 +80,9 @@
                 TaskParameter="Include" />
         </CreateItem>
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToDirectoryNoFiles)"
             Condition=" '@(FilesToPush)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToDirectoryNoFiles)"
             Text="There are no files to be pushed" />
 
         <MakeDir

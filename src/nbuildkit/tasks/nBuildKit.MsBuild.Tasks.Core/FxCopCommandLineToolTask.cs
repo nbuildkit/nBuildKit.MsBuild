@@ -10,9 +10,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
-using NBuildKit.MsBuild.Tasks.Core;
 
-namespace NBuildKit.MsBuild.Tasks.Validation
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that work with the FxCop command line tool.
@@ -54,19 +53,11 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                     }
                 };
 
-            DataReceivedEventHandler standardErrorHandler =
-                (s, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
-                    {
-                        Log.LogError(e.Data);
-                    }
-                };
             var exitCode = InvokeCommandLineTool(
                 exePath,
                 arguments,
                 standardOutputHandler: standardOutputhandler,
-                standardErrorHandler: standardErrorHandler);
+                standardErrorHandler: DefaultErrorHandler);
             if (exitCode != 0)
             {
                 if (!WarningsAsErrors)
@@ -82,11 +73,17 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                 else
                 {
                     Log.LogError(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "{0} exited with a non-zero exit code. Exit code was: {1}",
-                            Path.GetFileName(exePath),
-                            exitCode));
+                        string.Empty,
+                        ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                        ErrorIdApplicationNonzeroExitCode,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "{0} exited with a non-zero exit code. Exit code was: {1}",
+                        Path.GetFileName(exePath),
+                        exitCode);
                 }
             }
         }

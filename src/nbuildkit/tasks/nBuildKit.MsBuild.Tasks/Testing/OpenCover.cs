@@ -50,9 +50,6 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         /// <inheritdoc/>
         public override bool Execute()
         {
-            // Fix for the issue reported here: https://github.com/Microsoft/msbuild/issues/397
-            var encoding = Console.OutputEncoding;
-
             var arguments = new List<string>();
             {
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "-register:user "));
@@ -69,35 +66,24 @@ namespace NBuildKit.MsBuild.Tasks.Testing
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "-excludebyattribute:{0} ", OpenCoverExcludeAttributes));
             }
 
-            DataReceivedEventHandler standardErrorHandler =
-                (s, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
-                    {
-                        // Due to the change of the encoding of the error stream
-                        // it is possible that the error stream contains the BOM marker for UTF-8
-                        // So even if the error stream is actually empty, we still get something in
-                        // it, which means we'll fail.
-                        if (Encoding.UTF8.Equals(encoding) && (e.Data.Length == 1))
-                        {
-                            return;
-                        }
-
-                        Log.LogError(string.Format(CultureInfo.InvariantCulture, "OpenCover error: {0}", e.Data));
-                    }
-                };
             var exitCode = InvokeCommandLineTool(
                 OpenCoverExe,
                 arguments,
-                standardErrorHandler: standardErrorHandler);
+                standardErrorHandler: DefaultErrorHandler);
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        System.IO.Path.GetFileName(GetFullToolPath(OpenCoverExe)),
-                        exitCode));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    System.IO.Path.GetFileName(GetFullToolPath(OpenCoverExe)),
+                    exitCode);
                 return false;
             }
 

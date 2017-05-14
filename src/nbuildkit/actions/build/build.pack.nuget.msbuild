@@ -7,6 +7,13 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildPackNuGet>true</ExistsBuildPackNuGet>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadNuGetPackageSpecs>true</ShouldLoadNuGetPackageSpecs>
+        <ShouldLoadDesignTimeDependencies>true</ShouldLoadDesignTimeDependencies>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -31,6 +38,7 @@
 
         <!-- Process the build templates in the nuspec file path -->
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(NuGetPackageSpecs.Identity)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -41,6 +49,7 @@
         <!-- Process the build templates in the included dependencies -->
         <TemplateText
             Condition=" '%(NuGetPackageSpecs.IncludedDependencies)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="%(NuGetPackageSpecs.IncludedDependencies)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -51,6 +60,7 @@
         <!-- Process the build templates in the excluded dependencies -->
         <TemplateText
             Condition=" '%(NuGetPackageSpecs.ExcludedDependencies)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="%(NuGetPackageSpecs.ExcludedDependencies)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -92,6 +102,7 @@
 
         <GatherNuGetDependenciesForProject
             DesignTimePackages="@(DesignTimeDependencies)"
+            ErrorInformation="@(ErrorInformation)"
             NuGetSpec="$(FileNuGetNuSpec)"
             Packages="@(PackageDependencies)"
             VersionRangeType="$(NuGetDependencyVersionRangeStrategy)">
@@ -120,11 +131,13 @@
         <TemplateFile
             Condition="Exists('$(FileNuGetNuSpec)')"
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             OutputFileName="$(FileNuGetNuSpecTokensReplaced)"
             SearchExpression="(%3F&lt;token&gt;\%24(?&lt;identifier&gt;\w%2A)\%24)"
             Template="$(FileNuGetNuSpec)"
             Tokens="@(TemplateTokens)" />
         <NuGetPack
+            ErrorInformation="@(ErrorInformation)"
             File="$(FileNuGetNuSpecTokensReplaced)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             OutputDirectory="$(DirBuildDeploy)"

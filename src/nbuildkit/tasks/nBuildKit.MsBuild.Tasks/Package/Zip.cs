@@ -67,7 +67,16 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         {
             if (File == null)
             {
-                Log.LogError("No archive files to create!");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "No archive files to create!");
                 return false;
             }
 

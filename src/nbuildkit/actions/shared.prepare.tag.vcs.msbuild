@@ -20,10 +20,13 @@
 
     <Target Name="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion">
         <Error
+            Code="$(NBuildKitErrorCodeGetVersionFileMissing)"
             Condition="!Exists('$(FileSemanticVersion)') "
+            HelpKeyword="$(NBuildKitErrorIdGetVersionFileMissing)"
             Text="The semantic version file does not exist. Will not be able to get the version." />
         <GetSemanticVersionFromFile
             Condition="Exists('$(FileSemanticVersion)') "
+            ErrorInformation="@(ErrorInformation)"
             VersionFile="$(FileSemanticVersion)">
             <Output
                 PropertyName="VersionSemantic"
@@ -40,7 +43,9 @@
         DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion"
         Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Git">
         <Error
+            Code="$(NBuildKitErrorCodeGitNotFound)"
             Condition=" '$(ToolsExternalGitPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdGitNotFound)"
             Text="The git executable does not exist. Cannot apply tags." />
 
         <Exec
@@ -53,7 +58,9 @@
         DependsOnTargets="_nBuildKit_Shared_Prepare_Tag_Vcs_GetVersion"
         Name="_nBuildKit_Shared_Prepare_Tag_Vcs_Tfs">
         <Error
+            Code="$()"
             Condition=" '$(ToolsExternalTfsPath)' == '' "
+            HelpKeyword="$()"
             Text="The TFS executable does not exist. Cannot apply tags." />
 
         <Exec Command="&quot;$(ToolsExternalTfsPath)&quot; label $(VersionSemantic) $(DirWorkspace) /recursive" />

@@ -37,7 +37,7 @@
         allow that for global ItemGroups. So we first add the user defined items and then add the
         system defined ones if no value for that specific item exists.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadSystemTemplateVersion)' == 'true' ">
         <!--
             The template for the version number that will be used in the 'AssemblyVersionAttribute' in the
             'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
@@ -86,7 +86,7 @@
     <!--
         **** PREPARE - NUGET RESTORE ****
     -->
-    <ItemGroup Condition=" '@(NuGetPackageFiles)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNuGetPackageFiles)' == 'true' AND '@(NuGetPackageFiles)' == '' ">
         <NuGetPackageFiles
             Condition="Exists('$(DirWorkspace)\packages.config')"
             Include="$(DirWorkspace)\packages.config" />
@@ -100,7 +100,7 @@
     <!--
         **** PREPARE - NPM RESTORE ****
     -->
-    <ItemGroup Condition=" '@(NpmPackageFiles)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadNpmPackageFiles)' == 'true' AND '@(NpmPackageFiles)' == '' ">
         <NpmPackageFiles
             Condition=" '$(DirWorkspace)' != '' "
             Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json"
@@ -154,7 +154,7 @@
 
         Any failure during the branching process will stop the build process.
     -->
-    <ItemGroup Condition=" '@(BranchMergeTarget)' == '' ">
+    <ItemGroup Condition=" '$(ShouldLoadBranchMergeTarget)' == 'true' AND '@(BranchMergeTarget)' == '' ">
         <!-- GITFLOW: If the input branch (GitBranchExpected) is a feature branch then we merge to develop -->
         <BranchMergeTarget
             Condition=" '$(IsGitFlow)' == 'true' AND '$(IsFeatureBranch)' == 'true' "
@@ -185,7 +185,7 @@
         Additional items that should be available for the template replacement.
         The default template parameters, as indicated at the top of this file, are always available.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadTemplateTokens)' == 'true' ">
         <TemplateTokens
             Condition=" '$(GitRevNoExpected)' != '' AND '$(GitRevNoExpected)' != 'UNDEFINED' "
             Include="GitRevNo">

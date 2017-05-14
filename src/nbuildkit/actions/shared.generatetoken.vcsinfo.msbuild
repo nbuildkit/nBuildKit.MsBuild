@@ -22,6 +22,7 @@
         Name="shared_generatetoken_vcsinfo_writepropertyfile">
         <GetVcsInfoFromFile
             Condition="Exists('$(FileVcsInfo)')"
+            ErrorInformation="@(ErrorInformation)"
             InfoFile="$(FileVcsInfo)">
             <Output
                 PropertyName="VcsRevision"

@@ -93,7 +93,17 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 }
                 catch (Exception)
                 {
-                    Log.LogError("Failed to load document {0}.", packageFile);
+                    Log.LogError(
+                        string.Empty,
+                        ErrorCodeById(ErrorIdFileLoad),
+                        ErrorIdFileLoad,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "Failed to load document {0}.",
+                        packageFile);
                     throw;
                 }
 

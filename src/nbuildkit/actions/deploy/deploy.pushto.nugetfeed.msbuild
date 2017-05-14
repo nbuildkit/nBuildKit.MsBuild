@@ -7,6 +7,12 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsDeployPushToNuGet>true</ExistsDeployPushToNuGet>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadNuGetPackagesToPush>true</ShouldLoadNuGetPackagesToPush>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -20,7 +26,9 @@
     <Target
         Name="_nBuildKit_Deploy_PushTo_NuGet_Push">
         <Error
+            Code="$(NBuildKitErrorCodeNuGetNotFound)"
             Condition=" '$(ToolsExternalNuGetPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdNuGetNotFound)"
             Text="No NuGet executable defined. Will not be able to restore the packages." />
 
         <CreateProperty
@@ -33,6 +41,7 @@
 
         <TemplateText
             Condition=" '@(NuGetPackagesToPush)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="@(NuGetPackagesToPush)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -61,13 +70,16 @@
             Text="@(NuGetPackagesToPushLocal)" />
 
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToNuGetNoFiles)"
             Condition=" '@(NuGetPackagesToPushLocal)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToNuGetNoFiles)"
             Text="There are no files to be pushed to the NuGet feed" />
 
         <Message
             Importance="low"
             Text="Pushing: @(NuGetPackagesToPushLocal)" />
         <NuGetPush
+            ErrorInformation="@(ErrorInformation)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesToPush="@(NuGetPackagesToPushLocal)"
             Source="$(NuGetRepositoryToPushTo)"

@@ -3,6 +3,184 @@
     DefaultTargets="Run"
     ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** PREPARE - COPY FILES ****
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destinations>$(DirBuildTemp)</Destinations>
+        </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadHttpFilesToCopy)' == 'true' AND '@(HttpFilesToCopy)' == '' ">
+        <!--
+        <HttpFilesToCopy Include="">
+            <Destination></Destination>
+            <Password></Password>
+            <UseDefaultCredentials></UseDefaultCredentials>
+            <UserName></UserName>
+            <Unzip></Unzip>
+        </HttpFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
+        <!--
+        <FilesToCopy Include="">
+            <Destination></Destination>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
+        <!--
+        <ArchiveFilesToCopy Include="">
+            <Destination></Destination>
+        </ArchiveFilesToCopy>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - DIRECTORY / FILESERVER ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a given deployment directory.
+
+        The IncludedFiles and the ExcludedFiles are lists of files that
+        should be included (or excluded) in the list of files to deploy. Each entry is separated by a semi-colon(;).
+
+        The PushToDirectorySpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates,
+        e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadPushToDirectorySpecs)' == 'true' ">
+        <!--<PushToDirectorySpecs Include="\\MyServer\${ProductNameInFilePath}\${VersionSemantic}">
+            <IncludedFiles>
+                $(DirBuildDeploy)\myfile.zip
+            </IncludedFiles>
+            <ExcludedFiles>
+            </ExcludedFiles>
+        </PushToDirectorySpecs>-->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - NUGET ****
+    -->
+    <PropertyGroup>
+        <!--
+            The URL to which all NuGet packages should be pushed. By default it pushes to nuget.org.
+            If the repository needs authentication then the API key should be defined via an environment variable:
+            NuGetApiKey - The NuGet API key for the NuGet feed
+        -->
+        <!--<NuGetSourceUrl>UNDEFINED</NuGetSourceUrl>-->
+    </PropertyGroup>
+    <!--
+        The ItemGroup defining which packages should be pushed up to the NuGet package source.
+        Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.nupkg.
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadNuGetPackagesToPush)' == 'true' ">
+        <!--
+        <NuGetPackagesToPush
+            Condition=" '$(DirBuildDeploy)' != '' "
+            Include="$(DirBuildDeploy)\*.nupkg"
+            Exclude="$(DirBuildDeploy)\*.symbols.nupkg" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - SYMBOL SERVER ****
+    -->
+    <!--
+        The ItemGroup defining which symbol packages should be pushed up to the symbol server.
+        Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.symbols.nupkg.
+    -->
+    <PropertyGroup>
+        <!--
+            The URL to which all NuGet symbol packages should be pushed. If the repository needs authentication then
+            the API key should be defined via an environment variable:
+            NuGetApiKey - The NuGet API key for the NuGet feed
+        -->
+        <!--<NuGetSymbolSourceUrl>UNDEFINED</NuGetSymbolSourceUrl>-->
+        <!--
+            The URL / UNC path to which all the symbol packages should be pushed.
+        -->
+        <!--<SymbolServerUncPath>UNDEFINED</SymbolServerUncPath>-->
+    </PropertyGroup>
+    <ItemGroup Condition=" '$(ShouldLoadSymbolPackagesToPush)' == 'true' ">
+        <!--
+        <SymbolPackagesToPush
+            Condition=" '$(DirBuildDeploy)' != '' "
+            Include="$(DirBuildDeploy)\*.symbols.nupkg" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - GITHUB RELEASE ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a GitHub release. All properties
+        except for the Repository allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadPushToGitHubReleaseSpecs)' == 'true' ">
+        <!--
+        <PushToGitHubReleaseSpecs Include="${VersionSemantic} - My release">
+             <Repository>MyCoolProject</Repository>
+             <Description>${ReleaseNotes}</Description>
+             <IncludedFiles>
+                $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+             </IncludedFiles>
+             <ExcludedFiles>
+             </ExcludedFiles>
+        </PushToGitHubReleaseSpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - GIT BRANCH ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a GIT branch. All properties
+        allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadPushToGitBranchSpecs)' == 'true' ">
+        <!--
+        <PushToGitBranchSpecs
+            Condition=" '$(DirBuildDeploy)' != '' "
+            Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
+             <Repository>$(GitRemoteRepository)</Repository>
+             <Branch>master</Branch>
+             <ExtractZipFiles>true</ExtractZipFiles>
+             <CommitMessage>New changes</CommitMessage>
+        </PushToGitBranchSpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - GIT REPOSITORY ****
+    -->
+    <!--
+        The ItemGroup defining the zip files containing a git workspace that should be pushed to a GIT repository.
+        All properties allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadPushToGitRepositorySpecs)' == 'true' ">
+        <!--
+        <PushToGitRepositorySpecs
+            Condition=" '$(DirBuildDeploy)' != '' "
+            Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
+             <Repository>$(GitRemoteRepository)</Repository>
+        </PushToGitRepositorySpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** DEPLOY STEPS ****
+    -->
     <PropertyGroup>
         <!-- Indicate if an error in the pre-step actions should fail the deploy -->
         <!-- <FailDeployOnPreStepFailure>false</FailDeployOnPreStepFailure> -->
@@ -30,7 +208,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDeployPreStepsToExecute)' == 'true' ">
         <!--
         <DeployPreStepsToExecute Include="">
             <Properties>
@@ -52,7 +230,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given deploy step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDeployPostStepsToExecute)' == 'true' ">
         <!--
         <DeployPostStepsToExecute Include="">
             <Properties>
@@ -86,56 +264,13 @@
         The following ItemGroup defines which steps are taken during the deploy process. The order of the items in the item group
         determines in which order the deploy steps are executed.
 
-        The following deploy steps are by default provided through the given properties:
-        $(DeployStepsBuildTargetsAssembly) - Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio
-                                             solutions so that it is possible to build MsBuild tasks that will be used in the build process.
-        $(DeployStepsGenerateTargetsFile)  - Generates a targets file for use with an MsBuild tasks assembly.
-        $(DeployStepsPrepareRestoreNuGet)  - Restores the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally
-                                             also restores the NuGet packages as specified in the nBuildKit specific 'packages.config' files.
-        $(DeployStepsPrepareVcsBranch)     - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
-                                             name as the remote tracking branch.
-        $(DeployStepsPrepareGetVersion)    - Gathers version information and stores it in a temporary file for use by the rest of the deploy process.
-                                             Currently supported methods of gathering version information are using (in order):
-                                             - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
-                                               in the 'VersionScriptPath' property. The task should output:
-                                                 - VersionMajor
-                                                 - VersionMinor
-                                                 - VersionPatch
-                                                 - VersionBuild
-                                                 - VersionPreRelease
-                                                 - VersionSemantic
-                                                 - VersionSemanticFull
-                                                 - VersionSemanticNuget
-                                             - The version stored in an 'version.xml' file which contains an MsBuild property group with
-                                               the properties:
-                                                 - BuildNumber
-                                                 - VersionMajor
-                                                 - VersionMinor
-                                                 - VersionPatch
-                                                 - VersionBuild
-                                                 - VersionPreRelease
-                                             - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
-                                             - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
-        $(DeployStepsPrepareTagVcs)        - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
-        $(DeployStepsPrepareGetIssueIds)   - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
-        $(DeployStepsPrepareCopyNuGet)     - Copies one or more files from a NuGet package.
-        $(DeployStepsPrepareCopyFiles)     - Copies one or more files from the file system.
-        $(DeployStepsPushToTags)           - Pushes the tags to a remote git repository
-        $(DeployStepsPushToNuget)          - Pushes one or more artifacts to a NuGet feed
-        $(DeployStepsPushToDirectory)      - Pushes one or more artifacts to a directory
-        $(DeployStepsPushToSymbolServer)   - Pushes one or more NuGet symbol packages to a local symbol server on a UNC path
-        $(DeployStepsPushToGitHubRelease)  - Pushes zero or more files to a GitHub release
-        $(DeployStepsPushToGitBranch)      - Pushes zero or more files to a Git branch. Any files that currently exist on that branch are removed
-                                             and replaced by the specified files.
-        $(DeployStepsPushToGitRepository)  - Pushes an archived local workspace to a Git repository.
-
         Additional deploy steps can be defined by providing the path to the MsBuild script that should be executed
         for that step, e.g. adding a deploy step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
         that script.
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDeployStepsToExecute)' == 'true' ">
         <DeployStepsToExecute Include="$(DeployStepsBuildTargetsAssembly)">
             <Properties>
             </Properties>
@@ -252,6 +387,19 @@
             <PostSteps>
             </PostSteps>
         </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyHttp)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.url;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsPrepareCopyFiles)">
             <Properties>
             </Properties>
@@ -259,6 +407,19 @@
                 prepare;
                 prepare.copy;
                 prepare.copy.files;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyArchive)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.archive;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -375,7 +536,7 @@
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadDeployFailureStepsToExecute)' == 'true' ">
         <!--
         <DeployFailureStepsToExecute Include="">
             <Properties>
@@ -389,7 +550,7 @@
         By providing this metadata it is possible for pre- and post-step actions to more clearly determine which step
         they were attached to.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadAvailableStepMetadata)' == 'true' ">
         <!--
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DirWorkspace)\my.deploy.step.msbuild'))">
             <Description>
@@ -399,166 +560,6 @@
             <Name>My deploy step</Name>
             <Path>$(DirWorkspace)\my.deploy.step.msbuild</Path>
         </AvailableStepMetadata>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - COPY FILES ****
-    -->
-    <!--
-        Files that should be copied, either from the file system or from a NuGet package.
-    -->
-    <ItemGroup>
-        <!--
-        <FilesToCopy Include="">
-            <Destination></Destination>
-        </FilesToCopy>
-        -->
-    </ItemGroup>
-    <ItemGroup>
-        <!--
-        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
-            <Include>**/*.*</Include>
-            <Destinations>$(DirBuildTemp)</Destinations>
-        </NuGetFilesToCopy>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PUSHTO - DIRECTORY / FILESERVER ****
-    -->
-    <!--
-        The ItemGroup defining the files that should be pushed to a given deployment directory.
-
-        The IncludedFiles and the ExcludedFiles are lists of files that
-        should be included (or excluded) in the list of files to deploy. Each entry is separated by a semi-colon(;).
-
-        The PushToDirectorySpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates,
-        e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
-    -->
-    <ItemGroup>
-        <!--<PushToDirectorySpecs Include="\\MyServer\${ProductNameInFilePath}\${VersionSemantic}">
-            <IncludedFiles>
-                $(DirBuildDeploy)\myfile.zip
-            </IncludedFiles>
-            <ExcludedFiles>
-            </ExcludedFiles>
-        </PushToDirectorySpecs>-->
-    </ItemGroup>
-
-
-    <!--
-        **** PUSHTO - NUGET ****
-    -->
-    <PropertyGroup>
-        <!--
-            The URL to which all NuGet packages should be pushed. By default it pushes to nuget.org.
-            If the repository needs authentication then the API key should be defined via an environment variable:
-            NuGetApiKey - The NuGet API key for the NuGet feed
-        -->
-        <!--<NuGetSourceUrl>UNDEFINED</NuGetSourceUrl>-->
-    </PropertyGroup>
-    <!--
-        The ItemGroup defining which packages should be pushed up to the NuGet package source.
-        Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.nupkg.
-    -->
-    <ItemGroup>
-        <!--
-        <NuGetPackagesToPush
-            Condition=" '$(DirBuildDeploy)' != '' "
-            Include="$(DirBuildDeploy)\*.nupkg"
-            Exclude="$(DirBuildDeploy)\*.symbols.nupkg" />
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PUSHTO - SYMBOL SERVER ****
-    -->
-    <!--
-        The ItemGroup defining which symbol packages should be pushed up to the symbol server.
-        Allows build templates, e.g. $(DirBuildDeploy)\${VersionSemantic}\*.symbols.nupkg.
-    -->
-    <PropertyGroup>
-        <!--
-            The URL to which all NuGet symbol packages should be pushed. If the repository needs authentication then
-            the API key should be defined via an environment variable:
-            NuGetApiKey - The NuGet API key for the NuGet feed
-        -->
-        <!--<NuGetSymbolSourceUrl>UNDEFINED</NuGetSymbolSourceUrl>-->
-        <!--
-            The URL / UNC path to which all the symbol packages should be pushed.
-        -->
-        <!--<SymbolServerUncPath>UNDEFINED</SymbolServerUncPath>-->
-    </PropertyGroup>
-    <ItemGroup>
-        <!--
-        <SymbolPackagesToPush
-            Condition=" '$(DirBuildDeploy)' != '' "
-            Include="$(DirBuildDeploy)\*.symbols.nupkg" />
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PUSHTO - GITHUB RELEASE ****
-    -->
-    <!--
-        The ItemGroup defining the files that should be pushed to a GitHub release. All properties
-        except for the Repository allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
-    -->
-    <ItemGroup>
-        <!--
-        <PushToGitHubReleaseSpecs Include="${VersionSemantic} - My release">
-             <Repository>MyCoolProject</Repository>
-             <Description>${ReleaseNotes}</Description>
-             <IncludedFiles>
-                $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
-             </IncludedFiles>
-             <ExcludedFiles>
-             </ExcludedFiles>
-        </PushToGitHubReleaseSpecs>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PUSHTO - GIT BRANCH ****
-    -->
-    <!--
-        The ItemGroup defining the files that should be pushed to a GIT branch. All properties
-        allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
-    -->
-    <ItemGroup>
-        <!--
-        <PushToGitBranchSpecs
-            Condition=" '$(DirBuildDeploy)' != '' "
-            Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
-             <Repository>$(GitRemoteRepository)</Repository>
-             <Branch>master</Branch>
-             <ExtractZipFiles>true</ExtractZipFiles>
-             <CommitMessage>New changes</CommitMessage>
-        </PushToGitBranchSpecs>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PUSHTO - GIT REPOSITORY ****
-    -->
-    <!--
-        The ItemGroup defining the zip files containing a git workspace that should be pushed to a GIT repository.
-        All properties allow the use of build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip
-    -->
-    <ItemGroup>
-        <!--
-        <PushToGitRepositorySpecs
-            Condition=" '$(DirBuildDeploy)' != '' "
-            Include="$(DirBuildDeploy)\myarchive-${VersionSemantic}.zip">
-             <Repository>$(GitRemoteRepository)</Repository>
-        </PushToGitRepositorySpecs>
         -->
     </ItemGroup>
 

@@ -48,7 +48,17 @@ namespace NBuildKit.MsBuild.Tasks.Templating
 
             if (!File.Exists(GetAbsolutePath(Template)))
             {
-                Log.LogError("Template File '{0}' cannot be found", Template);
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Template File '{0}' cannot be found",
+                    Template);
             }
             else
             {

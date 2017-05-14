@@ -7,11 +7,9 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using Microsoft.Build.Framework;
-using NBuildKit.MsBuild.Tasks.Core;
 
-namespace NBuildKit.MsBuild.Tasks.Packaging
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that work with the NuGet command line tool.
@@ -49,20 +47,12 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 };
             }
 
-            DataReceivedEventHandler standardErrorHandler = (s, e) =>
-            {
-                if (!string.IsNullOrWhiteSpace(e.Data))
-                {
-                    Log.LogError(e.Data);
-                }
-            };
-
             var exitCode = InvokeCommandLineTool(
                 NuGetExecutablePath,
                 arguments,
                 WorkingDirectory,
                 standardOutputHandler: standardOutputHandler,
-                standardErrorHandler: standardErrorHandler);
+                standardErrorHandler: DefaultErrorHandler);
             return exitCode;
         }
 

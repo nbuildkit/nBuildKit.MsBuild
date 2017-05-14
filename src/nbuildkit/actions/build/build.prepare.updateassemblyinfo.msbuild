@@ -7,6 +7,13 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildPrepareGenerateLicenses>true</ExistsBuildPrepareGenerateLicenses>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadAssemblyInfoFilesToUpdate>true</ShouldLoadAssemblyInfoFilesToUpdate>
+        <ShouldLoadInternalsVisibleTo>true</ShouldLoadInternalsVisibleTo>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -26,6 +33,7 @@
             AttributeName="AssemblyVersion"
             Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
             Value="&quot;${VersionAssembly}&quot;" />
 
@@ -33,6 +41,7 @@
             AttributeName="AssemblyFileVersion"
             Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
             Value="&quot;${VersionAssemblyFile}&quot;" />
 
@@ -40,6 +49,7 @@
             AttributeName="AssemblyInformationalVersion"
             Condition=" '$(ShouldGenerateAssemblyVersionInfo)' == 'true' "
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
             Value="&quot;${VersionProduct}&quot;" />
 
@@ -47,6 +57,7 @@
             AttributeName="AssemblyCompany"
             Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
             Value="&quot;$(CompanyName)&quot;" />
 
@@ -54,6 +65,7 @@
             AttributeName="AssemblyCopyright"
             Condition=" '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' "
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
             Value="&quot;$(CopyrightLong)&quot;" />
 
@@ -61,6 +73,7 @@
             AttributeName="AssemblyConfiguration"
             Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
             Value="&quot;$(Configuration)&quot;" />
 
@@ -68,6 +81,7 @@
             AttributeName="AssemblyBuildTime"
             Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
             Value="buildTime: &quot;${Now}&quot;" />
 
@@ -75,12 +89,14 @@
             AttributeName="AssemblyBuildInformation"
             Condition=" '$(ShouldGenerateAssemblyBuildInfo)' == 'true' "
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             InputFile="%(AssemblyInfoFilesToUpdate.Identity)"
             Value="buildNumber: ${VersionBuild}, versionControlInformation: &quot;${VcsRevision}&quot;" />
 
         <TemplateFile
             Condition="Exists('%(AssemblyInfoFilesToUpdate.FullPath)') AND ('$(ShouldGenerateAssemblyVersionInfo)' == 'true' OR '$(ShouldGenerateAssemblyCompanyInfo)' == 'true' OR '$(ShouldGenerateAssemblyBuildInfo)' == 'true') "
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             OutputFileName="%(AssemblyInfoFilesToUpdate.Identity)"
             Template="%(AssemblyInfoFilesToUpdate.Identity)"
             Tokens="@(TemplateTokens)" />
@@ -110,7 +126,9 @@
                 Include="$(AssemblyInfoDirectory)\..\**\*.vbproj" />
         </ItemGroup>
         <Error
+            Code="$(NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles)"
             Condition="$([System.String]::new('@(PossibleProjectFiles)').Contains(';'))"
+            HelpKeyword="$(NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles)"
             Text="Found multiple project files that may be referencing the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity). The project files are: @(PossibleProjectFiles)" />
 
         <CreateProperty
@@ -121,7 +139,9 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <Error
+            Code="$(NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles)"
             Condition="!Exists('$(ProjectFile)')"
+            HelpKeyword="$(NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles)"
             Text="Did not find a project file that references the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity)" />
         <Message
             Condition="Exists('$(ProjectFile)')"
@@ -154,6 +174,7 @@
             AttributeTemplateForSignedAssemblies="$(InternalsVisibleToForSignedAssembliesTemplate)"
             AttributeTemplateForUnsignedAssemblies="$(InternalsVisibleToForUnsignedAssembliesTemplate)"
             Condition=" '@(InternalsVisibleTo)' != '' AND '$(AssemblyName)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Items="@(InternalsVisibleTo)"
             PackagesDirectory="$(DirPackages)"
             Project="$(AssemblyName)"

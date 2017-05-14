@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Shared_Prepare_Copy_FromUrl"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ExistsSharedPrepareCopyHttp>true</ExistsSharedPrepareCopyHttp>
+    </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadHttpFilesToCopy>true</ShouldLoadHttpFilesToCopy>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Condition=" '@(HttpFilesToCopy)' != '' "
+        Name="nBuildKit_Shared_Prepare_Copy_FromUrl"
+        Outputs="%(HttpFilesToCopy.Identity)">
+
+        <PropertyGroup>
+            <DestinationPath>%(HttpFilesToCopy.Destination)</DestinationPath>
+            <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'false' ">$(DestinationPath)</DirTempDestination>
+            <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' ">$(DirBuildTemp)</DirTempDestination>
+        </PropertyGroup>
+
+        <WebDownload
+            ErrorInformation="@(ErrorInformation)"
+            DestinationDirectory="$(DirTempDestination)"
+            Password="%(HttpFilesToCopy.Password)"
+            Source="%(HttpFilesToCopy.Identity)"
+            UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
+            UserName="%(HttpFilesToCopy.UserName)">
+            <Output
+                PropertyName="LocalFilePath"
+                TaskParameter="OutputPath" />
+        </WebDownload>
+
+        <Unzip
+            Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' "
+            DestinationDirectory="$(DestinationPath)"
+            ErrorInformation="@(ErrorInformation)"
+            InputFileName="$(LocalFilePath)" />
+    </Target>
+ </Project>

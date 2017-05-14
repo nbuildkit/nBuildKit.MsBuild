@@ -41,13 +41,30 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var scriptPath = GetAbsolutePath(Script);
             if (string.IsNullOrEmpty(scriptPath))
             {
-                Log.LogError("No script file was provided.");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "No script file was provided.");
                 return false;
             }
 
             if (!File.Exists(scriptPath))
             {
                 Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
                     "Expected to find the Powershell script at {0} but it was not found.",
                     scriptPath);
                 return false;

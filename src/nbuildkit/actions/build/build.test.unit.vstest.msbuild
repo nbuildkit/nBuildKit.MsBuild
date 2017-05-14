@@ -7,6 +7,12 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildTestUnitMsTest>true</ExistsBuildTestUnitMsTest>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadUnitTestAssemblies>true</ShouldLoadUnitTestAssemblies>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -25,14 +31,19 @@
 
     <Target Name="_nBuildKit_Build_Test_Unit_VsTest_GetToolPaths">
         <Error
+            Code="$(NBuildKitErrorCodePackagesDirectoryNotFound)"
             Condition="!Exists('$(DirPackages)') "
+            HelpKeyword="$(NBuildKitErrorIdPackagesDirectoryNotFound)"
             Text="The packages directory does not exist. Cannot search for the unit test executables." />
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition="!Exists('$(ToolsExternalVsTestPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="Could not locate the VsTest executable path. Cannot execute unit tests." />
 
         <NuGetInstall
             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -41,6 +52,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="VSCoverageToReportGenerator.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -49,6 +61,7 @@
         </SearchPackagesDirectoryForToolPath>
         <GetToolFullPath
             Condition=" '$(ToolsExternalVSCoverageToReportGeneratorPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             Tool="$(ToolsExternalVSCoverageToReportGeneratorPath)">
             <Output
                 PropertyName="ToolsExternalVSCoverageToReportGeneratorPath"
@@ -64,6 +77,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -73,6 +87,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalReportGeneratorPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="ReportGenerator.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -81,6 +96,7 @@
         </SearchPackagesDirectoryForToolPath>
         <GetToolFullPath
             Condition=" '$(ToolsExternalReportGeneratorPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             Tool="$(ToolsExternalReportGeneratorPath)">
             <Output
                 PropertyName="ToolsExternalReportGeneratorPath"
@@ -96,6 +112,7 @@
 
         <NuGetInstall
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -105,6 +122,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="OpenCoverToCoberturaConverter.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -113,6 +131,7 @@
         </SearchPackagesDirectoryForToolPath>
         <GetToolFullPath
             Condition=" '$(ToolsExternalOpenCoverToCoberturaConverterPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             Tool="$(ToolsExternalOpenCoverToCoberturaConverterPath)">
             <Output
                 PropertyName="ToolsExternalOpenCoverToCoberturaConverterPath"
@@ -133,6 +152,7 @@
             Text="Resolving build templates ..." />
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(DirReportVsTest)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -141,6 +161,7 @@
         </TemplateText>
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(FileReportOpenCoverXml)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -149,6 +170,7 @@
         </TemplateText>
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(FileReportOpenCoverCsv)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -157,6 +179,7 @@
         </TemplateText>
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(DirReportOpenCoverCobertura)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -172,10 +195,14 @@
         DependsOnTargets="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates"
         Name="_nBuildKit_Build_Test_Unit_VsTest_RunTests">
         <Error
+            Code="$(NBuildKitErrorCodePackagesDirectoryNotFound)"
             Condition="!Exists('$(DirPackages)') "
+            HelpKeyword="$(NBuildKitErrorIdPackagesDirectoryNotFound)"
             Text="The packages directory does not exist. Cannot search for the unit test executables." />
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition="!Exists('$(ToolsExternalVsTestPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="Could not locate the VsTest executable path. Cannot execute unit tests." />
 
         <MakeDir
@@ -237,7 +264,8 @@
         <ItemGroup>
             <UnitTestAssemblyDirectoriesWithTrailingBackslash Include="@(UnitTestAssemblies->'%(RootDir)%(Directory)')" />
         </ItemGroup>
-        <RemoveDuplicates Inputs="@(UnitTestAssemblyDirectoriesWithTrailingBackslash)">
+        <RemoveDuplicates
+            Inputs="@(UnitTestAssemblyDirectoriesWithTrailingBackslash)">
             <Output
                 ItemName="UnitTestAssemblyDirectoriesWithTrailingBackslashFiltered"
                 TaskParameter="Filtered" />
@@ -265,12 +293,14 @@
 
         <ReportGenerator
             Condition=" Exists('$(ToolsExternalReportGeneratorPath)') AND '@(ReportFilesToProcess)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             OpenCoverOutputFiles="@(ReportFilesToProcess)"
             OutputDirectory="$(DirReportGeneratorOutput)"
             ReportGeneratorExe="$(ToolsExternalReportGeneratorPath)" />
 
         <ReportGeneratorOutputToCsv
             Condition="Exists('$(FileReportReportGeneratorXmlSummary)') AND Exists('$(FileReportReportGeneratorXmlSummary)') "
+            ErrorInformation="@(ErrorInformation)"
             InputFile="$(FileReportReportGeneratorXmlSummary)"
             OutputFile="$(FileReportOpenCoverCsvExpanded)" />
     </Target>

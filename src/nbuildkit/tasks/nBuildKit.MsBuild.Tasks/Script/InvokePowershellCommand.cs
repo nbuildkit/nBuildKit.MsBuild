@@ -49,7 +49,16 @@ namespace NBuildKit.MsBuild.Tasks.Script
         {
             if (string.IsNullOrEmpty(Command))
             {
-                Log.LogError("No command was provided.");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationMissingArgument),
+                    ErrorIdApplicationMissingArgument,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "No command was provided.");
                 return false;
             }
 

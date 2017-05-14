@@ -19,7 +19,9 @@
         <DeployStepsRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
 
         <DeployStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</DeployStepsPrepareCopyNuGet>
+        <DeployStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</DeployStepsPrepareCopyHttp>
         <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</DeployStepsPrepareCopyFiles>
+        <DeployStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</DeployStepsPrepareCopyArchive>
 
         <DeployStepsPushToTags>$(MSBuildThisFileDirectory)deploy.pushto.tags.msbuild</DeployStepsPushToTags>
         <DeployStepsPushToNuget>$(MSBuildThisFileDirectory)deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
@@ -29,7 +31,7 @@
         <DeployStepsPushToGitBranch>$(MSBuildThisFileDirectory)deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
         <DeployStepsPushToGitRepository>$(MSBuildThisFileDirectory)deploy.pushto.gitrepository.msbuild</DeployStepsPushToGitRepository>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadAvailableStepMetadata)' == 'true' ">
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsBuildTargetsAssembly)'))">
             <Description>
                 Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio solutions so that it is possible to build MsBuild tasks that will be used in the build process.
@@ -94,6 +96,14 @@
             <Name>Deploy - copy nuget</Name>
             <Path>$(DeployStepsPrepareCopyNuGet)</Path>
         </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyHttp)'))">
+            <Description>
+                Copies one or more files from a set of URLs.
+            </Description>
+            <Id>DeployStepsPrepareCopyHttp</Id>
+            <Name>Deploy - copy from URL</Name>
+            <Path>$(DeployStepsPrepareCopyHttp)</Path>
+        </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyFiles)'))">
             <Description>
                 Copies one or more files from the file system.
@@ -101,6 +111,14 @@
             <Id>DeployStepsPrepareCopyFiles</Id>
             <Name>Deploy - copy files</Name>
             <Path>$(DeployStepsPrepareCopyFiles)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyArchive)'))">
+            <Description>
+                Copies one or more files from an archive or zip file.
+            </Description>
+            <Id>DeployStepsPrepareCopyArchive</Id>
+            <Name>Deploy - copy archive</Name>
+            <Path>$(DeployStepsPrepareCopyArchive)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToTags)'))">
             <Description>

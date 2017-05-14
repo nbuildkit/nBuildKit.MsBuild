@@ -135,10 +135,14 @@
 
     <Target Name="_nBuildKit_Executors_ConfigureAndExecute_ValidateDirectories">
         <Error
+            Code="NBKEX0100"
             Condition="!Exists('$(DirWorkspace)')"
+            HelpKeyword="NBuildKitExecutors.ConfigureAndExecute.WorkspaceNotValid"
             Text="The provided workspace directory is not valid. The provided value was: '$(DirWorkspace)'. Please provide a valid workspace directory." />
         <Error
+            Code="NBKEX0101"
             Condition="!Exists('$(DirLocalUserSettings)')"
+            HelpKeyword="NBuildKitExecutors.ConfigureAndExecute.UserSettingsNotValid"
             Text="The provided user settings directory is not valid. The provided value was: '$(DirLocalUserSettings)'. Please provide a valid user settings directory." />
     </Target>
 

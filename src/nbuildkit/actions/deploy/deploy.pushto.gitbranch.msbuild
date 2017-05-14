@@ -7,6 +7,12 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsDeployPushToGitBranch>true</ExistsDeployPushToGitBranch>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadPushToGitBranchSpecs>true</ShouldLoadPushToGitBranchSpecs>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -40,6 +46,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(FilesToPush)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -54,6 +61,7 @@
         </CreateProperty>
         <TemplateText
             Condition=" '$(RepositoryToPushTo)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="$(RepositoryToPushTo)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -68,6 +76,7 @@
         </CreateProperty>
         <TemplateText
             Condition=" '$(BranchToPushTo)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="$(BranchToPushTo)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -87,6 +96,7 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(CommitMessage)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -113,11 +123,15 @@
                 PropertyName="DirRepositoryWorkspace"
                 TaskParameter="Value" />
         </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirRepositoryWorkspace)') "
+            Directories="$(DirRepositoryWorkspace)" />
 
         <!-- Clone the repository in the temporary directory -->
         <Message Text="Cloning repository $(RepositoryToPushTo) and switching to branch $(BranchToPushTo) ..." />
         <GitClone
             Branch="$(BranchToPushTo)"
+            ErrorInformation="@(ErrorInformation)"
             Condition=" '$(RepositoryToPushTo)' != '' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Repository="$(RepositoryToPushTo)"
@@ -125,14 +139,17 @@
 
         <!-- Verify that we're on the branch!' -->
         <GitCurrentBranch
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
-            WorkingDirectory="$(DirRepositoryWorkspace)">
+            Workspace="$(DirRepositoryWorkspace)">
             <Output
                 PropertyName="GitCurrentBranch"
                 TaskParameter="CurrentBranch" />
         </GitCurrentBranch>
         <Error
+            Code="$(NBuildKitErrorCodeVcsGitNotOnExpectedBranch)"
             Condition=" '$(GitCurrentBranch)' != '$(BranchToPushTo)' "
+            HelpKeyword="$(NBuildKitErrorIdVcsGitNotOnExpectedBranch)"
             Text="Not on expected branch, expected to be on $(BranchToPushTo) but are on $(GitCurrentBranch)" />
 
         <!-- Remove everything except the .git folder and the .gitattributes and .gitignore files -->
@@ -158,7 +175,9 @@
                 TaskParameter="Include" />
         </CreateItem>
         <Error
+            Code="$(NBuildKitErrorCodeDeployPushToGitBranchNoFiles)"
             Condition=" '@(FilesToPush)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToGitBranchNoFiles)"
             Text="There are no files to be pushed" />
 
         <PropertyGroup>
@@ -182,6 +201,7 @@
         </ItemGroup>
         <Unzip
             Condition=" '@(FilesToUnzip)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             DestinationDirectory="$(DirBuildTemp)\unzip\%(FilesToUnzip.Filename)"
             InputFileName="%(FilesToUnzip.FullPath)" />
         <ItemGroup>
@@ -206,6 +226,7 @@
         Outputs="%(PushToGitBranchSpecs.Identity)">
         <Message Text="Adding new files to list of changes to commit on branch $(BranchToPushTo) ..." />
         <GitNewFiles
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirRepositoryWorkspace)">
             <Output
@@ -215,6 +236,7 @@
 
         <GitAdd
             Condition=" '@(NewFilesForGit)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             FilesToAdd="@(NewFilesForGit)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirRepositoryWorkspace)" />
@@ -222,6 +244,7 @@
         <Message Text="Commiting changes on branch $(BranchToPushTo) ..." />
         <GitCommit
             Condition=" '$(CommitMessageToProvide)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Message="$(CommitMessageToProvide)"
             Workspace="$(DirRepositoryWorkspace)" />
@@ -235,6 +258,7 @@
         <GitPush
             Branch="$(BranchToPushTo)"
             Condition=" '$(RepositoryToPushTo)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirRepositoryWorkspace)" />
     </Target>

@@ -24,6 +24,9 @@ namespace NBuildKit.MsBuild.Tasks.Code
     /// </summary>
     public sealed class GenerateInternalsVisibleToAttributes : CommandLineToolTask
     {
+        private const string ErrorIdFailedToExtractPublicKey = "NBuildKit.GenerateInternalsVisibleTo.FailedToExtractPublicKey";
+        private const string ErrorIdNoFiles = "NBuildKit.GenerateInternalsVisibleTo.NoFiles";
+
         private const string MetadataValueTag = "ReplacementValue";
 
         /// <summary>
@@ -68,7 +71,16 @@ namespace NBuildKit.MsBuild.Tasks.Code
         {
             if (Items == null)
             {
-                Log.LogError("No InternalsVisibleTo attributes to generate!");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdNoFiles),
+                    ErrorIdNoFiles,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "No InternalsVisibleTo attributes to generate!");
                 return false;
             }
 
@@ -146,11 +158,17 @@ namespace NBuildKit.MsBuild.Tasks.Code
                                     if (exitCode != 0)
                                     {
                                         Log.LogError(
-                                            string.Format(
-                                                CultureInfo.InvariantCulture,
-                                                "{0} exited with a non-zero exit code while trying to extract the public key file from the signing key file. Exit code was: {1}",
-                                                snExeFileName,
-                                                exitCode));
+                                            string.Empty,
+                                            ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                                            ErrorIdApplicationNonzeroExitCode,
+                                            string.Empty,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            "{0} exited with a non-zero exit code while trying to extract the public key file from the signing key file. Exit code was: {1}",
+                                            snExeFileName,
+                                            exitCode);
                                         return false;
                                     }
                                 }
@@ -173,11 +191,17 @@ namespace NBuildKit.MsBuild.Tasks.Code
                                     if (exitCode != 0)
                                     {
                                         Log.LogError(
-                                            string.Format(
-                                                CultureInfo.InvariantCulture,
-                                                "{0} exited with a non-zero exit code while trying to extract the public key information from the public key file. Exit code was: {1}",
-                                                snExeFileName,
-                                                exitCode));
+                                            string.Empty,
+                                            ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                                            ErrorIdApplicationNonzeroExitCode,
+                                            string.Empty,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            "{0} exited with a non-zero exit code while trying to extract the public key information from the public key file. Exit code was: {1}",
+                                            snExeFileName,
+                                            exitCode);
                                         return false;
                                     }
                                 }
@@ -185,7 +209,16 @@ namespace NBuildKit.MsBuild.Tasks.Code
                                 var publicKeyText = text.ToString();
                                 if (string.IsNullOrEmpty(publicKeyText))
                                 {
-                                    Log.LogError("Failed to extract public key from key file.");
+                                    Log.LogError(
+                                        string.Empty,
+                                        ErrorCodeById(ErrorIdFailedToExtractPublicKey),
+                                        ErrorIdFailedToExtractPublicKey,
+                                        string.Empty,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        "Failed to extract public key from key file.");
                                     continue;
                                 }
 
@@ -215,7 +248,16 @@ namespace NBuildKit.MsBuild.Tasks.Code
                                     .LastOrDefault();
                                 if (string.IsNullOrEmpty(assemblyPath))
                                 {
-                                    Log.LogError("Failed to find the full path of: " + assemblyFromPackage);
+                                    Log.LogError(
+                                        string.Empty,
+                                        ErrorCodeById(ErrorIdFileNotFound),
+                                        ErrorIdFileNotFound,
+                                        string.Empty,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        "Failed to find the full path of: " + assemblyFromPackage);
                                     continue;
                                 }
 
@@ -237,18 +279,33 @@ namespace NBuildKit.MsBuild.Tasks.Code
                                 if (exitCode != 0)
                                 {
                                     Log.LogError(
-                                        string.Format(
-                                            CultureInfo.InvariantCulture,
-                                            "{0} exited with a non-zero exit code while trying to extract the public key from a signed assembly. Exit code was: {1}",
-                                            snExeFileName,
-                                            exitCode));
+                                        string.Empty,
+                                        ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                                        ErrorIdApplicationNonzeroExitCode,
+                                        string.Empty,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        "{0} exited with a non-zero exit code while trying to extract the public key from a signed assembly. Exit code was: {1}",
+                                        snExeFileName,
+                                        exitCode);
                                     return false;
                                 }
 
                                 var publicKeyText = text.ToString();
                                 if (string.IsNullOrEmpty(publicKeyText))
                                 {
-                                    Log.LogError("Failed to extract public key from assembly.");
+                                    Log.LogError(
+                                        string.Empty,
+                                        ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                                        ErrorIdApplicationNonzeroExitCode,
+                                        string.Empty,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        "Failed to extract public key from assembly.");
                                     continue;
                                 }
 

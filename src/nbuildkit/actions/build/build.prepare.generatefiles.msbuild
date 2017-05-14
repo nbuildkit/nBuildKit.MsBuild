@@ -7,6 +7,12 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildPrepareGenerateFiles>true</ExistsBuildPrepareGenerateFiles>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadBuildFilesToGenerate>true</ShouldLoadBuildFilesToGenerate>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -55,8 +61,8 @@
         </ItemGroup>
 
         <TemplateFile
-            Condition="!Exists('%(BuildFilesToGenerate.FullPath)')"
             Encoding="%(BuildFilesToGenerate.Encoding)"
+            ErrorInformation="@(ErrorInformation)"
             OutputFileName="%(BuildFilesToGenerate.Identity)"
             SearchExpression="%(BuildFilesToGenerate.Expression)"
             Template="%(BuildFilesToGenerate.Template)"
