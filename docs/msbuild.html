@@ -1,0 +1,403 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+        <meta name="description" />
+        <meta name="keywords" content="static content generator,static site generator,static site,HTML,web development,.NET,C#,Razor,Markdown,YAML" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="/nBuildKit.MsBuild/assets/img/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/nBuildKit.MsBuild/assets/img/favicon.ico" type="image/x-icon">
+        <title>nBuildKit - Msbuild</title>
+        <link href="/nBuildKit.MsBuild/assets/css/mermaid.css" rel="stylesheet">
+        <link href="/nBuildKit.MsBuild/assets/css/highlight.css" rel="stylesheet">
+        <link href="/nBuildKit.MsBuild/assets/css/bootstrap/bootstrap.css" rel="stylesheet" />
+        <link href="/nBuildKit.MsBuild/assets/css/adminlte/AdminLTE.css" rel="stylesheet" />
+        <link href="/nBuildKit.MsBuild/assets/css/theme/theme.css" rel="stylesheet" />
+        <link href="//fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,400i,700,700i" rel="stylesheet">
+        <link href="/nBuildKit.MsBuild/assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="/nBuildKit.MsBuild/assets/css/override.css" rel="stylesheet" />
+        <script src="/nBuildKit.MsBuild/assets/js/jquery-2.2.3.min.js"></script>
+        <script src="/nBuildKit.MsBuild/assets/js/bootstrap.min.js"></script>        
+        <script src="/nBuildKit.MsBuild/assets/js/app.min.js"></script>         
+        <script src="/nBuildKit.MsBuild/assets/js/highlight.pack.js"></script>   
+        <script src="/nBuildKit.MsBuild/assets/js/jquery.slimscroll.min.js"></script>
+        <script src="/nBuildKit.MsBuild/assets/js/jquery.sticky-kit.min.js"></script>
+        <script src="/nBuildKit.MsBuild/assets/js/mermaid.min.js"></script>
+        <!--[if lt IE 9]>
+        <script src="/nBuildKit.MsBuild/assets/js/html5shiv.min.js"></script>
+        <script src="/nBuildKit.MsBuild/assets/js/respond.min.js"></script>
+        <![endif]-->  
+
+        
+    </head>
+    <body class="hold-transition wyam layout-boxed  ">    
+        <div class="top-banner"></div>
+        <div class="wrapper with-container">
+            <!-- Header -->
+            <header class="main-header">   
+                     
+                <a href="/nBuildKit.MsBuild/" class="logo">
+                            <span>nBuildKit</span>
+                </a>   
+                         
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <!-- Sidebar toggle button-->
+                        <a href="#" class="sidebar-toggle visible-xs-block" data-toggle="offcanvas" role="button">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-right"></i>
+                        </a>
+                                        
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-down"></i>
+                        </button>
+                    </div>
+            
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                        <ul class="nav navbar-nav">                            
+                                    <li class="active"><a href="/nBuildKit.MsBuild/docs">Docs</a></li>
+        <li><a href="/nBuildKit.MsBuild/blog">Blog</a></li>
+        <li><a href="/nBuildKit.MsBuild/api">API</a></li>
+ 
+                        </ul>       
+                    </div>
+                    <!-- /.navbar-collapse -->
+                
+                    <!-- Navbar Right Menu -->
+                </nav>
+            </header>
+            
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="main-sidebar ">
+                <section class="infobar" data-spy="affix" data-offset-top="60" data-offset-bottom="200"> 
+                    	
+        <div><p><a href="https://github.com/nbuildkit/nBuildKit.MsBuild/tree/master/doc/docs/msbuild.md"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Content</a></p></div>
+    <div id="infobar-headings"></div>
+
+                </section>
+                <section class="sidebar">                    
+                    
+
+                    <ul class="sidebar-menu">
+                        
+                <li><a href="/nBuildKit.MsBuild/docs/about">About</a></li>
+                <li><a href="/nBuildKit.MsBuild/docs/building">Building</a></li>
+                <li><a href="/nBuildKit.MsBuild/docs/contributing">Contributing</a></li>
+                <li><a href="/nBuildKit.MsBuild/docs/creating-a-release">Creating A Release</a></li>
+                <li class="selected"><a href="/nBuildKit.MsBuild/docs/msbuild">Msbuild</a></li>
+                <li><a href="/nBuildKit.MsBuild/docs/usage">Usage</a></li>
+
+                    </ul>
+                </section>                
+            </aside>
+            
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                
+
+
+
+	<section class="content-header">
+		<h1>Msbuild</h1>
+	</section>
+	<section class="content">
+		<p>nBuildKit provides the following MsBuild packages:</p>
+<h2 id="requirements">Requirements</h2>
+<p>The <code>nBuildKit</code> package makes the following assumptions:</p>
+<ul>
+<li>There is an installation of the command line version of NuGet available for use during the build process. This may be either be found via the PATH environment variable or may be found via the path value provided in the <code>settings.props</code> file.</li>
+<li>Certain tasks cannot be skipped</li>
+<li>Workspace preparation - Cleans out the <code>build</code> directory</li>
+<li>Gather version information - Collects information about the current version and stores it in a temporary file to be used by the rest of the build. Current options are to use a MsBuild version file or to use the GitHubFlowVersion application.</li>
+<li>Certain tasks require certain applications / packages to be available. These are:</li>
+<li>Release notes are gathered via <a href="https://github.com/GitTools/GitReleaseNotes">GitReleaseNotes</a></li>
+<li>Version numbers are either gathered via a <code>version.xml</code> msbuild file, via <a href="https://github.com/ParticularLabs/GitVersion">GitVersion</a>, or via <a href="https://github.com/JakeGinnivan/GitHubFlowVersion">GitHubFlowVersion</a></li>
+<li><a href="http://www.blunck.se/ccm.html">CCM</a></li>
+<li><a href="http://www.campwoodsw.com/sourcemonitor.html">SourceMonitor</a></li>
+<li>Binaries --&gt; should be able to build with MsBuild, hence all tasks need to be available</li>
+<li><a href="http://www.mono-project.com/docs/tools+libraries/tools/moma/">Moma</a></li>
+<li>FxCop</li>
+<li><a href="https://github.com/EWSoftware/SHFB">Sandcastle</a> for documentation</li>
+<li>All binaries are dropped in a specific directory (<code>workspace/build/bin</code>) at the end of the compilation process.</li>
+</ul>
+<h2 id="workspace-layout">Workspace layout</h2>
+<p>The <code>nBuildKit.MsBuild</code> package makes the following assumptions about the layout of the build environment:</p>
+<ul>
+<li>There is a <code>packages.config</code> file in the same directory as the <code>nbuildkit.msbuild</code> main build script. The <code>packages.config</code> file is used to find the installed version of nBuildKit.</li>
+<li>There is either a <code>packages</code> directory, which contains the installed NuGet packages for the project, or a <code>nuget.config</code> file in the same directory as the <code>nsbuildkit.msbuild</code>  main build script. If the <code>packages</code> directory is found then it will be assumed that the installed version of nBuildKit will be in that directory, otherwise the <code>nuget.config</code> file will be searched for a <code>repositorypath</code> which will be used to determine the location of the packages directory.</li>
+</ul>
+<p>In other words <code>nBuildKit</code> expects at least either one of the following directory (<code>[D]</code>) and file structures:</p>
+<pre><code>[D] workspace
+    |
+    |- myproject.msbuild
+    |- nuget.config
+    |- packages.config
+    |- settings.props
+</code></pre>
+<p>where the <code>nuget.config</code> file points to a <code>repositorypath</code>, or the following situation</p>
+<pre><code>[D] workspace
+    |
+    |- [D] packages
+    |- myproject.msbuild
+    |- packages.config
+    |- settings.props
+</code></pre>
+<p>By default the <code>settings.props</code> file describes a workspace with the following layout:</p>
+<pre><code>[D] workspace
+    |
+    |- [D] build
+    |      |
+    |      |- [D] bin
+    |      |- [D] deploy
+    |      |- [D] logs
+    |      |- [D] temp
+    |- [D] packages
+    |- [D] src
+    |- [D] templates
+    |- nbuildkit.msbuild
+    |- packages.config
+    |- settings.props
+</code></pre>
+<p>Where:</p>
+<ul>
+<li><strong>build</strong> - The directory that will contain all files generated during the build process, including binaries, artifacts, log files etc. etc.</li>
+<li><strong>bin</strong> - The directory that will contain the binary files generated during the build process.</li>
+<li><strong>deploy</strong> - The directory that will contain the artifacts (e.g. NuGet packages, ZIP archives etc.) generated during the build process.</li>
+<li><strong>logs</strong> - The directory that will contain all the log files that were generated during the build process including the reports from the unit tests and the static analysis.</li>
+<li><strong>temp</strong> - The directory that will contain all the temporary files that were generated during the build process.</li>
+<li><strong>packages</strong> - The directory that contains the NuGet packages for the build process. This directory may also contain the NuGet packages for the Visual Studio solution but that is not required.</li>
+<li><strong>src</strong> - The directory that contains the source files and Visual Studio solution and projects.</li>
+<li><strong>templates</strong> - The directory that contains the template files which are used as a basis for generated files.</li>
+</ul>
+<p>Note that all these locations, other than the location of the <code>settings.props</code> file, which has to be in the 'root' of the workspace, may be changed by specifying where they are located in the <code>settings.props</code> file.</p>
+<h2 id="updating-the-settings-file">Updating the settings file</h2>
+<p>Once a basic version of the <code>settings.props</code> file is available in the workspace directory you may want to configure it so that it fits your specific case better. All sections, properties and collections are fully documented in the <code>settings.props</code> file. The documentation should provide enough information to determine the goal of each item. The <code>settings.props</code> file contains the following sections:</p>
+<ul>
+<li><strong>Global settings</strong> - Contains the properties and collections that apply to all parts of the build, test and deploy process. These are items such as product information, directory and file locations and the selected processes for getting version numbers and release notes.</li>
+<li><strong>Build settings</strong> - Contains the properties and collections that apply to the build part of the process. These are items such as source code analysis with tools like CCM, compilation of source code, execution of unit tests, execution of static analysis through tools like FxCop, generation of API documentation through tools like Sandcastle and finally creating NuGet packages or ZIP archives. Note that any type of tests done in this part of the process should be assumed to be running in the same workspace and process environment as the compilation part of the build.</li>
+<li><strong>Test settings</strong> - Contains the properties and collections that apply to the test part of the process. These are items such as automated regression or performance tests. Any tests executed during this stage of the process can be assumed to be executed in a different workspace and process space from the build steps, making this section more suitable for longer running tests.</li>
+<li><strong>Deploy settings</strong> - Contains the properties and collections that apply to the deploy part of the process. These are items such as tagging the current VCS revision, pushing NuGet packages to a NuGet feed and copying files to a local or remote location.</li>
+</ul>
+<h3 id="build-settings-specifics">Build settings specifics</h3>
+<p>There are several build specific settings defined in the <code>settings.props</code> file.</p>
+<h4 id="available-build-steps">Available build steps</h4>
+<p>The build part of <code>nBuildKit</code> has defined the following default steps:</p>
+<ul>
+<li><strong>Build / workspace preparation</strong></li>
+<li><strong>Workspace cleaning</strong> - Removes the <code>build</code> directory and all the files generated during the build.</li>
+<li><strong>Restore NuGet packages</strong> - Restores the NuGet packages for all of the build.</li>
+<li><strong>Gather version numbers</strong> - Gathers the version number information for the build.</li>
+<li><strong>Gather release notes</strong> - Gathers the release notes for the build.</li>
+<li><strong>Gather VCS information</strong> - Gathers information about the current revision number and branch. Currently only supported for GIT.</li>
+<li><strong>Generate license file</strong> - Generates an XML file containing the license information for each of the NuGet packages used in the build.</li>
+<li><strong>Generate files</strong> - Generate one or more files based on a set of templates.</li>
+<li><strong>Analysis of source code</strong></li>
+<li><strong>CCM</strong> - Analyzes the source code with <a href="http://www.blunck.se/ccm.html">CCM</a>.</li>
+<li><strong>SourceMonitor</strong> - Analyzes the source code with <a href="http://www.campwoodsw.com/sourcemonitor.html">SourceMonitor</a>.</li>
+<li><strong>Compilation</strong> - Invokes MsBuild on one or more Visual Studio solutions.</li>
+<li><strong>Unit testing</strong></li>
+<li><strong>MsTest</strong> - Executes the unit tests with <a href="">MsTest</a></li>
+<li><strong>NUnit</strong> - Executes the unit tests with <a href="http://nunit.org">NUnit</a></li>
+<li><strong>VsTest</strong> - Executes the unit tests with <a href="">VsTest</a></li>
+<li><strong>Analysis of binaries</strong></li>
+<li><strong>MoMA</strong> - Analyzes the binaries with the <a href="http://www.mono-project.com/MoMA">Mono Migration Analyzer</a>.</li>
+<li><strong>FxCop</strong> - Analyzes the binaries with FxCop.</li>
+<li><strong>API documentation</strong> - Builds the API documentation with <a href="http://sandcastle.codeplex.com/">Sandcastle</a> and <a href="http://shfb.codeplex.com/">Sandcastle helpfile builder</a>.</li>
+<li><strong>Packing</strong></li>
+<li><strong>NuGet</strong> - Creates the <a href="http://nuget.org/">NuGet</a> packages.</li>
+<li><strong>ZIP archives</strong> - Creates one or more ZIP archives.</li>
+</ul>
+<p>Note that the build steps described above may have its own set of properties that need to be configured. These properties can also be found in the <code>settings.props</code> file below the build steps <code>ItemGroup</code>.</p>
+<h3 id="test-settings">Test settings</h3>
+<h4 id="available-test-steps">Available test steps</h4>
+<p>The test part of <code>nBuildKit</code> can execute the following steps:</p>
+<ul>
+<li><strong>Build / workspace preparation</strong></li>
+<li><strong>Workspace cleaning</strong> - Removes the <code>build</code> directory and all the files generated during the build.</li>
+<li><strong>Restore NuGet packages</strong> - Restores the NuGet packages for all of the build.</li>
+<li><strong>Gather version numbers</strong> - Gathers the version number information for the build.</li>
+<li><strong>Gather release notes</strong> - Gathers the release notes for the build.</li>
+<li><strong>Gather VCS information</strong> - Gathers information about the current branch. Currently only supported for GIT.</li>
+<li><strong>Generate files</strong> - Generate one or more files based on a set of templates.</li>
+</ul>
+<h3 id="deploy-settings">Deploy settings</h3>
+<h4 id="available-deploy-steps">Available deploy steps</h4>
+<p>The deploy part of <code>nBuildKit</code> can execute the following steps:</p>
+<ul>
+<li>Tag current revision with the version number</li>
+<li>GIT</li>
+<li>TFS</li>
+<li>Push artifacts to local / remote directory</li>
+<li>Push NuGet packages to NuGet feed</li>
+<li>Push NuGet symbol packages to local symbol server (copy to directory) (nAnicitus approach)</li>
+<li>Create release on GitHub (based on earlier tag) and push artifacts to release</li>
+</ul>
+<h3 id="custom-build-steps">Custom build steps</h3>
+<p>All sections allow custom build steps to be executed before and after the section. Custom build step must be a MsBuild script. Custom build steps can be inserted in the sequence by adding them in the desired location in the <code>BuildStepsToExecute</code>, <code>TestStepsToExecute</code> or <code>DeployStepsToExecute</code> item groups.</p>
+<h2 id="versions">Versions</h2>
+<ul>
+<li><p>Build scripts require a version. Using the <a href="semver.org">semantic version</a> at all times. Normally provide <code>major.minor.patch</code>. Note that binaries are versioned according to the way they are set up. The build scripts do not change that.</p>
+</li>
+<li><p>Version can be gotten from a custom MsBuild script that defines the major, minor, patch and build numbers, e.g.</p>
+<pre><code>  &lt;Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'
+           ToolsVersion=&quot;4.0&quot;&gt;
+      &lt;UsingTask TaskName=&quot;CalculateCustomVersion&quot;
+                 TaskFactory=&quot;CodeTaskFactory&quot;
+                 AssemblyFile=&quot;$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll&quot;&gt;
+          &lt;ParameterGroup&gt;
+              &lt;VersionMajor ParameterType=&quot;System.String&quot; Output=&quot;true&quot; /&gt;
+              &lt;VersionMinor ParameterType=&quot;System.String&quot; Output=&quot;true&quot; /&gt;
+              &lt;VersionPatch ParameterType=&quot;System.String&quot; Output=&quot;true&quot; /&gt;
+              &lt;VersionBuild ParameterType=&quot;System.String&quot; Output=&quot;true&quot; /&gt;
+              &lt;VersionPreRelease ParameterType=&quot;System.String&quot; Output=&quot;true&quot; /&gt;
+              &lt;VersionSemantic ParameterType=&quot;System.String&quot; Output=&quot;true&quot; /&gt;
+              &lt;VersionSemanticFull ParameterType=&quot;System.String&quot; Output=&quot;true&quot; /&gt;
+              &lt;VersionSemanticNuGet ParameterType=&quot;System.String&quot; Output=&quot;true&quot; /&gt;
+          &lt;/ParameterGroup&gt;
+          &lt;Task&gt;
+              &lt;Code Type=&quot;Method&quot; Language=&quot;cs&quot;&gt;
+                  &lt;![CDATA[
+                      public override bool Execute()
+                      {
+                          try
+                          {
+                              VersionMajor = &quot;4&quot;;
+                              VersionMinor = &quot;3&quot;;
+                              VersionPatch = &quot;2&quot;;
+                              VersionBuild = &quot;1&quot;;
+                              VersionPreRelease = &quot;MyPreRelease&quot;;
+                              VersionSemantic = string.Format(
+                                  &quot;{0}.{1}.{2}&quot;,
+                                  VersionMajor,
+                                  VersionMinor,
+                                  VersionPatch);
+                              VersionSemanticFull = string.Format(
+                                  &quot;{0}.{1}.{2}-{3}+{4}&quot;,
+                                  VersionMajor,
+                                  VersionMinor,
+                                  VersionPatch,
+                                  VersionPreRelease,
+                                  VersionBuild);
+                              VersionSemanticNuGet = string.Format(
+                                  &quot;{0}.{1}.{2}-{3}{4}&quot;,
+                                  VersionMajor,
+                                  VersionMinor,
+                                  VersionPatch,
+                                  VersionPreRelease,
+                                  VersionBuild);
+                          }
+                          catch(Exception e)
+                          {
+                              Log.LogError(e.ToString());
+                          }
+
+                          // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
+                          // from a task's constructor or property setter. As long as this task is written to always log an error
+                          // when it fails, we can reliably return HasLoggedErrors.
+                          return !Log.HasLoggedErrors;
+                      }
+                  ]]&gt;
+              &lt;/Code&gt;
+          &lt;/Task&gt;
+      &lt;/UsingTask&gt;
+  &lt;/Project&gt;
+</code></pre>
+</li>
+<li><p>Getting the version from a XML file.</p>
+<pre><code>  &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+  &lt;Project ToolsVersion=&quot;3.5&quot;
+           DefaultTargets=&quot;Build&quot;
+           xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;
+      &lt;!-- Define the values for the version number --&gt;
+      &lt;PropertyGroup&gt;
+          &lt;!-- Get the build number from a CI server (e.g. Jenkins) --&gt;
+          &lt;BuildNumber&gt;$(BUILD_NUMBER)&lt;/BuildNumber&gt;
+
+          &lt;!-- If the build number doesn't exist then just set it to zero so that it has some kind of value --&gt;
+          &lt;BuildNumber Condition=&quot; '$(BuildNumber)' == '' &quot;&gt;0&lt;/BuildNumber&gt;
+
+          &lt;!-- The version numbers --&gt;
+          &lt;VersionMajor&gt;1&lt;/VersionMajor&gt;
+          &lt;VersionMinor&gt;2&lt;/VersionMinor&gt;
+          &lt;VersionPatch&gt;3&lt;/VersionPatch&gt;
+          &lt;VersionBuild&gt;$(BuildNumber)&lt;/VersionBuild&gt;
+          &lt;VersionPreRelease&gt;&lt;/VersionPreRelease&gt;
+      &lt;/PropertyGroup&gt;
+  &lt;/Project&gt;
+</code></pre>
+</li>
+<li><p>Using the <a href="https://github.com/ParticularLabs/GitVersion">GitVersion</a> application to get the version.</p>
+</li>
+<li><p>Using the <a href="https://github.com/JakeGinnivan/GitHubFlowVersion">GitHubFlowVersion</a> application to get the version.</p>
+</li>
+</ul>
+<h2 id="commonly-asked-questions">Commonly asked questions</h2>
+<ul>
+<li>How to add a custom build step</li>
+<li>Minimal edits to <code>settings.props</code> for working build</li>
+<li>How to control what build steps are taken</li>
+<li>How to control what test steps are taken</li>
+<li>How to control what deploy steps are taken</li>
+<li>Multi stage build - test - deploy process</li>
+<li>Deploying through promoting</li>
+</ul>
+
+	</section>
+                
+            </div>           
+            
+            <!-- Footer -->
+            <footer class="main-footer">
+            </footer>
+            
+        </div>
+        <div class="wrapper bottom-wrapper">
+            <footer class="bottom-footer">
+                Generated by <a href="https://wyam.io">Wyam</a>
+            </footer>
+        </div>
+        <a href="javascript:" id="return-to-top"><i class="fa fa-chevron-up"></i></a>
+        
+        <script>           
+            // Close the sidebar if we select an anchor link
+            $(".main-sidebar a[href^='#']:not('.expand')").click(function(){
+                $(document.body).removeClass('sidebar-open');
+            });
+            
+            $(document).load(function() {
+                mermaid.initialize(
+                {
+                    flowchart:
+                    {
+                        htmlLabels: false,
+                        useMaxWidth:false
+                    }
+                });  
+                mermaid.init(undefined, ".mermaid")
+                $('svg').addClass('img-responsive');
+                
+                $('pre code').each(function(i, block) {
+                    hljs.highlightBlock(block);
+                });  
+            });
+            hljs.initHighlightingOnLoad();
+
+            // Back to top
+            $(window).scroll(function() {
+                if ($(this).scrollTop() >= 200) {        // If page is scrolled more than 50px
+                    $('#return-to-top').fadeIn(1000);    // Fade in the arrow
+                } else {
+                    $('#return-to-top').fadeOut(1000);   // Else fade out the arrow
+                }
+            });
+            $('#return-to-top').click(function() {      // When arrow is clicked
+                $('body,html').animate({
+                    scrollTop : 0                       // Scroll to top of body
+                }, 500);
+            });
+        </script>
+    </body>
+</html>

@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="/nBuildKit.MsBuild/assets/img/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/nBuildKit.MsBuild/assets/img/favicon.ico" type="image/x-icon">
-        <title>nBuildKit - Home</title>
+        <title>nBuildKit - About</title>
         <link href="/nBuildKit.MsBuild/assets/css/mermaid.css" rel="stylesheet">
         <link href="/nBuildKit.MsBuild/assets/css/highlight.css" rel="stylesheet">
         <link href="/nBuildKit.MsBuild/assets/css/bootstrap/bootstrap.css" rel="stylesheet" />
@@ -31,9 +31,9 @@
 
         
     </head>
-    <body class="hold-transition wyam layout-boxed layout-top-nav no-gutter">    
+    <body class="hold-transition wyam layout-boxed  ">    
         <div class="top-banner"></div>
-        <div class="wrapper">
+        <div class="wrapper with-container">
             <!-- Header -->
             <header class="main-header">   
                      
@@ -43,6 +43,10 @@
                          
                 <nav class="navbar navbar-static-top" role="navigation">
                     <!-- Sidebar toggle button-->
+                        <a href="#" class="sidebar-toggle visible-xs-block" data-toggle="offcanvas" role="button">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-right"></i>
+                        </a>
                                         
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
@@ -54,7 +58,7 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
                         <ul class="nav navbar-nav">                            
-                                    <li><a href="/nBuildKit.MsBuild/docs">Docs</a></li>
+                                    <li class="active"><a href="/nBuildKit.MsBuild/docs">Docs</a></li>
         <li><a href="/nBuildKit.MsBuild/blog">Blog</a></li>
         <li><a href="/nBuildKit.MsBuild/api">API</a></li>
  
@@ -67,9 +71,10 @@
             </header>
             
             <!-- Left side column. contains the logo and sidebar -->
-            <aside class="main-sidebar hidden">
+            <aside class="main-sidebar ">
                 <section class="infobar" data-spy="affix" data-offset-top="60" data-offset-bottom="200"> 
                     	
+        <div><p><a href="https://github.com/nbuildkit/nBuildKit.MsBuild/tree/master/doc/docs/about.md"><i class="fa fa-pencil-square" aria-hidden="true"></i> Edit Content</a></p></div>
     <div id="infobar-headings"></div>
 
                 </section>
@@ -78,6 +83,12 @@
 
                     <ul class="sidebar-menu">
                         
+                <li class="selected"><a href="/nBuildKit.MsBuild/docs/about">About</a></li>
+                <li><a href="/nBuildKit.MsBuild/docs/building">Building</a></li>
+                <li><a href="/nBuildKit.MsBuild/docs/contributing">Contributing</a></li>
+                <li><a href="/nBuildKit.MsBuild/docs/creating-a-release">Creating A Release</a></li>
+                <li><a href="/nBuildKit.MsBuild/docs/msbuild">Msbuild</a></li>
+                <li><a href="/nBuildKit.MsBuild/docs/usage">Usage</a></li>
 
                     </ul>
                 </section>                
@@ -89,52 +100,61 @@
 
 
 
-<div class="jumbotron">
-    <div class="container">
-        <h1>What is nBuildKit?</h1>
-        <p>
-            A collection of tools that provide an easy way to set-up a complete build, test and deployment for a
-            (.NET) project.
-        </p>
-    </div>
-</div>
+	<section class="content-header">
+		<h1>About</h1>
+	</section>
+	<section class="content">
+		<p>nBuildKit is a collection of tools and scripts that provide an easy way to set-up a complete build and deployment for a (.NET) project.</p>
+<p>The build scripts provide the following default abilities:</p>
+<ul>
+<li>Clear previously created files from the workspace.</li>
+<li>Restore any missing NuGet packages for the project.</li>
+<li>Calculate the version based on the selected method of determining version numbers. Currently available methods are:
+<ul>
+<li>Getting the version through a custom calculation method.</li>
+<li>Getting the version from a XML file.</li>
+<li>Using the <a href="https://github.com/ParticularLabs/GitVersion">GitVersion</a> application to get the version.</li>
+<li>Using the <a href="https://github.com/JakeGinnivan/GitHubFlowVersion">GitHubFlowVersion</a> application to get the version.</li>
+</ul>
+</li>
+<li>Gather the release notes via the <a href="https://github.com/GitTools/GitReleaseNotes">GitReleaseNotes</a> application.</li>
+<li>Gather information about the current revision number and the working branch. Currently only GIT is supported.</li>
+<li>Generate one or more files from custom templates.</li>
+<li>Analyse sources with the <a href="http://www.blunck.se/ccm.html">CCM</a> application.</li>
+<li>Analyse sources with the <a href="http://www.campwoodsw.com/sourcemonitor.html">SourceMonitor</a> application.</li>
+<li>Build one or more Visual Studio solutions each with their own build configuration and platform.</li>
+<li>Execute unit tests and calculate code coverage. Code coverage reports can optionally be processed by <a href="https://github.com/danielpalme/ReportGenerator">ReportGenerator</a>. Currently supported test frameworks are
+<ul>
+<li>MsTest - Code coverage is always calculated with the <a href="https://github.com/sawilde/opencover">OpenCover</a> library</li>
+<li>VsTest - Code coverage is calculated with VsTest itself</li>
+<li>nUnit - Code coverage is always calculated with the <a href="https://github.com/sawilde/opencover">OpenCover</a> library</li>
+</ul>
+</li>
+<li>Analyse the created binaries with <a href="http://www.mono-project.com/docs/tools+libraries/tools/moma/">Moma</a>.</li>
+<li>Analyse the created binaries with FxCop.</li>
+<li>Generate API documentation with <a href="https://github.com/EWSoftware/SHFB">Sandcastle</a>.</li>
+<li>Package the created binaries with:
+<ul>
+<li>NuGet</li>
+<li>Zip archives</li>
+</ul>
+</li>
+</ul>
+<p>Build steps can be executed in any order providing the prerequisites for a build step are provided. Additionally custom build steps can be added at any point in the sequence.</p>
+<h2 id="available-scripts">Available scripts</h2>
+<p>nBuildKit currently has build scripts that use:</p>
+<ul>
+<li>[[MsBuild|MsBuild]] as the script 'language'.</li>
+</ul>
+<p>Build scripts for other languages may be added at a later stage.</p>
+<h2 id="building-and-contributing">Building and contributing</h2>
+<p>The following pages provide the information necessary to build a local copy of the library and to contribute to the library.</p>
+<ul>
+<li>[[How to build|Building]]</li>
+<li>[[How to contribute|Contributing]]</li>
+</ul>
 
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12 col-sm-6">
-
-            <h3>Based on MsBuild</h3>
-            <p>
-                The build engine powering all of the .NET framework builds
-            </p>
-
-            <h3>Consistent</h3>
-            <p>
-                Each build starts by removing the files that were generated in the last build so as to ensure that each
-                build behaves exactly the same as the previous one.
-            </p>
-
-            <h3>Lots of build-in functions</h3>
-            <p>
-                nBuildKit provides functions for restoring packages from NuGet and NPM, updating AssemblyInfo files,
-                gathering version numbers and release notes, generating files, building Visual Studio solutions,
-                excuting unit tests with NUnit and VsTest, executing FxCop code analysis, performing IL merging, creating
-                NuGet packages and ZIP archives. And all that during the build process.
-            </p>
-            <p>
-                Additionally nBuildKit provides many functions for more comprehensive testing and deployment
-            </p>
-
-            <h3>Easy to extend</h3>
-            <p>
-                Because you'll have to extend your build scripts at some point
-            </p>
-        </div>
-        <div class="col-sm-6 hidden-xs">
-            <img style="width: 100%;" src="/assets/img/screenshot.png" alt=""/>
-        </div>
-    </div>
-</div>
+	</section>
                 
             </div>           
             

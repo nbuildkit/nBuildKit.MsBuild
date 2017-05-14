@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="/nBuildKit.MsBuild/assets/img/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/nBuildKit.MsBuild/assets/img/favicon.ico" type="image/x-icon">
-        <title>nBuildKit - Home</title>
+        <title>nBuildKit - API - NBuildKit.MsBuild.Tasks.Properties Namespace</title>
         <link href="/nBuildKit.MsBuild/assets/css/mermaid.css" rel="stylesheet">
         <link href="/nBuildKit.MsBuild/assets/css/highlight.css" rel="stylesheet">
         <link href="/nBuildKit.MsBuild/assets/css/bootstrap/bootstrap.css" rel="stylesheet" />
@@ -31,9 +31,9 @@
 
         
     </head>
-    <body class="hold-transition wyam layout-boxed layout-top-nav no-gutter">    
+    <body class="hold-transition wyam layout-boxed  ">    
         <div class="top-banner"></div>
-        <div class="wrapper">
+        <div class="wrapper with-container">
             <!-- Header -->
             <header class="main-header">   
                      
@@ -43,6 +43,10 @@
                          
                 <nav class="navbar navbar-static-top" role="navigation">
                     <!-- Sidebar toggle button-->
+                        <a href="#" class="sidebar-toggle visible-xs-block" data-toggle="offcanvas" role="button">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-right"></i>
+                        </a>
                                         
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
@@ -56,7 +60,7 @@
                         <ul class="nav navbar-nav">                            
                                     <li><a href="/nBuildKit.MsBuild/docs">Docs</a></li>
         <li><a href="/nBuildKit.MsBuild/blog">Blog</a></li>
-        <li><a href="/nBuildKit.MsBuild/api">API</a></li>
+        <li class="active"><a href="/nBuildKit.MsBuild/api">API</a></li>
  
                         </ul>       
                     </div>
@@ -67,17 +71,100 @@
             </header>
             
             <!-- Left side column. contains the logo and sidebar -->
-            <aside class="main-sidebar hidden">
+            <aside class="main-sidebar ">
                 <section class="infobar" data-spy="affix" data-offset-top="60" data-offset-bottom="200"> 
                     	
-    <div id="infobar-headings"></div>
+	<div id="infobar-headings"></div>
 
                 </section>
                 <section class="sidebar">                    
-                    
+                    	
+	    <script src="/assets/js/lunr.min.js"></script>
+    <script src="/assets/js/searchIndex.js"></script>
+    <div class="sidebar-form">
+        <div class="input-group">
+            <input type="text" name="search" id="search" class="form-control" placeholder="Search Types...">
+            <span class="input-group-btn">
+                <button class="btn btn-flat"><i class="fa fa-search"></i></button>
+            </span>
+        </div>
+    </div>
+    <div id="search-results">
+    </div>
+    <script>
+        function runSearch(query){
+            $("#search-results").empty();			
+            if( query.length < 2 ){
+                return;
+            }			
+            var results = searchModule.search("*" + query + "*");
+            var listHtml = "<ul class='sidebar-menu'>";	
+            listHtml += "<li class='header'>Type Results</li>";	
+            if(results.length == 0 ){
+                listHtml += "<li>No results found</li>";
+            } else {					
+                for(var i = 0; i < results.length; ++i){
+                    var res = results[i];
+                    listHtml += "<li><a href='" + res.url + "'>" + res.title + "</a></li>";
+                }				
+            }
+            listHtml += "</ul>";				
+            $("#search-results").append(listHtml);
+        }
+
+        $(document).ready(function(){
+            $("#search").on('input propertychange paste', function() {
+                runSearch($("#search").val());
+            });
+        });
+    </script>
+	
+    <hr />
 
                     <ul class="sidebar-menu">
                         
+	<li class="header">Namespaces</li>   
+			<li><a href="/nBuildKit.MsBuild/api/global">global</a></li>
+
+				<li class="treeview active">
+				<a href="/nBuildKit.MsBuild/api/NBuildKit">NBuildKit</a> <a href="#" class="expand"></a>
+				<ul class="treeview-menu">
+			
+				<li class="treeview active">
+				<a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild">NBuildKit<wbr>.MsBuild</a> <a href="#" class="expand"></a>
+				<ul class="treeview-menu">
+			
+				<li class="treeview active">
+				<a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks">NBuildKit<wbr>.MsBuild<wbr>.Tasks</a> <a href="#" class="expand"></a>
+				<ul class="treeview-menu">
+						<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Code</a></li>
+
+				<li class="treeview">
+				<a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Core</a> <a href="#" class="expand"></a>
+				<ul class="treeview-menu">
+						<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core.FileSystem">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Core<wbr>.FileSystem</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core.Properties">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Core<wbr>.Properties</a></li>
+</ul></li>			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.FileSystem</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Groups">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Groups</a></li>
+
+				<li class="treeview">
+				<a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Nuclei">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Nuclei</a> <a href="#" class="expand"></a>
+				<ul class="treeview-menu">
+						<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Nuclei.AppDomains">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Nuclei<wbr>.AppDomains</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Nuclei<wbr>.ExceptionHandling</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Nuclei.Fusion">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Nuclei<wbr>.Fusion</a></li>
+</ul></li>			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Packaging</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Projects">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Projects</a></li>
+			<li class=" selected"><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Properties">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Properties</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Script</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Templating</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Testing</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Tests">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Tests</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Validation">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Validation</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.VersionControl</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Versions">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Versions</a></li>
+			<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Web">NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Web</a></li>
+</ul></li></ul></li></ul></li>      
 
                     </ul>
                 </section>                
@@ -89,52 +176,16 @@
 
 
 
-<div class="jumbotron">
-    <div class="container">
-        <h1>What is nBuildKit?</h1>
-        <p>
-            A collection of tools that provide an easy way to set-up a complete build, test and deployment for a
-            (.NET) project.
-        </p>
-    </div>
-</div>
+<section class="content-header">
+	<h1>NBuildKit<wbr>.MsBuild<wbr>.Tasks<wbr>.Properties <small>Namespace</small></h1>
+</section>
+<section class="content">
+	
+	
+	
 
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12 col-sm-6">
-
-            <h3>Based on MsBuild</h3>
-            <p>
-                The build engine powering all of the .NET framework builds
-            </p>
-
-            <h3>Consistent</h3>
-            <p>
-                Each build starts by removing the files that were generated in the last build so as to ensure that each
-                build behaves exactly the same as the previous one.
-            </p>
-
-            <h3>Lots of build-in functions</h3>
-            <p>
-                nBuildKit provides functions for restoring packages from NuGet and NPM, updating AssemblyInfo files,
-                gathering version numbers and release notes, generating files, building Visual Studio solutions,
-                excuting unit tests with NUnit and VsTest, executing FxCop code analysis, performing IL merging, creating
-                NuGet packages and ZIP archives. And all that during the build process.
-            </p>
-            <p>
-                Additionally nBuildKit provides many functions for more comprehensive testing and deployment
-            </p>
-
-            <h3>Easy to extend</h3>
-            <p>
-                Because you'll have to extend your build scripts at some point
-            </p>
-        </div>
-        <div class="col-sm-6 hidden-xs">
-            <img style="width: 100%;" src="/assets/img/screenshot.png" alt=""/>
-        </div>
-    </div>
-</div>
+	
+</section>
                 
             </div>           
             
