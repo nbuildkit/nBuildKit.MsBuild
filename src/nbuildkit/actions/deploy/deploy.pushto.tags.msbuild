@@ -21,7 +21,9 @@
         Condition=" '$(IsGitWorkspace)' == 'true' "
         Name="_nBuildKit_Deploy_PushTo_Tag_Vcs_Git">
         <Error
+            Code="$(NBuildKitErrorCodeGitNotFound)"
             Condition=" '$(ToolsExternalGitPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdGitNotFound)"
             Text="The git executable does not exist. Cannot push tags." />
 
         <!--

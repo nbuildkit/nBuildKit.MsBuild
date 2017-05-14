@@ -7,6 +7,11 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedPrepareGetVersion>true</ExistsSharedPrepareGetVersion>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -50,6 +55,7 @@
         </PropertyGroup>
         <InvokeStandaloneMsBuild
             Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild')"
+            ErrorInformation="@(ErrorInformation)"
             Projects="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild"
             Properties="$(Locations);$(Files);$(DefaultProperties)"
             RunEachTargetSeparately="True"
@@ -148,6 +154,7 @@
         Name="_nBuildKit_Shared_Prepare_GetVersion_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -157,6 +164,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalGitVersionPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="GitVersion.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -165,6 +173,7 @@
         </SearchPackagesDirectoryForToolPath>
         <GetToolFullPath
             Condition=" '$(ToolsExternalGitVersionPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             Tool="$(ToolsExternalGitVersionPath)">
             <Output
                 PropertyName="ToolsExternalGitVersionPath"
@@ -176,7 +185,9 @@
             Text="The GitVersion executable was found at: $(ToolsExternalGitVersionPath)" />
 
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition="!Exists('$(ToolsExternalGitVersionPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="Could not locate the GitVersion executable path. Cannot get semantic version." />
     </Target>
 
@@ -188,6 +199,7 @@
             Text="Getting version from the GitVersion ..." />
 
         <CalculateSemanticVersionWithGitVersion
+            ErrorInformation="@(ErrorInformation)"
             ExePath="$(ToolsExternalGitVersionPath)"
             LogPath="$(DirBuildLogs)\gitversion.log"
             RemoteRepositoryUri="$(GitRemoteRepository)"

@@ -21,10 +21,13 @@
         Condition=" '$(IsGitWorkspace)' == 'True' AND '$(IsOnBuildServer)' == 'True' "
         Name="_nBuildKit_Shared_Prepare_VcsSetBranch_EnsureCorrectGitBranch">
         <Error
+            Code="$(NBuildKitErrorCodeGitNotFound)"
             Condition=" '$(ToolsExternalGitPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdGitNotFound)"
             Text="No GIT executable defined. Will not be able to gather the VCS information." />
 
         <GitCurrentBranch
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -38,11 +41,13 @@
             Text="Not on expected branch, resetting ..." />
         <GitCheckout
             Branch="$(GitBranchExpected)"
+            ErrorInformation="@(ErrorInformation)"
             Condition=" '$(GitBranchExpected)' != 'UNDEFINED' AND '$(CurrentGitBranch)' != '$(GitBranchExpected)' "
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)" />
 
         <GitCurrentRevision
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)">
             <Output
@@ -57,6 +62,7 @@
         <GitReset
             Commit="$(GitRevNoExpected)"
             Condition=" '$(GitRevNoExpected)' != 'UNDEFINED' AND '$(GitRevNoCurrentBranch)' != '$(GitRevNoExpected)' "
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)" />
     </Target>

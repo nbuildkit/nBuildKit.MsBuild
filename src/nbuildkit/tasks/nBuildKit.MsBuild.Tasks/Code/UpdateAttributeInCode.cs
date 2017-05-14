@@ -43,7 +43,17 @@ namespace NBuildKit.MsBuild.Tasks.Code
         {
             if (!File.Exists(GetAbsolutePath(InputFile)))
             {
-                Log.LogError("Input File '{0}' cannot be found", InputFile);
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Input File '{0}' cannot be found",
+                    InputFile);
             }
             else
             {

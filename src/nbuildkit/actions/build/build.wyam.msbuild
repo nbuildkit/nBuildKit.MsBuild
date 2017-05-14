@@ -16,7 +16,9 @@
         DependsOnTargets="_nBuildKit_Build_Wyam_GetToolPaths"
         Name="nBuildKit_Build_Wyam_Run">
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition=" '$(ToolsExternalWyamPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="The Wyam executable does not exist. Cannot generate the site." />
 
         <Exec
@@ -26,11 +28,14 @@
 
     <Target Name="_nBuildKit_Build_Wyam_GetToolPaths">
         <Error
+            Code="$(NBuildKitErrorCodePackagesDirectoryNotFound)"
             Condition="!Exists('$(DirPackages)') "
+            HelpKeyword="$(NBuildKitErrorIdPackagesDirectoryNotFound)"
             Text="The packages directory does not exist. Cannot search for the Wyam executables." />
 
         <NuGetInstall
             Condition=" '$(ToolsExternalWyamPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -40,6 +45,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalWyamPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="wyam.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -48,6 +54,7 @@
         </SearchPackagesDirectoryForToolPath>
         <GetToolFullPath
             Condition=" '$(ToolsExternalWyamPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             Tool="$(ToolsExternalWyamPath)">
             <Output
                 PropertyName="ToolsExternalWyamPath"
@@ -58,7 +65,9 @@
             Importance="low"
             Text="The Wyam executable was found at: $(ToolsExternalWyamPath)" />
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition="!Exists('$(ToolsExternalWyamPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="Could not locate the Wyam executable path. Cannot generate the site." />
     </Target>
  </Project>

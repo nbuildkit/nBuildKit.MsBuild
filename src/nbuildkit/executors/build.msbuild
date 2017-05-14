@@ -11,6 +11,13 @@
         <!-- Don't load the template tokens, this script doesn't need them -->
         <LoadTemplateTokens>false</LoadTemplateTokens>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadBuildFailureStepsToExecute>true</ShouldLoadBuildFailureStepsToExecute>
+        <ShouldLoadBuildPreStepsToExecute>true</ShouldLoadBuildPreStepsToExecute>
+        <ShouldLoadBuildPostStepsToExecute>true</ShouldLoadBuildPostStepsToExecute>
+        <ShouldLoadBuildStepsToExecute>true</ShouldLoadBuildStepsToExecute>
+        <ShouldLoadAvailableStepMetadata>true</ShouldLoadAvailableStepMetadata>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileBuildImports)') AND '$(ExistsBuildImports)' != 'true' "
@@ -44,6 +51,7 @@
         </CreateItem>
 
         <InvokeSteps
+            ErrorInformation="@(ErrorInformation)"
             FailOnPreStepFailure="$(FailBuildOnPreStepFailure)"
             FailOnPostStepFailure="$(FailBuildOnPostStepFailure)"
             FailureSteps="@(BuildFailureStepsToExecute)"

@@ -22,6 +22,522 @@
 
 
     <!--
+        **** PREPARE - WORKSPACE ****
+    -->
+    <!--
+        The list of all files that should be deleted prior to starting the build process.
+
+        If the deletion process fails the build will continue and a warning will be printed.
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadFilesToDelete)' == 'true' ">
+        <!--
+        <FilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the build process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the build will continue and a warning will be printed.
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadDirectoriesToDelete)' == 'true' ">
+        <!--
+        <DirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - COPY FILES ****
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' ">
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destinations>$(DirBuildTemp)</Destinations>
+        </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadHttpFilesToCopy)' == 'true' AND '@(HttpFilesToCopy)' == '' ">
+        <!--
+        <HttpFilesToCopy Include="">
+            <Destination></Destination>
+            <Unzip></Unzip>
+        </HttpFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
+        <!--
+        <FilesToCopy Include="">
+            <Destination></Destination>
+        </FilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
+        <!--
+        <ArchiveFilesToCopy Include="">
+            <Destination></Destination>
+        </ArchiveFilesToCopy>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
+    -->
+    <!--
+        The list of all assembly info files that should be updated with version and copyright information.
+
+        For additional information see the ShouldGenerateAssemblyXXXX properties below.
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadAssemblyInfoFilesToUpdate)' == 'true' ">
+        <!--
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.cs" />
+        <AssemblyInfoFilesToUpdate
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\**\AssemblyInfo.vb" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!--
+        The list of all files that should be generated and their template files.
+
+        The template file may contain zero or more template parameters as indicated at the top of this
+        file. By default template parameters must be enclosed in '${}'. By providing a value for
+        'Expression' it is possible to use a custom regular expression to search for elements to replace,
+        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
+        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
+
+        Only the 'Template' value is required.
+
+        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
+    -->
+    <PropertyGroup>
+        <!--
+            Replaced all instances of $TOKEN$ with the value for TOKEN. The regular expession
+            is rather mangled because XML doesn't like < and > and MsBuild doesn't
+            like $ (%24), * (%2A), ? (%3F)
+        -->
+        <MsBuildFileReplacementToken>(%3F&lt;token&gt;\%24(?&lt;identifier&gt;\w%2A)\%24)</MsBuildFileReplacementToken>
+    </PropertyGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildFilesToGenerate)' == 'true' ">
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\samples\files\entrypoint.msbuild">
+            <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\entrypoint.msbuild</Template>
+        </BuildFilesToGenerate>
+
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\samples\files\artefacts.settings.props">
+            <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\artefacts.settings.props</Template>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\samples\files\build.settings.props">
+            <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\build.settings.props</Template>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\samples\files\deploy.settings.props">
+            <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\deploy.settings.props</Template>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\samples\files\settings.props">
+            <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\settings.props</Template>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate
+            Condition=" '$(DirBuildTemp)' != '' "
+            Include="$(DirBuildTemp)\samples\files\test.settings.props">
+            <Encoding>UTF-8</Encoding>
+            <Expression>$(MsBuildFileReplacementToken)</Expression>
+            <Template>$(DirSrc)\samples\files\test.settings.props</Template>
+        </BuildFilesToGenerate>
+    </ItemGroup>
+
+
+    <!--
+        **** VISUAL STUDIO BUILD ****
+    -->
+    <!--
+        The item group defining the location of the Vistual Studio solutions that should be build.
+        The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadSolutionsToBuild)' == 'true' ">
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' AND '$(TestConfiguration)' != '$(ProductionConfiguration)' "
+            Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
+            <Configuration>$(TestConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties>
+                ShouldPerformCodeAnalysis=false;
+            </Properties>
+            <GeneratedAssembliesFile>$(DirBuildTemp)\nBuildKit.MsBuild.Tasks.$(TestConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
+        </SolutionsToBuild>
+
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
+            <Configuration>$(ProductionConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties>
+                ShouldPerformCodeAnalysis=false;
+            </Properties>
+            <GeneratedAssembliesFile>$(DirBuildTemp)\nBuildKit.MsBuild.Tasks.$(ProductionConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
+        </SolutionsToBuild>
+
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
+            <Configuration>$(TestConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties>
+                ShouldPerformCodeAnalysis=false;
+            </Properties>
+            <GeneratedAssembliesFile>$(DirBuildTemp)\VSCoverageToReportGenerator.$(ProductionConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
+        </SolutionsToBuild>
+
+        <SolutionsToBuild
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
+            <Configuration>$(ProductionConfiguration)</Configuration>
+            <Platform>$(Platform)</Platform>
+            <Targets>Rebuild</Targets>
+            <Properties>
+                ShouldPerformCodeAnalysis=false;
+            </Properties>
+            <GeneratedAssembliesFile>$(DirBuildTemp)\VSCoverageToReportGenerator.$(ProductionConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
+        </SolutionsToBuild>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <!--
+            A flag that indicates whether an AssemblyInfo file with the company and copyright information should be generated.
+            The file will be placed in the Properties directory of the Visual Studio project and will be named
+            AssemblyInfo.Company.xx (cs/vb). This file will contain:
+            - The AssemblyCompanyAttribute with the company name
+            - The AssemblyCopyrightAttribute with the text provided by the ${CopyrightLong} template parameter.
+        -->
+        <ShouldGenerateAssemblyCompanyInfo>true</ShouldGenerateAssemblyCompanyInfo>
+
+        <!--
+            A flag that indicates whether an AssemblyInfo file with the version numbers should be generated. The file
+            will be placed in the Properties directory of the Visual Studio project and will be named
+            AssemblyInfo.Version.xx (cs/vb). This file will contain:
+            - The AssemblyVersionAttribute with the version as provided by the ${VersionAssembly} template parameter.
+            - The AssemblyFileVersionAttribute with the version as provided by the ${VersionAssemblyFile} template parameter.
+            - The AssemblyInformationalVersionAttribute with the version as provided by the ${VersionProduct} template parameter.
+
+            Also indicates that a VersionNumber.wxi should be generated. This file will be placed
+            in the project folder of the Visual Studio project. This file will contain:
+            - The ApplicationVersion property with the version as provided by the ${VersionProduct} template parameter.
+            - The InstallVersion property with the version as provided by the ${VersionInstall} template parameter.
+            - The ProductVersionFolder property with the version as provided by the ${VersionInstallFilePath} template parameter.
+        -->
+        <ShouldGenerateAssemblyVersionInfo>true</ShouldGenerateAssemblyVersionInfo>
+
+        <!--
+            A flag that indicates whether an AssemblyInfo file with the build information should be generated. The file
+            will be placed in the Properties directory of the Visual Studio project and will be named
+            AssemblyInfo.BuildInformation.xx (cs/vb). This file will contain
+            - The AssemblyConfigurationAttribute containing the configuration of the build, e.g. Debug
+            - The AssemblyBuildTimeAttribute containing the complete date and time that the file was generated (which
+              should be close enough to the time the assembly was build).
+            - The assemblyBuildInformationAttribute which contains the build number and VCS revision number.
+
+            Note for this file to compile successfully a reference to the Nuclei.Build assembly needs to be added.
+            This assembly can be found on NuGet.org (http://www.nuget.org/packages/Nuclei.Build/)
+        -->
+        <ShouldGenerateAssemblyBuildInfo>true</ShouldGenerateAssemblyBuildInfo>
+    </PropertyGroup>
+
+    <!--
+        The ItemGroup defining the information for the generation of the InternalsVisibleAttribute.
+        Three different ways of referencing the test projects public key are available. Test assemblies
+        can be referenced by:
+        - Providing the snk key that was / is used to sign the test assembly. This is mainly of use
+          for test assemblies which are compiled at the same time as the target assemblies, i.e. test
+          assemblies that are part of the same Visual Studio solution.
+        - Providing the signed test assembly. This is mainly of use for test assemblies that have been
+          compiled prior to compiling the target assemblies, e.g. third party test assemblies.
+        - Providing the full public key for the assembly. This is mainly of use for assemblies that
+          do not exists on disk, e.g. assemblies that are dynamically generated.
+
+        Multiple projects can be referenced in the 'projects' section by separating them with a semi-colon (;). Whitespace
+        can be added if required but it has no influence on the project list.
+
+        If the assemblies are not signed it is possible to leave out the signing information, e.g. the 'KeyFile'
+        property, the 'AssemblyFromPackage' property and the 'PublicKey' property.
+    -->
+    <PropertyGroup>
+        <!--
+            Defines the compiler constants for which the InternalsVisibleTo attributes should
+            be generated.
+
+            Separate multiple compiler constants with semi-colons.
+        -->
+        <!-- <InternalsVisibletoCompilerConstants>INTERNALS_VISIBLE_TO</InternalsVisibletoCompilerConstants> -->
+    </PropertyGroup>
+    <ItemGroup Condition=" '$(ShouldLoadInternalsVisibleTo)' == 'true' ">
+        <InternalsVisibleTo Include="Test.Unit.MsBuild.Tasks">
+            <Projects>
+                nBuildKit.MsBuild.Tasks
+            </Projects>
+            <KeyFile></KeyFile>
+        </InternalsVisibleTo>
+        <!--
+        <InternalsVisibleTo Include="SomeExternalAssembly">
+            <Projects>
+                MyProject1;
+                MyProject2;
+            </Projects>
+            <AssemblyFromPackage>SomeExternalAssembly.dll</AssemblyFromPackage>
+        </InternalsVisibleTo>
+        <InternalsVisibleTo Include="SomeOtherExternalAssemblyThatDoesNotExistOnDisk">
+            <Projects>
+                MyProject1;
+                MyProject2;
+            </Projects>
+            <PublicKey>$(TheFullPublicKeyForTheExternalAssemblyThatDoesNotExistOnDisk)</PublicKey>
+        </InternalsVisibleTo>
+        -->
+    </ItemGroup>
+
+    <!-- Build configuration -->
+    <PropertyGroup>
+        <!--
+            The version of the .NET framework at which the assemblies should be targeted. This value is set
+            for all projects that include the MsBuild.Projects.XXXX NuGet package.
+        -->
+        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    </PropertyGroup>
+
+
+    <!--
+        **** UNIT TESTS ****
+    -->
+    <PropertyGroup>
+        <!--
+            The assembly name prefix for the assemblies containing the unit tests. Allows build templates,
+            e.g. '${CompanyName}.${ProductName}.Tests'.
+        -->
+        <!--<UnitTestAssemblyNamePrefix>Test.Unit</UnitTestAssemblyNamePrefix>-->
+
+        <!--
+            The full path to the location where the MsTest report file should be created. This path can include build templates,
+            e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\mytest.trx.
+        -->
+        <!--<FileReportMsTest>$(DirBuildLogs)\mstest.trx</FileReportMsTest>-->
+
+        <!--
+            The full path to the directory where the VsTest report files should be created. This path can include build templates,
+            e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}.
+        -->
+        <!--<DirReportVsTest>$(DirBuildLogs)\vstest</DirReportVsTest>-->
+
+        <!--
+            The full path to the XML report file that is generated by OpenCover upon completion of the unit test execution.
+            Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\opencover.xml.
+        -->
+        <!--<FileReportOpenCoverXml>$(DirBuildLogs)\opencover.xml</FileReportOpenCoverXml>-->
+
+        <!--
+            The full path to the CSV report file that is generated by OpenCover upon completion of the unit test execution.
+            Allows build templates. , e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\coverage.csv.
+        -->
+        <!--<FileReportOpenCoverCsv>$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv>-->
+
+        <!--
+            The full path to the Cobertura report directory which will contain the cobertura report files which are generated
+            by converting the OpenCover results to Cobertura.
+            Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}
+        -->
+        <DirReportOpenCoverCobertura>$(DirBuildLogs)</DirReportOpenCoverCobertura>
+    </PropertyGroup>
+    <ItemGroup Condition=" '$(ShouldLoadUnitTestAssemblies)' == 'true' ">
+        <!--
+            The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
+            e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
+        -->
+        <UnitTestAssemblies
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nBuildKit\tasks\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadOpenCoverIgnoreAttributes)' == 'true' ">
+        <!--
+            The ItemGroup items that define the attributes that indicate code that should be ignored by OpenCover.
+        -->
+        <!--<OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />-->
+        <!--<OpenCoverIgnoreAttributes Include="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />-->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadOpenCoverFilters)' == 'true' ">
+        <!--
+            The ItemGroup items that define the filters used by OpenCover.
+            NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text.
+        -->
+        <!--
+            The namespace for the nBuildKit tasks starts with a capital 'N', while the assembly starts with a lower
+            case 'n'.
+        -->
+        <OpenCoverFilters Include="+[$(ProductName)]%2A" />
+        <OpenCoverFilters Include="+[$(ProductName).%2A]%2A" />
+        <OpenCoverFilters Include="-[%2A$(UnitTestAssemblyNamePrefix)%2A]%2A" />
+        <OpenCoverFilters Include="-[NUnit]%2A" />
+        <OpenCoverFilters Include="-[NUnit.%2A]%2A" />
+    </ItemGroup>
+
+
+    <!--
+        **** SOURCE ANALYSIS - XML ****
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadXmlFilesToValidate)' == 'true' ">
+        <!--
+            The paths to the XML files that should be validated against the given schema.
+        -->
+        <!--
+        <XmlFilesToValidate
+            Condition=" '$(DirSrc)' != '' "
+            Exclude="$(DirSrc)\**\ignore.xml"
+            Include="$(DirSrc)\**\*.xml">
+            <SchemaFile></SchemaFile>
+            <TargetNamespace></TargetNamespace>
+        </XmlFilesToValidate>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** BINARY ANALYSIS - FXCOP ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the FxCop project file.
+        -->
+        <!--<FileProjectFxCop>UNDEFINED</FileProjectFxCop>-->
+
+        <!--
+            The full path to the FxCop output report. Allows build templates, e.g. $(DirBuildLogs)\${ProductName}_fxcop.xml.
+        -->
+        <!--<FileReportFxCop>$(DirBuildLogs)\fxcop.xml</FileReportFxCop>-->
+
+        <!--
+            The full path to the XML file that contains the custom dictionary for FxCop.
+        -->
+        <FxCopCustomDictionary>$(DirSrc)\nbuildkit\tasks\customdictionary.xml</FxCopCustomDictionary>
+
+        <!--
+            The culture that FxCop should use for the spelling rules.
+        -->
+        <FxCopCulture>en-US</FxCopCulture>
+
+        <!--
+            A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
+            errors are marked as errors then any analysis error will stop the build.
+        -->
+        <FxCopWarningsAsErrors>true</FxCopWarningsAsErrors>
+    </PropertyGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFxCopFiles)' == 'true' ">
+        <!--
+            The locations of the files that should be analyzed by FxCop.
+        -->
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\nBuildKit*.dll">
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
+            <RuleSet>$(DirSrc)\nbuildkit\tasks\default.ruleset</RuleSet>
+            <TargetFramework>4.5</TargetFramework>
+        </FxCopFiles>
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\Test.*.dll">
+            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
+            <RuleSet>$(DirSrc)\nbuildkit\tasks\test.ruleset</RuleSet>
+            <TargetFramework>4.5</TargetFramework>
+        </FxCopFiles>
+        <FxCopFiles
+            Condition=" '$(DirSrc)' != '' "
+            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\**\bin\$(Configuration)\VSCoverageToReportGenerator.exe">
+            <CustomDictionary>$(DirSrc)\tools\VSCoverageToReportGenerator\CustomDictionary.xml</CustomDictionary>
+            <RuleSet>$(DirSrc)\tools\VSCoverageToReportGenerator\default.ruleset</RuleSet>
+            <TargetFramework>4.5</TargetFramework>
+        </FxCopFiles>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFxCopReferenceFiles)' == 'true' ">
+        <!--
+            The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
+            use as reference assemblies.
+        -->
+        <!--
+        <FxCopReferenceFiles Include=""
+                             Exclude="" />
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFxCopReferenceDirectories)' == 'true' ">
+        <!--
+            The directory locations that contain the assemblies (not including the .NET framework assemblies) which
+            FxCop should use as reference assemblies
+        -->
+        <!--
+        <FxCopReferenceDirectories Include=""
+                                   Exclude="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PACK - NUGET ****
+    -->
+    <PropertyGroup>
+        <!--
+            Defines how the version range for a dependency is generated in a NuGet package. Options are:
+
+                None   - The version range of the dependency is simply the version, e.g. 1.2.3
+                Major  - The version range of the dependency is from the current version up to, but not including, the next major version,
+                         e.g [1.2.3, 2)
+                Minor  - The version range of the dependency is from the current version up to, but not including, the next minor version,
+                         e.g [1.2.3, 1.3)
+                Patch  - The version range of the dependency is from the current version up to, but not including, the next patch version,
+                         e.g [1.2.3, 1.2.4)
+        -->
+        <!-- <NuGetDependencyVersionRangeStrategy>Major</NuGetDependencyVersionRangeStrategy> -->
+    </PropertyGroup>
+
+    <!--
+        The item group defining the (partial) names of the NuGet packages that only contain design time element and should
+        thus not be considered dependencies for the generated NuGet packages, even if they are included in the list
+        of dependencies that should be included.
+
+        By default nBuildkit and nUnit are ignored.
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadDesignTimeDependencies)' == 'true' ">
+        <DesignTimeDependencies Include="nBuildKit" />
+        <DesignTimeDependencies Include="nUnit" />
+        <DesignTimeDependencies Include="StyleCop.Analyzers" />
+    </ItemGroup>
+
+
+    <!--
         **** BUILD STEPS ****
     -->
     <PropertyGroup>
@@ -51,7 +567,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given build step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildPreStepsToExecute)' == 'true' ">
         <!--
         <BuildPreStepsToExecute Include="">
             <Properties>
@@ -73,7 +589,7 @@
 
         Additionally all the standard properties as seen below and the properties for the given build step are passed in.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildPostStepsToExecute)' == 'true' ">
         <!--
         <BuildPostStepsToExecute Include="">
             <Properties>
@@ -104,75 +620,12 @@
 
         Additionally all the standard properties as seen below and the properties for the given build step are passed in.
 
-        The following build steps are by default provided through the given properties:
-        $(BuildStepsPrepareWorkspace)                    - Clears the existing build artifacts from the workspace and creates the required directories. Clearing the
-                                                           existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
-        $(BuildStepsBuildTargetsAssembly)                - Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio
-                                                           solutions so that it is possible to build MsBuild tasks that will be used in the build process.
-        $(BuildStepsGenerateTargetsFile)                 - Generates a targets file for use with an MsBuild tasks assembly.
-        $(BuildStepsPrepareRestoreNuGet)                 - Restores the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally
-                                                           also restores the NuGet packages as specified in the nBuildKit specific 'packages.config' files.
-        $(BuildStepsPrepareVcsBranch)                    - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
-                                                           name as the remote tracking branch.
-        $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
-                                                           Currently supported version control systems is GIT
-        $(BuildStepsPrepareGetIssueIds)                  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
-        $(BuildStepsPrepareVcsMerge)                     - Merges the current changes to the designated target branches (specified by @(BranchMergeTarget)).
-        $(BuildStepsPrepareGetVersion)                   - Gathers version information and stores it in a temporary file for use by the rest of the build process.
-                                                           Currently supported methods of gathering version information are using (in order):
-                                                           - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
-                                                             in the 'VersionScriptPath' property. The task should output:
-                                                             - VersionMajor
-                                                             - VersionMinor
-                                                             - VersionPatch
-                                                             - VersionBuild
-                                                             - VersionPreRelease
-                                                             - VersionSemantic
-                                                             - VersionSemanticFull
-                                                             - VersionSemanticNuget
-                                                           - The version stored in an 'version.xml' file which contains an MsBuild property group with
-                                                             the properties:
-                                                             - BuildNumber
-                                                             - VersionMajor
-                                                             - VersionMinor
-                                                             - VersionPatch
-                                                             - VersionBuild
-                                                             - VersionPreRelease
-                                                           - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
-                                                           - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
-        $(BuildStepsPrepareTagVcs)                       - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
-        $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process. Release notes
-                                                           are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
-                                                           currently allows gathering release notes from GitHub, Jira and YouTrack
-        $(BuildStepsPrepareRestoreNpm)                   - Restores all the NPM packages for the project.
-        $(BuildStepsPrepareRestoreBower)                 - Restores all the Bower packages for the project.
-        $(BuildStepsPrepareCopyNuGet)                    - Copies one or more files from a NuGet package.
-        $(BuildStepsPrepareCopyFiles)                    - Copies one or more files from the file system.
-        $(BuildStepsPrepareAssemblyInfo)                 - Updates all existing AssemblyInfo.cs and AssemblyInfo.vb files with the version numbers, company information,
-                                                           copyright information and optionally build time and build information.
-        $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
-        $(BuildStepsPrepareGenerateLicenses)             - Generates an XML file containing the licenses for all the NuGet packages in use for the current build.
-        $(BuildStepsBuildVisualStudioSolution)           - Builds the binaries from a given Visual Studio solution.
-        $(BuildStepsUnitTestNUnit)                       - Executes the unit tests with NUnit and measures code coverage with OpenCover.
-        $(BuildStepsUnitTestMsTest)                      - Executes the unit tests with MsTest and measures code coverage with OpenCover.
-        $(BuildStepsUnitTestVsTest)                      - Executes the unit tests with VsTest and measures code coverage.
-        $(BuildStepsAnalyzeXml)                          - Analyzes one or more XML files based on the provided XSD.
-        $(BuildStepsAnalyzeBinariesFxCop)                - Analyzes the binary files with FxCop.
-        $(BuildStepsBuildILMerge)                        - Performs one or more IL merge operations.
-        $(BuildStepsBuildWyam)                           - Builds the documentation in the `doc` folder with Wyam.
-        $(BuildStepsPackNuGet)                           - Generates the NuGet packages.
-        $(BuildStepsPackZip)                             - Generates one or more ZIP archives.
-
-        Additional build steps can be defined by providing the path to the MsBuild script that should be executed
-        for that step, e.g. adding a build step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute
-        that script.
-
         Any properties defined by the 'Properties' section are pushed up.
 
         Custom build steps may chose to add metadata to the 'AvailableStepMetadata' ItemGroup. This ItemGroup contains metadata describing
         all known steps.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildStepsToExecute)' == 'true' ">
         <BuildStepsToExecute Include="$(BuildStepsPrepareWorkspace)">
             <Properties>
             </Properties>
@@ -358,6 +811,19 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareCopyHttp)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.url;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPrepareCopyFiles)">
             <Properties>
             </Properties>
@@ -365,6 +831,19 @@
                 prepare;
                 prepare.copy;
                 prepare.copy.files;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareCopyArchive)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.archive;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -563,7 +1042,7 @@
 
         Any properties defined by the 'Properties' section are pushed up.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildFailureStepsToExecute)' == 'true' ">
         <!--
         <BuildFailureStepsToExecute Include="">
             <Properties>
@@ -579,7 +1058,7 @@
         By providing this metadata it is possible for pre- and post-step actions to more clearly determine which step
         they were attached to.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadAvailableStepMetadata)' == 'true' ">
         <!--
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DirWorkspace)\my.build.step.msbuild'))">
             <Description>
@@ -590,510 +1069,6 @@
             <Path>$(DirWorkspace)\my.build.step.msbuild</Path>
         </AvailableStepMetadata>
         -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - WORKSPACE ****
-    -->
-    <!--
-        The list of all files that should be deleted prior to starting the build process.
-
-        If the deletion process fails the build will continue and a warning will be printed.
-    -->
-    <ItemGroup>
-        <!--
-        <FilesToDelete Include="" />
-        -->
-    </ItemGroup>
-
-    <!--
-        The list of all directories that should be deleted prior to starting the build process.
-        Deleting the directories will also delete all the files contained in these directories.
-
-        If the deletion process fails the build will continue and a warning will be printed.
-    -->
-    <ItemGroup>
-        <!--
-        <DirectoriesToDelete Include="" />
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - COPY FILES ****
-    -->
-    <!--
-        Files that should be copied, either from the file system or from a NuGet package.
-    -->
-    <ItemGroup Condition=" '@(FilesToCopy)' == '' ">
-        <!--
-        <FilesToCopy Include="">
-            <Destination></Destination>
-        </FilesToCopy>
-        -->
-    </ItemGroup>
-    <ItemGroup Condition=" '@(NuGetFilesToCopy)' == '' ">
-        <!--
-        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
-            <Include>**/*.*</Include>
-            <Destinations>$(DirBuildTemp)</Destinations>
-        </NuGetFilesToCopy>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
-    -->
-    <!--
-        The list of all assembly info files that should be updated with version and copyright information.
-
-        For additional information see the ShouldGenerateAssemblyXXXX properties below.
-    -->
-    <ItemGroup Condition=" '@(AssemblyInfoFilesToUpdate)' == '' ">
-        <!--
-        <AssemblyInfoFilesToUpdate
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\**\AssemblyInfo.cs" />
-        <AssemblyInfoFilesToUpdate
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\**\AssemblyInfo.vb" />
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - GENERATE FILES ****
-    -->
-    <!--
-        The list of all files that should be generated and their template files.
-
-        The template file may contain zero or more template parameters as indicated at the top of this
-        file. By default template parameters must be enclosed in '${}'. By providing a value for
-        'Expression' it is possible to use a custom regular expression to search for elements to replace,
-        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
-        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
-
-        Only the 'Template' value is required.
-
-        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
-    -->
-    <PropertyGroup>
-        <!--
-            Replaced all instances of $TOKEN$ with the value for TOKEN. The regular expession
-            is rather mangled because XML doesn't like < and > and MsBuild doesn't
-            like $ (%24), * (%2A), ? (%3F)
-        -->
-        <MsBuildFileReplacementToken>(%3F&lt;token&gt;\%24(?&lt;identifier&gt;\w%2A)\%24)</MsBuildFileReplacementToken>
-    </PropertyGroup>
-    <ItemGroup>
-        <BuildFilesToGenerate
-            Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\samples\files\entrypoint.msbuild">
-            <Encoding>UTF-8</Encoding>
-            <Expression>$(MsBuildFileReplacementToken)</Expression>
-            <Template>$(DirSrc)\samples\files\entrypoint.msbuild</Template>
-        </BuildFilesToGenerate>
-
-        <BuildFilesToGenerate
-            Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\samples\files\artefacts.settings.props">
-            <Encoding>UTF-8</Encoding>
-            <Expression>$(MsBuildFileReplacementToken)</Expression>
-            <Template>$(DirSrc)\samples\files\artefacts.settings.props</Template>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate
-            Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\samples\files\build.settings.props">
-            <Encoding>UTF-8</Encoding>
-            <Expression>$(MsBuildFileReplacementToken)</Expression>
-            <Template>$(DirSrc)\samples\files\build.settings.props</Template>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate
-            Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\samples\files\deploy.settings.props">
-            <Encoding>UTF-8</Encoding>
-            <Expression>$(MsBuildFileReplacementToken)</Expression>
-            <Template>$(DirSrc)\samples\files\deploy.settings.props</Template>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate
-            Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\samples\files\settings.props">
-            <Encoding>UTF-8</Encoding>
-            <Expression>$(MsBuildFileReplacementToken)</Expression>
-            <Template>$(DirSrc)\samples\files\settings.props</Template>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate
-            Condition=" '$(DirBuildTemp)' != '' "
-            Include="$(DirBuildTemp)\samples\files\test.settings.props">
-            <Encoding>UTF-8</Encoding>
-            <Expression>$(MsBuildFileReplacementToken)</Expression>
-            <Template>$(DirSrc)\samples\files\test.settings.props</Template>
-        </BuildFilesToGenerate>
-    </ItemGroup>
-
-
-    <!--
-        **** VISUAL STUDIO BUILD ****
-    -->
-    <!--
-        The item group defining the location of the Vistual Studio solutions that should be build.
-        The solution path allows build templates, e.g. '$(DirSrc)\${CompanyName}\${ProductName}\MySolution.sln'
-    -->
-    <ItemGroup>
-        <SolutionsToBuild
-            Condition=" '$(DirSrc)' != '' AND '$(TestConfiguration)' != '$(ProductionConfiguration)' "
-            Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
-            <Configuration>$(TestConfiguration)</Configuration>
-            <Platform>$(Platform)</Platform>
-            <Targets>Rebuild</Targets>
-            <Properties>
-                ShouldPerformCodeAnalysis=false;
-            </Properties>
-            <GeneratedAssembliesFile>$(DirBuildTemp)\nBuildKit.MsBuild.Tasks.$(TestConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
-        </SolutionsToBuild>
-
-        <SolutionsToBuild
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks.sln">
-            <Configuration>$(ProductionConfiguration)</Configuration>
-            <Platform>$(Platform)</Platform>
-            <Targets>Rebuild</Targets>
-            <Properties>
-                ShouldPerformCodeAnalysis=false;
-            </Properties>
-            <GeneratedAssembliesFile>$(DirBuildTemp)\nBuildKit.MsBuild.Tasks.$(ProductionConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
-        </SolutionsToBuild>
-
-        <SolutionsToBuild
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
-            <Configuration>$(TestConfiguration)</Configuration>
-            <Platform>$(Platform)</Platform>
-            <Targets>Rebuild</Targets>
-            <Properties>
-                ShouldPerformCodeAnalysis=false;
-            </Properties>
-            <GeneratedAssembliesFile>$(DirBuildTemp)\VSCoverageToReportGenerator.$(ProductionConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
-        </SolutionsToBuild>
-
-        <SolutionsToBuild
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\VSCoverageToReportGenerator.sln">
-            <Configuration>$(ProductionConfiguration)</Configuration>
-            <Platform>$(Platform)</Platform>
-            <Targets>Rebuild</Targets>
-            <Properties>
-                ShouldPerformCodeAnalysis=false;
-            </Properties>
-            <GeneratedAssembliesFile>$(DirBuildTemp)\VSCoverageToReportGenerator.$(ProductionConfiguration).$(PlatformWithoutSpaces).props</GeneratedAssembliesFile>
-        </SolutionsToBuild>
-    </ItemGroup>
-
-    <PropertyGroup>
-        <!--
-            A flag that indicates whether an AssemblyInfo file with the company and copyright information should be generated.
-            The file will be placed in the Properties directory of the Visual Studio project and will be named
-            AssemblyInfo.Company.xx (cs/vb). This file will contain:
-            - The AssemblyCompanyAttribute with the company name
-            - The AssemblyCopyrightAttribute with the text provided by the ${CopyrightLong} template parameter.
-        -->
-        <ShouldGenerateAssemblyCompanyInfo>true</ShouldGenerateAssemblyCompanyInfo>
-
-        <!--
-            A flag that indicates whether an AssemblyInfo file with the version numbers should be generated. The file
-            will be placed in the Properties directory of the Visual Studio project and will be named
-            AssemblyInfo.Version.xx (cs/vb). This file will contain:
-            - The AssemblyVersionAttribute with the version as provided by the ${VersionAssembly} template parameter.
-            - The AssemblyFileVersionAttribute with the version as provided by the ${VersionAssemblyFile} template parameter.
-            - The AssemblyInformationalVersionAttribute with the version as provided by the ${VersionProduct} template parameter.
-
-            Also indicates that a VersionNumber.wxi should be generated. This file will be placed
-            in the project folder of the Visual Studio project. This file will contain:
-            - The ApplicationVersion property with the version as provided by the ${VersionProduct} template parameter.
-            - The InstallVersion property with the version as provided by the ${VersionInstall} template parameter.
-            - The ProductVersionFolder property with the version as provided by the ${VersionInstallFilePath} template parameter.
-        -->
-        <ShouldGenerateAssemblyVersionInfo>true</ShouldGenerateAssemblyVersionInfo>
-
-        <!--
-            A flag that indicates whether an AssemblyInfo file with the build information should be generated. The file
-            will be placed in the Properties directory of the Visual Studio project and will be named
-            AssemblyInfo.BuildInformation.xx (cs/vb). This file will contain
-            - The AssemblyConfigurationAttribute containing the configuration of the build, e.g. Debug
-            - The AssemblyBuildTimeAttribute containing the complete date and time that the file was generated (which
-              should be close enough to the time the assembly was build).
-            - The assemblyBuildInformationAttribute which contains the build number and VCS revision number.
-
-            Note for this file to compile successfully a reference to the Nuclei.Build assembly needs to be added.
-            This assembly can be found on NuGet.org (http://www.nuget.org/packages/Nuclei.Build/)
-        -->
-        <ShouldGenerateAssemblyBuildInfo>true</ShouldGenerateAssemblyBuildInfo>
-    </PropertyGroup>
-
-    <!--
-        The ItemGroup defining the information for the generation of the InternalsVisibleAttribute.
-        Three different ways of referencing the test projects public key are available. Test assemblies
-        can be referenced by:
-        - Providing the snk key that was / is used to sign the test assembly. This is mainly of use
-          for test assemblies which are compiled at the same time as the target assemblies, i.e. test
-          assemblies that are part of the same Visual Studio solution.
-        - Providing the signed test assembly. This is mainly of use for test assemblies that have been
-          compiled prior to compiling the target assemblies, e.g. third party test assemblies.
-        - Providing the full public key for the assembly. This is mainly of use for assemblies that
-          do not exists on disk, e.g. assemblies that are dynamically generated.
-
-        Multiple projects can be referenced in the 'projects' section by separating them with a semi-colon (;). Whitespace
-        can be added if required but it has no influence on the project list.
-
-        If the assemblies are not signed it is possible to leave out the signing information, e.g. the 'KeyFile'
-        property, the 'AssemblyFromPackage' property and the 'PublicKey' property.
-    -->
-    <PropertyGroup>
-        <!--
-            Defines the compiler constants for which the InternalsVisibleTo attributes should
-            be generated.
-
-            Separate multiple compiler constants with semi-colons.
-        -->
-        <!-- <InternalsVisibletoCompilerConstants>INTERNALS_VISIBLE_TO</InternalsVisibletoCompilerConstants> -->
-    </PropertyGroup>
-    <ItemGroup>
-        <InternalsVisibleTo Include="Test.Unit.MsBuild.Tasks">
-            <Projects>
-                nBuildKit.MsBuild.Tasks
-            </Projects>
-            <KeyFile></KeyFile>
-        </InternalsVisibleTo>
-        <!--
-        <InternalsVisibleTo Include="SomeExternalAssembly">
-            <Projects>
-                MyProject1;
-                MyProject2;
-            </Projects>
-            <AssemblyFromPackage>SomeExternalAssembly.dll</AssemblyFromPackage>
-        </InternalsVisibleTo>
-        <InternalsVisibleTo Include="SomeOtherExternalAssemblyThatDoesNotExistOnDisk">
-            <Projects>
-                MyProject1;
-                MyProject2;
-            </Projects>
-            <PublicKey>$(TheFullPublicKeyForTheExternalAssemblyThatDoesNotExistOnDisk)</PublicKey>
-        </InternalsVisibleTo>
-        -->
-    </ItemGroup>
-
-    <!-- Build configuration -->
-    <PropertyGroup>
-        <!--
-            The version of the .NET framework at which the assemblies should be targeted. This value is set
-            for all projects that include the MsBuild.Projects.XXXX NuGet package.
-        -->
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    </PropertyGroup>
-
-
-    <!--
-        **** UNIT TESTS ****
-    -->
-    <PropertyGroup>
-        <!--
-            The assembly name prefix for the assemblies containing the unit tests. Allows build templates,
-            e.g. '${CompanyName}.${ProductName}.Tests'.
-        -->
-        <!--<UnitTestAssemblyNamePrefix>Test.Unit</UnitTestAssemblyNamePrefix>-->
-
-        <!--
-            The full path to the location where the MsTest report file should be created. This path can include build templates,
-            e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\mytest.trx.
-        -->
-        <!--<FileReportMsTest>$(DirBuildLogs)\mstest.trx</FileReportMsTest>-->
-
-        <!--
-            The full path to the directory where the VsTest report files should be created. This path can include build templates,
-            e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}.
-        -->
-        <!--<DirReportVsTest>$(DirBuildLogs)\vstest</DirReportVsTest>-->
-
-        <!--
-            The full path to the XML report file that is generated by OpenCover upon completion of the unit test execution.
-            Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\opencover.xml.
-        -->
-        <!--<FileReportOpenCoverXml>$(DirBuildLogs)\opencover.xml</FileReportOpenCoverXml>-->
-
-        <!--
-            The full path to the CSV report file that is generated by OpenCover upon completion of the unit test execution.
-            Allows build templates. , e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}\coverage.csv.
-        -->
-        <!--<FileReportOpenCoverCsv>$(DirBuildLogs)\coverage.csv</FileReportOpenCoverCsv>-->
-
-        <!--
-            The full path to the Cobertura report directory which will contain the cobertura report files which are generated
-            by converting the OpenCover results to Cobertura.
-            Allows build templates, e.g. $(DirBuildLogs)\${CompanyName}\${ProductName}
-        -->
-        <DirReportOpenCoverCobertura>$(DirBuildLogs)</DirReportOpenCoverCobertura>
-    </PropertyGroup>
-    <ItemGroup>
-        <!--
-            The ItemGroup items that define which files contain the unit test cases. Paths can include build templates,
-            e.g. $(DirBuildBinPlatformConfig)\${VersionMajor}.0\**\test*.dll
-        -->
-        <UnitTestAssemblies
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\nBuildKit\tasks\**\bin\$(Configuration)\**\$(UnitTestAssemblyNamePrefix)*.dll" />
-    </ItemGroup>
-    <ItemGroup>
-        <!--
-            The ItemGroup items that define the attributes that indicate code that should be ignored by OpenCover.
-        -->
-        <!--<OpenCoverIgnoreAttributes Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />-->
-        <!--<OpenCoverIgnoreAttributes Include="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />-->
-    </ItemGroup>
-    <ItemGroup>
-        <!--
-            The ItemGroup items that define the filters used by OpenCover.
-            NOTE: Use the hexadecimal value for * (%2A) to avoid MsBuild trying to make sense out of the text.
-        -->
-        <!--
-            The namespace for the nBuildKit tasks starts with a capital 'N', while the assembly starts with a lower
-            case 'n'.
-        -->
-        <OpenCoverFilters Include="+[$(ProductName)]%2A" />
-        <OpenCoverFilters Include="+[$(ProductName).%2A]%2A" />
-        <OpenCoverFilters Include="-[%2A$(UnitTestAssemblyNamePrefix)%2A]%2A" />
-        <OpenCoverFilters Include="-[NUnit]%2A" />
-        <OpenCoverFilters Include="-[NUnit.%2A]%2A" />
-    </ItemGroup>
-
-
-    <!--
-        **** SOURCE ANALYSIS - XML ****
-    -->
-    <ItemGroup>
-        <!--
-            The paths to the XML files that should be validated against the given schema.
-        -->
-        <!--
-        <XmlFilesToValidate
-            Condition=" '$(DirSrc)' != '' "
-            Exclude="$(DirSrc)\**\ignore.xml"
-            Include="$(DirSrc)\**\*.xml">
-            <SchemaFile></SchemaFile>
-            <TargetNamespace></TargetNamespace>
-        </XmlFilesToValidate>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** BINARY ANALYSIS - FXCOP ****
-    -->
-    <PropertyGroup>
-        <!--
-            The full path to the FxCop project file.
-        -->
-        <!--<FileProjectFxCop>UNDEFINED</FileProjectFxCop>-->
-
-        <!--
-            The full path to the FxCop output report. Allows build templates, e.g. $(DirBuildLogs)\${ProductName}_fxcop.xml.
-        -->
-        <!--<FileReportFxCop>$(DirBuildLogs)\fxcop.xml</FileReportFxCop>-->
-
-        <!--
-            The full path to the XML file that contains the custom dictionary for FxCop.
-        -->
-        <FxCopCustomDictionary>$(DirSrc)\nbuildkit\tasks\customdictionary.xml</FxCopCustomDictionary>
-
-        <!--
-            The culture that FxCop should use for the spelling rules.
-        -->
-        <FxCopCulture>en-US</FxCopCulture>
-
-        <!--
-            A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
-            errors are marked as errors then any analysis error will stop the build.
-        -->
-        <FxCopWarningsAsErrors>true</FxCopWarningsAsErrors>
-    </PropertyGroup>
-    <ItemGroup>
-        <!--
-            The locations of the files that should be analyzed by FxCop.
-        -->
-        <FxCopFiles
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\nBuildKit*.dll">
-            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
-            <RuleSet>$(DirSrc)\nbuildkit\tasks\default.ruleset</RuleSet>
-            <TargetFramework>4.5</TargetFramework>
-        </FxCopFiles>
-        <FxCopFiles
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\Test.*.dll">
-            <CustomDictionary>$(FxCopCustomDictionary)</CustomDictionary>
-            <RuleSet>$(DirSrc)\nbuildkit\tasks\test.ruleset</RuleSet>
-            <TargetFramework>4.5</TargetFramework>
-        </FxCopFiles>
-        <FxCopFiles
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\tools\VSCoverageToReportGenerator\**\bin\$(Configuration)\VSCoverageToReportGenerator.exe">
-            <CustomDictionary>$(DirSrc)\tools\VSCoverageToReportGenerator\CustomDictionary.xml</CustomDictionary>
-            <RuleSet>$(DirSrc)\tools\VSCoverageToReportGenerator\default.ruleset</RuleSet>
-            <TargetFramework>4.5</TargetFramework>
-        </FxCopFiles>
-    </ItemGroup>
-    <ItemGroup>
-        <!--
-            The locations of the assemblies (not including the .NET framework assemblies) which FxCop should
-            use as reference assemblies.
-        -->
-        <!--
-        <FxCopReferenceFiles Include=""
-                             Exclude="" />
-        -->
-    </ItemGroup>
-    <ItemGroup>
-        <!--
-            The directory locations that contain the assemblies (not including the .NET framework assemblies) which
-            FxCop should use as reference assemblies
-        -->
-        <!--
-        <FxCopReferenceDirectories Include=""
-                                   Exclude="" />
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PACK - NUGET ****
-    -->
-    <PropertyGroup>
-        <!--
-            Defines how the version range for a dependency is generated in a NuGet package. Options are:
-
-                None   - The version range of the dependency is simply the version, e.g. 1.2.3
-                Major  - The version range of the dependency is from the current version up to, but not including, the next major version,
-                         e.g [1.2.3, 2)
-                Minor  - The version range of the dependency is from the current version up to, but not including, the next minor version,
-                         e.g [1.2.3, 1.3)
-                Patch  - The version range of the dependency is from the current version up to, but not including, the next patch version,
-                         e.g [1.2.3, 1.2.4)
-        -->
-        <!-- <NuGetDependencyVersionRangeStrategy>Major</NuGetDependencyVersionRangeStrategy> -->
-    </PropertyGroup>
-
-    <!--
-        The item group defining the (partial) names of the NuGet packages that only contain design time element and should
-        thus not be considered dependencies for the generated NuGet packages, even if they are included in the list
-        of dependencies that should be included.
-
-        By default nBuildkit and nUnit are ignored.
-    -->
-    <ItemGroup>
-        <DesignTimeDependencies Include="nBuildKit" />
-        <DesignTimeDependencies Include="nUnit" />
-        <DesignTimeDependencies Include="StyleCop.Analyzers" />
     </ItemGroup>
 
 

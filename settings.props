@@ -369,7 +369,7 @@
     <!--
         **** PREPARE - NUGET RESTORE ****
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadNuGetPackageFiles)' == 'true' ">
         <!--
         <NuGetPackageFiles
             Include="$(DirWorkspace)\packages.config"
@@ -385,7 +385,7 @@
     <!--
         **** PREPARE - NPM RESTORE ****
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadNpmPackageFiles)' == 'true' ">
         <!--
         <NpmPackageFiles
             Condition=" '$(DirWorkspace)' != '' "

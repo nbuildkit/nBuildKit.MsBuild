@@ -25,6 +25,8 @@ namespace NBuildKit.MsBuild.Tasks.Versions
     /// </summary>
     public sealed class CalculateSemanticVersionWithGitVersion : CommandLineToolTask
     {
+        private const string ErrorIdInvalidOutput = "NBuildKit.GetVersion.GitVersion.InvalidOutput";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CalculateSemanticVersionWithGitVersion"/> class.
         /// </summary>
@@ -96,16 +98,20 @@ namespace NBuildKit.MsBuild.Tasks.Versions
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        System.IO.Path.GetFileName(ExePath.ItemSpec),
-                        exitCode));
-                Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Output was: {0}",
-                        text));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    System.IO.Path.GetFileName(ExePath.ItemSpec),
+                    exitCode);
+                Log.LogWarning(
+                    "Output was: {0}",
+                    text);
 
                 return false;
             }
@@ -175,7 +181,16 @@ namespace NBuildKit.MsBuild.Tasks.Versions
             }
             catch (Exception e)
             {
-                Log.LogError(e.ToString());
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdInvalidOutput),
+                    ErrorIdInvalidOutput,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    e.ToString());
             }
 
             return !Log.HasLoggedErrors;

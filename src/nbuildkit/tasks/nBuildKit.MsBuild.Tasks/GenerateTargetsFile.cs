@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -28,6 +29,9 @@ namespace NBuildKit.MsBuild.Tasks
     public sealed class GenerateTargetsFile : BaseTask
     {
         private const string DefaultNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
+
+        private const string ErrorIdFailedToLoadTypes = "NBuildKit.GenerateTargets.FailedToLoadTypes";
+        private const string ErrorIdFailedToSaveFile = "NBuildKit.GenerateTargets.FailedToSaveFile";
 
         private static void AppendUsingTask(XmlNode node, string assemblyFilePropertyName, string typeName)
         {
@@ -69,10 +73,15 @@ namespace NBuildKit.MsBuild.Tasks
             return AppDomainBuilder.Assemble(
                 "nBuildKit.MsBuild Task scanning AppDomain",
                 AppDomainResolutionPaths.WithFilesAndDirectories(
-                    Assembly.GetExecutingAssembly().LocalDirectoryPath(),
-                    new List<string>(),
+                    Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName),
                     new List<string>
                     {
+                        // the nBuildKit task assembly
+                        Assembly.GetExecutingAssembly().LocalFilePath(),
+                    },
+                    new List<string>
+                    {
+                        // The directory in which the newly created task assembly lives
                         applicationBase
                     }));
         }
@@ -97,20 +106,48 @@ namespace NBuildKit.MsBuild.Tasks
             var filePath = GetAbsolutePath(AssemblyFile);
             if (string.IsNullOrEmpty(filePath))
             {
-                Log.LogError("No input file provided");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "No input file provided");
                 return false;
             }
 
             if (!File.Exists(filePath))
             {
-                Log.LogError("Input File '{0}' cannot be found", AssemblyFile);
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Input File '{0}' cannot be found",
+                    AssemblyFile);
                 return false;
             }
 
             var outputPath = GetAbsolutePath(TargetsFile);
             if (string.IsNullOrEmpty(outputPath))
             {
-                Log.LogError("No output file provided");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFileNotFound),
+                    ErrorIdFileNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "No output file provided");
                 return false;
             }
 
@@ -174,7 +211,18 @@ namespace NBuildKit.MsBuild.Tasks
             }
             catch (Exception e)
             {
-                Log.LogError("Failed to extract the Task types from the assembly at {0}. Error was: {1}", filePath, e);
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFailedToLoadTypes),
+                    ErrorIdFailedToLoadTypes,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Failed to extract the Task types from the assembly at {0}. Error was: {1}",
+                    filePath,
+                    e);
             }
 
             try
@@ -183,7 +231,17 @@ namespace NBuildKit.MsBuild.Tasks
             }
             catch (Exception)
             {
-                Log.LogError("Failed to save the targets file to {0}", outputPath);
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdFailedToSaveFile),
+                    ErrorIdFailedToSaveFile,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "Failed to save the targets file to {0}",
+                    outputPath);
             }
 
             return !Log.HasLoggedErrors;
@@ -267,26 +325,44 @@ namespace NBuildKit.MsBuild.Tasks
                     // The file does not exist. Only possible if somebody removes the file
                     // between the check and the loading.
                     Log.LogError(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "The assembly file containing the MsBuild tasks was expected to be at {0} but it could not be found.",
-                            fileName));
+                        string.Empty,
+                        "NBK0300",
+                        "NBuildKit.FileNotFound",
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "The assembly file containing the MsBuild tasks was expected to be at {0} but it could not be found.",
+                        fileName);
                 }
                 catch (FileLoadException)
                 {
                     Log.LogError(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "The assembly file containing the MsBuild tasks at {0} could not be loaded.",
-                            fileName));
+                        string.Empty,
+                        "NBK0355",
+                        "NBuildKit.GenerateTargets.FailedToLoadAssembly",
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "The assembly file containing the MsBuild tasks at {0} could not be loaded.",
+                        fileName);
                 }
                 catch (BadImageFormatException)
                 {
                     Log.LogError(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "The assembly file containing the MsBuild tasks at {0} was invalid.",
-                            fileName));
+                        string.Empty,
+                        "NBK0355",
+                        "NBuildKit.GenerateTargets.FailedToLoadAssembly",
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "The assembly file containing the MsBuild tasks at {0} was invalid.",
+                        fileName);
                 }
 
                 return null;
@@ -322,11 +398,17 @@ namespace NBuildKit.MsBuild.Tasks
                 catch (Exception e)
                 {
                     Log.LogError(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Failed to get the Task types from the assembly at: {0}. Error was: {1}",
-                            assemblyFileToScan,
-                            e));
+                        string.Empty,
+                        "NBK0356",
+                        ErrorIdFailedToLoadTypes,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "Failed to get the Task types from the assembly at: {0}. Error was: {1}",
+                        assemblyFileToScan,
+                        e);
 
                     return new List<string>();
                 }

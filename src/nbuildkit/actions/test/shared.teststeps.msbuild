@@ -20,13 +20,15 @@
         <TestStepsPrepareVcsInfo>$(MSBuildThisFileDirectory)..\shared.prepare.vcsinfo.msbuild</TestStepsPrepareVcsInfo>
 
         <TestStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</TestStepsPrepareCopyNuGet>
+        <TestStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</TestStepsPrepareCopyHttp>
         <TestStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</TestStepsPrepareCopyFiles>
+        <TestStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</TestStepsPrepareCopyArchive>
 
         <TestStepsPrepareGenerateFiles>$(MSBuildThisFileDirectory)test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
 
         <TestStepsIntegrationPester>$(MSBuildThisFileDirectory)test.integration.pester.msbuild</TestStepsIntegrationPester>
     </PropertyGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadAvailableStepMetadata)' == 'true' ">
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareWorkspace)'))">
             <Description>
                 Clears the existing build artifacts from the workspace and creates the required directories. Clearing the existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
@@ -107,6 +109,14 @@
             <Name>Test - copy nuget</Name>
             <Path>$(TestStepsPrepareCopyNuGet)</Path>
         </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyHttp)'))">
+            <Description>
+                Copies one or more files from a set of URLs.
+            </Description>
+            <Id>TestStepsPrepareCopyHttp</Id>
+            <Name>Test - copy from URL</Name>
+            <Path>$(TestStepsPrepareCopyHttp)</Path>
+        </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyFiles)'))">
             <Description>
                 Copies one or more files from the file system.
@@ -114,6 +124,14 @@
             <Id>TestStepsPrepareCopyFiles</Id>
             <Name>Test - copy files</Name>
             <Path>$(TestStepsPrepareCopyFiles)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareCopyArchive)'))">
+            <Description>
+                Copies one or more files from an archive or zip file.
+            </Description>
+            <Id>TestStepsPrepareCopyArchive</Id>
+            <Name>Test - copy archive</Name>
+            <Path>$(TestStepsPrepareCopyArchive)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareGenerateFiles)'))">
             <Description>

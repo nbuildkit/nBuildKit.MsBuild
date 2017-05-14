@@ -18,6 +18,8 @@ namespace NBuildKit.MsBuild.Tasks.Validation
     /// </summary>
     public sealed class ValidateXmlAgainstSchema : BaseTask
     {
+        private const string ErrorIdValidationError = "NBuildKit.XmlValidation.ValidationError";
+
         /// <inheritdoc/>
         public override bool Execute()
         {
@@ -99,11 +101,17 @@ namespace NBuildKit.MsBuild.Tasks.Validation
             else
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "XML validation {0}: {1}",
-                        args.Severity,
-                        args.Message));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdValidationError),
+                    ErrorIdValidationError,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "XML validation {0}: {1}",
+                    args.Severity,
+                    args.Message);
             }
         }
     }

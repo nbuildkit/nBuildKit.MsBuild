@@ -7,6 +7,12 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildBinaries>true</ExistsBuildBinaries>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadAssembliesToMerge>true</ShouldLoadAssembliesToMerge>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -19,11 +25,14 @@
 
     <Target Name="_nBuildKit_Build_ILRepack_GetToolPaths">
         <Error
+            Code="$(NBuildKitErrorCodePackagesDirectoryNotFound)"
             Condition="!Exists('$(DirPackages)')"
+            HelpKeyword="$(NBuildKitErrorIdPackagesDirectoryNotFound)"
             Text="The packages directory does not exist. Cannot search for the ILRepack executable." />
 
         <NuGetInstall
             Condition=" '$(ToolsExternalILRepackPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
@@ -33,6 +42,7 @@
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalILRepackPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             FileToLocate="ilrepack.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
@@ -41,6 +51,7 @@
         </SearchPackagesDirectoryForToolPath>
         <GetToolFullPath
             Condition=" '$(ToolsExternalILRepackPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
             Tool="$(ToolsExternalILRepackPath)">
             <Output
                 PropertyName="ToolsExternalILRepackPath"
@@ -51,7 +62,9 @@
             Importance="low"
             Text="The ILRepack executable was found at: $(ToolsExternalILRepackPath)" />
         <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
             Condition="!Exists('$(ToolsExternalILRepackPath)')"
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
             Text="Could not locate the ILRepack executable path. Cannot merge assemblies." />
     </Target>
 
@@ -63,6 +76,7 @@
 
         <!-- Process the build templates in the primairy assembly path -->
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(AssembliesToMerge.Identity)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -72,6 +86,7 @@
 
         <!-- Process the build templates in the destination path -->
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(AssembliesToMerge.Destination)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -86,6 +101,7 @@
 
         <!-- Process the build templates in the key file path -->
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Condition=" '%(AssembliesToMerge.KeyFile)' != '' "
             Template="%(AssembliesToMerge.KeyFile)"
             Tokens="@(TemplateTokens)">
@@ -96,6 +112,7 @@
 
         <!-- Process the build templates in the version -->
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(AssembliesToMerge.Version)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -106,6 +123,7 @@
         <!-- Process the build templates in the included assemblies -->
         <TemplateText
             Condition=" '%(AssembliesToMerge.AssembliesToInclude)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="%(AssembliesToMerge.AssembliesToInclude)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -116,6 +134,7 @@
         <!-- Process the build templates in the excluded assemblies -->
         <TemplateText
             Condition=" '%(AssembliesToMerge.AssembliesToExclude)' != '' "
+            ErrorInformation="@(ErrorInformation)"
             Template="%(AssembliesToMerge.AssembliesToExclude)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -163,6 +182,7 @@
 
         <ILRepack
             AssembliesToMerge="@(AssembliesToMergeIntoThePrimaryAssembly)"
+            ErrorInformation="@(ErrorInformation)"
             ILRepackExe="$(ToolsExternalILRepackPath)"
             KeyFile="$(ILRepackStrongNameFile)"
             LogFile="$(DirBuildLogs)\$([System.IO.Path]::GetFileNameWithoutExtension('$(FilePrimaryAssembly)')).ilrepack.log"

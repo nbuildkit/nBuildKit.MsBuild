@@ -26,6 +26,8 @@ namespace NBuildKit.MsBuild.Tasks.Projects
     /// </summary>
     public sealed class GetIssuesForGitHubMilestone : BaseTask
     {
+        private const string ErrorIdNoMilestone = "NBuildKit.Prepare.GetIssues.GitHub.NoMilestone";
+
         private const string MetadataTitleTag = "Title";
         private const string MetadataUrlTag = "Url";
         private const string MetadataStateTag = "State";
@@ -96,10 +98,16 @@ namespace NBuildKit.MsBuild.Tasks.Projects
                 else
                 {
                     Log.LogError(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Failed to find a milestone with title: {0}",
-                            MilestoneName));
+                        string.Empty,
+                        ErrorCodeById(ErrorIdNoMilestone),
+                        ErrorIdNoMilestone,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "Failed to find a milestone with title: {0}",
+                        MilestoneName);
                 }
             }
             catch (Exception e)

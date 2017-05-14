@@ -10,6 +10,9 @@
         <!-- Don't load the template tokens, this script doesn't need them -->
         <LoadTemplateTokens>false</LoadTemplateTokens>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadMsBuildTasksProjectsToBuild>true</ShouldLoadMsBuildTasksProjectsToBuild>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -30,10 +33,14 @@
                 TaskParameter="Value" />
         </CreateProperty>
         <Error
+            Code="$(NBuildKitErrorCodeNuGetNotFound)"
             Condition=" '$(ToolsExternalNuGetPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdNuGetNotFound)"
             Text="No NuGet executable defined. Will not be able to restore the packages." />
         <Error
+            Code="$(NBuildKitErrorCodeBootstrapBuildTaskFileNotFound)"
             Condition="!Exists('$(FileMsBuildTasksProject)') "
+            HelpKeyword="$(NBuildKitErrorIdBootstrapBuildTaskFileNotFound)"
             Text="Expected $(FileMsBuildTasksProject) to point to a valid path but it does not." />
 
         <Message

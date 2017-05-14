@@ -18,6 +18,8 @@ namespace NBuildKit.MsBuild.Tasks.Validation
     /// </summary>
     public sealed class FxCopViaProject : FxCopCommandLineToolTask
     {
+        private const string ErrorIdNoProjectFile = "NBuildKit.FxCop.NoProjectFileDefined";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FxCopViaProject"/> class.
         /// </summary>
@@ -41,7 +43,16 @@ namespace NBuildKit.MsBuild.Tasks.Validation
             var projectPath = GetAbsolutePath(ProjectFile).TrimEnd('\\');
             if (string.IsNullOrWhiteSpace(projectPath) || !File.Exists(projectPath))
             {
-                Log.LogError("No project file was provided.");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdNoProjectFile),
+                    ErrorIdNoProjectFile,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "No project file was provided.");
                 return false;
             }
 

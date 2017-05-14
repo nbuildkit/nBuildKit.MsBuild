@@ -10,9 +10,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using Microsoft.Build.Framework;
-using NBuildKit.MsBuild.Tasks.Core;
 
-namespace NBuildKit.MsBuild.Tasks.VersionControl
+namespace NBuildKit.MsBuild.Tasks.Core
 {
     /// <summary>
     /// Defines the base class for <see cref="ITask"/> classes that work with the GIT command line tool.
@@ -40,7 +39,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             {
                 if (!string.IsNullOrWhiteSpace(e.Data))
                 {
-                    text.Append(e.Data);
+                    text.AppendLine(e.Data);
                 }
             };
 
@@ -48,12 +47,20 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
-                        exitCode));
-                Log.LogError(string.Format(CultureInfo.InvariantCulture, "Output was: {0}", text));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
+                    exitCode);
+                Log.LogWarning(
+                    "Output was: {0}",
+                    text);
             }
 
             return text.ToString();
@@ -108,11 +115,17 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             if (exitCode != 0)
             {
                 Log.LogError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} exited with a non-zero exit code. Exit code was: {1}",
-                        System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
-                        exitCode));
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
+                    ErrorIdApplicationNonzeroExitCode,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "{0} exited with a non-zero exit code. Exit code was: {1}",
+                    System.IO.Path.GetFileName(GitExecutablePath.ItemSpec),
+                    exitCode);
             }
 
             return exitCode;

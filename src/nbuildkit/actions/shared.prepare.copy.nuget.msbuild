@@ -6,6 +6,9 @@
     <PropertyGroup>
         <ExistsSharedPrepareCopyNuGet>true</ExistsSharedPrepareCopyNuGet>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadNuGetFilesToCopy>true</ShouldLoadNuGetFilesToCopy>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -15,6 +18,7 @@
         Condition=" '@(NuGetFilesToCopy)' != '' "
         Name="nBuildKit_Shared_Prepare_Copy_FromNuGetPackage">
         <CopyFilesFromNuGetPackages
+            ErrorInformation="@(ErrorInformation)"
             Items="@(NuGetFilesToCopy)"
             PackagesDirectory="$(DirPackages)">
         </CopyFilesFromNuGetPackages>

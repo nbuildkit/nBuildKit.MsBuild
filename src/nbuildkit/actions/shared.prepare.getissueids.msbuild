@@ -6,6 +6,9 @@
     <PropertyGroup>
         <ExistsSharedPrepareGetIssueIds>true</ExistsSharedPrepareGetIssueIds>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadBranchMergeTarget>true</ShouldLoadBranchMergeTarget>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -22,7 +25,9 @@
         Condition=" '$(IsGitWorkspace)' == 'true' "
         Name="_nBuildKit_Shared_Prepare_GetIssueIds_ForCurrentBranch_GetWorkItemsFromCommits_FromGit">
 
-        <LastItemInGroup Items="@(BranchMergeTarget)">
+        <LastItemInGroup
+            ErrorInformation="@(ErrorInformation)"
+            Items="@(BranchMergeTarget)">
             <Output
                 PropertyName="WorkItemTargetBranch"
                 TaskParameter="Item" />
@@ -31,10 +36,13 @@
             Condition=" '$(WorkItemTargetBranch)' != '' "
             Text="Getting issue IDs from the GIT commit messages relative to $(WorkItemTargetBranch)" />
         <Error
+            Code="$(NBuildKitErrorCodePrepareGetIssuesUnknownBranch)"
             Condition=" '$(WorkItemTargetBranch)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdPrepareGetIssuesUnknownBranch)"
             Text="Could not determine what relative to which branch the commit messages should be examined." />
 
         <ExtractIssueIdsFromGitCommitMessages
+            ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
             Workspace="$(DirWorkspace)"
             MergeTargetBranch="$(WorkItemTargetBranch)">

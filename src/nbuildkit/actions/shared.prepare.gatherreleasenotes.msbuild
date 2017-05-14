@@ -7,6 +7,11 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsSharedPrepareGatherReleaseNotes>true</ExistsSharedPrepareGatherReleaseNotes>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -48,6 +53,7 @@
         </PropertyGroup>
         <InvokeStandaloneMsBuild
             Condition="Exists('$(MSBuildThisFileDirectory)shared.templatetokens.msbuild')"
+            ErrorInformation="@(ErrorInformation)"
             Projects="$(MSBuildThisFileDirectory)shared.templatetokens.msbuild"
             Properties="$(Locations);$(Files);$(DefaultProperties)"
             RunEachTargetSeparately="True"
@@ -63,6 +69,7 @@
     <Target Name="_nBuildKit_Shared_Prepare_GatherReleaseNotes_GetPrerequisites">
         <GetSemanticVersionFromFile
             Condition="Exists('$(FileSemanticVersion)')"
+            ErrorInformation="@(ErrorInformation)"
             VersionFile="$(FileSemanticVersion)">
             <Output
                 PropertyName="VersionSemantic"
@@ -92,6 +99,7 @@
             Text="Getting the release notes from a github milestone ..." />
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="$(GitHubMilestoneName)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -101,6 +109,7 @@
 
         <GetIssuesForGitHubMilestone
             ContinueOnError="$(ContinueBuildIfReleaseNoteGatheringFails)"
+            ErrorInformation="@(ErrorInformation)"
             GitHubProjectName="$(GitHubRepositoryName)"
             GitHubUserName="$(GitHubUserName)"
             IssueState="closed"

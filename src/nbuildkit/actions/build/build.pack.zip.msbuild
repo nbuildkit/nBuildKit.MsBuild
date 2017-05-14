@@ -7,6 +7,12 @@
         <!-- Defines whether the current script file has been loaded / imported or not -->
         <ExistsBuildPackZip>true</ExistsBuildPackZip>
     </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadArchivePackageSpecs>true</ShouldLoadArchivePackageSpecs>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
 
     <Import
         Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
@@ -30,6 +36,7 @@
             Directories="$(DirBuildDeploy)" />
 
         <TemplateText
+            ErrorInformation="@(ErrorInformation)"
             Template="%(ArchivePackageSpecs.Identity)"
             Tokens="@(TemplateTokens)">
             <Output
@@ -50,11 +57,13 @@
 
         <TemplateFile
             Encoding="UTF-8"
+            ErrorInformation="@(ErrorInformation)"
             OutputFileName="$(FileGeneratedArchiveSpec)"
             Template="$(FileArchiveSpec)"
             Tokens="@(TemplateTokens)" />
 
         <Zip
+            ErrorInformation="@(ErrorInformation)"
             File="$(FileGeneratedArchiveSpec)"
             OutputDirectory="$(DirBuildDeploy)"
             OverwriteExistingFiles="true"

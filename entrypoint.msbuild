@@ -214,12 +214,15 @@
             <BootstrapIncludes>
                 FileImports=$(DirNBuildKitMsBuildEntryPoint)\import.build.props;
             </BootstrapIncludes>
+            <BootstrapSettings>
+                Configuration=Deploy
+            </BootstrapSettings>
         </PropertyGroup>
 
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKitMsBuildActions)\shared.bootstrap.build.tasks.msbuild"
-            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapIncludes)"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapSettings);$(BootstrapIncludes)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -235,7 +238,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKitMsBuildActions)\shared.bootstrap.generate.targetsfile.msbuild"
-            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapIncludes)"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapSettings);$(BootstrapIncludes)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"

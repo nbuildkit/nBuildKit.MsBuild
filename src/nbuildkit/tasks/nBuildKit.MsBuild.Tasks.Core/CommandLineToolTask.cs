@@ -23,6 +23,26 @@ namespace NBuildKit.MsBuild.Tasks.Core
     /// </summary>
     public abstract class CommandLineToolTask : BaseTask
     {
+        /// <summary>
+        /// Defines the error ID for an error describing an application writing to the error stream.
+        /// </summary>
+        protected const string ErrorIdApplicationErrorStream = "NBuildKit.Application.WroteToErrorStream";
+
+        /// <summary>
+        /// Defines the error ID for an error indicating that a required application argument has not been provided.
+        /// </summary>
+        protected const string ErrorIdApplicationMissingArgument = "NBuildKit.Application.MissingArgument";
+
+        /// <summary>
+        /// Defines the error ID for an error describing an application exiting with a non-zero exit code.
+        /// </summary>
+        protected const string ErrorIdApplicationNonzeroExitCode = "NBuildKit.Application.NonzeroExitCode";
+
+        /// <summary>
+        /// Defines the error ID for an error indicating that the path to the selected tool was not found.
+        /// </summary>
+        protected const string ErrorIdApplicationPathNotFound = "NBuildKit.FileNotFound.ExecutableTool";
+
         private readonly IApplicationInvoker _invoker;
 
         /// <summary>
@@ -69,11 +89,31 @@ namespace NBuildKit.MsBuild.Tasks.Core
         {
             get
             {
+                // Fix for the issue reported here: https://github.com/Microsoft/msbuild/issues/397
+                var encoding = Console.OutputEncoding;
                 return (s, e) =>
                 {
                     if (!string.IsNullOrWhiteSpace(e.Data))
                     {
-                        Log.LogError(e.Data);
+                        // If the error stream encoding is UTF8
+                        // it is possible that the error stream contains the BOM marker for UTF-8
+                        // So even if the error stream is actually empty, we still get something in
+                        // it, which means we'll fail.
+                        if (Encoding.UTF8.Equals(encoding) && (e.Data.Length == 1))
+                        {
+                            return;
+                        }
+
+                        Log.LogError(
+                            string.Empty,
+                            ErrorCodeById(ErrorIdApplicationErrorStream),
+                            ErrorIdApplicationErrorStream,
+                            string.Empty,
+                            0,
+                            0,
+                            0,
+                            0,
+                            e.Data);
                     }
                 };
             }
@@ -135,14 +175,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
                             text.AppendLine(e.Data);
                         }
                     };
-                process.ErrorDataReceived +=
-                    (s, e) =>
-                    {
-                        if (!string.IsNullOrWhiteSpace(e.Data))
-                        {
-                            Log.LogError(e.Data);
-                        }
-                    };
+                process.ErrorDataReceived += DefaultErrorHandler;
                 try
                 {
                     process.Start();
@@ -220,7 +253,16 @@ namespace NBuildKit.MsBuild.Tasks.Core
         {
             if ((exePath == null) || string.IsNullOrEmpty(exePath.ItemSpec))
             {
-                Log.LogError("The command line executable name was not provided");
+                Log.LogError(
+                    string.Empty,
+                    ErrorCodeById(ErrorIdApplicationPathNotFound),
+                    ErrorIdApplicationPathNotFound,
+                    string.Empty,
+                    0,
+                    0,
+                    0,
+                    0,
+                    "The command line executable name was not provided");
                 return -1;
             }
 
