@@ -37,10 +37,65 @@
                 TaskParameter="OutputPath" />
         </WebDownload>
 
+        <!--
+            Verify hash
+        -->
+        <ValidateHash
+            Algorithm="%(HttpFilesToCopy.HashAlgorithm)"
+            Hash="%(HttpFilesToCopy.Hash)"
+            HashFile="%(HttpFilesToCopy.HashFile)"
+            Path="%(HttpFilesToCopy.FullPath)" />
+
+        <!--
+            Verify GPG signature if required
+        -->
+
         <Unzip
             Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' "
             DestinationDirectory="$(DestinationPath)"
             ErrorInformation="@(ErrorInformation)"
             InputFileName="$(LocalFilePath)" />
+    </Target>
+
+    <Target
+        Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')"
+        Name="_nBuildKit_Shared_Prepare_Copy_FromUrl_GetToolPaths">
+        <NuGetInstall
+            Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="Gpg.Nuget"
+            PackageVersion="$(ToolsExternalGpgVersion)"
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            FileToLocate="GitVersion.exe"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalGpgPath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalGpgPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            Tool="$(ToolsExternalGpgPath)">
+            <Output
+                PropertyName="ToolsExternalGpgPath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalGpgPath)') "
+            Importance="low"
+            Text="The GPG executable was found at: $(ToolsExternalGpgPath)" />
+
+        <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
+            Condition="!Exists('$(ToolsExternalGpgPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
+            Text="Could not locate the GPG executable path. Cannot verify signatures." />
     </Target>
  </Project>

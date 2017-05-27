@@ -23,6 +23,20 @@
             <DestinationPath>%(ArchiveFilesToCopy.Destination)</DestinationPath>
         </PropertyGroup>
 
+        <!--
+            Verify GPG signature if required
+        -->
+
+        <!--
+            Verify hash
+        -->
+        <ValidateHash
+            Algorithm="%(ArchiveFilesToCopy.HashAlgorithm)"
+            Hash="%(ArchiveFilesToCopy.Hash)"
+            HashFile="%(ArchiveFilesToCopy.HashFile)"
+            Path="%(ArchiveFilesToCopy.FullPath)" />
+
+
         <Unzip
             DestinationDirectory="$(DestinationPath)"
             ErrorInformation="@(ErrorInformation)"
