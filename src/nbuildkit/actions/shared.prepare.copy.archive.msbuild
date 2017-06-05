@@ -26,7 +26,7 @@
 
         <Exec
             Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
-            Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) %(ArchiveFilesToCopy.GpgKey)" />
+            Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) --recv-keys %(ArchiveFilesToCopy.GpgKey)" />
 
         <Exec
             Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
@@ -38,7 +38,6 @@
             HashFile="%(ArchiveFilesToCopy.HashFile)"
             Path="%(ArchiveFilesToCopy.FullPath)" />
 
-
         <Unzip
             DestinationDirectory="$(DestinationPath)"
             ErrorInformation="@(ErrorInformation)"
@@ -46,7 +45,6 @@
     </Target>
 
     <Target
-        Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')"
         Name="_nBuildKit_Shared_Prepare_Copy_FromArchive_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
@@ -54,14 +52,14 @@
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
-            PackageName="Gpg.Nuget"
+            PackageName="Gpg.Windows.x64"
             PackageVersion="$(ToolsExternalGpgVersion)"
             Sources="@(NuGetSources)"
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
             ErrorInformation="@(ErrorInformation)"
-            FileToLocate="GitVersion.exe"
+            FileToLocate="gpg.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalGpgPath"

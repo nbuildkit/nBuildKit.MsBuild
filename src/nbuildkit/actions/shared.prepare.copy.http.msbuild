@@ -26,12 +26,21 @@
             <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' ">$(DirBuildTemp)</DirTempDestination>
         </PropertyGroup>
 
+        <TemplateText
+            Condition=" '%(HttpFilesToCopy.HashFile)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(HttpFilesToCopy.HashFile)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="HashFileUriTransformed"
+                TaskParameter="Result" />
+        </TemplateText>
         <WebDownload
             Condition=" '%(HttpFilesToCopy.HashFile)' != '' "
             ErrorInformation="@(ErrorInformation)"
             DestinationDirectory="$(DirTempDestination)"
             Password="%(HttpFilesToCopy.Password)"
-            Source="%(HttpFilesToCopy.HashFile)"
+            Source="$(HashFileUriTransformed)"
             UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
             UserName="%(HttpFilesToCopy.UserName)">
             <Output
@@ -39,12 +48,21 @@
                 TaskParameter="OutputPath" />
         </WebDownload>
 
+        <TemplateText
+            Condition=" '%(HttpFilesToCopy.SignatureFile)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(HttpFilesToCopy.SignatureFile)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="SignatureFileUriTransformed"
+                TaskParameter="Result" />
+        </TemplateText>
         <WebDownload
             Condition=" '%(HttpFilesToCopy.SignatureFile)' != '' "
             ErrorInformation="@(ErrorInformation)"
             DestinationDirectory="$(DirTempDestination)"
             Password="%(HttpFilesToCopy.Password)"
-            Source="%(HttpFilesToCopy.SignatureFile)"
+            Source="$(SignatureFileUriTransformed)"
             UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
             UserName="%(HttpFilesToCopy.UserName)">
             <Output
@@ -52,11 +70,19 @@
                 TaskParameter="OutputPath" />
         </WebDownload>
 
+        <TemplateText
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(HttpFilesToCopy.Identity)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="TargetFileUriTransformed"
+                TaskParameter="Result" />
+        </TemplateText>
         <WebDownload
             ErrorInformation="@(ErrorInformation)"
             DestinationDirectory="$(DirTempDestination)"
             Password="%(HttpFilesToCopy.Password)"
-            Source="%(HttpFilesToCopy.Identity)"
+            Source="$(TargetFileUriTransformed)"
             UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
             UserName="%(HttpFilesToCopy.UserName)">
             <Output
@@ -66,7 +92,7 @@
 
         <Exec
             Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
-            Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) %(HttpFilesToCopy.GpgKey)" />
+            Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) --recv-keys %(HttpFilesToCopy.GpgKey)" />
 
         <Exec
             Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
@@ -76,7 +102,7 @@
             Algorithm="%(HttpFilesToCopy.HashAlgorithm)"
             Hash="%(HttpFilesToCopy.Hash)"
             HashFile="$(HashFile)"
-            Path="%(HttpFilesToCopy.FullPath)" />
+            Path="$(LocalFilePath)" />
 
         <Unzip
             Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' "
@@ -86,7 +112,6 @@
     </Target>
 
     <Target
-        Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')"
         Name="_nBuildKit_Shared_Prepare_Copy_FromUrl_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
@@ -94,14 +119,14 @@
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
-            PackageName="Gpg.Nuget"
+            PackageName="Gpg.Windows.x64"
             PackageVersion="$(ToolsExternalGpgVersion)"
             Sources="@(NuGetSources)"
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
             ErrorInformation="@(ErrorInformation)"
-            FileToLocate="GitVersion.exe"
+            FileToLocate="gpg.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalGpgPath"
