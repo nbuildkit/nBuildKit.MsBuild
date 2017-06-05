@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsSharedGenerateTokenHashes>true</ExistsSharedGenerateTokenHashes>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TemplateTokensHashes>$(DirGeneratedPropertiesFiles)\templatetokens.hashes.props</TemplateTokensHashes>
+    </PropertyGroup>
+    <Target
+        Inputs="$(FileHashes)"
+        Name="shared_generatetoken_hashes"
+        Outputs="$(TemplateTokensHashes)">
+        <CallTarget Targets="shared_generatetokens_hashes_writepropertyfile" />
+    </Target>
+
+    <Target
+        Condition="Exists('$(FileHashes)')"
+        Name="shared_generatetokens_hashes_writepropertyfile">
+        <ReadHashesFromFile
+            Condition="Exists('$(FileHashes)')"
+            Path="$(FileHashes)">
+            <Output
+                ItemName="StoredHashes"
+                TaskParameter="Hashes" />
+        </ReadHashesFromFile>
+
+        <PropertyGroup>
+            <GenerationTime>$([System.DateTime]::Now.ToString("o"))</GenerationTime>
+        </PropertyGroup>
+        <ItemGroup>
+            <TemplateTokensHashes_Header Include="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;" />
+            <TemplateTokensHashes_Header Include="&lt;Project xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot; &gt;" />
+            <TemplateTokensHashes_Header Include='&lt;!-- Generated at $(GenerationTime) --&gt;' />
+            <TemplateTokensHashes_Header Include="&lt;PropertyGroup&gt;" />
+            <TemplateTokensHashes_Header Include="&lt;ExistsGeneratedTemplateTokensHashes&gt;true&lt;/ExistsGeneratedTemplateTokensHashes&gt;" />
+            <TemplateTokensHashes_Header Include="&lt;/PropertyGroup&gt;" />
+            <TemplateTokensHashes_Header Include="&lt;ItemGroup&gt;" />
+
+            <TemplateTokensHashes Include="&lt;TemplateTokens Include=&quot;Hash_$([System.IO.Path]::GetFileNameWithoutExtension('%(StoredHashes.FullPath)'))&quot; &gt; &#xD;&#xA; &lt;ReplacementValue&gt;%(StoredHashes.Hash)&lt;/ReplacementValue&gt; &#xD;&#xA; &lt;/TemplateTokens&gt;" />
+
+            <TemplateTokensHashes_Footer Include="&lt;/ItemGroup&gt;" />
+            <TemplateTokensHashes_Footer Include="&lt;/Project&gt;" />
+        </ItemGroup>
+
+        <CreateProperty
+            Value="$([System.IO.Path]::GetDirectoryName('$(TemplateTokensHashes)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)')"
+            Directories="$(DirToCreate)" />
+        <WriteLinesToFile
+            File="$(TemplateTokensHashes)"
+            Lines="@(TemplateTokensHashes_Header)"
+            Overwrite="true" />
+
+        <WriteLinesToFile
+            File="$(TemplateTokensHashes)"
+            Lines="@(TemplateTokensHashes)"
+            Overwrite="false" />
+
+        <WriteLinesToFile
+            File="$(TemplateTokensHashes)"
+            Lines="@(TemplateTokensHashes_Footer)"
+            Overwrite="false" />
+    </Target>
+</Project>

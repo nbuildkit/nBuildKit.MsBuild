@@ -16,6 +16,7 @@
 
     <Target
         Condition=" '@(HttpFilesToCopy)' != '' "
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Copy_FromUrl_GetToolPaths"
         Name="nBuildKit_Shared_Prepare_Copy_FromUrl"
         Outputs="%(HttpFilesToCopy.Identity)">
 
@@ -25,11 +26,63 @@
             <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' ">$(DirBuildTemp)</DirTempDestination>
         </PropertyGroup>
 
+        <TemplateText
+            Condition=" '%(HttpFilesToCopy.HashFile)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(HttpFilesToCopy.HashFile)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="HashFileUriTransformed"
+                TaskParameter="Result" />
+        </TemplateText>
+        <WebDownload
+            Condition=" '%(HttpFilesToCopy.HashFile)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            DestinationDirectory="$(DirTempDestination)"
+            Password="%(HttpFilesToCopy.Password)"
+            Source="$(HashFileUriTransformed)"
+            UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
+            UserName="%(HttpFilesToCopy.UserName)">
+            <Output
+                PropertyName="HashFile"
+                TaskParameter="OutputPath" />
+        </WebDownload>
+
+        <TemplateText
+            Condition=" '%(HttpFilesToCopy.SignatureFile)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(HttpFilesToCopy.SignatureFile)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="SignatureFileUriTransformed"
+                TaskParameter="Result" />
+        </TemplateText>
+        <WebDownload
+            Condition=" '%(HttpFilesToCopy.SignatureFile)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            DestinationDirectory="$(DirTempDestination)"
+            Password="%(HttpFilesToCopy.Password)"
+            Source="$(SignatureFileUriTransformed)"
+            UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
+            UserName="%(HttpFilesToCopy.UserName)">
+            <Output
+                PropertyName="SignatureFile"
+                TaskParameter="OutputPath" />
+        </WebDownload>
+
+        <TemplateText
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(HttpFilesToCopy.Identity)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="TargetFileUriTransformed"
+                TaskParameter="Result" />
+        </TemplateText>
         <WebDownload
             ErrorInformation="@(ErrorInformation)"
             DestinationDirectory="$(DirTempDestination)"
             Password="%(HttpFilesToCopy.Password)"
-            Source="%(HttpFilesToCopy.Identity)"
+            Source="$(TargetFileUriTransformed)"
             UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
             UserName="%(HttpFilesToCopy.UserName)">
             <Output
@@ -37,10 +90,65 @@
                 TaskParameter="OutputPath" />
         </WebDownload>
 
+        <Exec
+            Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
+            Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) --recv-keys %(HttpFilesToCopy.GpgKey)" />
+
+        <Exec
+            Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
+            Command="&quot;$(ToolsExternalGpgPath)&quot; --verify &quot;$(SignatureFile)&quot; &quot;$(HashFile)&quot;" />
+
+        <ValidateHash
+            Algorithm="%(HttpFilesToCopy.HashAlgorithm)"
+            Hash="%(HttpFilesToCopy.Hash)"
+            HashFile="$(HashFile)"
+            Path="$(LocalFilePath)" />
+
         <Unzip
             Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' "
             DestinationDirectory="$(DestinationPath)"
             ErrorInformation="@(ErrorInformation)"
             InputFileName="$(LocalFilePath)" />
+    </Target>
+
+    <Target
+        Name="_nBuildKit_Shared_Prepare_Copy_FromUrl_GetToolPaths">
+        <NuGetInstall
+            Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="Gpg.Windows.x64"
+            PackageVersion="$(ToolsExternalGpgVersion)"
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            FileToLocate="gpg.exe"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalGpgPath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalGpgPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            Tool="$(ToolsExternalGpgPath)">
+            <Output
+                PropertyName="ToolsExternalGpgPath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalGpgPath)') "
+            Importance="low"
+            Text="The GPG executable was found at: $(ToolsExternalGpgPath)" />
+
+        <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
+            Condition="!Exists('$(ToolsExternalGpgPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
+            Text="Could not locate the GPG executable path. Cannot verify signatures." />
     </Target>
  </Project>
