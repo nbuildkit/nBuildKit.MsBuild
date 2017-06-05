@@ -16,6 +16,7 @@
 
     <Target
         Condition=" '@(ArchiveFilesToCopy)' != '' "
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Copy_FromArchive_GetToolPaths"
         Name="nBuildKit_Shared_Prepare_Copy_FromArchive"
         Outputs="%(ArchiveFilesToCopy.Identity)">
 
@@ -23,13 +24,14 @@
             <DestinationPath>%(ArchiveFilesToCopy.Destination)</DestinationPath>
         </PropertyGroup>
 
-        <!--
-            Verify GPG signature if required
-        -->
+        <Exec
+            Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
+            Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) %(ArchiveFilesToCopy.GpgKey)" />
 
-        <!--
-            Verify hash
-        -->
+        <Exec
+            Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
+            Command="&quot;$(ToolsExternalGpgPath)&quot; --verify &quot;%(ArchiveFilesToCopy.SignatureFile)&quot; &quot;%(ArchiveFilesToCopy.HashFile)&quot;" />
+
         <ValidateHash
             Algorithm="%(ArchiveFilesToCopy.HashAlgorithm)"
             Hash="%(ArchiveFilesToCopy.Hash)"
@@ -41,5 +43,47 @@
             DestinationDirectory="$(DestinationPath)"
             ErrorInformation="@(ErrorInformation)"
             InputFileName="%(ArchiveFilesToCopy.FullPath)" />
+    </Target>
+
+    <Target
+        Condition="!Exists('$(FileVersionMsBuild)') AND !Exists('$(ScriptGetVersion)')"
+        Name="_nBuildKit_Shared_Prepare_Copy_FromArchive_GetToolPaths">
+        <NuGetInstall
+            Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="Gpg.Nuget"
+            PackageVersion="$(ToolsExternalGpgVersion)"
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalGpgPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            FileToLocate="GitVersion.exe"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalGpgPath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalGpgPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            Tool="$(ToolsExternalGpgPath)">
+            <Output
+                PropertyName="ToolsExternalGpgPath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalGpgPath)') "
+            Importance="low"
+            Text="The GPG executable was found at: $(ToolsExternalGpgPath)" />
+
+        <Error
+            Code="$(NBuildKitErrorCodeToolFileNotFound)"
+            Condition="!Exists('$(ToolsExternalGpgPath)') "
+            HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
+            Text="Could not locate the GPG executable path. Cannot verify signatures." />
     </Target>
  </Project>

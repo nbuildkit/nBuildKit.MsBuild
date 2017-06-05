@@ -16,6 +16,7 @@
 
     <Target
         Condition=" '@(HttpFilesToCopy)' != '' "
+        DependsOnTargets="_nBuildKit_Shared_Prepare_Copy_FromUrl_GetToolPaths"
         Name="nBuildKit_Shared_Prepare_Copy_FromUrl"
         Outputs="%(HttpFilesToCopy.Identity)">
 
@@ -24,6 +25,32 @@
             <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'false' ">$(DestinationPath)</DirTempDestination>
             <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' ">$(DirBuildTemp)</DirTempDestination>
         </PropertyGroup>
+
+        <WebDownload
+            Condition=" '%(HttpFilesToCopy.HashFile)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            DestinationDirectory="$(DirTempDestination)"
+            Password="%(HttpFilesToCopy.Password)"
+            Source="%(HttpFilesToCopy.HashFile)"
+            UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
+            UserName="%(HttpFilesToCopy.UserName)">
+            <Output
+                PropertyName="HashFile"
+                TaskParameter="OutputPath" />
+        </WebDownload>
+
+        <WebDownload
+            Condition=" '%(HttpFilesToCopy.SignatureFile)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            DestinationDirectory="$(DirTempDestination)"
+            Password="%(HttpFilesToCopy.Password)"
+            Source="%(HttpFilesToCopy.SignatureFile)"
+            UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
+            UserName="%(HttpFilesToCopy.UserName)">
+            <Output
+                PropertyName="SignatureFile"
+                TaskParameter="OutputPath" />
+        </WebDownload>
 
         <WebDownload
             ErrorInformation="@(ErrorInformation)"
@@ -37,18 +64,19 @@
                 TaskParameter="OutputPath" />
         </WebDownload>
 
-        <!--
-            Verify hash
-        -->
+        <Exec
+            Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
+            Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) %(HttpFilesToCopy.GpgKey)" />
+
+        <Exec
+            Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
+            Command="&quot;$(ToolsExternalGpgPath)&quot; --verify &quot;$(SignatureFile)&quot; &quot;$(HashFile)&quot;" />
+
         <ValidateHash
             Algorithm="%(HttpFilesToCopy.HashAlgorithm)"
             Hash="%(HttpFilesToCopy.Hash)"
-            HashFile="%(HttpFilesToCopy.HashFile)"
+            HashFile="$(HashFile)"
             Path="%(HttpFilesToCopy.FullPath)" />
-
-        <!--
-            Verify GPG signature if required
-        -->
 
         <Unzip
             Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' "
