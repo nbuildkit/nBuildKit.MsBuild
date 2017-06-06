@@ -34,158 +34,30 @@ var searchModule = function() {
 
     a({
         id:0,
-        title:"PublicKeySignatureFromKeyFile",
-        content:"PublicKeySignatureFromKeyFile",
+        title:"InvokePesterOnFile",
+        content:"InvokePesterOnFile",
         description:'',
         tags:''
     });
 
     a({
         id:1,
-        title:"NuGetRestore",
-        content:"NuGetRestore",
+        title:"GenerateSpecialParameterTemplateTokens",
+        content:"GenerateSpecialParameterTemplateTokens",
         description:'',
         tags:''
     });
 
     a({
         id:2,
-        title:"SortItemGroupByKey",
-        content:"SortItemGroupByKey",
+        title:"ExceptionHandler",
+        content:"ExceptionHandler",
         description:'',
         tags:''
     });
 
     a({
         id:3,
-        title:"ILRepack",
-        content:"ILRepack",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:4,
-        title:"Zip",
-        content:"Zip",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:5,
-        title:"GitAdd",
-        content:"GitAdd",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:6,
-        title:"GitCurrentRevision",
-        content:"GitCurrentRevision",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:7,
-        title:"InvokeStandaloneMsBuild",
-        content:"InvokeStandaloneMsBuild",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:8,
-        title:"MsBuildCommandLineToolTask",
-        content:"MsBuildCommandLineToolTask",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:9,
-        title:"GitHubReleaseCreate",
-        content:"GitHubReleaseCreate",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:10,
-        title:"SortFilesByDirectory",
-        content:"SortFilesByDirectory",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:11,
-        title:"GetVcsInfoFromFile",
-        content:"GetVcsInfoFromFile",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:12,
-        title:"FxCopCommandLineToolTask",
-        content:"FxCopCommandLineToolTask",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:13,
-        title:"MsBuildLogger",
-        content:"MsBuildLogger",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:14,
-        title:"GitCheckout",
-        content:"GitCheckout",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:15,
-        title:"NuGetPush",
-        content:"NuGetPush",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:16,
-        title:"ReportGeneratorOutputToCsv",
-        content:"ReportGeneratorOutputToCsv",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:17,
-        title:"GitPush",
-        content:"GitPush",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:18,
-        title:"NuGetPack",
-        content:"NuGetPack",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:19,
         title:"BaseTask",
         content:"BaseTask",
         description:'',
@@ -193,39 +65,39 @@ var searchModule = function() {
     });
 
     a({
-        id:20,
-        title:"FxCopViaAssemblies",
-        content:"FxCopViaAssemblies",
+        id:4,
+        title:"NuGetInstall",
+        content:"NuGetInstall",
         description:'',
         tags:''
     });
 
     a({
-        id:21,
-        title:"CalculateSemanticVersionWithGitVersion",
-        content:"CalculateSemanticVersionWithGitVersion",
+        id:5,
+        title:"InvokeStandaloneMsBuild",
+        content:"InvokeStandaloneMsBuild",
         description:'',
         tags:''
     });
 
     a({
-        id:22,
-        title:"ValidateXmlAgainstSchema",
-        content:"ValidateXmlAgainstSchema",
+        id:6,
+        title:"GitReset",
+        content:"GitReset",
         description:'',
         tags:''
     });
 
     a({
-        id:23,
-        title:"GitCurrentBranch",
-        content:"GitCurrentBranch",
+        id:7,
+        title:"GitClone",
+        content:"GitClone",
         description:'',
         tags:''
     });
 
     a({
-        id:24,
+        id:8,
         title:"InvokeNodeTool",
         content:"InvokeNodeTool",
         description:'',
@@ -233,7 +105,119 @@ var searchModule = function() {
     });
 
     a({
-        id:25,
+        id:9,
+        title:"PublicKeySignatureFromKeyFile",
+        content:"PublicKeySignatureFromKeyFile",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:10,
+        title:"GitCommit",
+        content:"GitCommit",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:11,
+        title:"ExecWithArguments",
+        content:"ExecWithArguments",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:12,
+        title:"GetFileVersion",
+        content:"GetFileVersion",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:13,
+        title:"InvokePesterOnDirectory",
+        content:"InvokePesterOnDirectory",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:14,
+        title:"GatherNuGetDependenciesForProject",
+        content:"GatherNuGetDependenciesForProject",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:15,
+        title:"GetIssuesForGitHubMilestone",
+        content:"GetIssuesForGitHubMilestone",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:16,
+        title:"SearchPackagesDirectoryForNuGetPackage",
+        content:"SearchPackagesDirectoryForNuGetPackage",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:17,
+        title:"AddOrUpdateAttributeInCode",
+        content:"AddOrUpdateAttributeInCode",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:18,
+        title:"FindAndReplaceInText",
+        content:"FindAndReplaceInText",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:19,
+        title:"TaskItemExtensions",
+        content:"TaskItemExtensions",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:20,
+        title:"GitCheckout",
+        content:"GitCheckout",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:21,
+        title:"UpdateAttributeInCode",
+        content:"UpdateAttributeInCode",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:22,
+        title:"GitMerge",
+        content:"GitMerge",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:23,
         title:"GitCommandLineToolTask",
         content:"GitCommandLineToolTask",
         description:'',
@@ -241,9 +225,25 @@ var searchModule = function() {
     });
 
     a({
+        id:24,
+        title:"SortFilesByDirectory",
+        content:"SortFilesByDirectory",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:25,
+        title:"CalculateSemanticVersionWithGitVersion",
+        content:"CalculateSemanticVersionWithGitVersion",
+        description:'',
+        tags:''
+    });
+
+    a({
         id:26,
-        title:"GitCommit",
-        content:"GitCommit",
+        title:"GitPush",
+        content:"GitPush",
         description:'',
         tags:''
     });
@@ -258,6 +258,30 @@ var searchModule = function() {
 
     a({
         id:28,
+        title:"LastItemInGroup",
+        content:"LastItemInGroup",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:29,
+        title:"TemplateText",
+        content:"TemplateText",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:30,
+        title:"GitAdd",
+        content:"GitAdd",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:31,
         title:"InvokePowershellFile",
         content:"InvokePowershellFile",
         description:'',
@@ -265,103 +289,7 @@ var searchModule = function() {
     });
 
     a({
-        id:29,
-        title:"InvokeSteps",
-        content:"InvokeSteps",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:30,
-        title:"GitMerge",
-        content:"GitMerge",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:31,
-        title:"SetEnvironmentVariable",
-        content:"SetEnvironmentVariable",
-        description:'',
-        tags:''
-    });
-
-    a({
         id:32,
-        title:"GitNewFiles",
-        content:"GitNewFiles",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:33,
-        title:"NuGetInstall",
-        content:"NuGetInstall",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:34,
-        title:"GetToolFullPath",
-        content:"GetToolFullPath",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:35,
-        title:"ExtractIssueIdsFromGitCommitMessages",
-        content:"ExtractIssueIdsFromGitCommitMessages",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:36,
-        title:"EscapingUtilities",
-        content:"EscapingUtilities",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:37,
-        title:"TaskItemExtensions",
-        content:"TaskItemExtensions",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:38,
-        title:"GenerateInternalsVisibleToAttributes",
-        content:"GenerateInternalsVisibleToAttributes",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:39,
-        title:"PathUtilities",
-        content:"PathUtilities",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:40,
-        title:"GitClone",
-        content:"GitClone",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:41,
         title:"PropertyParser",
         content:"PropertyParser",
         description:'',
@@ -369,57 +297,129 @@ var searchModule = function() {
     });
 
     a({
+        id:33,
+        title:"MsBuildCommandLineToolTask",
+        content:"MsBuildCommandLineToolTask",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:34,
+        title:"GitHubReleaseCreate",
+        content:"GitHubReleaseCreate",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:35,
+        title:"InvokeSteps",
+        content:"InvokeSteps",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:36,
+        title:"GetSemanticVersionFromFile",
+        content:"GetSemanticVersionFromFile",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:37,
+        title:"GenerateTargetsFile",
+        content:"GenerateTargetsFile",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:38,
+        title:"HtmlEncodeText",
+        content:"HtmlEncodeText",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:39,
+        title:"SetEnvironmentVariable",
+        content:"SetEnvironmentVariable",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:40,
+        title:"GitCurrentBranch",
+        content:"GitCurrentBranch",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:41,
+        title:"NuGetCommandLineToolTask",
+        content:"NuGetCommandLineToolTask",
+        description:'',
+        tags:''
+    });
+
+    a({
         id:42,
-        title:"IsInCollection",
-        content:"IsInCollection",
+        title:"ExceptionProcessor",
+        content:"ExceptionProcessor",
         description:'',
         tags:''
     });
 
     a({
         id:43,
-        title:"UpdateAttributeInCode",
-        content:"UpdateAttributeInCode",
+        title:"TemplateFile",
+        content:"TemplateFile",
         description:'',
         tags:''
     });
 
     a({
         id:44,
-        title:"IApplicationInvoker",
-        content:"IApplicationInvoker",
+        title:"ValidateXmlAgainstSchema",
+        content:"ValidateXmlAgainstSchema",
         description:'',
         tags:''
     });
 
     a({
         id:45,
-        title:"AddOrUpdateAttributeInCode",
-        content:"AddOrUpdateAttributeInCode",
+        title:"NuGetRestore",
+        content:"NuGetRestore",
         description:'',
         tags:''
     });
 
     a({
         id:46,
-        title:"TaskTest",
-        content:"TaskTest",
+        title:"MsBuildLogger",
+        content:"MsBuildLogger",
         description:'',
         tags:''
     });
 
     a({
         id:47,
-        title:"GitHubReleaseUpload",
-        content:"GitHubReleaseUpload",
+        title:"FindAndReplaceInFile",
+        content:"FindAndReplaceInFile",
         description:'',
         tags:''
     });
 
     a({
         id:48,
-        title:"GitReset",
-        content:"GitReset",
+        title:"CommandLineToolTask",
+        content:"CommandLineToolTask",
         description:'',
         tags:''
     });
@@ -434,230 +434,62 @@ var searchModule = function() {
 
     a({
         id:50,
-        title:"ExecWithArguments",
-        content:"ExecWithArguments",
+        title:"NuGetPush",
+        content:"NuGetPush",
         description:'',
         tags:''
     });
 
     a({
         id:51,
-        title:"LastItemInGroup",
-        content:"LastItemInGroup",
+        title:"ExtractIssueIdsFromGitCommitMessages",
+        content:"ExtractIssueIdsFromGitCommitMessages",
         description:'',
         tags:''
     });
 
     a({
         id:52,
-        title:"FxCopViaProject",
-        content:"FxCopViaProject",
+        title:"FxCopCommandLineToolTask",
+        content:"FxCopCommandLineToolTask",
         description:'',
         tags:''
     });
 
     a({
         id:53,
-        title:"FindAndReplaceInFile",
-        content:"FindAndReplaceInFile",
+        title:"GetVcsInfoFromFile",
+        content:"GetVcsInfoFromFile",
         description:'',
         tags:''
     });
 
     a({
         id:54,
-        title:"GatherNuGetDependenciesForProject",
-        content:"GatherNuGetDependenciesForProject",
+        title:"TaskTest",
+        content:"TaskTest",
         description:'',
         tags:''
     });
 
     a({
         id:55,
-        title:"ExceptionHandler",
-        content:"ExceptionHandler",
+        title:"GetToolFullPath",
+        content:"GetToolFullPath",
         description:'',
         tags:''
     });
 
     a({
         id:56,
-        title:"InvokePowershellCommand",
-        content:"InvokePowershellCommand",
+        title:"SortItemGroupByKey",
+        content:"SortItemGroupByKey",
         description:'',
         tags:''
     });
 
     a({
         id:57,
-        title:"InvokePesterOnDirectory",
-        content:"InvokePesterOnDirectory",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:58,
-        title:"SearchPackagesDirectoryForToolPath",
-        content:"SearchPackagesDirectoryForToolPath",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:59,
-        title:"FindAndReplaceInText",
-        content:"FindAndReplaceInText",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:60,
-        title:"SearchPackagesDirectoryForToolDirectory",
-        content:"SearchPackagesDirectoryForToolDirectory",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:61,
-        title:"ReportGenerator",
-        content:"ReportGenerator",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:62,
-        title:"HtmlEncodeText",
-        content:"HtmlEncodeText",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:63,
-        title:"GetFileVersion",
-        content:"GetFileVersion",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:64,
-        title:"Unzip",
-        content:"Unzip",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:65,
-        title:"TemplateText",
-        content:"TemplateText",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:66,
-        title:"GenerateSpecialParameterTemplateTokens",
-        content:"GenerateSpecialParameterTemplateTokens",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:67,
-        title:"ExceptionProcessor",
-        content:"ExceptionProcessor",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:68,
-        title:"NuGetCommandLineToolTask",
-        content:"NuGetCommandLineToolTask",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:69,
-        title:"GetSemanticVersionFromFile",
-        content:"GetSemanticVersionFromFile",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:70,
-        title:"SearchPackagesDirectoryForNuGetPackage",
-        content:"SearchPackagesDirectoryForNuGetPackage",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:71,
-        title:"GetProjectsFromVisualStudioSolution",
-        content:"GetProjectsFromVisualStudioSolution",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:72,
-        title:"OpenCover",
-        content:"OpenCover",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:73,
-        title:"CommandLineToolTask",
-        content:"CommandLineToolTask",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:74,
-        title:"InvokePesterOnFile",
-        content:"InvokePesterOnFile",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:75,
-        title:"CopyFilesFromNuGetPackages",
-        content:"CopyFilesFromNuGetPackages",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:76,
-        title:"GenerateTargetsFile",
-        content:"GenerateTargetsFile",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:77,
-        title:"GetIssuesForGitHubMilestone",
-        content:"GetIssuesForGitHubMilestone",
-        description:'',
-        tags:''
-    });
-
-    a({
-        id:78,
         title:"ApplicationInvoker",
         content:"ApplicationInvoker",
         description:'',
@@ -665,11 +497,233 @@ var searchModule = function() {
     });
 
     a({
-        id:79,
-        title:"TemplateFile",
-        content:"TemplateFile",
+        id:58,
+        title:"SearchPackagesDirectoryForToolDirectory",
+        content:"SearchPackagesDirectoryForToolDirectory",
         description:'',
         tags:''
+    });
+
+    a({
+        id:59,
+        title:"SearchPackagesDirectoryForToolPath",
+        content:"SearchPackagesDirectoryForToolPath",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:60,
+        title:"Zip",
+        content:"Zip",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:61,
+        title:"IApplicationInvoker",
+        content:"IApplicationInvoker",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:62,
+        title:"Unzip",
+        content:"Unzip",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:63,
+        title:"GenerateInternalsVisibleToAttributes",
+        content:"GenerateInternalsVisibleToAttributes",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:64,
+        title:"CopyFilesFromNuGetPackages",
+        content:"CopyFilesFromNuGetPackages",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:65,
+        title:"PathUtilities",
+        content:"PathUtilities",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:66,
+        title:"OpenCover",
+        content:"OpenCover",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:67,
+        title:"GetProjectsFromVisualStudioSolution",
+        content:"GetProjectsFromVisualStudioSolution",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:68,
+        title:"GitCurrentRevision",
+        content:"GitCurrentRevision",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:69,
+        title:"InvokePowershellCommand",
+        content:"InvokePowershellCommand",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:70,
+        title:"FxCopViaAssemblies",
+        content:"FxCopViaAssemblies",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:71,
+        title:"ILRepack",
+        content:"ILRepack",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:72,
+        title:"ReportGenerator",
+        content:"ReportGenerator",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:73,
+        title:"IsInCollection",
+        content:"IsInCollection",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:74,
+        title:"ReportGeneratorOutputToCsv",
+        content:"ReportGeneratorOutputToCsv",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:75,
+        title:"GitNewFiles",
+        content:"GitNewFiles",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:76,
+        title:"GitHubReleaseUpload",
+        content:"GitHubReleaseUpload",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:77,
+        title:"FxCopViaProject",
+        content:"FxCopViaProject",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:78,
+        title:"NuGetPack",
+        content:"NuGetPack",
+        description:'',
+        tags:''
+    });
+
+    a({
+        id:79,
+        title:"EscapingUtilities",
+        content:"EscapingUtilities",
+        description:'',
+        tags:''
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/InvokePesterOnFile',
+        title:"InvokePesterOnFile",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/GenerateSpecialParameterTemplateTokens',
+        title:"GenerateSpecialParameterTemplateTokens",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling/ExceptionHandler',
+        title:"ExceptionHandler",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask',
+        title:"BaseTask",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/NuGetInstall',
+        title:"NuGetInstall",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokeStandaloneMsBuild',
+        title:"InvokeStandaloneMsBuild",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitReset',
+        title:"GitReset",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitClone',
+        title:"GitClone",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokeNodeTool',
+        title:"InvokeNodeTool",
+        description:""
     });
 
     y({
@@ -679,26 +733,122 @@ var searchModule = function() {
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/NuGetRestore',
-        title:"NuGetRestore",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitCommit',
+        title:"GitCommit",
         description:""
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SortItemGroupByKey',
-        title:"SortItemGroupByKey",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/ExecWithArguments',
+        title:"ExecWithArguments",
         description:""
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/ILRepack',
-        title:"ILRepack",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Versions/GetFileVersion',
+        title:"GetFileVersion",
         description:""
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/Zip',
-        title:"Zip",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/InvokePesterOnDirectory',
+        title:"InvokePesterOnDirectory",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/GatherNuGetDependenciesForProject',
+        title:"GatherNuGetDependenciesForProject",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Projects/GetIssuesForGitHubMilestone',
+        title:"GetIssuesForGitHubMilestone",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SearchPackagesDirectoryForNuGetPackage',
+        title:"SearchPackagesDirectoryForNuGetPackage",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/AddOrUpdateAttributeInCode',
+        title:"AddOrUpdateAttributeInCode",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/FindAndReplaceInText',
+        title:"FindAndReplaceInText",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/TaskItemExtensions',
+        title:"TaskItemExtensions",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitCheckout',
+        title:"GitCheckout",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/UpdateAttributeInCode',
+        title:"UpdateAttributeInCode",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitMerge',
+        title:"GitMerge",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/GitCommandLineToolTask',
+        title:"GitCommandLineToolTask",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SortFilesByDirectory',
+        title:"SortFilesByDirectory",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Versions/CalculateSemanticVersionWithGitVersion',
+        title:"CalculateSemanticVersionWithGitVersion",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitPush',
+        title:"GitPush",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/PowershellCommandLineToolTask',
+        title:"PowershellCommandLineToolTask",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Groups/LastItemInGroup',
+        title:"LastItemInGroup",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/TemplateText',
+        title:"TemplateText",
         description:""
     });
 
@@ -709,14 +859,14 @@ var searchModule = function() {
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitCurrentRevision',
-        title:"GitCurrentRevision",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellFile',
+        title:"InvokePowershellFile",
         description:""
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokeStandaloneMsBuild',
-        title:"InvokeStandaloneMsBuild",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/PropertyParser',
+        title:"PropertyParser",
         description:""
     });
 
@@ -733,356 +883,8 @@ var searchModule = function() {
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SortFilesByDirectory',
-        title:"SortFilesByDirectory",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GetVcsInfoFromFile',
-        title:"GetVcsInfoFromFile",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/FxCopCommandLineToolTask',
-        title:"FxCopCommandLineToolTask",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/MsBuildLogger',
-        title:"MsBuildLogger",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitCheckout',
-        title:"GitCheckout",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/NuGetPush',
-        title:"NuGetPush",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/ReportGeneratorOutputToCsv',
-        title:"ReportGeneratorOutputToCsv",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitPush',
-        title:"GitPush",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/NuGetPack',
-        title:"NuGetPack",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask',
-        title:"BaseTask",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Validation/FxCopViaAssemblies',
-        title:"FxCopViaAssemblies",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Versions/CalculateSemanticVersionWithGitVersion',
-        title:"CalculateSemanticVersionWithGitVersion",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Validation/ValidateXmlAgainstSchema',
-        title:"ValidateXmlAgainstSchema",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitCurrentBranch',
-        title:"GitCurrentBranch",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokeNodeTool',
-        title:"InvokeNodeTool",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/GitCommandLineToolTask',
-        title:"GitCommandLineToolTask",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitCommit',
-        title:"GitCommit",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/PowershellCommandLineToolTask',
-        title:"PowershellCommandLineToolTask",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellFile',
-        title:"InvokePowershellFile",
-        description:""
-    });
-
-    y({
         url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks/InvokeSteps',
         title:"InvokeSteps",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitMerge',
-        title:"GitMerge",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks/SetEnvironmentVariable',
-        title:"SetEnvironmentVariable",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitNewFiles',
-        title:"GitNewFiles",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/NuGetInstall',
-        title:"NuGetInstall",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/GetToolFullPath',
-        title:"GetToolFullPath",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/ExtractIssueIdsFromGitCommitMessages',
-        title:"ExtractIssueIdsFromGitCommitMessages",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/EscapingUtilities',
-        title:"EscapingUtilities",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/TaskItemExtensions',
-        title:"TaskItemExtensions",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/GenerateInternalsVisibleToAttributes',
-        title:"GenerateInternalsVisibleToAttributes",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core.FileSystem/PathUtilities',
-        title:"PathUtilities",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitClone',
-        title:"GitClone",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/PropertyParser',
-        title:"PropertyParser",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Groups/IsInCollection',
-        title:"IsInCollection",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/UpdateAttributeInCode',
-        title:"UpdateAttributeInCode",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/IApplicationInvoker',
-        title:"IApplicationInvoker",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/AddOrUpdateAttributeInCode',
-        title:"AddOrUpdateAttributeInCode",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Tests/TaskTest',
-        title:"TaskTest",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Projects/GitHubReleaseUpload',
-        title:"GitHubReleaseUpload",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitReset',
-        title:"GitReset",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Web/WebDownload',
-        title:"WebDownload",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/ExecWithArguments',
-        title:"ExecWithArguments",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Groups/LastItemInGroup',
-        title:"LastItemInGroup",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Validation/FxCopViaProject',
-        title:"FxCopViaProject",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/FindAndReplaceInFile',
-        title:"FindAndReplaceInFile",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/GatherNuGetDependenciesForProject',
-        title:"GatherNuGetDependenciesForProject",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling/ExceptionHandler',
-        title:"ExceptionHandler",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellCommand',
-        title:"InvokePowershellCommand",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/InvokePesterOnDirectory',
-        title:"InvokePesterOnDirectory",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SearchPackagesDirectoryForToolPath',
-        title:"SearchPackagesDirectoryForToolPath",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/FindAndReplaceInText',
-        title:"FindAndReplaceInText",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SearchPackagesDirectoryForToolDirectory',
-        title:"SearchPackagesDirectoryForToolDirectory",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/ReportGenerator',
-        title:"ReportGenerator",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks/HtmlEncodeText',
-        title:"HtmlEncodeText",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Versions/GetFileVersion',
-        title:"GetFileVersion",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/Unzip',
-        title:"Unzip",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/TemplateText',
-        title:"TemplateText",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/GenerateSpecialParameterTemplateTokens',
-        title:"GenerateSpecialParameterTemplateTokens",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling/ExceptionProcessor',
-        title:"ExceptionProcessor",
-        description:""
-    });
-
-    y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/NuGetCommandLineToolTask',
-        title:"NuGetCommandLineToolTask",
         description:""
     });
 
@@ -1093,20 +895,68 @@ var searchModule = function() {
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SearchPackagesDirectoryForNuGetPackage',
-        title:"SearchPackagesDirectoryForNuGetPackage",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks/GenerateTargetsFile',
+        title:"GenerateTargetsFile",
         description:""
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/GetProjectsFromVisualStudioSolution',
-        title:"GetProjectsFromVisualStudioSolution",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks/HtmlEncodeText',
+        title:"HtmlEncodeText",
         description:""
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/OpenCover',
-        title:"OpenCover",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks/SetEnvironmentVariable',
+        title:"SetEnvironmentVariable",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitCurrentBranch',
+        title:"GitCurrentBranch",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/NuGetCommandLineToolTask',
+        title:"NuGetCommandLineToolTask",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling/ExceptionProcessor',
+        title:"ExceptionProcessor",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/TemplateFile',
+        title:"TemplateFile",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Validation/ValidateXmlAgainstSchema',
+        title:"ValidateXmlAgainstSchema",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/NuGetRestore',
+        title:"NuGetRestore",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/MsBuildLogger',
+        title:"MsBuildLogger",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/FindAndReplaceInFile',
+        title:"FindAndReplaceInFile",
         description:""
     });
 
@@ -1117,26 +967,50 @@ var searchModule = function() {
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/InvokePesterOnFile',
-        title:"InvokePesterOnFile",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Web/WebDownload',
+        title:"WebDownload",
         description:""
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/CopyFilesFromNuGetPackages',
-        title:"CopyFilesFromNuGetPackages",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/NuGetPush',
+        title:"NuGetPush",
         description:""
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks/GenerateTargetsFile',
-        title:"GenerateTargetsFile",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/ExtractIssueIdsFromGitCommitMessages',
+        title:"ExtractIssueIdsFromGitCommitMessages",
         description:""
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Projects/GetIssuesForGitHubMilestone',
-        title:"GetIssuesForGitHubMilestone",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/FxCopCommandLineToolTask',
+        title:"FxCopCommandLineToolTask",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GetVcsInfoFromFile',
+        title:"GetVcsInfoFromFile",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Tests/TaskTest',
+        title:"TaskTest",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/GetToolFullPath',
+        title:"GetToolFullPath",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SortItemGroupByKey',
+        title:"SortItemGroupByKey",
         description:""
     });
 
@@ -1147,8 +1021,134 @@ var searchModule = function() {
     });
 
     y({
-        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Templating/TemplateFile',
-        title:"TemplateFile",
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SearchPackagesDirectoryForToolDirectory',
+        title:"SearchPackagesDirectoryForToolDirectory",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/SearchPackagesDirectoryForToolPath',
+        title:"SearchPackagesDirectoryForToolPath",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/Zip',
+        title:"Zip",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/IApplicationInvoker',
+        title:"IApplicationInvoker",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/Unzip',
+        title:"Unzip",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/GenerateInternalsVisibleToAttributes',
+        title:"GenerateInternalsVisibleToAttributes",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.FileSystem/CopyFilesFromNuGetPackages',
+        title:"CopyFilesFromNuGetPackages",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core.FileSystem/PathUtilities',
+        title:"PathUtilities",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/OpenCover',
+        title:"OpenCover",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/GetProjectsFromVisualStudioSolution',
+        title:"GetProjectsFromVisualStudioSolution",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitCurrentRevision',
+        title:"GitCurrentRevision",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellCommand',
+        title:"InvokePowershellCommand",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Validation/FxCopViaAssemblies',
+        title:"FxCopViaAssemblies",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Code/ILRepack',
+        title:"ILRepack",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/ReportGenerator',
+        title:"ReportGenerator",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Groups/IsInCollection',
+        title:"IsInCollection",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/ReportGeneratorOutputToCsv',
+        title:"ReportGeneratorOutputToCsv",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.VersionControl/GitNewFiles',
+        title:"GitNewFiles",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Projects/GitHubReleaseUpload',
+        title:"GitHubReleaseUpload",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Validation/FxCopViaProject',
+        title:"FxCopViaProject",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Packaging/NuGetPack',
+        title:"NuGetPack",
+        description:""
+    });
+
+    y({
+        url:'/nBuildKit.MsBuild/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/EscapingUtilities',
+        title:"EscapingUtilities",
         description:""
     });
 
