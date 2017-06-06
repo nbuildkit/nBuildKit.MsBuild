@@ -21,6 +21,7 @@
         Project="$(FileImports)" />
 
     <Target
+        Condition=" '@(UnitTestAssemblies)' != '' "
         Name="nBuildKit_Build_Test_Unit_NUnit_Run">
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates" />
