@@ -23,6 +23,7 @@
     </PropertyGroup>
 
     <Target
+        Condition=" '@(UnitTestAssemblies)' != '' "
         Name="nBuildKit_Build_Test_Unit_VsTest_Run">
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_GetToolPaths" />
         <CallTarget Targets="_nBuildKit_Build_Test_Unit_VsTest_ReplaceBuildTemplates" />

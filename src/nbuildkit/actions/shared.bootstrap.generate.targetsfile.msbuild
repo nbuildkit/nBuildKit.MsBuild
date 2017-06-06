@@ -29,6 +29,7 @@
     </Target>
 
     <Target
+        Condition=" '@(ExtensionAssemblies)' != '' "
         Name="_nBuildKit_Shared_Bootstrap_Generate_TargetsFile_Execute"
         Outputs="%(ExtensionAssemblies.Identity)">
         <Error
