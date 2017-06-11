@@ -126,6 +126,8 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var fileName = Path.GetFileName(source.AbsolutePath);
             var targetPath = Path.Combine(destinationDirectory, fileName);
 
+            // Make sure that we can establish secure connections. See here: https://stackoverflow.com/a/37572417/539846
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             using (var client = new WebClient())
             {
                 client.Credentials = GetConfiguredCredentials();
