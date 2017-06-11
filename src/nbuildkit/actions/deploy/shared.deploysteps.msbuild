@@ -22,6 +22,7 @@
         <DeployStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</DeployStepsPrepareCopyHttp>
         <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</DeployStepsPrepareCopyFiles>
         <DeployStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</DeployStepsPrepareCopyArchive>
+        <DeployStepsPrepareFileHashes>$(MSBuildThisFileDirectory)..\shared.prepare.getfilehashes.msbuild</DeployStepsPrepareFileHashes>
 
         <DeployStepsPushToTags>$(MSBuildThisFileDirectory)deploy.pushto.tags.msbuild</DeployStepsPushToTags>
         <DeployStepsPushToNuget>$(MSBuildThisFileDirectory)deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
@@ -119,6 +120,14 @@
             <Id>DeployStepsPrepareCopyArchive</Id>
             <Name>Deploy - copy archive</Name>
             <Path>$(DeployStepsPrepareCopyArchive)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareFileHashes)'))">
+            <Description>
+                Calculate the hash of one or more files.
+            </Description>
+            <Id>DeployStepsPrepareFileHashes</Id>
+            <Name>Deploy - calculate file hashes</Name>
+            <Path>$(DeployStepsPrepareFileHashes)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToTags)'))">
             <Description>

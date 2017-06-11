@@ -29,6 +29,7 @@
         <BuildStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</BuildStepsPrepareCopyHttp>
         <BuildStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</BuildStepsPrepareCopyFiles>
         <BuildStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</BuildStepsPrepareCopyArchive>
+        <BuildStepsPrepareFileHashes>$(MSBuildThisFileDirectory)..\shared.prepare.getfilehashes.msbuild</BuildStepsPrepareFileHashes>
 
         <BuildStepsPrepareAssemblyInfo>$(MSBuildThisFileDirectory)build.prepare.updateassemblyinfo.msbuild</BuildStepsPrepareAssemblyInfo>
         <BuildStepsPrepareGenerateLicenses>$(MSBuildThisFileDirectory)build.prepare.generatelicenses.msbuild</BuildStepsPrepareGenerateLicenses>
@@ -172,6 +173,14 @@
             <Id>BuildStepsPrepareCopyArchive</Id>
             <Name>Build - copy archive</Name>
             <Path>$(BuildStepsPrepareCopyArchive)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareFileHashes)'))">
+            <Description>
+                Calculate the hash of one or more files.
+            </Description>
+            <Id>BuildStepsPrepareFileHashes</Id>
+            <Name>Build - Calculate file hashes</Name>
+            <Path>$(BuildStepsPrepareFileHashes)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareAssemblyInfo)'))">
             <Description>
