@@ -19,7 +19,7 @@
         Project="$(FileImports)" />
 
     <Target
-        Condition="!Exists('$(FileHashes)')"
+        Condition=" '@(FilesToHash)' != '' "
         Name="nBuildKit_Shared_Prepare_GetFileHashes_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_GetFileHashes_Calculate" />
 
@@ -62,7 +62,7 @@
     </Target>
 
     <Target
-        Condition="!Exists('$(FileHashes)') "
+        Condition=" '@(FilesToHash)' != '' "
         Name="_nBuildKit_Shared_Prepare_GetFileHashes_Calculate"
         Outputs="%(FilesToHash.Identity)">
         <Message
