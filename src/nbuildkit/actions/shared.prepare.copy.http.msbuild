@@ -103,6 +103,7 @@
 
         <ValidateHash
             Algorithm="%(HttpFilesToCopy.HashAlgorithm)"
+            Condition=" '%(HttpFilesToCopy.Hash)' != '' OR '$(HashFile)' != '' "
             Hash="%(HttpFilesToCopy.Hash)"
             HashFile="$(HashFile)"
             Path="$(LocalFilePath)" />

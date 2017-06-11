@@ -34,6 +34,7 @@
 
         <ValidateHash
             Algorithm="%(ArchiveFilesToCopy.HashAlgorithm)"
+            Condition=" '%(ArchiveFilesToCopy.Hash)' != '' OR '%(ArchiveFilesToCopy.HashFile)' != '' "
             Hash="%(ArchiveFilesToCopy.Hash)"
             HashFile="%(ArchiveFilesToCopy.HashFile)"
             Path="%(ArchiveFilesToCopy.FullPath)" />
