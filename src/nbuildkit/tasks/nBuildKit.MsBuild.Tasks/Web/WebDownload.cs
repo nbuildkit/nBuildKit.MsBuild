@@ -123,7 +123,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                 Directory.CreateDirectory(destinationDirectory);
             }
 
-            var fileName = Path.GetFileName(source.AbsolutePath);
+            var fileName = !string.IsNullOrWhiteSpace(Name) ? Name : Path.GetFileName(source.AbsolutePath);
             var targetPath = Path.Combine(destinationDirectory, fileName);
 
             // Make sure that we can establish secure connections. See here: https://stackoverflow.com/a/37572417/539846
@@ -178,6 +178,15 @@ namespace NBuildKit.MsBuild.Tasks.Web
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets or sets the optional name of the file in the local file system.
+        /// </summary>
+        public string Name
+        {
+            get;
+            set;
         }
 
         /// <summary>

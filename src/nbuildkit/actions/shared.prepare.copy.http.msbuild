@@ -25,7 +25,7 @@
 
         <PropertyGroup>
             <DestinationPath>%(HttpFilesToCopy.Destination)</DestinationPath>
-            <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'false' ">$(DestinationPath)</DirTempDestination>
+            <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == '' OR '%(HttpFilesToCopy.Unzip)' == 'false' ">$(DestinationPath)</DirTempDestination>
             <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' ">$(DirBuildTemp)</DirTempDestination>
         </PropertyGroup>
 
@@ -84,6 +84,7 @@
         <WebDownload
             ErrorInformation="@(ErrorInformation)"
             DestinationDirectory="$(DirTempDestination)"
+            Name="%(HttpFilesToCopy.Name)"
             Password="%(HttpFilesToCopy.Password)"
             Source="$(TargetFileUriTransformed)"
             UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
