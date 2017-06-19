@@ -81,10 +81,19 @@
                 PropertyName="TargetFileUriTransformed"
                 TaskParameter="Result" />
         </TemplateText>
+        <TemplateText
+            Condition=" '%(HttpFilesToCopy.Name)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(HttpFilesToCopy.Name)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="TargetFileName"
+                TaskParameter="Result" />
+        </TemplateText>
         <WebDownload
             ErrorInformation="@(ErrorInformation)"
             DestinationDirectory="$(DirTempDestination)"
-            Name="%(HttpFilesToCopy.Name)"
+            Name="$(TargetFileName)"
             Password="%(HttpFilesToCopy.Password)"
             Source="$(TargetFileUriTransformed)"
             UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
