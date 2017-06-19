@@ -66,6 +66,7 @@
             <Hash></Hash>
             <HashAlgorithm></HashAlgorithm>
             <HashFile></HashFile>
+            <Name></Name>
             <Password></Password>
             <SignatureFile></SignatureFile>
             <UseDefaultCredentials></UseDefaultCredentials>
@@ -550,67 +551,6 @@
         - StepId          : The ID of the step. In general the name of the property that references the step file.
         - StepName        : The name of the step.
         - StepPath        : The full path to the script file for the step.
-
-        Additionally all the standard properties as seen below and the properties for the given build step are passed in.
-
-        The following build steps are by default provided through the given properties:
-        $(BuildStepsPrepareWorkspace)                    - Clears the existing build artifacts from the workspace and creates the required directories. Clearing the
-                                                           existing build artifacts is only executed if the $(ShouldClean) property is set to 'true'.
-        $(BuildStepsBuildTargetsAssembly)                - Builds Visual Studio projects that contain MsBuild Tasks. Separate from building the standard Visual Studio
-                                                           solutions so that it is possible to build MsBuild tasks that will be used in the build process.
-        $(BuildStepsGenerateTargetsFile)                 - Generates a targets file for use with an MsBuild tasks assembly.
-        $(BuildStepsPrepareRestoreNuGet)                 - Restores the NuGet packages as specified in the '$(DirWorkspace)\packages.config' file. Additionally
-                                                           also restores the NuGet packages as specified in the nBuildKit specific 'packages.config' files.
-        $(BuildStepsPrepareVcsBranch)                    - When building from a GIT repository on Jenkins ensures that the current checkout has the same branch
-                                                           name as the remote tracking branch.
-        $(BuildStepsPrepareVcsInfo)                      - Stores the Version Control System (VCS) information in a file for later use.
-                                                           Currently supported version control systems is GIT
-        $(BuildStepsPrepareGetIssueIds)                  - Gets the issue IDs from the commits on the current branch and stores them in a temp file for later use.
-        $(BuildStepsPrepareVcsMerge)                     - Merges the current changes to the designated target branches (specified by @(BranchMergeTarget)).
-        $(BuildStepsPrepareGetVersion)                   - Gathers version information and stores it in a temporary file for use by the rest of the build process.
-                                                           Currently supported methods of gathering version information are using (in order):
-                                                           - The version defined by a custom MsBuild task which is defined in a file of which the path is stored
-                                                             in the 'VersionScriptPath' property. The task should output:
-                                                             - VersionMajor
-                                                             - VersionMinor
-                                                             - VersionPatch
-                                                             - VersionBuild
-                                                             - VersionPreRelease
-                                                             - VersionSemantic
-                                                             - VersionSemanticFull
-                                                             - VersionSemanticNuget
-                                                           - The version stored in an 'version.xml' file which contains an MsBuild property group with
-                                                             the properties:
-                                                             - BuildNumber
-                                                             - VersionMajor
-                                                             - VersionMinor
-                                                             - VersionPatch
-                                                             - VersionBuild
-                                                             - VersionPreRelease
-                                                           - The GitVersion tool (https://github.com/ParticularLabs/GitVersion)
-                                                           - The GitHubFlowVersion tool (https://github.com/JakeGinnivan/GitHubFlowVersion)
-        $(BuildStepsPrepareTagVcs)                       - Tags the current commit with the version number. Currently supported version control systems are TFS and GIT.
-        $(BuildStepsPrepareReleaseNotes)                 - Gathers the release notes and stores them for later use during the build process. Release notes
-                                                           are retrieved with the GitReleaseNotes tool (https://github.com/GitTools/GitReleaseNotes) which
-                                                           currently allows gathering release notes from GitHub, Jira and YouTrack
-        $(BuildStepsPrepareRestoreNpm)                   - Restores all the NPM packages for the project.
-        $(BuildStepsPrepareRestoreBower)                 - Restores all the Bower packages for the project.
-        $(BuildStepsPrepareCopyNuGet)                    - Copies one or more files from a NuGet package.
-        $(BuildStepsPrepareCopyFiles)                    - Copies one or more files from the file system.
-        $(BuildStepsPrepareAssemblyInfo)                 - Updates all existing AssemblyInfo.cs and AssemblyInfo.vb files with the version numbers, company information,
-                                                           copyright information and optionally build time and build information.
-        $(BuildStepsPrepareGenerateFiles)                - Generates one or more files from a set of template files.
-        $(BuildStepsPrepareGenerateLicenses)             - Generates an XML file containing the licenses for all the NuGet packages in use for the current build.
-        $(BuildStepsBuildVisualStudioSolution)           - Builds the binaries from a given Visual Studio solution.
-        $(BuildStepsUnitTestNUnit)                       - Executes the unit tests with NUnit and measures code coverage with OpenCover.
-        $(BuildStepsUnitTestMsTest)                      - Executes the unit tests with MsTest and measures code coverage with OpenCover.
-        $(BuildStepsUnitTestVsTest)                      - Executes the unit tests with VsTest and measures code coverage.
-        $(BuildStepsAnalyzeXml)                          - Analyzes one or more XML files based on the provided XSD.
-        $(BuildStepsAnalyzeBinariesFxCop)                - Analyzes the binary files with FxCop.
-        $(BuildStepsBuildILMerge)                        - Performs one or more IL merge operations.
-        $(BuildStepsBuildWyam)                           - Builds the documentation in the `doc` folder with Wyam.
-        $(BuildStepsPackNuGet)                           - Generates the NuGet packages.
-        $(BuildStepsPackZip)                             - Generates one or more ZIP archives.
 
         Additional build steps can be defined by providing the path to the MsBuild script that should be executed
         for that step, e.g. adding a build step that points to the 'c:\stuff\MyCoolScript.msbuild' will execute

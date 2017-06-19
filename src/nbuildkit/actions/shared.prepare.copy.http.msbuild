@@ -8,6 +8,9 @@
     </PropertyGroup>
     <PropertyGroup>
         <ShouldLoadHttpFilesToCopy>true</ShouldLoadHttpFilesToCopy>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
     </PropertyGroup>
 
     <Import
@@ -22,7 +25,7 @@
 
         <PropertyGroup>
             <DestinationPath>%(HttpFilesToCopy.Destination)</DestinationPath>
-            <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'false' ">$(DestinationPath)</DirTempDestination>
+            <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == '' OR '%(HttpFilesToCopy.Unzip)' == 'false' ">$(DestinationPath)</DirTempDestination>
             <DirTempDestination Condition=" '%(HttpFilesToCopy.Unzip)' == 'true' ">$(DirBuildTemp)</DirTempDestination>
         </PropertyGroup>
 
@@ -78,9 +81,19 @@
                 PropertyName="TargetFileUriTransformed"
                 TaskParameter="Result" />
         </TemplateText>
+        <TemplateText
+            Condition=" '%(HttpFilesToCopy.Name)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(HttpFilesToCopy.Name)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="TargetFileName"
+                TaskParameter="Result" />
+        </TemplateText>
         <WebDownload
             ErrorInformation="@(ErrorInformation)"
             DestinationDirectory="$(DirTempDestination)"
+            Name="$(TargetFileName)"
             Password="%(HttpFilesToCopy.Password)"
             Source="$(TargetFileUriTransformed)"
             UseDefaultCredentials="%(HttpFilesToCopy.UseDefaultCredentials)"
@@ -100,6 +113,7 @@
 
         <ValidateHash
             Algorithm="%(HttpFilesToCopy.HashAlgorithm)"
+            Condition=" '%(HttpFilesToCopy.Hash)' != '' OR '$(HashFile)' != '' "
             Hash="%(HttpFilesToCopy.Hash)"
             HashFile="$(HashFile)"
             Path="$(LocalFilePath)" />

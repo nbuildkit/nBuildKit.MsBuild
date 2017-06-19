@@ -116,6 +116,34 @@ namespace NBuildKit.MsBuild.Tasks.Web
         }
 
         [Test]
+        public void ExecuteWithName()
+        {
+            var baseDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var targetDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
+            var fileName = "not_the_original_name.aspx";
+
+            InitializeBuildEngine();
+
+            var task = new WebDownload();
+            task.BuildEngine = BuildEngine.Object;
+            task.DestinationDirectory = new TaskItem(targetDirectory);
+            task.Name = fileName;
+            task.Source = new TaskItem("http://www.microsoft.com/default.aspx");
+            task.UseDefaultCredentials = false;
+
+            var result = task.Execute();
+            Assert.IsTrue(result, "Expected the task to finish successfully");
+
+            Assert.IsTrue(Directory.Exists(targetDirectory), "Expected the task to create the target directory");
+
+            var file = Path.Combine(targetDirectory, fileName);
+            Assert.IsTrue(File.Exists(file), "Expected the task to download the file");
+            Assert.Greater(new FileInfo(file).Length, 0);
+
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 2);
+        }
+
+        [Test]
         public void ExecuteWithoutTargetDirectory()
         {
             var baseDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();

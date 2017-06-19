@@ -23,6 +23,7 @@
         <TestStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</TestStepsPrepareCopyHttp>
         <TestStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</TestStepsPrepareCopyFiles>
         <TestStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</TestStepsPrepareCopyArchive>
+        <TestStepsPrepareFileHashes>$(MSBuildThisFileDirectory)..\shared.prepare.getfilehashes.msbuild</TestStepsPrepareFileHashes>
 
         <TestStepsPrepareGenerateFiles>$(MSBuildThisFileDirectory)test.prepare.generatefiles.msbuild</TestStepsPrepareGenerateFiles>
 
@@ -132,6 +133,14 @@
             <Id>TestStepsPrepareCopyArchive</Id>
             <Name>Test - copy archive</Name>
             <Path>$(TestStepsPrepareCopyArchive)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareFileHashes)'))">
+            <Description>
+                Calculate the hash of one or more files.
+            </Description>
+            <Id>TestStepsPrepareFileHashes</Id>
+            <Name>Test - calculate file hashes</Name>
+            <Path>$(TestStepsPrepareFileHashes)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(TestStepsPrepareGenerateFiles)'))">
             <Description>
