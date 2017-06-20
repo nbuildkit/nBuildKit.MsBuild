@@ -6,41 +6,42 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks.Web
 {
     /// <summary>
-    /// Defines a task that downloads one or more files from a remote server.
+    /// Defines a task that uploads one or more files from a remote server.
     /// </summary>
-    public sealed class WebDownload : BaseTask
+    public sealed class WebUpload : BaseTask
     {
-        private const string ErrorIdFailed = "NBuildKit.WebDownload.Failed";
-        private const string ErrorIdUrlInvalid = "NBuildKit.WebDownload.UrlInvalid";
-        private const string ErrorIdUrlMissing = "NBuildKit.WebDownload.UrlMissing";
+        private const string ErrorIdFailed = "NBuildKit.WebUpload.Failed";
+        private const string ErrorIdUrlInvalid = "NBuildKit.WebUpload.UrlInvalid";
+        private const string ErrorIdUrlMissing = "NBuildKit.WebUpload.UrlMissing";
+        private const string ErrorIdNoFiles = "NBuildKit.WebUpload.NoFiles";
 
         private readonly Func<IInternalWebClient> _webClientBuilder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WebDownload"/> class.
+        /// Initializes a new instance of the <see cref="WebUpload"/> class.
         /// </summary>
-        public WebDownload()
+        public WebUpload()
             : this(() => new InternalWebClient(new WebClient()))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WebDownload"/> class.
+        /// Initializes a new instance of the <see cref="WebUpload"/> class.
         /// </summary>
         /// <param name="builder">The function that creates <see cref="IInternalWebClient"/> instances.</param>
         /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="builder"/> is <see langword="null"/>.
         /// </exception>
-        public WebDownload(Func<IInternalWebClient> builder)
+        public WebUpload(Func<IInternalWebClient> builder)
         {
             if (ReferenceEquals(builder, null))
             {
@@ -50,17 +51,11 @@ namespace NBuildKit.MsBuild.Tasks.Web
             _webClientBuilder = builder;
         }
 
-        /// <summary>
-        /// Gets or sets the directory into which the file should be placed.
-        /// </summary>
-        [Required]
-        public ITaskItem DestinationDirectory
-        {
-            get;
-            set;
-        }
-
         /// <inheritdoc/>
+        [SuppressMessage(
+            "Microsoft.Usage",
+            "CA2234:PassSystemUriObjectsInsteadOfStrings",
+            Justification = "Cannot turn a file path into a URI.")]
         public override bool Execute()
         {
             if (Source == null)
@@ -93,10 +88,10 @@ namespace NBuildKit.MsBuild.Tasks.Web
                 return false;
             }
 
-            Uri source = null;
+            Uri baseUri = null;
             try
             {
-                source = new Uri(Source.ItemSpec);
+                baseUri = new Uri(Source.ItemSpec);
             }
             catch (UriFormatException e)
             {
@@ -114,44 +109,20 @@ namespace NBuildKit.MsBuild.Tasks.Web
                 return false;
             }
 
-            if (DestinationDirectory == null)
+            if ((Items == null) || (Items.Length == 0))
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdDirectoryNotFound),
-                    ErrorIdDirectoryNotFound,
+                    ErrorCodeById(ErrorIdNoFiles),
+                    ErrorIdNoFiles,
                     string.Empty,
                     0,
                     0,
                     0,
                     0,
-                    "No output directory provided");
+                    "No files to upload provided");
                 return false;
             }
-
-            if (string.IsNullOrWhiteSpace(DestinationDirectory.ItemSpec))
-            {
-                Log.LogError(
-                    string.Empty,
-                    ErrorCodeById(ErrorIdDirectoryNotFound),
-                    ErrorIdDirectoryNotFound,
-                    string.Empty,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "No output directory provided");
-                return false;
-            }
-
-            var destinationDirectory = GetAbsolutePath(DestinationDirectory);
-            if (!Directory.Exists(destinationDirectory))
-            {
-                Directory.CreateDirectory(destinationDirectory);
-            }
-
-            var fileName = !string.IsNullOrWhiteSpace(Name) ? Name : Path.GetFileName(source.AbsolutePath);
-            var targetPath = Path.Combine(destinationDirectory, fileName);
 
             // Make sure that we can establish secure connections. See here: https://stackoverflow.com/a/37572417/539846
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
@@ -173,30 +144,42 @@ namespace NBuildKit.MsBuild.Tasks.Web
                 }
 
                 client.Credentials = GetConfiguredCredentials();
-                try
+                foreach (var item in Items)
                 {
-                    Log.LogMessage(
-                        MessageImportance.Normal,
-                        "Downloading from: {0}. To: {1}",
-                        source,
-                        targetPath);
-                    client.DownloadFile(source, targetPath);
-                    OutputPath = new TaskItem(targetPath);
-                }
-                catch (WebException e)
-                {
-                    Log.LogError(
-                        string.Empty,
-                        ErrorCodeById(ErrorIdFailed),
-                        ErrorIdFailed,
-                        string.Empty,
-                        0,
-                        0,
-                        0,
-                        0,
-                        "Failed to download a file from the url: {0}. The error was: {1}",
-                        source,
-                        e);
+                    if ((item == null) || string.IsNullOrWhiteSpace(item.ItemSpec))
+                    {
+                        continue;
+                    }
+
+                    var itemPath = GetAbsolutePath(item);
+
+                    var fileName = !string.IsNullOrWhiteSpace(Name) ? Name : Path.GetFileName(itemPath);
+                    var targetUri = new Uri(baseUri, fileName);
+
+                    try
+                    {
+                        Log.LogMessage(
+                            MessageImportance.Normal,
+                            "Uploading from: {0}. To: {1}",
+                            itemPath,
+                            targetUri);
+                        client.UploadFile(targetUri, itemPath);
+                    }
+                    catch (WebException e)
+                    {
+                        Log.LogError(
+                            string.Empty,
+                            ErrorCodeById(ErrorIdFailed),
+                            ErrorIdFailed,
+                            string.Empty,
+                            0,
+                            0,
+                            0,
+                            0,
+                            "Failed to upload a file to the url: {0}. The error was: {1}",
+                            baseUri,
+                            e);
+                    }
                 }
             }
 
@@ -223,7 +206,17 @@ namespace NBuildKit.MsBuild.Tasks.Web
         }
 
         /// <summary>
-        /// Gets or sets the optional name of the file in the local file system.
+        /// Gets or sets the items that should be uploaded.
+        /// </summary>
+        [Required]
+        public ITaskItem[] Items
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the optional name of the file on the web server.
         /// </summary>
         public string Name
         {
@@ -232,7 +225,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         }
 
         /// <summary>
-        /// Gets or sets the path to the location of the downloaded file on the local file system.
+        /// Gets or sets the path to the location of the file on the local file system that should be uploaded.
         /// </summary>
         [Output]
         public ITaskItem OutputPath
@@ -251,7 +244,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         }
 
         /// <summary>
-        /// Gets or sets the URL from which the file should be downloaded.
+        /// Gets or sets the URL to which the file should be uploaded.
         /// </summary>
         [Required]
         public ITaskItem Source
