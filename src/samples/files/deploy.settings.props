@@ -76,6 +76,31 @@
 
 
     <!--
+        **** PUSHTO - HTTP / FTP SERVER ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a given HTTP or FTP server.
+
+        The IncludedFiles and the ExcludedFiles are lists of files that
+        should be included (or excluded) in the list of files to deploy. Each entry is separated by a semi-colon(;).
+
+        The PushToWebSpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates,
+        e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadPushToWebSpecs)' == 'true' ">
+        <!--
+        <PushToWebSpecs Include="http://myserver/${ProductNameInFilePath}/${VersionSemantic}">
+            <IncludedFiles>
+                $(DirBuildDeploy)\myfile.zip
+            </IncludedFiles>
+            <ExcludedFiles>
+            </ExcludedFiles>
+        </PushToWebSpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
         **** PUSHTO - NUGET ****
     -->
     <PropertyGroup>
@@ -474,6 +499,20 @@
             <Groups>
                 deploy;
                 deploy.package.directory;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToHttp)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+            <Groups>
+                deploy;
+                deploy.package.http;
             </Groups>
             <PreSteps>
             </PreSteps>

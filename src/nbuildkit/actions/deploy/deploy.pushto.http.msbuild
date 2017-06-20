@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="nBuildKit_Deploy_PushTo_Http_Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsDeployPushToHttp>true</ExistsDeployPushToHttp>
+    </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadPushToWebSpecs>true</ShouldLoadPushToWebSpecs>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
+
+    <Import
+        Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target
+        Name="nBuildKit_Deploy_PushTo_Http_Run">
+        <CallTarget Targets="_nBuildKit_Deploy_PushTo_Http_Push" />
+    </Target>
+
+    <Target
+        Name="_nBuildKit_Deploy_PushTo_Http_Push"
+        Outputs="%(PushToWebSpecs.Identity)">
+        <Message
+            Importance="low"
+            Text="Resolving build templates for: %(PushToWebSpecs.Identity)" />
+
+        <!-- Process the build templates in the input directories -->
+        <TemplateText
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(PushToWebSpecs.Identity)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="TargetPushToSpecs"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the included files -->
+        <TemplateText
+            Condition=" '%(PushToWebSpecs.IncludedFiles)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(PushToWebSpecs.IncludedFiles)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilesPushToIncluded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!-- Process the build templates in the excluded files -->
+        <TemplateText
+            Condition=" '%(PushToWebSpecs.ExcludedFiles)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(PushToWebSpecs.ExcludedFiles)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="FilesPushToExcluded"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <!--
+            Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
+            created properties doesn't work because the wildcards are not always expanded for some reason.
+        -->
+        <CreateItem
+            Include="$(FilesPushToExcluded.Split(';'))">
+            <Output
+                ItemName="FilesToExcludeFromPush"
+                TaskParameter="Include" />
+        </CreateItem>
+        <CreateItem
+            Exclude="@(FilesToExcludeFromPush -> '%(FullPath)')"
+            Include="$(FilesPushToIncluded.Split(';'))">
+            <Output
+                ItemName="FilesToPush"
+                TaskParameter="Include" />
+        </CreateItem>
+        <Error
+            Code="$(NBuildKitErrorCodeDeployPushToHttpNoFiles)"
+            Condition=" '@(FilesToPush)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdDeployPushToHttpNoFiles)"
+            Text="There are no files to be pushed" />
+
+        <WebUpload
+            ErrorInformation="@(ErrorInformation)"
+            Name="$(TargetFileName)"
+            Items="@(FilesToPush)"
+            Password="%(PushToWebSpecs.Password)"
+            Source="$(TargetPushToSpecs)"
+            UseDefaultCredentials="%(PushToWebSpecs.UseDefaultCredentials)"
+            UserName="%(PushToWebSpecs.UserName)" />
+    </Target>
+</Project>
