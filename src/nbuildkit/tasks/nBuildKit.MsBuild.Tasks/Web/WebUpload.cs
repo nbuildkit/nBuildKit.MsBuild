@@ -153,17 +153,14 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
                     var itemPath = GetAbsolutePath(item);
 
-                    var fileName = !string.IsNullOrWhiteSpace(Name) ? Name : Path.GetFileName(itemPath);
-                    var targetUri = new Uri(baseUri, fileName);
-
                     try
                     {
                         Log.LogMessage(
                             MessageImportance.Normal,
                             "Uploading from: {0}. To: {1}",
                             itemPath,
-                            targetUri);
-                        client.UploadFile(targetUri, itemPath);
+                            baseUri);
+                        client.UploadFile(baseUri, itemPath);
                     }
                     catch (WebException e)
                     {
@@ -210,15 +207,6 @@ namespace NBuildKit.MsBuild.Tasks.Web
         /// </summary>
         [Required]
         public ITaskItem[] Items
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the optional name of the file on the web server.
-        /// </summary>
-        public string Name
         {
             get;
             set;
