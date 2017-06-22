@@ -8,6 +8,9 @@
     </PropertyGroup>
     <PropertyGroup>
         <ShouldLoadArchiveFilesToCopy>true</ShouldLoadArchiveFilesToCopy>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
     </PropertyGroup>
 
     <Import
@@ -19,9 +22,25 @@
         Name="nBuildKit_Shared_Prepare_Copy_FromArchive"
         Outputs="%(ArchiveFilesToCopy.Identity)">
 
-        <PropertyGroup>
-            <DestinationPath>%(ArchiveFilesToCopy.Destination)</DestinationPath>
-        </PropertyGroup>
+        <TemplateText
+            Condition=" '%(ArchiveFilesToCopy.FullPath)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(ArchiveFilesToCopy.FullPath)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="ArchiveFileToCopy"
+                TaskParameter="Result" />
+        </TemplateText>
+
+        <TemplateText
+            Condition=" '%(ArchiveFilesToCopy.Destination)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            Template="%(ArchiveFilesToCopy.Destination)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="DestinationPath"
+                TaskParameter="Result" />
+        </TemplateText>
 
         <CallTarget
             Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
@@ -44,7 +63,7 @@
         <Unzip
             DestinationDirectory="$(DestinationPath)"
             ErrorInformation="@(ErrorInformation)"
-            InputFileName="%(ArchiveFilesToCopy.FullPath)" />
+            InputFileName="$(ArchiveFileToCopy)" />
     </Target>
 
     <Target
