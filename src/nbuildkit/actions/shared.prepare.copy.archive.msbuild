@@ -16,7 +16,6 @@
 
     <Target
         Condition=" '@(ArchiveFilesToCopy)' != '' "
-        DependsOnTargets="_nBuildKit_Shared_Prepare_Copy_FromArchive_GetToolPaths"
         Name="nBuildKit_Shared_Prepare_Copy_FromArchive"
         Outputs="%(ArchiveFilesToCopy.Identity)">
 
@@ -24,6 +23,9 @@
             <DestinationPath>%(ArchiveFilesToCopy.Destination)</DestinationPath>
         </PropertyGroup>
 
+        <CallTarget
+            Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
+            Targets="_nBuildKit_Shared_Prepare_Copy_FromArchive_GetToolPaths" />
         <Exec
             Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
             Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) --recv-keys %(ArchiveFilesToCopy.GpgKey)" />
