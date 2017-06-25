@@ -59,7 +59,7 @@
         ${DirLogs}                 - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
         ${DirSrc}                  - The full path to the directory that contains the source files, e.g. c:\myproject\src
         ${DirTemp}                 - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
-        ${DirTest}                 - The full path to the directory that contains the test files, e.g. c:\myproject\tests
+        ${DirTests}                 - The full path to the directory that contains the test files, e.g. c:\myproject\tests
 
         ${DirNBuildKit}            - The full path to the directory that contains the nBuildKit scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build
         ${DirNBuildKitExtensions}  - The full path to the directory that contains the nBuildKit extension scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\extensions
@@ -252,8 +252,8 @@
         <!-- The directory that contains the template files for the project -->
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
 
-        <!-- The directory that contains all the test files for the project -->
-        <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
+        <!-- The directories that contains all the test files for the project -->
+        <DirTests Condition=" '$(DirTests)' == '' ">$(DirWorkspace)\tests</DirTests>
 
         <!-- The directory in which the transformed user configuration files will be stored while running nBuildKit. -->
         <DirUserConfiguration Condition=" '$(DirUserConfiguration)' == '' ">$(DirWorkspace)\build\configurations</DirUserConfiguration>
