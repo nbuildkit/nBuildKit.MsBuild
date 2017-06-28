@@ -38,7 +38,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                     .Callback<Uri, string>(
                         (uri, path) =>
                         {
-                            Assert.AreEqual(new Uri(targetUri), uri);
+                            Assert.AreEqual(new Uri(new Uri(targetUri), Path.GetFileName(path)), uri);
                             Assert.AreEqual(fileToUpload, path);
                         })
                     .Verifiable();

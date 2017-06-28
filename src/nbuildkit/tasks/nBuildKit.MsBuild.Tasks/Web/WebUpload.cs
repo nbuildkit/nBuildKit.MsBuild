@@ -152,15 +152,15 @@ namespace NBuildKit.MsBuild.Tasks.Web
                     }
 
                     var itemPath = GetAbsolutePath(item);
-
+                    var targetUri = new Uri(baseUri, Path.GetFileName(itemPath));
                     try
                     {
                         Log.LogMessage(
                             MessageImportance.Normal,
                             "Uploading from: {0}. To: {1}",
                             itemPath,
-                            baseUri);
-                        client.UploadFile(baseUri, itemPath);
+                            targetUri);
+                        client.UploadFile(targetUri, itemPath);
                     }
                     catch (WebException e)
                     {
