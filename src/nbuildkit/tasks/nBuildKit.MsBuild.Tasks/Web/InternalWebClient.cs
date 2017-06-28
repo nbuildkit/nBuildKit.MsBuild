@@ -57,10 +57,11 @@ namespace NBuildKit.MsBuild.Tasks.Web
         /// Uploads the specified local file to a resource with the specified URI.
         /// </summary>
         /// <param name="address">The URI of the resource to receive the file. For example, ftp://localhost/samplefile.txt.</param>
+        /// <param name="method">The method that should be used for the upload.</param>
         /// <param name="fileName">The file to send to the resource. For example, "samplefile.txt".</param>
-        public void UploadFile(Uri address, string fileName)
+        public void UploadFile(Uri address, string method, string fileName)
         {
-            _webClient.UploadFile(address, fileName);
+            _webClient.UploadFile(address, method, fileName);
         }
     }
 }

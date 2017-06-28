@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
+using Flurl;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
 
@@ -152,7 +153,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                     }
 
                     var itemPath = GetAbsolutePath(item);
-                    var targetUri = new Uri(baseUri, Path.GetFileName(itemPath));
+                    var targetUri = new Uri(Url.Combine(baseUri.ToString(), Path.GetFileName(itemPath)));
                     try
                     {
                         Log.LogMessage(
@@ -160,7 +161,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                             "Uploading from: {0}. To: {1}",
                             itemPath,
                             targetUri);
-                        client.UploadFile(targetUri, itemPath);
+                        client.UploadFile(targetUri, "PUT", itemPath);
                     }
                     catch (WebException e)
                     {

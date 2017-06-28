@@ -30,15 +30,15 @@ namespace NBuildKit.MsBuild.Tasks.Web
         {
             var fileToUpload = Assembly.GetExecutingAssembly().LocalFilePath();
 
-            var targetUri = "http://www.example.com";
+            var targetUri = "http://www.example.com/mypath";
 
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()))
-                    .Callback<Uri, string>(
-                        (uri, path) =>
+                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
+                    .Callback<Uri, string, string>(
+                        (uri, method, path) =>
                         {
-                            Assert.AreEqual(new Uri(new Uri(targetUri), Path.GetFileName(path)), uri);
+                            Assert.AreEqual(new Uri(targetUri + "/" + Path.GetFileName(path)), uri);
                             Assert.AreEqual(fileToUpload, path);
                         })
                     .Verifiable();
@@ -57,7 +57,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var result = task.Execute();
             Assert.IsTrue(result, "Expected the task to finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Once());
+            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 2);
         }
@@ -69,7 +69,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Verifiable();
             }
 
@@ -86,7 +86,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Never());
+            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
@@ -98,7 +98,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Verifiable();
             }
 
@@ -115,7 +115,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Never());
+            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
@@ -125,7 +125,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         {
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Verifiable();
             }
 
@@ -142,7 +142,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Never());
+            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
@@ -154,7 +154,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
                     .Verifiable();
             }
 
@@ -170,7 +170,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Never());
+            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
