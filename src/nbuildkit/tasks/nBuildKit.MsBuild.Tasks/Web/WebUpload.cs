@@ -105,7 +105,8 @@ namespace NBuildKit.MsBuild.Tasks.Web
                     0,
                     0,
                     0,
-                    "The provided URL is not valid. The error was: {0}",
+                    "The provided URL '{0}' is not valid. The error was: {1}",
+                    Source.ItemSpec,
                     e);
                 return false;
             }
