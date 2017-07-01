@@ -19,7 +19,6 @@
 
     <Target
         Condition=" '@(HttpFilesToCopy)' != '' "
-        DependsOnTargets="_nBuildKit_Shared_Prepare_Copy_FromUrl_GetToolPaths"
         Name="nBuildKit_Shared_Prepare_Copy_FromUrl"
         Outputs="%(HttpFilesToCopy.Identity)">
 
@@ -103,6 +102,9 @@
                 TaskParameter="OutputPath" />
         </WebDownload>
 
+        <CallTarget
+            Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
+            Targets="_nBuildKit_Shared_Prepare_Copy_FromUrl_GetToolPaths" />
         <Exec
             Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
             Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) --recv-keys %(HttpFilesToCopy.GpgKey)" />

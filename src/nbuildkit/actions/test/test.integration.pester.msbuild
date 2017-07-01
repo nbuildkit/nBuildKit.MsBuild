@@ -54,6 +54,7 @@
     </Target>
 
     <Target
+        Condition=" '@(PesterTestArguments)' != '' "
         Name="_nBuildKit_Test_Integration_Pester_ExpandTemplates"
         Outputs="%(PesterTestArguments.Identity)">
 
@@ -78,6 +79,7 @@
     </Target>
 
     <Target
+        Condition=" '@(PesterTestArguments)' != '' "
         DependsOnTargets="_nBuildKit_Test_Integration_Pester_GetToolPaths;_nBuildKit_Test_Integration_Pester_ExpandTemplates"
         Name="nBuildKit_Test_Integration_Pester_Run">
 

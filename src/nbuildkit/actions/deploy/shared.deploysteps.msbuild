@@ -27,6 +27,7 @@
         <DeployStepsPushToTags>$(MSBuildThisFileDirectory)deploy.pushto.tags.msbuild</DeployStepsPushToTags>
         <DeployStepsPushToNuget>$(MSBuildThisFileDirectory)deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
         <DeployStepsPushToDirectory>$(MSBuildThisFileDirectory)deploy.pushto.directory.msbuild</DeployStepsPushToDirectory>
+        <DeployStepsPushToHttp>$(MSBuildThisFileDirectory)deploy.pushto.http.msbuild</DeployStepsPushToHttp>
         <DeployStepsPushToSymbolServer>$(MSBuildThisFileDirectory)deploy.pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
         <DeployStepsPushToGitHubRelease>$(MSBuildThisFileDirectory)deploy.pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
         <DeployStepsPushToGitBranch>$(MSBuildThisFileDirectory)deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
@@ -152,6 +153,14 @@
             <Id>DeployStepsPushToDirectory</Id>
             <Name>Deploy - copy artefacts to a directory</Name>
             <Path>$(DeployStepsPushToDirectory)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToHttp)'))">
+            <Description>
+                Pushes one or more artifacts to a web server
+            </Description>
+            <Id>DeployStepsPushToHttp</Id>
+            <Name>Deploy - copy artefacts to a web server</Name>
+            <Path>$(DeployStepsPushToHttp)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToSymbolServer)'))">
             <Description>

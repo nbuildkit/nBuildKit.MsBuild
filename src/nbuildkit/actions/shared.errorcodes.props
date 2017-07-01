@@ -163,6 +163,18 @@
         <NBuildKitErrorIdCopyFromHttpFailed>NBuildKit.WebDownload.Failed</NBuildKitErrorIdCopyFromHttpFailed>
         <NBuildKitErrorCodeCopyFromHttpFailed>NBK1523</NBuildKitErrorCodeCopyFromHttpFailed>
 
+        <NBuildKitErrorIdCopyToHttpUrlMissing>NBuildKit.WebUpload.UrlMissing</NBuildKitErrorIdCopyToHttpUrlMissing>
+        <NBuildKitErrorCodeCopyToHttpUrlMissing>NBK1524</NBuildKitErrorCodeCopyToHttpUrlMissing>
+
+        <NBuildKitErrorIdCopyToHttpUrlInvalid>NBuildKit.WebUpload.UrlInvalid</NBuildKitErrorIdCopyToHttpUrlInvalid>
+        <NBuildKitErrorCodeCopyToHttpUrlInvalid>NBK1525</NBuildKitErrorCodeCopyToHttpUrlInvalid>
+
+        <NBuildKitErrorIdCopyToHttpFailed>NBuildKit.WebUpload.Failed</NBuildKitErrorIdCopyToHttpFailed>
+        <NBuildKitErrorCodeCopyToHttpFailed>NBK1526</NBuildKitErrorCodeCopyToHttpFailed>
+
+        <NBuildKitErrorIdCopyToHttpNoFiles>NBuildKit.WebUpload.NoFiles</NBuildKitErrorIdCopyToHttpNoFiles>
+        <NBuildKitErrorCodeCopyToHttpNoFiles>NBK1527</NBuildKitErrorCodeCopyToHttpNoFiles>
+
 
         <!-- Generate files -->
         <!-- Error codes from 1700 to 1899 -->
@@ -243,6 +255,10 @@
 
         <NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>NBuildKit.Deploy.GitHub.NoReleaseDescription</NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>
         <NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>NBK7216</NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>
+
+        <!-- Push to remote web server: Error codes from 7220 to 7249 -->
+        <NBuildKitErrorIdDeployPushToHttpNoFiles>NBuildKit.Deploy.PushToHttp.NoFiles</NBuildKitErrorIdDeployPushToHttpNoFiles>
+        <NBuildKitErrorCodeDeployPushToHttpNoFiles>NBK7221</NBuildKitErrorCodeDeployPushToHttpNoFiles>
     </PropertyGroup>
 
     <ItemGroup>
@@ -338,6 +354,22 @@
         <ErrorInformation Include="$(NBuildKitErrorIdCopyFromHttpFailed)">
             <Code>$(NBuildKitErrorCodeCopyFromHttpFailed)</Code>
             <Description>Failed to download the desired file from the provided URL.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdCopyToHttpUrlMissing)">
+            <Code>$(NBuildKitErrorCodeCopyToHttpUrlMissing)</Code>
+            <Description>No URL was provided.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdCopyToHttpUrlInvalid)">
+            <Code>$(NBuildKitErrorCodeCopyToHttpUrlInvalid)</Code>
+            <Description>The provided URL was not a valid URL.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdCopyToHttpFailed)">
+            <Code>$(NBuildKitErrorCodeCopyToHttpFailed)</Code>
+            <Description>Failed to upload the desired file to the provided URL.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdCopyToHttpNoFiles)">
+            <Code>$(NBuildKitErrorCodeCopyToHttpNoFiles)</Code>
+            <Description>No files were found to be uploaded to the provided URL.</Description>
         </ErrorInformation>
 
         <ErrorInformation Include="$(NBuildKitErrorIdTasksGenerateInternalsVisibleToNoFiles)">
