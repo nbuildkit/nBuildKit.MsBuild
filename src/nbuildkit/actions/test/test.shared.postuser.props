@@ -13,8 +13,8 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadFilesToDelete)' == 'true' ">
         <FilesToDelete
-            Condition=" '$(DirBuildTest)' != '' AND Exists('$(DirBuildTest)')"
-            Include="$(DirBuildTest)\**\*.*"/>
+            Condition=" '$(DirBuildTests)' != '' AND Exists('$(DirBuildTests)')"
+            Include="$(DirBuildTests)\**\*.*"/>
     </ItemGroup>
 
     <!--
@@ -25,8 +25,8 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadDirectoriesToDelete)' == 'true' ">
         <DirectoriesToDelete
-            Condition=" '$(DirBuildTest)' != '' AND Exists('$(DirBuildTest)')"
-            Include="$(DirBuildTest)" />
+            Condition=" '$(DirBuildTests)' != '' AND Exists('$(DirBuildTests)')"
+            Include="$(DirBuildTests)" />
         <DirectoriesToDelete
             Condition=" '$(DirBuildTemp)' != '' AND Exists('$(DirBuildTemp)')"
             Include="$(DirBuildTemp)" />
