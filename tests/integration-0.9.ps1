@@ -101,21 +101,6 @@ if (-not (Test-Path $tempLocation))
     New-Item -Path $tempLocation -ItemType Directory | Out-Null
 }
 
-if (-not (Test-Path $nugetPath))
-{
-    New-Item -Path $nugetPath -ItemType Directory | Out-Null
-}
-
-if (-not (Test-Path $symbolsPath))
-{
-    New-Item -Path $symbolsPath -ItemType Directory | Out-Null
-}
-
-if (-not (Test-Path $artefactsPath))
-{
-    New-Item -Path $artefactsPath -ItemType Directory | Out-Null
-}
-
 [array]$additionalNuGetSources = @()
 if (($localNuGetFeed -ne $null) -and ($localNuGetFeed -ne ''))
 {
@@ -139,19 +124,14 @@ New-EnvironmentFile `
 # DEFINE TESTS TO EXECUTE
 #
 
-$tests = @{
-    'vs-solution-01' = @(
-            'CSharp',
-            'VbNet'
-        )
-}
+$tests = @(
+    'vs-solution-01'
+    'vs-solution-02'
+)
 
 #
 # DEFINE VERSION NUMBERS
 #
-
-$assemblyVersion = "$(([System.Version]$releaseVersion).Major).0.0.0"
-$assemblyFileVersion = "$(([System.Version]$releaseVersion).Major).0.0.0"
 
 $branchToTestOn = "release/$($releaseVersion)"
 
@@ -159,10 +139,29 @@ $branchToTestOn = "release/$($releaseVersion)"
 # EXECUTE TESTS
 #
 
-foreach($testPair in $tests.GetEnumerator())
+foreach($testPair in $tests)
 {
-    $testId = $testPair.Key
-    $languages = $testPair.Value
+
+    if (Test-Path $nugetPath)
+    {
+        Remove-Item -Path $nugetPath -Force -Recurse -ErrorAction SilentlyContinue
+    }
+
+    if (Test-Path $symbolsPath)
+    {
+        Remove-Item -Path $symbolsPath -Force -Recurse -ErrorAction SilentlyContinue
+    }
+
+    if (Test-Path $artefactsPath)
+    {
+        Remove-Item -Path $artefactsPath -Force -Recurse -ErrorAction SilentlyContinue
+    }
+
+    New-Item -Path $nugetPath -ItemType Directory | Out-Null
+    New-Item -Path $symbolsPath -ItemType Directory | Out-Null
+    New-Item -Path $artefactsPath -ItemType Directory | Out-Null
+
+    $testId = $testPair
 
     $testRepositoryLocation = Join-Path $repositoryLocation $testId
     $testWorkspaceLocation = Join-Path $workspaceLocation $testId
@@ -331,218 +330,18 @@ foreach($testPair in $tests.GetEnumerator())
             }
         }
 
-        foreach($language in $languages)
-        {
-            if ($language.ToLowerInvariant() -eq 'csharp')
-            {
-                $nugetVersion = "$($releaseVersion)-rtm"
-                Context "the build produces NuGet packages for the $($language) project" {
-                    $nugetPackage = Join-Path $testWorkspaceLocation "build\deploy\nBuildKit.Test.$($language).Library.$($nugetVersion).nupkg"
-
-                    It 'in the expected location' {
-                        $nugetpackage | Should Exist
-                    }
-
-                    if (Test-Path $nugetPackage)
-                    {
-                        $packageUnzipLocation = Join-Path $testWorkspaceLocation "build\temp\unzip\nuget\$($language)"
-                        if (-not (Test-Path $packageUnziplocation))
-                        {
-                            New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
-                        }
-                        [System.IO.Compression.ZipFile]::ExtractToDirectory($nugetPackage, $packageUnzipLocation)
-
-                        It 'with the expected metadata' {
-                            $nuspec = Join-Path $packageUnzipLocation "nBuildKit.Test.$($language.ToLowerInvariant()).Library.nuspec"
-                            $nuspec | Should Exist
-
-                            $xmlDoc = [xml](Get-Content $nuspec)
-                            $xmlDoc.package.metadata.version | Should Be $nugetVersion
-                            $xmlDoc.package.metadata.releaseNotes | Should BeNullOrEmpty
-
-                            $dependencies = $xmlDoc.package.metadata.dependencies
-                            $dependencies.ChildNodes.Count | Should Be 5
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'Autofac' } | Select-Object -ExpandProperty version -First 1 | Should Be '[2.2.4.900, 3.0.0)'
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'log4net' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.2.10, 2.0.0)'
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'Lokad.Shared' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.5.181, 2.0.0)'
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'Mono.Cecil' } | Select-Object -ExpandProperty version -First 1 | Should Be '[0.9.6, 1.0.0)'
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'NuGet.Versioning' } | Select-Object -ExpandProperty version -First 1 | Should Be '[3.4.4-rtm-final, 4.0.0)'
-                        }
-
-                        $assemblyFile = Join-Path $packageUnzipLocation "lib\net45\nBuildKit.Test.$($language).Library.dll"
-                        It 'with the expected files' {
-                            $assemblyFile | Should Exist
-                        }
-
-                        It 'has files with the right metadata' {
-                            [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be $assemblyVersion
-
-                            $file = [System.IO.FileInfo]$assemblyFile
-                            $file.VersionInfo.FileVersion | Should Be $assemblyFileVersion
-                            $file.VersionInfo.ProductVersion | Should Be "$($releaseVersion)+0"
-
-                            $file.VersionInfo.ProductName | Should Be "nBuildKit.Test.$($language).Library"
-                            $file.VersionInfo.CompanyName | Should Be "My Company"
-                            $file.VersionInfo.LegalCopyright | Should Be "Copyright (c) - My Company 2015 - $((Get-Date).Year). All rights reserved."
-                        }
-                    }
-                }
-
-                Context "the build produces symbol packages for the $($language) project" {
-                    $symbolPackage = Join-Path $testWorkspaceLocation "build\deploy\nBuildKit.Test.$($language).Library.$($nugetVersion).symbols.nupkg"
-
-                    It 'in the expected location' {
-                        $symbolPackage | Should Exist
-                    }
-
-                    if (Test-Path $symbolPackage)
-                    {
-                        # extract the package
-                        $packageUnzipLocation = Join-Path $testWorkspaceLocation "build\temp\unzip\symbols\$($language)"
-                        if (-not (Test-Path $packageUnziplocation))
-                        {
-                            New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
-                        }
-                        [System.IO.Compression.ZipFile]::ExtractToDirectory($symbolPackage, $packageUnzipLocation)
-
-                        It 'with the expected metadata' {
-                            $nuspec = Join-Path $packageUnzipLocation "nBuildKit.Test.$($language.ToLowerInvariant()).Library.nuspec"
-                            $nuspec | Should Exist
-
-                            $xmlDoc = [xml](Get-Content $nuspec)
-                            $xmlDoc.package.metadata.version | Should Be $nugetVersion
-
-                            $dependencies = $xmlDoc.package.metadata.dependencies
-                            $dependencies.ChildNodes.Count | Should Be 5
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'Autofac' } | Select-Object -ExpandProperty version -First 1 | Should Be '[2.2.4.900, 3.0.0)'
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'log4net' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.2.10, 2.0.0)'
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'Lokad.Shared' } | Select-Object -ExpandProperty version -First 1 | Should Be '[1.5.181, 2.0.0)'
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'Mono.Cecil' } | Select-Object -ExpandProperty version -First 1 | Should Be '[0.9.6, 1.0.0)'
-                            $dependencies.ChildNodes | Where-Object { $_.id -eq 'NuGet.Versioning' } | Select-Object -ExpandProperty version -First 1 | Should Be '[3.4.4-rtm-final, 4.0.0)'
-                        }
-
-                        $assemblyFile = Join-Path $packageUnzipLocation "lib\net45\nBuildKit.Test.$($language).Library.dll"
-                        It 'with the expected files' {
-                            $assemblyFile | Should Exist
-
-                            (Join-Path $packageUnzipLocation "lib\net45\nBuildKit.Test.$($language).Library.pdb") | Should Exist
-                        }
-
-                        It 'has files with the right metadata' {
-                            [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be $assemblyVersion
-
-                            $file = [System.IO.FileInfo]$assemblyFile
-                            $file.VersionInfo.FileVersion | Should Be $assemblyFileVersion
-                            $file.VersionInfo.ProductVersion | Should Be "$($releaseVersion)+0"
-
-                            $file.VersionInfo.ProductName | Should Be "nBuildKit.Test.$($language).Library"
-                            $file.VersionInfo.CompanyName | Should Be "My Company"
-                            $file.VersionInfo.LegalCopyright | Should Be "Copyright (c) - My Company 2015 - $((Get-Date).Year). All rights reserved."
-                        }
-                    }
-                }
-            }
-
-            if ($language.ToLowerInvariant() -eq 'vbnet')
-            {
-                $nugetVersion = $releaseVersion
-                Context "the build produces NuGet packages for the $($language) project" {
-                    $nugetPackage = Join-Path $testWorkspaceLocation "build\deploy\nBuildKit.Test.$($language).Library.$($nugetVersion).nupkg"
-
-                    It 'in the expected location' {
-                        $nugetpackage | Should Exist
-                    }
-
-                    if (Test-Path $nugetPackage)
-                    {
-                        $packageUnzipLocation = Join-Path $testWorkspaceLocation "build\temp\unzip\nuget\$($language)"
-                        if (-not (Test-Path $packageUnziplocation))
-                        {
-                            New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
-                        }
-                        [System.IO.Compression.ZipFile]::ExtractToDirectory($nugetPackage, $packageUnzipLocation)
-
-                        It 'with the expected metadata' {
-                            $nuspec = Join-Path $packageUnzipLocation "nBuildKit.Test.$($language.ToLowerInvariant()).Library.nuspec"
-                            $nuspec | Should Exist
-
-                            $xmlDoc = [xml](Get-Content $nuspec)
-                            $xmlDoc.package.metadata.version | Should Be $nugetVersion
-                            $xmlDoc.package.metadata.releaseNotes | Should BeNullOrEmpty
-
-                            $dependencies = $xmlDoc.package.metadata.dependencies
-                            $dependencies.ChildNodes.Count | Should Be 0
-                        }
-
-                        $assemblyFile = Join-Path $packageUnzipLocation "lib\net45\nBuildKit.Test.$($language).Library.dll"
-                        It 'with the expected files' {
-                            $assemblyFile | Should Exist
-                        }
-
-                        It 'has files with the right metadata' {
-                            [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be $assemblyVersion
-
-                            $file = [System.IO.FileInfo]$assemblyFile
-                            $file.VersionInfo.FileVersion | Should Be $assemblyFileVersion
-                            $file.VersionInfo.ProductVersion | Should Be "$($releaseVersion)+0"
-
-                            $file.VersionInfo.ProductName | Should Be "nBuildKit.Test.$($language).Library"
-                            $file.VersionInfo.CompanyName | Should Be "My Company"
-                            $file.VersionInfo.LegalCopyright | Should Be "Copyright (c) - My Company 2015 - $((Get-Date).Year). All rights reserved."
-                        }
-                    }
-                }
-
-                Context "the build produces symbol packages for the $($language) project" {
-                    $symbolPackage = Join-Path $testWorkspaceLocation "build\deploy\nBuildKit.Test.$($language).Library.$($nugetVersion).symbols.nupkg"
-
-                    It 'in the expected location' {
-                        $symbolPackage | Should Exist
-                    }
-
-                    if (Test-Path $symbolPackage)
-                    {
-                        # extract the package
-                        $packageUnzipLocation = Join-Path $testWorkspaceLocation "build\temp\unzip\symbols\$($language)"
-                        if (-not (Test-Path $packageUnziplocation))
-                        {
-                            New-Item -Path $packageUnzipLocation -ItemType Directory | Out-Null
-                        }
-                        [System.IO.Compression.ZipFile]::ExtractToDirectory($symbolPackage, $packageUnzipLocation)
-
-                        It 'with the expected metadata' {
-                            $nuspec = Join-Path $packageUnzipLocation "nBuildKit.Test.$($language.ToLowerInvariant()).Library.nuspec"
-                            $nuspec | Should Exist
-
-                            $xmlDoc = [xml](Get-Content $nuspec)
-                            $xmlDoc.package.metadata.version | Should Be $nugetVersion
-
-                            $dependencies = $xmlDoc.package.metadata.dependencies
-                            $dependencies.ChildNodes.Count | Should Be 0
-                        }
-
-                        $assemblyFile = Join-Path $packageUnzipLocation "lib\net45\nBuildKit.Test.$($language).Library.dll"
-                        It 'with the expected files' {
-                            $assemblyFile | Should Exist
-
-                            (Join-Path $packageUnzipLocation "lib\net45\nBuildKit.Test.$($language).Library.pdb") | Should Exist
-                        }
-
-                        It 'has files with the right metadata' {
-                            [Reflection.AssemblyName]::GetAssemblyName($assemblyFile).Version | Should Be $assemblyVersion
-
-                            $file = [System.IO.FileInfo]$assemblyFile
-                            $file.VersionInfo.FileVersion | Should Be $assemblyFileVersion
-                            $file.VersionInfo.ProductVersion | Should Be "$($releaseVersion)+0"
-
-                            $file.VersionInfo.ProductName | Should Be "nBuildKit.Test.$($language).Library"
-                            $file.VersionInfo.CompanyName | Should Be "My Company"
-                            $file.VersionInfo.LegalCopyright | Should Be "Copyright (c) - My Company 2015 - $((Get-Date).Year). All rights reserved."
-                        }
-                    }
-                }
-            }
-        }
+        $validationScript = Join-Path $PSScriptRoot "0.9\$($testId)_validatebuild.ps1"
+        & $validationScript `
+            -repositoryVersion $repositoryVersion `
+            -releaseVersion $releaseVersion `
+            -remoteRepositoryUrl $remoteRepositoryUrl `
+            -workspaceLocation $workspaceLocation `
+            -nugetPath $nugetPath `
+            -symbolsPath $symbolsPath `
+            -artefactsPath $artefactsPath `
+            -logLocation $logLocation `
+            -tempLocation $tempLocation `
+            -branchToTestOn $branchToTestOn
 
         Context 'the build produces a merge archive package' {
             $archive = Join-Path $testWorkspaceLocation "build\deploy\gitmerge-nBuildKit.Test-$($branchToTestOn.Replace('/', '_')).zip"
@@ -593,28 +392,26 @@ foreach($testPair in $tests.GetEnumerator())
             }
         }
 
-        Context 'the deploy pushed to the nuget feed' {
-            It 'pushed the nuget package' {
-                (Join-Path $nugetPath "nBuildKit.Test.CSharp.Library.$($releaseVersion)-rtm.nupkg") | Should Exist
-                (Join-Path $nugetPath "nBuildKit.Test.VbNet.Library.$($releaseVersion).nupkg") | Should Exist
-            }
-        }
-
-        Context 'the deploy pushed to the symbol store' {
-            It 'pushed the symbol package' {
-                (Join-Path $symbolsPath "nBuildKit.Test.CSharp.Library.$($releaseVersion)-rtm.symbols.nupkg") | Should Exist
-                (Join-Path $symbolsPath "nBuildKit.Test.VbNet.Library.$($releaseVersion).symbols.nupkg") | Should Exist
-            }
-        }
-
-        Context 'the deploy pushed to the file system' {
-            It 'pushed the archive' {
-                (Join-Path $artefactsPath "nBuildKit.Test\$($releaseVersion)\gitmerge-nBuildKit.Test-$($branchToTestOn.Replace('/', '_')).zip") | Should Exist
-            }
-        }
+        $validationScript = Join-Path $PSScriptRoot "0.9\$($testId)_validatedeploy.ps1"
+        & $validationScript `
+            -repositoryVersion $repositoryVersion `
+            -releaseVersion $releaseVersion `
+            -remoteRepositoryUrl $remoteRepositoryUrl `
+            -workspaceLocation $workspaceLocation `
+            -nugetPath $nugetPath `
+            -symbolsPath $symbolsPath `
+            -artefactsPath $artefactsPath `
+            -logLocation $logLocation `
+            -tempLocation $tempLocation `
+            -branchToTestOn $branchToTestOn
 
         Context 'the deploy pushed to the remote repository' {
             $tempWorkspace = Join-Path $tempLocation 'verification'
+            if (Test-Path $tempWorkspace)
+            {
+                Remove-Item -Path $tempWorkspace -Force -Recurse -ErrorAction SilentlyContinue
+            }
+
             Clone-Repository `
                 -url $testRepositoryLocation `
                 -destination $tempWorkspace
