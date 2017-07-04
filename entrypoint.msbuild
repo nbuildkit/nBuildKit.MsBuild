@@ -222,7 +222,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKitMsBuildActions)\shared.bootstrap.build.tasks.msbuild"
-            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapSettings);$(BootstrapIncludes)"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapSettings);$(BootstrapIncludes);DirUserConfiguration=$(DirUserSettings)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
@@ -238,7 +238,7 @@
         <MSBuild
             BuildInParallel="False"
             Projects="$(DirNBuildKitMsBuildActions)\shared.bootstrap.generate.targetsfile.msbuild"
-            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapSettings);$(BootstrapIncludes)"
+            Properties="DirWorkspace=$(DirWorkspace);$(Locations);$(Files);$(BootstrapSettings);$(BootstrapIncludes);DirUserConfiguration=$(DirUserSettings)"
             RebaseOutputs="False"
             RemoveProperties=""
             RunEachTargetSeparately="True"
