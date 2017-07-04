@@ -493,6 +493,24 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsIntegrationPester)">
+            <Properties>
+                DirTestLocal=$(DirBuildTestIntegration);
+                NameTestRepository=Test.Integration;
+                ConfigurationVersionToTest=0.10;
+                ScriptTest=$(DirTests)\integration-0.10.ps1;
+            </Properties>
+            <Groups>
+                test;
+                test.integration;
+                test.integration.pester;
+                test.integration.pester.0.10;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
     </ItemGroup>
 
     <!--

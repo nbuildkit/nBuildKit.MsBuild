@@ -1,6 +1,6 @@
 <#
     This file contains the 'verification tests' for the nbuildkit verification test suite
-    which test against a repository that contains the 0.9 version of the configuration files.
+    which test against a repository that contains the 0.10 version of the configuration files.
 
     These tests are executed using Pester (https://github.com/pester/Pester).
 #>
@@ -52,19 +52,19 @@ param(
     [string] $tempLocation
 )
 
-Write-Host "integration-0.9 - param repositoryVersion = $repositoryVersion"
-Write-Host "integration-0.9 - param releaseVersion = $releaseVersion"
-Write-Host "integration-0.9 - param localNuGetFeed = $localNuGetFeed"
-Write-Host "integration-0.9 - param validNuGetSources = $validNuGetSources"
-Write-Host "integration-0.9 - param configurationVersionToTest = $configurationVersionToTest"
-Write-Host "integration-0.9 - param remoteRepositoryUrl = $remoteRepositoryUrl"
-Write-Host "integration-0.9 - param activeBranch = $activeBranch"
-Write-Host "integration-0.9 - param repositoryLocation = $repositoryLocation"
-Write-Host "integration-0.9 - param workspaceLocation = $workspaceLocation"
-Write-Host "integration-0.9 - param symbolsPath = $symbolsPath"
-Write-Host "integration-0.9 - param artefactsPath = $artefactsPath"
-Write-Host "integration-0.9 - param logLocation = $logLocation"
-Write-Host "integration-0.9 - param tempLocation = $tempLocation"
+Write-Host "integration-0.10 - param repositoryVersion = $repositoryVersion"
+Write-Host "integration-0.10 - param releaseVersion = $releaseVersion"
+Write-Host "integration-0.10 - param localNuGetFeed = $localNuGetFeed"
+Write-Host "integration-0.10 - param validNuGetSources = $validNuGetSources"
+Write-Host "integration-0.10 - param configurationVersionToTest = $configurationVersionToTest"
+Write-Host "integration-0.10 - param remoteRepositoryUrl = $remoteRepositoryUrl"
+Write-Host "integration-0.10 - param activeBranch = $activeBranch"
+Write-Host "integration-0.10 - param repositoryLocation = $repositoryLocation"
+Write-Host "integration-0.10 - param workspaceLocation = $workspaceLocation"
+Write-Host "integration-0.10 - param symbolsPath = $symbolsPath"
+Write-Host "integration-0.10 - param artefactsPath = $artefactsPath"
+Write-Host "integration-0.10 - param logLocation = $logLocation"
+Write-Host "integration-0.10 - param tempLocation = $tempLocation"
 
 #
 # LOAD HELPER SCRIPTS
@@ -296,7 +296,7 @@ foreach($testPair in $tests)
                 -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
                 -target 'build' `
                 -properties $msBuildProperties `
-                -logPath (Join-Path $logLocation "integration-0.9.0.1.$($testId).build.log")
+                -logPath (Join-Path $logLocation "integration-0.10.0.1.$($testId).build.log")
 
             $hasBuild = ($exitCode -eq 0)
             It 'and completes with a zero exit code' {
@@ -335,7 +335,7 @@ foreach($testPair in $tests)
             }
         }
 
-        $validationScript = Join-Path $PSScriptRoot "0.9\$($testId)_validatebuild.ps1"
+        $validationScript = Join-Path $PSScriptRoot "0.10\$($testId)_validatebuild.ps1"
         & $validationScript `
             -repositoryVersion $repositoryVersion `
             -releaseVersion $releaseVersion `
@@ -389,7 +389,7 @@ foreach($testPair in $tests)
                 -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
                 -target 'deploy' `
                 -properties $msBuildProperties `
-                -logPath (Join-Path $logLocation "integration-0.9.0.1.$($testId).deploy.log")
+                -logPath (Join-Path $logLocation "integration-0.10.0.1.$($testId).deploy.log")
 
             $hasBuild = ($exitCode -eq 0)
             It 'and completes with a zero exit code' {
@@ -397,7 +397,7 @@ foreach($testPair in $tests)
             }
         }
 
-        $validationScript = Join-Path $PSScriptRoot "0.9\$($testId)_validatedeploy.ps1"
+        $validationScript = Join-Path $PSScriptRoot "0.10\$($testId)_validatedeploy.ps1"
         & $validationScript `
             -repositoryVersion $repositoryVersion `
             -releaseVersion $releaseVersion `
