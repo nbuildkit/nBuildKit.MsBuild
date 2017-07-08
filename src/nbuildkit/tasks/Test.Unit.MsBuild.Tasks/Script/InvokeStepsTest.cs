@@ -75,6 +75,645 @@ namespace NBuildKit.MsBuild.Tasks.Script
         }
 
         [Test]
+        public void ExecuteWithAfterDependencyOnMultipleSteps()
+        {
+            var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var workingDir = Path.Combine(baseDir, Guid.NewGuid().ToString());
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+
+            var scriptPath1 = Path.Combine(
+                workingDir,
+                "script1.msbuild");
+            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath2 = Path.Combine(
+                workingDir,
+                "script2.msbuild");
+            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath3 = Path.Combine(
+                workingDir,
+                "script3.msbuild");
+            using (var writer = new StreamWriter(scriptPath3, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            InitializeBuildEngine(new[] { true, true, true });
+
+            var task = new InvokeSteps();
+            task.BuildEngine = BuildEngine.Object;
+            task.FailOnPostStepFailure = true;
+            task.FailOnPreStepFailure = true;
+            task.GroupsToExecute = new ITaskItem[0];
+            task.PostSteps = new ITaskItem[0];
+            task.PreSteps = new ITaskItem[0];
+            task.Projects = new[]
+            {
+                new TaskItem(
+                    scriptPath1,
+                    new Hashtable
+                    {
+                        { "Properties", "a=b" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteAfter", scriptPath3 + ";" + scriptPath2 }
+                    }),
+                new TaskItem(
+                    scriptPath2,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty }
+                    }),
+                new TaskItem(
+                    scriptPath3,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath2 }
+                    })
+            };
+            task.Properties = new TaskItem[0];
+            task.StepMetadata = new[]
+            {
+                new TaskItem(
+                    Path.GetFileName(scriptPath2),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    }),
+                new TaskItem(
+                    Path.GetFileName(scriptPath3),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    })
+            };
+            task.StopOnFirstFailure = true;
+            task.StopOnPostStepFailure = true;
+            task.StopOnPreStepFailure = true;
+
+            var result = task.Execute();
+            Assert.IsTrue(result);
+
+            VerifyNumberOfInvocations(3);
+            CollectionAssert.AreEqual(new[] { scriptPath3, scriptPath2, scriptPath1 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
+        }
+
+        [Test]
+        public void ExecuteWithBeforeDependencyOnMultipleSteps()
+        {
+            var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var workingDir = Path.Combine(baseDir, Guid.NewGuid().ToString());
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+
+            var scriptPath1 = Path.Combine(
+                workingDir,
+                "script1.msbuild");
+            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath2 = Path.Combine(
+                workingDir,
+                "script2.msbuild");
+            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath3 = Path.Combine(
+                workingDir,
+                "script3.msbuild");
+            using (var writer = new StreamWriter(scriptPath3, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            InitializeBuildEngine(new[] { true, true, true });
+
+            var task = new InvokeSteps();
+            task.BuildEngine = BuildEngine.Object;
+            task.FailOnPostStepFailure = true;
+            task.FailOnPreStepFailure = true;
+            task.GroupsToExecute = new ITaskItem[0];
+            task.PostSteps = new ITaskItem[0];
+            task.PreSteps = new ITaskItem[0];
+            task.Projects = new[]
+            {
+                new TaskItem(
+                    scriptPath1,
+                    new Hashtable
+                    {
+                        { "Properties", "a=b" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath3 + ";" + scriptPath2 }
+                    }),
+                new TaskItem(
+                    scriptPath2,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty }
+                    }),
+                new TaskItem(
+                    scriptPath3,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath2 }
+                    })
+            };
+            task.Properties = new TaskItem[0];
+            task.StepMetadata = new[]
+            {
+                new TaskItem(
+                    Path.GetFileName(scriptPath2),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    }),
+                new TaskItem(
+                    Path.GetFileName(scriptPath3),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    })
+            };
+            task.StopOnFirstFailure = true;
+            task.StopOnPostStepFailure = true;
+            task.StopOnPreStepFailure = true;
+
+            var result = task.Execute();
+            Assert.IsTrue(result);
+
+            VerifyNumberOfInvocations(3);
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath3, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
+        }
+
+        [Test]
+        public void ExecuteWithBetweenDependencyOnMultipleSteps()
+        {
+            var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var workingDir = Path.Combine(baseDir, Guid.NewGuid().ToString());
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+
+            var scriptPath1 = Path.Combine(
+                workingDir,
+                "script1.msbuild");
+            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath2 = Path.Combine(
+                workingDir,
+                "script2.msbuild");
+            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath3 = Path.Combine(
+                workingDir,
+                "script3.msbuild");
+            using (var writer = new StreamWriter(scriptPath3, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            InitializeBuildEngine(new[] { true, true, true });
+
+            var task = new InvokeSteps();
+            task.BuildEngine = BuildEngine.Object;
+            task.FailOnPostStepFailure = true;
+            task.FailOnPreStepFailure = true;
+            task.GroupsToExecute = new ITaskItem[0];
+            task.PostSteps = new ITaskItem[0];
+            task.PreSteps = new ITaskItem[0];
+            task.Projects = new[]
+            {
+                new TaskItem(
+                    scriptPath1,
+                    new Hashtable
+                    {
+                        { "Properties", "a=b" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath2 },
+                        { "ExecuteAfter", scriptPath3 },
+                    }),
+                new TaskItem(
+                    scriptPath2,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty }
+                    }),
+                new TaskItem(
+                    scriptPath3,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath2 }
+                    })
+            };
+            task.Properties = new TaskItem[0];
+            task.StepMetadata = new[]
+            {
+                new TaskItem(
+                    Path.GetFileName(scriptPath2),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    }),
+                new TaskItem(
+                    Path.GetFileName(scriptPath3),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    })
+            };
+            task.StopOnFirstFailure = true;
+            task.StopOnPostStepFailure = true;
+            task.StopOnPreStepFailure = true;
+
+            var result = task.Execute();
+            Assert.IsTrue(result);
+
+            VerifyNumberOfInvocations(3);
+            CollectionAssert.AreEqual(new[] { scriptPath3, scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
+        }
+
+        [Test]
+        public void ExecuteWithCyclicDependencies()
+        {
+            var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var workingDir = Path.Combine(baseDir, Guid.NewGuid().ToString());
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+
+            var scriptPath1 = Path.Combine(
+                workingDir,
+                "script1.msbuild");
+            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath2 = Path.Combine(
+                workingDir,
+                "script2.msbuild");
+            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath3 = Path.Combine(
+                workingDir,
+                "script3.msbuild");
+            using (var writer = new StreamWriter(scriptPath3, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            InitializeBuildEngine(new[] { true, true, true });
+
+            var task = new InvokeSteps();
+            task.BuildEngine = BuildEngine.Object;
+            task.FailOnPostStepFailure = true;
+            task.FailOnPreStepFailure = true;
+            task.GroupsToExecute = new ITaskItem[0];
+            task.PostSteps = new ITaskItem[0];
+            task.PreSteps = new ITaskItem[0];
+            task.Projects = new[]
+            {
+                new TaskItem(
+                    scriptPath1,
+                    new Hashtable
+                    {
+                        { "Properties", "a=b" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteAfter", scriptPath3 }
+                    }),
+                new TaskItem(
+                    scriptPath2,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty }
+                    }),
+                new TaskItem(
+                    scriptPath3,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath1 }
+                    })
+            };
+            task.Properties = new TaskItem[0];
+            task.StepMetadata = new[]
+            {
+                new TaskItem(
+                    Path.GetFileName(scriptPath2),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    }),
+                new TaskItem(
+                    Path.GetFileName(scriptPath3),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    })
+            };
+            task.StopOnFirstFailure = true;
+            task.StopOnPostStepFailure = true;
+            task.StopOnPreStepFailure = true;
+
+            var result = task.Execute();
+            Assert.IsFalse(result);
+
+            VerifyNumberOfInvocations(0);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 5);
+        }
+
+        [Test]
+        public void ExecuteWithDependencyOnNonExistingStep()
+        {
+            var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var workingDir = Path.Combine(baseDir, Guid.NewGuid().ToString());
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+
+            var scriptPath1 = Path.Combine(
+                workingDir,
+                "script1.msbuild");
+            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath2 = Path.Combine(
+                workingDir,
+                "script2.msbuild");
+            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath3 = Path.Combine(
+                workingDir,
+                "script3.msbuild");
+
+            InitializeBuildEngine(new[] { true, true });
+
+            var task = new InvokeSteps();
+            task.BuildEngine = BuildEngine.Object;
+            task.FailOnPostStepFailure = true;
+            task.FailOnPreStepFailure = true;
+            task.GroupsToExecute = new ITaskItem[0];
+            task.PostSteps = new ITaskItem[0];
+            task.PreSteps = new ITaskItem[0];
+            task.Projects = new[]
+            {
+                new TaskItem(
+                    scriptPath1,
+                    new Hashtable
+                    {
+                        { "Properties", "a=b" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteAfter", scriptPath3 }
+                    }),
+                new TaskItem(
+                    scriptPath2,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty }
+                    })
+            };
+            task.Properties = new TaskItem[0];
+            task.StepMetadata = new[]
+            {
+                new TaskItem(
+                    Path.GetFileName(scriptPath2),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    }),
+                new TaskItem(
+                    Path.GetFileName(scriptPath3),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    })
+            };
+            task.StopOnFirstFailure = true;
+            task.StopOnPostStepFailure = true;
+            task.StopOnPreStepFailure = true;
+
+            var result = task.Execute();
+            Assert.IsFalse(result);
+
+            VerifyNumberOfInvocations(0);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 4);
+        }
+
+        [Test]
+        public void ExecuteWithDependencyThatCannotBePlaced()
+        {
+            var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var workingDir = Path.Combine(baseDir, Guid.NewGuid().ToString());
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+
+            var scriptPath1 = Path.Combine(
+                workingDir,
+                "script1.msbuild");
+            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath2 = Path.Combine(
+                workingDir,
+                "script2.msbuild");
+            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath3 = Path.Combine(
+                workingDir,
+                "script3.msbuild");
+            using (var writer = new StreamWriter(scriptPath3, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            InitializeBuildEngine(new[] { true, true, true });
+
+            var task = new InvokeSteps();
+            task.BuildEngine = BuildEngine.Object;
+            task.FailOnPostStepFailure = true;
+            task.FailOnPreStepFailure = true;
+            task.GroupsToExecute = new ITaskItem[0];
+            task.PostSteps = new ITaskItem[0];
+            task.PreSteps = new ITaskItem[0];
+            task.Projects = new[]
+            {
+                new TaskItem(
+                    scriptPath1,
+                    new Hashtable
+                    {
+                        { "Properties", "a=b" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath3 },
+                        { "ExecuteAfter", scriptPath2 },
+                    }),
+                new TaskItem(
+                    scriptPath2,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty }
+                    }),
+                new TaskItem(
+                    scriptPath3,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath2 }
+                    })
+            };
+            task.Properties = new TaskItem[0];
+            task.StepMetadata = new[]
+            {
+                new TaskItem(
+                    Path.GetFileName(scriptPath2),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    }),
+                new TaskItem(
+                    Path.GetFileName(scriptPath3),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    })
+            };
+            task.StopOnFirstFailure = true;
+            task.StopOnPostStepFailure = true;
+            task.StopOnPreStepFailure = true;
+
+            var result = task.Execute();
+            Assert.IsFalse(result);
+
+            VerifyNumberOfInvocations(0);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
+        }
+
+        [Test]
         public void ExecuteWithFailingGlobalPostStep()
         {
             var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
@@ -153,7 +792,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
+
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
         }
 
         [Test]
@@ -241,7 +882,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
         }
 
         [Test]
@@ -329,7 +971,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(1);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 13);
+            CollectionAssert.AreEqual(new[] { scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 15);
         }
 
         [Test]
@@ -417,7 +1060,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
+
+            CollectionAssert.AreEqual(new[] { scriptPath2, scriptPath1 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
         }
 
         [Test]
@@ -497,7 +1142,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 16);
         }
 
         [Test]
@@ -577,7 +1223,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 16);
         }
 
         [Test]
@@ -657,7 +1304,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(1);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 10);
+            CollectionAssert.AreEqual(new[] { scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 12);
         }
 
         [Test]
@@ -737,7 +1385,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
+            CollectionAssert.AreEqual(new[] { scriptPath2, scriptPath1 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 16);
         }
 
         [Test]
@@ -800,7 +1449,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(1);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 3);
+            CollectionAssert.AreEqual(new[] { scriptPath }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 5);
         }
 
         [Test]
@@ -893,7 +1543,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsFalse(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 9);
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 11);
         }
 
         [Test]
@@ -981,7 +1632,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
         }
 
         [Test]
@@ -1069,7 +1721,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 17);
+            CollectionAssert.AreEqual(new[] { scriptPath2, scriptPath1 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
         }
 
         [Test]
@@ -1161,7 +1814,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(1);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 6);
+            CollectionAssert.AreEqual(new[] { scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 8);
         }
 
         [Test]
@@ -1241,7 +1895,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 16);
         }
 
         [Test]
@@ -1321,7 +1976,117 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 14);
+            CollectionAssert.AreEqual(new[] { scriptPath2, scriptPath1 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 16);
+        }
+
+        [Test]
+        public void ExecuteWithMultipleDependencies()
+        {
+            var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var workingDir = Path.Combine(baseDir, Guid.NewGuid().ToString());
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+
+            var scriptPath1 = Path.Combine(
+                workingDir,
+                "script1.msbuild");
+            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath2 = Path.Combine(
+                workingDir,
+                "script2.msbuild");
+            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath3 = Path.Combine(
+                workingDir,
+                "script3.msbuild");
+            using (var writer = new StreamWriter(scriptPath3, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            InitializeBuildEngine(new[] { true, true, true });
+
+            var task = new InvokeSteps();
+            task.BuildEngine = BuildEngine.Object;
+            task.FailOnPostStepFailure = true;
+            task.FailOnPreStepFailure = true;
+            task.GroupsToExecute = new ITaskItem[0];
+            task.PostSteps = new ITaskItem[0];
+            task.PreSteps = new ITaskItem[0];
+            task.Projects = new[]
+            {
+                new TaskItem(
+                    scriptPath1,
+                    new Hashtable
+                    {
+                        { "Properties", "a=b" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteAfter", scriptPath3 }
+                    }),
+                new TaskItem(
+                    scriptPath2,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty }
+                    }),
+                new TaskItem(
+                    scriptPath3,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath2 }
+                    })
+            };
+            task.Properties = new TaskItem[0];
+            task.StepMetadata = new[]
+            {
+                new TaskItem(
+                    Path.GetFileName(scriptPath2),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    }),
+                new TaskItem(
+                    Path.GetFileName(scriptPath3),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    })
+            };
+            task.StopOnFirstFailure = true;
+            task.StopOnPostStepFailure = true;
+            task.StopOnPreStepFailure = true;
+
+            var result = task.Execute();
+            Assert.IsTrue(result);
+
+            VerifyNumberOfInvocations(3);
+            CollectionAssert.AreEqual(new[] { scriptPath3, scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 19);
         }
 
         [Test]
@@ -1384,7 +2149,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(1);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 6);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 8);
         }
 
         [Test]
@@ -1447,7 +2212,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(1);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 6);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 8);
         }
 
         [Test]
@@ -1536,7 +2301,190 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(2);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 10);
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 13);
+        }
+
+        [Test]
+        public void ExecuteWithSingleDependencyInsertedAfter()
+        {
+            var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var workingDir = Path.Combine(baseDir, Guid.NewGuid().ToString());
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+
+            var scriptPath1 = Path.Combine(
+                workingDir,
+                "script1.msbuild");
+            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath2 = Path.Combine(
+                workingDir,
+                "script2.msbuild");
+            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            InitializeBuildEngine(new[] { true, true });
+
+            var task = new InvokeSteps();
+            task.BuildEngine = BuildEngine.Object;
+            task.FailOnPostStepFailure = true;
+            task.FailOnPreStepFailure = true;
+            task.GroupsToExecute = new ITaskItem[0];
+            task.PostSteps = new ITaskItem[0];
+            task.PreSteps = new ITaskItem[0];
+            task.Projects = new[]
+            {
+                new TaskItem(
+                    scriptPath1,
+                    new Hashtable
+                    {
+                        { "Properties", "a=b" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteAfter", scriptPath2 }
+                    }),
+                new TaskItem(
+                    scriptPath2,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty }
+                    })
+            };
+            task.Properties = new TaskItem[0];
+            task.StepMetadata = new[]
+            {
+                new TaskItem(
+                    Path.GetFileName(scriptPath1),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    }),
+                new TaskItem(
+                    Path.GetFileName(scriptPath2),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    })
+            };
+            task.StopOnFirstFailure = true;
+            task.StopOnPostStepFailure = true;
+            task.StopOnPreStepFailure = true;
+
+            var result = task.Execute();
+            Assert.IsTrue(result);
+
+            VerifyNumberOfInvocations(2);
+            CollectionAssert.AreEqual(new[] { scriptPath2, scriptPath1 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 13);
+        }
+
+        [Test]
+        public void ExecuteWithSingleDependencyInsertedBefore()
+        {
+            var baseDir = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var workingDir = Path.Combine(baseDir, Guid.NewGuid().ToString());
+            if (!Directory.Exists(workingDir))
+            {
+                Directory.CreateDirectory(workingDir);
+            }
+
+            var scriptPath1 = Path.Combine(
+                workingDir,
+                "script1.msbuild");
+            using (var writer = new StreamWriter(scriptPath1, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            var scriptPath2 = Path.Combine(
+                workingDir,
+                "script2.msbuild");
+            using (var writer = new StreamWriter(scriptPath2, false, Encoding.Unicode))
+            {
+                writer.WriteLine("ExecuteWithSingleDependencyInsertedAfter");
+            }
+
+            InitializeBuildEngine(new[] { true, true });
+
+            var task = new InvokeSteps();
+            task.BuildEngine = BuildEngine.Object;
+            task.FailOnPostStepFailure = true;
+            task.FailOnPreStepFailure = true;
+            task.GroupsToExecute = new ITaskItem[0];
+            task.PostSteps = new ITaskItem[0];
+            task.PreSteps = new ITaskItem[0];
+            task.Projects = new[]
+            {
+                new TaskItem(
+                    scriptPath1,
+                    new Hashtable
+                    {
+                        { "Properties", "a=b" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty },
+                        { "ExecuteBefore", scriptPath2 }
+                    }),
+                new TaskItem(
+                    scriptPath2,
+                    new Hashtable
+                    {
+                        { "Properties", "c=d" },
+                        { "Groups", string.Empty },
+                        { "PreSteps", string.Empty },
+                        { "PostSteps", string.Empty }
+                    })
+            };
+            task.Properties = new TaskItem[0];
+            task.StepMetadata = new[]
+            {
+                new TaskItem(
+                    Path.GetFileName(scriptPath1),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    }),
+                new TaskItem(
+                    Path.GetFileName(scriptPath2),
+                    new Hashtable
+                    {
+                        { "Description", "description" },
+                        { "Id", "id" },
+                        { "Name", "name" },
+                        { "Path", "Path" },
+                    })
+            };
+            task.StopOnFirstFailure = true;
+            task.StopOnPostStepFailure = true;
+            task.StopOnPreStepFailure = true;
+
+            var result = task.Execute();
+            Assert.IsTrue(result);
+
+            VerifyNumberOfInvocations(2);
+            CollectionAssert.AreEqual(new[] { scriptPath1, scriptPath2 }, ExecutedScripts());
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 13);
         }
 
         [Test]
@@ -1599,7 +2547,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(1);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 5);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 7);
         }
 
         [Test]
@@ -1662,7 +2610,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(1);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 5);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 7);
         }
 
         [Test]
@@ -1722,7 +2670,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             Assert.IsTrue(result);
 
             VerifyNumberOfInvocations(1);
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 3);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 5);
         }
     }
 }
