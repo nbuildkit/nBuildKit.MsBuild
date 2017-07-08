@@ -240,19 +240,22 @@
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadDeployStepsToExecute)' == 'true' AND '@(DeployStepsToExecute)' == '' ">
         <DeployStepsToExecute Include="$(DeployStepsShowHelp)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
+            <Groups>
+                Help;
+            </Groups>
+            <Id>deploy.help</Id>
+            <PostSteps>
+            </PostSteps>
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importdeploysharedsettings.props;
                 HelpFileSettings=deploy.settings.props;
                 HelpProcess=deploy;
                 HelpStepGroup=DeployStepsToExecute;
             </Properties>
-            <Groups>
-                Help;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
         </DeployStepsToExecute>
     </ItemGroup>
 
