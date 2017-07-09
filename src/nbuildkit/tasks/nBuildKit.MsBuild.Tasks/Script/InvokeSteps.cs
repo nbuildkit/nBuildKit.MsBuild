@@ -17,7 +17,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core;
 
-namespace NBuildKit.MsBuild.Tasks
+namespace NBuildKit.MsBuild.Tasks.Script
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> that executes steps for nBuildKit.
@@ -25,9 +25,15 @@ namespace NBuildKit.MsBuild.Tasks
     public sealed class InvokeSteps : BaseTask
     {
         private const string ErrorIdInvalidConfiguration = "NBuildKit.Steps.InvalidConfiguration";
+        private const string ErrorIdInvalidDependencies = "NBuildKit.Steps.InvalidDependencies";
         private const string ErrorIdPostStepFailure = "NBuildKit.Steps.PostStep";
         private const string ErrorIdPreStepFailure = "NBuildKit.Steps.PreStep";
         private const string ErrorIdStepFailure = "NBuildKit.Steps.Failure";
+
+        private const string StepMetadataDescription = "StepDescription";
+        private const string StepMetadataId = "StepId";
+        private const string StepMetadataName = "StepName";
+        private const string StepMetadataPath = "StepPath";
 
         private static Hashtable GetStepMetadata(string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)
         {
@@ -42,19 +48,19 @@ namespace NBuildKit.MsBuild.Tasks
             var description = stepMetadata != null
                     ? stepMetadata.GetMetadata(MetadataTagDescription)
                     : string.Empty;
-            result.Add("StepDescription", description);
+            result.Add(StepMetadataDescription, description);
 
             var id = (stepMetadata != null) && !string.IsNullOrEmpty(stepMetadata.GetMetadata(MetadataTagId))
                     ? stepMetadata.GetMetadata(MetadataTagId)
                     : stepFileName;
-            result.Add("StepId", id);
+            result.Add(StepMetadataId, id);
 
             var name = (stepMetadata != null) && !string.IsNullOrEmpty(stepMetadata.GetMetadata(MetadataTagName))
                     ? stepMetadata.GetMetadata(MetadataTagName)
                     : stepFileName;
-            result.Add("StepName", name);
+            result.Add(StepMetadataName, name);
 
-            result.Add("StepPath", stepPath);
+            result.Add(StepMetadataPath, stepPath);
 
             result.Add("IsFirstStep", isFirst.ToString().ToLower(CultureInfo.InvariantCulture));
 
@@ -63,18 +69,42 @@ namespace NBuildKit.MsBuild.Tasks
             return result;
         }
 
+        private static StepId[] ExecuteAfter(ITaskItem step)
+        {
+            const string MetadataTag = "ExecuteAfter";
+
+            var idsText = (step != null) && !string.IsNullOrEmpty(step.GetMetadata(MetadataTag))
+                    ? step.GetMetadata(MetadataTag)
+                    : string.Empty;
+            var ids = idsText.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            return ids.Select(id => new StepId(id)).ToArray();
+        }
+
+        private static StepId[] ExecuteBefore(ITaskItem step)
+        {
+            const string MetadataTag = "ExecuteBefore";
+
+            var idsText = (step != null) && !string.IsNullOrEmpty(step.GetMetadata(MetadataTag))
+                    ? step.GetMetadata(MetadataTag)
+                    : string.Empty;
+            var ids = idsText.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            return ids.Select(id => new StepId(id)).ToArray();
+        }
+
         private static ITaskItem[] LocalPreSteps(ITaskItem step)
         {
             const string MetadataTag = "PreSteps";
             var steps = step.GetMetadata(MetadataTag);
-            return steps.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => new TaskItem(s)).ToArray();
+            return steps.Split(';').Select(s => new TaskItem(s)).ToArray();
         }
 
         private static ITaskItem[] LocalPostSteps(ITaskItem step)
         {
             const string MetadataTag = "PostSteps";
             var steps = step.GetMetadata(MetadataTag);
-            return steps.ToLower(CultureInfo.InvariantCulture).Split(';').Select(s => new TaskItem(s)).ToArray();
+            return steps.Split(';').Select(s => new TaskItem(s)).ToArray();
         }
 
         private static IEnumerable<string> StepGroups(ITaskItem step)
@@ -82,6 +112,16 @@ namespace NBuildKit.MsBuild.Tasks
             const string MetadataTag = "Groups";
             var groups = step.GetMetadata(MetadataTag);
             return groups.ToLower(CultureInfo.InvariantCulture).Split(';');
+        }
+
+        private static StepId StepId(ITaskItem step)
+        {
+            const string MetadataTagId = "Id";
+
+            var id = (step != null) && !string.IsNullOrEmpty(step.GetMetadata(MetadataTagId))
+                    ? step.GetMetadata(MetadataTagId)
+                    : step.ItemSpec;
+            return new StepId(id);
         }
 
         private void AddStepMetadata(ITaskItem subStep, string stepPath, ITaskItem[] metadata, bool isFirst, bool isLast)
@@ -157,12 +197,34 @@ namespace NBuildKit.MsBuild.Tasks
                 stepsToExecute.Add(step);
             }
 
-            for (int i = 0; i < stepsToExecute.Count; i++)
+            var orderedStepsToExecute = OrderSteps(stepsToExecute);
+            if (orderedStepsToExecute == null)
             {
-                var step = stepsToExecute[i];
+                return false;
+            }
+
+            Log.LogMessage(
+                MessageImportance.Normal,
+                "Executing steps in the following order: ");
+            for (int i = 0; i < orderedStepsToExecute.Count; i++)
+            {
+                var step = orderedStepsToExecute[i];
+                var metadata = GetStepMetadata(step.ItemSpec, StepMetadata, false, false);
+
+                Log.LogMessage(
+                    MessageImportance.Normal,
+                    "{0} - {1}: {2}",
+                    i,
+                    metadata.ContainsKey(StepMetadataName) ? ((string)metadata[StepMetadataName]).Trim() : step.ItemSpec,
+                    metadata.ContainsKey(StepMetadataDescription) ? ((string)metadata[StepMetadataDescription]).Trim() : string.Empty);
+            }
+
+            for (int i = 0; i < orderedStepsToExecute.Count; i++)
+            {
+                var step = orderedStepsToExecute[i];
                 try
                 {
-                    if (!ExecuteStep(step, i == 0, i == stepsToExecute.Count - 1))
+                    if (!ExecuteStep(step, i == 0, i == orderedStepsToExecute.Count - 1))
                     {
                         hasFailed = true;
                         if (StopOnFirstFailure)
@@ -537,6 +599,142 @@ namespace NBuildKit.MsBuild.Tasks
                     projectPath);
                 return false;
             }
+        }
+
+        private List<ITaskItem> OrderSteps(IEnumerable<ITaskItem> steps)
+        {
+            var sortedItems = new List<Tuple<StepId, ITaskItem>>();
+            int IndexOf(StepId id)
+            {
+                return sortedItems.FindIndex(t => t.Item1.Equals(id));
+            }
+
+            var unsortedItems = new List<Tuple<StepId, StepId[], StepId[], ITaskItem>>();
+            foreach (var item in steps)
+            {
+                var id = StepId(item);
+                var executeAfter = ExecuteAfter(item);
+                var executeBefore = ExecuteBefore(item);
+
+                if ((executeBefore.Length > 0) || (executeAfter.Length > 0))
+                {
+                    unsortedItems.Add(Tuple.Create(id, executeBefore, executeAfter, item));
+                }
+                else
+                {
+                    sortedItems.Add(Tuple.Create(id, item));
+                }
+            }
+
+            var lastCount = steps.Count();
+            while ((unsortedItems.Count > 0) && (lastCount > unsortedItems.Count))
+            {
+                lastCount = unsortedItems.Count;
+
+                var toDelete = new List<Tuple<StepId, StepId[], StepId[], ITaskItem>>();
+                foreach (var unsortedItem in unsortedItems)
+                {
+                    var insertBefore = -1;
+                    var executeBefore = unsortedItem.Item2;
+                    if (executeBefore.Length > 0)
+                    {
+                        var indices = executeBefore.Select(id => IndexOf(id)).Where(i => i > -1);
+                        if (indices.Count() != executeBefore.Length)
+                        {
+                            continue;
+                        }
+
+                        insertBefore = indices.Min();
+                    }
+
+                    var insertAfter = sortedItems.Count;
+                    var executeAfter = unsortedItem.Item3;
+                    if (executeAfter.Length > 0)
+                    {
+                        var indices = executeAfter.Select(id => IndexOf(id)).Where(i => i > -1);
+                        if (indices.Count() != executeAfter.Length)
+                        {
+                            continue;
+                        }
+
+                        insertAfter = indices.Max();
+                    }
+
+                    if ((executeBefore.Length > 0) && (executeAfter.Length > 0) && (insertBefore < insertAfter))
+                    {
+                        Log.LogError(
+                           string.Empty,
+                           ErrorCodeById(ErrorIdInvalidDependencies),
+                           ErrorIdInvalidDependencies,
+                           string.Empty,
+                           0,
+                           0,
+                           0,
+                           0,
+                           "At least one dependency needs to be inserted both before an earlier item and after a later item. No suitable place for the insertion could be found.");
+                        return null;
+                    }
+
+                    if (executeBefore.Length > 0)
+                    {
+                        sortedItems.Insert(insertBefore, Tuple.Create(unsortedItem.Item1, unsortedItem.Item4));
+                        toDelete.Add(unsortedItem);
+                    }
+                    else
+                    {
+                        sortedItems.Insert(insertAfter + 1, Tuple.Create(unsortedItem.Item1, unsortedItem.Item4));
+                        toDelete.Add(unsortedItem);
+                    }
+                }
+
+                foreach (var item in toDelete)
+                {
+                    unsortedItems.Remove(item);
+                }
+            }
+
+            if (unsortedItems.Count > 0)
+            {
+                Log.LogMessage(
+                    MessageImportance.Normal,
+                    "Failed to sort all the steps. The sorted steps were: ");
+                for (int i = 0; i < sortedItems.Count; i++)
+                {
+                    var tuple = sortedItems[i];
+                    Log.LogMessage(
+                        MessageImportance.Normal,
+                        "{0} - {1}",
+                        i,
+                        tuple.Item1);
+                }
+
+                Log.LogMessage(
+                    MessageImportance.Normal,
+                    "The unsorted steps were: ");
+                for (int i = 0; i < unsortedItems.Count; i++)
+                {
+                    var tuple = unsortedItems[i];
+                    Log.LogMessage(
+                        MessageImportance.Normal,
+                        "{0} - {1}",
+                        i,
+                        tuple.Item1);
+                }
+
+                Log.LogError(
+                   string.Empty,
+                   ErrorCodeById(ErrorIdInvalidDependencies),
+                   ErrorIdInvalidDependencies,
+                   string.Empty,
+                   0,
+                   0,
+                   0,
+                   0,
+                   "Was not able to order all the steps.");
+                return null;
+            }
+
+            return sortedItems.Select(t => t.Item2).ToList();
         }
 
         /// <summary>

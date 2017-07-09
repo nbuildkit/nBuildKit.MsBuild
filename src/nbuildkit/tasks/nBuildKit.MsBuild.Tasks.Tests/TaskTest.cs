@@ -58,6 +58,7 @@ namespace NBuildKit.MsBuild.Tasks.Tests
 
         private readonly List<string> _errorMessages = new List<string>();
         private readonly List<string> _logMessages = new List<string>();
+        private readonly List<string> _scriptsToExecute = new List<string>();
         private readonly List<string> _warningMessages = new List<string>();
 
         private Mock<IBuildEngine4> _buildEngine;
@@ -81,6 +82,7 @@ namespace NBuildKit.MsBuild.Tasks.Tests
         {
             _errorMessages.Clear();
             _logMessages.Clear();
+            _scriptsToExecute.Clear();
             _warningMessages.Clear();
 
             var buildEngine = new Mock<IBuildEngine>();
@@ -108,6 +110,11 @@ namespace NBuildKit.MsBuild.Tasks.Tests
                         It.IsAny<IList<string>[]>(),
                         It.IsAny<string[]>(),
                         It.IsAny<bool>()))
+                    .Callback<string[], string[], IDictionary[], IList<string>[], string[], bool>(
+                        (projectFilesNames, targetNames, globalProperties, removeGlobalProperties, toolsVersion, returnTargetOutputs) =>
+                        {
+                            _scriptsToExecute.AddRange(projectFilesNames);
+                        })
                     .Returns(
                         () =>
                         {
@@ -120,6 +127,15 @@ namespace NBuildKit.MsBuild.Tasks.Tests
             }
 
             _buildEngine = buildEngine3.As<IBuildEngine4>();
+        }
+
+        /// <summary>
+        /// Returns the collection containing all the scripts that were executed during the test.
+        /// </summary>
+        /// <returns>The collection containing all the scripts that were executed.</returns>
+        public IEnumerable<string> ExecutedScripts()
+        {
+            return new List<string>(_scriptsToExecute);
         }
 
         /// <summary>

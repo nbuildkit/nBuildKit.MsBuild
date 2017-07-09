@@ -171,19 +171,22 @@
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadTestStepsToExecute)' == 'true' AND '@(TestStepsToExecute)' == '' ">
         <TestStepsToExecute Include="$(TestStepsShowHelp)">
+           <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
+            <Groups>
+                Help;
+            </Groups>
+            <Id>test.help</Id>
+            <PostSteps>
+            </PostSteps>
+            <PreSteps>
+            </PreSteps>
            <Properties>
                 HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importtestsharedsettings.props;
                 HelpFileSettings=test.settings.props;
                 HelpProcess=test;
                 HelpStepGroup=TestStepsToExecute;
             </Properties>
-            <Groups>
-                Help;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
         </TestStepsToExecute>
     </ItemGroup>
 

@@ -381,19 +381,22 @@
 
     <ItemGroup Condition=" '$(ShouldLoadBuildStepsToExecute)' == 'true' AND '@(BuildStepsToExecute)' == '' ">
         <BuildStepsToExecute Include="$(BuildStepsShowHelp)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
+            <Groups>
+                Help;
+            </Groups>
+            <Id>build.help</Id>
+            <PostSteps>
+            </PostSteps>
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importbuildsharedsettings.props;
                 HelpFileSettings=build.settings.props;
                 HelpProcess=build;
                 HelpStepGroup=BuildStepsToExecute;
             </Properties>
-            <Groups>
-                Help;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
         </BuildStepsToExecute>
     </ItemGroup>
 

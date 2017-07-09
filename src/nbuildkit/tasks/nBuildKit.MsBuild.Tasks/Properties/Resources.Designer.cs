@@ -68,5 +68,33 @@ namespace NBuildKit.MsBuild.Tasks.Properties {
                 return ResourceManager.GetString("Exceptions_Messages_ParameterShouldNotBeAnEmptyString", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot insert step with ID {0} before index {1} and after index {2}.
+        /// </summary>
+        internal static string Exceptions_Messages_StepOrderFailure_CannotInsertBeforeAndAfter_WithIdAndIndices {
+            get {
+                return ResourceManager.GetString("Exceptions_Messages_StepOrderFailure_CannotInsertBeforeAndAfter_WithIdAndIndices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to insert all steps. There are possible missing dependencies or some steps have a cyclic dependency.
+        /// </summary>
+        internal static string Exceptions_Messages_StepOrderFailure_FailedToInsertAllSteps_PossibleMissingOrCyclicDependencies {
+            get {
+                return ResourceManager.GetString("Exceptions_Messages_StepOrderFailure_FailedToInsertAllSteps_PossibleMissingOrCycl" +
+                        "icDependencies", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to order the steps in a sensible execution order..
+        /// </summary>
+        internal static string Exceptions_Messages_StepOrderFailure_FailedToOrderSteps {
+            get {
+                return ResourceManager.GetString("Exceptions_Messages_StepOrderFailure_FailedToOrderSteps", resourceCulture);
+            }
+        }
     }
 }
