@@ -123,8 +123,15 @@
                 PropertyName="DirRepositoryWorkspace"
                 TaskParameter="Value" />
         </CreateProperty>
+
+        <!-- Delete the workspace directory before trying to use it so that we know it's empty -->
+        <Delete
+            Condition="Exists('$(DirRepositoryWorkspace)')"
+            Files="$(DirRepositoryWorkspace)\**\*" />
+        <RemoveDir
+            Condition="Exists('$(DirRepositoryWorkspace)')"
+            Directories="$(DirRepositoryWorkspace)" />
         <MakeDir
-            Condition="!Exists('$(DirRepositoryWorkspace)') "
             Directories="$(DirRepositoryWorkspace)" />
 
         <!-- Clone the repository in the temporary directory -->
@@ -137,7 +144,7 @@
             Repository="$(RepositoryToPushTo)"
             Workspace="$(DirRepositoryWorkspace)" />
 
-        <!-- Verify that we're on the branch!' -->
+        <!-- Verify that we're on the branch! -->
         <GitCurrentBranch
             ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
