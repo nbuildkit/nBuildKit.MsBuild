@@ -380,7 +380,7 @@ foreach($testPair in $tests)
                 'IsOnBuildServer' = 'true'
                 'GitBranchExpected' = $branchToTestOn
                 'GitRevNoExpected' = $originalWorkingBranchSha
-                'GitRemoteRepository' = $repositoryLocation
+                'GitRemoteRepository' = $testRepositoryLocation
                 'DirBuildServerSettings' = $testTempLocation
                 'DirUserSettings' = $testWorkspace
             }
@@ -410,8 +410,7 @@ foreach($testPair in $tests)
             -tempLocation $tempLocation `
             -branchToTestOn $branchToTestOn
 
-        Context 'the deploy pushed to the remote repository' {
-            $tempWorkspace = Join-Path $tempLocation 'verification'
+        $tempWorkspace = Join-Path $tempLocation 'verification'
             if (Test-Path $tempWorkspace)
             {
                 Remove-Item -Path $tempWorkspace -Force -Recurse -ErrorAction SilentlyContinue
@@ -421,6 +420,7 @@ foreach($testPair in $tests)
                 -url $testRepositoryLocation `
                 -destination $tempWorkspace
 
+        Context 'the deploy pushed to the remote repository' {
             $workspaceSha = Get-CurrentCommit -branch 'master' -workspace $testWorkspaceLocation
             $remoteSha = Get-CurrentCommit -branch 'master' -workspace $tempWorkspace
             It 'pushed the master branch' {
@@ -444,6 +444,32 @@ foreach($testPair in $tests)
             $remoteSha = Get-CurrentCommit -branch 'develop' -workspace $tempWorkspace
             It 'pushed the develop branch' {
                 $remoteSha | Should Be $workspaceSha
+            }
+        }
+
+        Context 'the deploy pushed to a remote branch' {
+            $originalWorkingDirectory = $pwd
+            try
+            {
+                Set-Location $tempWorkspace
+
+                Checkout-Branch `
+                    -Branch 'testdeploy'
+            }
+            finally
+            {
+                Set-Location $originalWorkingDirectory
+            }
+
+            $remoteSha = Get-CurrentCommit -branch 'testdeploy' -workspace $tempWorkspace
+            It 'pushed the testdeploy branch' {
+                $remoteSha | Should Not Be '3f9ce0d9e70ae0c49a4f61685df2d5c9aac8b643'
+            }
+
+            $files = @( Get-ChildItem -Path $tempWorkspace )
+            It 'replaced the branch content with the archive content' {
+                $files.Length | Should Be 1
+                $files[0].FullName | Should Be (Join-Path $tempWorkspace 'nBuildKit.Test.CSharp.Console.exe')
             }
         }
     }

@@ -113,12 +113,7 @@
             Importance="low"
             Text="Cloning repository from: $(RepositoryToPushTo)" />
 
-        <CreateProperty Value="$(RepositoryToPushTo.Substring($(RepositoryToPushTo.LastIndexOf('/'))).TrimStart('/'))">
-            <Output
-                PropertyName="RepositoryName"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <CreateProperty Value="$(DirBuildTemp)\git\$(RepositoryName)">
+        <CreateProperty Value="$(DirBuildTemp)\$([System.Guid]::NewGuid().ToString('N'))">
             <Output
                 PropertyName="DirRepositoryWorkspace"
                 TaskParameter="Value" />
@@ -190,8 +185,14 @@
         <PropertyGroup>
             <DirBuildTempCopy>$(DirBuildTemp)\copy</DirBuildTempCopy>
         </PropertyGroup>
+
+        <!-- Make sure the directory is empty -->
+        <Delete
+            Files="$(DirBuildTempCopy)\**\*" />
+        <RemoveDir
+            Condition="Exists('$(DirBuildTempCopy)')"
+            Directories="$(DirBuildTempCopy)" />
         <MakeDir
-            Condition="!Exists('$(DirBuildTempCopy)') "
             Directories="$(DirBuildTempCopy)" />
 
         <Copy
