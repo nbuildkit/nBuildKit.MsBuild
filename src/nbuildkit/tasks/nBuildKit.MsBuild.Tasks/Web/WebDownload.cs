@@ -29,7 +29,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         /// Initializes a new instance of the <see cref="WebDownload"/> class.
         /// </summary>
         public WebDownload()
-            : this(() => new InternalWebClient(new WebClient()))
+            : this(() => new InternalWebClient())
         {
         }
 

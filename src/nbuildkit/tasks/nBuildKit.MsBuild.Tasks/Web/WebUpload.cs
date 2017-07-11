@@ -31,7 +31,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         /// Initializes a new instance of the <see cref="WebUpload"/> class.
         /// </summary>
         public WebUpload()
-            : this(() => new InternalWebClient(new WebClient()))
+            : this(() => new InternalWebClient())
         {
         }
 
@@ -162,7 +162,12 @@ namespace NBuildKit.MsBuild.Tasks.Web
                             "Uploading from: {0}. To: {1}",
                             itemPath,
                             targetUri);
-                        client.UploadFile(targetUri, "PUT", itemPath);
+                        var response = client.UploadFile(targetUri, "PUT", itemPath);
+                        var responseText = System.Text.Encoding.ASCII.GetString(response);
+                        Log.LogMessage(
+                            MessageImportance.Normal,
+                            "Server response: {0}",
+                            responseText);
                     }
                     catch (WebException e)
                     {

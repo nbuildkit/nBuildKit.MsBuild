@@ -41,6 +41,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                             Assert.AreEqual(new Uri(targetUri + "/" + Path.GetFileName(path)), uri);
                             Assert.AreEqual(fileToUpload, path);
                         })
+                    .Returns(new byte[0])
                     .Verifiable();
             }
 
@@ -59,7 +60,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
 
-            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 2);
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 3);
         }
 
         [Test]
