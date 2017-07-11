@@ -18,6 +18,8 @@
         <DeployStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
         <DeployStepsRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
 
+        <DeployStepsPrepareReleaseNotes>$(MSBuildThisFileDirectory)..\shared.prepare.gatherreleasenotes.msbuild</DeployStepsPrepareReleaseNotes>
+
         <DeployStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</DeployStepsPrepareCopyNuGet>
         <DeployStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</DeployStepsPrepareCopyHttp>
         <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</DeployStepsPrepareCopyFiles>
@@ -89,6 +91,14 @@
             <Id>DeployStepsRestoreNuGet</Id>
             <Name>Deploy - restore NuGet packages</Name>
             <Path>$(DeployStepsRestoreNuGet)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareReleaseNotes)'))">
+            <Description>
+                Gathers the release notes and stores them for later use during the deploy process.
+            </Description>
+            <Id>DeployStepsPrepareReleaseNotes</Id>
+            <Name>Deploy - gather release notes</Name>
+            <Path>$(DeployStepsPrepareReleaseNotes)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyNuGet)'))">
             <Description>

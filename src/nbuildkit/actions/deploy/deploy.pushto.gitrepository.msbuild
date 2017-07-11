@@ -93,8 +93,13 @@
         <PropertyGroup>
             <DirBuildTempCopy>$(DirBuildTemp)\copy</DirBuildTempCopy>
         </PropertyGroup>
+        <!-- Make sure the directory is empty -->
+        <Delete
+            Files="$(DirBuildTempCopy)\**\*" />
+        <RemoveDir
+            Condition="Exists('$(DirBuildTempCopy)')"
+            Directories="$(DirBuildTempCopy)" />
         <MakeDir
-            Condition="!Exists('$(DirBuildTempCopy)') "
             Directories="$(DirBuildTempCopy)" />
 
         <Copy

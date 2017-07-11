@@ -33,6 +33,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         /// <param name="address">The URI of the resource to receive the file. For example, ftp://localhost/samplefile.txt.</param>
         /// <param name="method">The method that should be used for the upload.</param>
         /// <param name="fileName">The file to send to the resource. For example, "samplefile.txt".</param>
-        void UploadFile(Uri address, string method, string fileName);
+        /// <returns>The response of the server.</returns>
+        byte[] UploadFile(Uri address, string method, string fileName);
     }
 }

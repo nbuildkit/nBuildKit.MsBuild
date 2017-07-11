@@ -113,18 +113,20 @@
             Importance="low"
             Text="Cloning repository from: $(RepositoryToPushTo)" />
 
-        <CreateProperty Value="$(RepositoryToPushTo.Substring($(RepositoryToPushTo.LastIndexOf('/'))).TrimStart('/'))">
-            <Output
-                PropertyName="RepositoryName"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <CreateProperty Value="$(DirBuildTemp)\git\$(RepositoryName)">
+        <CreateProperty Value="$(DirBuildTemp)\$([System.Guid]::NewGuid().ToString('N'))">
             <Output
                 PropertyName="DirRepositoryWorkspace"
                 TaskParameter="Value" />
         </CreateProperty>
+
+        <!-- Delete the workspace directory before trying to use it so that we know it's empty -->
+        <Delete
+            Condition="Exists('$(DirRepositoryWorkspace)')"
+            Files="$(DirRepositoryWorkspace)\**\*" />
+        <RemoveDir
+            Condition="Exists('$(DirRepositoryWorkspace)')"
+            Directories="$(DirRepositoryWorkspace)" />
         <MakeDir
-            Condition="!Exists('$(DirRepositoryWorkspace)') "
             Directories="$(DirRepositoryWorkspace)" />
 
         <!-- Clone the repository in the temporary directory -->
@@ -137,7 +139,7 @@
             Repository="$(RepositoryToPushTo)"
             Workspace="$(DirRepositoryWorkspace)" />
 
-        <!-- Verify that we're on the branch!' -->
+        <!-- Verify that we're on the branch! -->
         <GitCurrentBranch
             ErrorInformation="@(ErrorInformation)"
             GitExecutablePath="$(ToolsExternalGitPath)"
@@ -183,8 +185,14 @@
         <PropertyGroup>
             <DirBuildTempCopy>$(DirBuildTemp)\copy</DirBuildTempCopy>
         </PropertyGroup>
+
+        <!-- Make sure the directory is empty -->
+        <Delete
+            Files="$(DirBuildTempCopy)\**\*" />
+        <RemoveDir
+            Condition="Exists('$(DirBuildTempCopy)')"
+            Directories="$(DirBuildTempCopy)" />
         <MakeDir
-            Condition="!Exists('$(DirBuildTempCopy)') "
             Directories="$(DirBuildTempCopy)" />
 
         <Copy
