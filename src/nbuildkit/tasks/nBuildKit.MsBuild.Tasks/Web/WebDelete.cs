@@ -161,7 +161,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                             MessageImportance.Normal,
                             "Deleting from: {0}",
                             targetUri);
-                        var response = client.UploadFile(targetUri, "DELETE", itemPath);
+                        var response = client.DeleteFile(targetUri);
                         var responseText = System.Text.Encoding.ASCII.GetString(response);
                         Log.LogMessage(
                             MessageImportance.Normal,

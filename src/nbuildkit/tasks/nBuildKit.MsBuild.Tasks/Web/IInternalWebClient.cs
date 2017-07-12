@@ -28,6 +28,13 @@ namespace NBuildKit.MsBuild.Tasks.Web
         void DownloadFile(Uri address, string fileName);
 
         /// <summary>
+        /// Deletes the specific file from the remote file server.
+        /// </summary>
+        /// <param name="address">The URI of the resource that should be removed. For example http://localhost/samplefile.txt</param>
+        /// <returns>The response of the server.</returns>
+        byte[] DeleteFile(Uri address);
+
+        /// <summary>
         /// Uploads the specified local file to a resource with the specified URI.
         /// </summary>
         /// <param name="address">The URI of the resource to receive the file. For example, ftp://localhost/samplefile.txt.</param>

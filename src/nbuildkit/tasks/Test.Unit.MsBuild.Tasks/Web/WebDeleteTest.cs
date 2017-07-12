@@ -28,18 +28,17 @@ namespace NBuildKit.MsBuild.Tasks.Web
         [Test]
         public void Execute()
         {
-            var fileToUpload = Assembly.GetExecutingAssembly().LocalFilePath();
+            var fileToDelete = Assembly.GetExecutingAssembly().LocalFilePath();
 
             var targetUri = "http://www.example.com/mypath";
 
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
-                    .Callback<Uri, string, string>(
-                        (uri, method, path) =>
+                webClient.Setup(w => w.DeleteFile(It.IsAny<Uri>()))
+                    .Callback<Uri>(
+                        (uri) =>
                         {
-                            Assert.AreEqual(new Uri(targetUri + "/" + Path.GetFileName(path)), uri);
-                            Assert.AreEqual(fileToUpload, path);
+                            Assert.AreEqual(new Uri(targetUri + "/" + Path.GetFileName(fileToDelete)), uri);
                         })
                     .Returns(new byte[0])
                     .Verifiable();
@@ -51,14 +50,14 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             var task = new WebDelete(builder);
             task.BuildEngine = BuildEngine.Object;
-            task.Items = new ITaskItem[] { new TaskItem(fileToUpload) };
+            task.Items = new ITaskItem[] { new TaskItem(fileToDelete) };
             task.Source = new TaskItem(targetUri);
             task.UseDefaultCredentials = false;
 
             var result = task.Execute();
             Assert.IsTrue(result, "Expected the task to finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
+            webClient.Verify(w => w.DeleteFile(It.IsAny<Uri>()), Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 3);
         }
@@ -66,11 +65,11 @@ namespace NBuildKit.MsBuild.Tasks.Web
         [Test]
         public void ExecuteWithEmptyUrl()
         {
-            var fileToUpload = Assembly.GetExecutingAssembly().LocalFilePath();
+            var fileToDelete = Assembly.GetExecutingAssembly().LocalFilePath();
 
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
+                webClient.Setup(w => w.DeleteFile(It.IsAny<Uri>()))
                     .Verifiable();
             }
 
@@ -80,14 +79,14 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             var task = new WebDelete(builder);
             task.BuildEngine = BuildEngine.Object;
-            task.Items = new ITaskItem[] { new TaskItem(fileToUpload) };
+            task.Items = new ITaskItem[] { new TaskItem(fileToDelete) };
             task.Source = new TaskItem(string.Empty);
             task.UseDefaultCredentials = false;
 
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            webClient.Verify(w => w.DeleteFile(It.IsAny<Uri>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
@@ -99,7 +98,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
+                webClient.Setup(w => w.DeleteFile(It.IsAny<Uri>()))
                     .Verifiable();
             }
 
@@ -116,7 +115,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            webClient.Verify(w => w.DeleteFile(It.IsAny<Uri>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
@@ -126,7 +125,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         {
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
+                webClient.Setup(w => w.DeleteFile(It.IsAny<Uri>()))
                     .Verifiable();
             }
 
@@ -143,7 +142,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            webClient.Verify(w => w.DeleteFile(It.IsAny<Uri>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
@@ -155,7 +154,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             var webClient = new Mock<IInternalWebClient>();
             {
-                webClient.Setup(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()))
+                webClient.Setup(w => w.DeleteFile(It.IsAny<Uri>()))
                     .Verifiable();
             }
 
@@ -171,7 +170,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
-            webClient.Verify(w => w.UploadFile(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            webClient.Verify(w => w.DeleteFile(It.IsAny<Uri>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
