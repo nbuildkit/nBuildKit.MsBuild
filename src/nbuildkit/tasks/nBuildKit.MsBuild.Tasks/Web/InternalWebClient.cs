@@ -15,13 +15,20 @@ namespace NBuildKit.MsBuild.Tasks.Web
     /// </summary>
     internal class InternalWebClient : WebClient, IInternalWebClient, IDisposable
     {
+        private readonly bool _forUploads;
+
+        public InternalWebClient(bool forUploads = false)
+        {
+            _forUploads = forUploads;
+        }
+
         protected override WebRequest GetWebRequest(Uri uri)
         {
             var webRequest = base.GetWebRequest(uri);
             webRequest.Timeout = 20 * 60 * 1000;
 
             var httpRequest = webRequest as HttpWebRequest;
-            if (httpRequest != null)
+            if ((httpRequest != null) && _forUploads)
             {
                 httpRequest.SendChunked = true;
                 httpRequest.AllowWriteStreamBuffering = false;

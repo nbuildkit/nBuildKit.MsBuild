@@ -31,7 +31,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         /// Initializes a new instance of the <see cref="WebUpload"/> class.
         /// </summary>
         public WebUpload()
-            : this(() => new InternalWebClient())
+            : this(() => new InternalWebClient(true))
         {
         }
 
