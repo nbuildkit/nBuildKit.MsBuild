@@ -45,7 +45,13 @@
         <!--
         <HttpFilesToCopy Include="">
             <Destination></Destination>
+            <GpgKey></GpgKey>
+            <Hash></Hash>
+            <HashAlgorithm></HashAlgorithm>
+            <HashFile></HashFile>
+            <Name></Name>
             <Password></Password>
+            <SignatureFile></SignatureFile>
             <UseDefaultCredentials></UseDefaultCredentials>
             <UserName></UserName>
             <Unzip></Unzip>
@@ -63,6 +69,11 @@
         <!--
         <ArchiveFilesToCopy Include="">
             <Destination></Destination>
+            <GpgKey></GpgKey>
+            <Hash></Hash>
+            <HashAlgorithm></HashAlgorithm>
+            <HashFile></HashFile>
+            <SignatureFile></SignatureFile>
         </ArchiveFilesToCopy>
         -->
     </ItemGroup>
@@ -212,56 +223,68 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadTestStepsToExecute)' == 'true' ">
         <TestStepsToExecute Include="$(TestStepsPrepareWorkspace)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 clean;
                 prepare;
                 prepare.clean;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareWorkspace</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsBuildTargetsAssembly)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.bootstrap;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsBuildTargetsAssembly</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </TestStepsToExecute>
         <TestStepsToExecute Include="$(TestStepsGenerateTargetsFile)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.bootstrap;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsGenerateTargetsFile</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsPrepareRestoreNuGet)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.restore;
                 prepare.restore.nuget;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareRestoreNuGet</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </TestStepsToExecute>
 
         <!--
@@ -269,151 +292,184 @@
             building.
         -->
         <TestStepsToExecute Include="$(TestStepsPrepareVcsBranch)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.buildserver;
                 prepare.buildserver.vcssetbranch;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareVcsBranch</Id>
             <PostSteps>
             </PostSteps>
-        </TestStepsToExecute>
-        <TestStepsToExecute Include="$(TestStepsPrepareVcsInfo)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareVcsInfo)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.get;
                 prepare.get.vcsinfo;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareVcsInfo</Id>
             <PostSteps>
             </PostSteps>
-        </TestStepsToExecute>
-        <TestStepsToExecute Include="$(TestStepsPrepareGetIssueIds)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareGetIssueIds)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.get;
                 prepare.get.issueids;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareGetIssueIds</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsPrepareGetVersion)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.get;
                 prepare.get.version;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareGetVersion</Id>
             <PostSteps>
             </PostSteps>
-        </TestStepsToExecute>
-        <TestStepsToExecute Include="$(TestStepsPrepareReleaseNotes)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareReleaseNotes)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.get;
                 prepare.get.releasenotes;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareReleaseNotes</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsPrepareCopyNuGet)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.copy;
                 prepare.copy.nuget;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareCopyNuGet</Id>
             <PostSteps>
             </PostSteps>
-        </TestStepsToExecute>
-        <TestStepsToExecute Include="$(TestStepsPrepareCopyHttp)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyHttp)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.copy;
                 prepare.copy.url;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareCopyHttp</Id>
             <PostSteps>
             </PostSteps>
-        </TestStepsToExecute>
-        <TestStepsToExecute Include="$(TestStepsPrepareCopyFiles)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyFiles)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.copy;
                 prepare.copy.files;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareCopyFiles</Id>
             <PostSteps>
             </PostSteps>
-        </TestStepsToExecute>
-        <TestStepsToExecute Include="$(TestStepsPrepareCopyArchive)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyArchive)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.copy;
                 prepare.copy.archive;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareCopyArchive</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.generate;
                 prepare.generate.files;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsPrepareGenerateFiles</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </TestStepsToExecute>
 
         <TestStepsToExecute Include="$(TestStepsIntegrationPester)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 test;
                 test.pester;
                 test.pester.integration;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>TestStepsIntegrationPester</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </TestStepsToExecute>
     </ItemGroup>
 

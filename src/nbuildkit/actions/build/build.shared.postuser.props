@@ -83,7 +83,12 @@
         <!--
         <HttpFilesToCopy Include="">
             <Destination></Destination>
+            <GpgKey></GpgKey>
+            <Hash></Hash>
+            <HashAlgorithm></HashAlgorithm>
+            <HashFile></HashFile>
             <Password></Password>
+            <SignatureFile></SignatureFile>
             <UseDefaultCredentials></UseDefaultCredentials>
             <UserName></UserName>
             <Unzip></Unzip>
@@ -101,7 +106,37 @@
         <!--
         <ArchiveFilesToCopy Include="">
             <Destination></Destination>
+            <GpgKey></GpgKey>
+            <Hash></Hash>
+            <HashAlgorithm></HashAlgorithm>
+            <HashFile></HashFile>
+            <SignatureFile></SignatureFile>
         </ArchiveFilesToCopy>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - CALCULATE HASHES ****
+    -->
+    <!--
+        The collection of files for which the hashes need to be calculated. The available hash algorithms
+        are:
+
+        - MD5
+        - SHA1
+        - SHA256
+        - SHA384
+        - SHA512
+
+        Hash values are stored in a file in the temp directory and can be retrieved with the
+        'ReadHashFromFile' task
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadFilesToHash)' == 'true' AND '@(FilesToHash)' == '' ">
+        <!-->
+        <FilesToHash Include="">
+            <Algorithm></Algorithm>
+        </FilesToHash>
         -->
     </ItemGroup>
 
@@ -346,19 +381,22 @@
 
     <ItemGroup Condition=" '$(ShouldLoadBuildStepsToExecute)' == 'true' AND '@(BuildStepsToExecute)' == '' ">
         <BuildStepsToExecute Include="$(BuildStepsShowHelp)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
+            <Groups>
+                Help;
+            </Groups>
+            <Id>build.help</Id>
+            <PostSteps>
+            </PostSteps>
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importbuildsharedsettings.props;
                 HelpFileSettings=build.settings.props;
                 HelpProcess=build;
                 HelpStepGroup=BuildStepsToExecute;
             </Properties>
-            <Groups>
-                Help;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
         </BuildStepsToExecute>
     </ItemGroup>
 

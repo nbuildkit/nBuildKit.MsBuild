@@ -59,7 +59,7 @@
         ${DirLogs}                 - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
         ${DirSrc}                  - The full path to the directory that contains the source files, e.g. c:\myproject\src
         ${DirTemp}                 - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
-        ${DirTest}                 - The full path to the directory that contains the test files, e.g. c:\myproject\tests
+        ${DirTests}                 - The full path to the directory that contains the test files, e.g. c:\myproject\tests
 
         ${DirNBuildKit}            - The full path to the directory that contains the nBuildKit scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build
         ${DirNBuildKitExtensions}  - The full path to the directory that contains the nBuildKit extension scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\extensions
@@ -307,7 +307,7 @@
         <!-- <DirBuildTemp>$(DirBuild)\temp</DirBuildTemp> -->
 
         <!-- The directory that will contain all the test files generated during the test process -->
-        <!-- <DirBuildTest>$(DirBuild)\tests</DirBuildTest> -->
+        <!-- <DirBuildTests>$(DirBuild)\tests</DirBuildTests> -->
 
         <!-- The directory that contains all the NuGet packages for the project -->
         <!-- <DirPackages>$(DirWorkspace)\packages</DirPackages> -->
@@ -319,7 +319,7 @@
         <!-- <DirTemplates>$(DirWorkspace)\templates</DirTemplates> -->
 
         <!-- The directory that contains all the test files for the project -->
-        <!-- <DirTest>$(DirWorkspace)\tests</DirTest> -->
+        <!-- <DirTests>$(DirWorkspace)\tests</DirTests> -->
     </PropertyGroup>
 
     <!--
@@ -342,6 +342,16 @@
             workflow is being used.
         -->
         <!-- <IsGitFlow>UNDEFINED</IsGitFlow> -->
+    </PropertyGroup>
+
+    <!--
+        Security
+    -->
+    <PropertyGroup>
+        <!--
+            The GPG key server that will be used to pull GPG keys from.
+        -->
+        <!-- <GpgKeyServer>pgp.mit.edu</GpgKeyServer> -->
     </PropertyGroup>
 
 

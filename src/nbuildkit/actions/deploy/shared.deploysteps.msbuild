@@ -18,14 +18,18 @@
         <DeployStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
         <DeployStepsRestoreNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.nuget.restore.msbuild</DeployStepsRestoreNuGet>
 
+        <DeployStepsPrepareReleaseNotes>$(MSBuildThisFileDirectory)..\shared.prepare.gatherreleasenotes.msbuild</DeployStepsPrepareReleaseNotes>
+
         <DeployStepsPrepareCopyNuGet>$(MSBuildThisFileDirectory)..\shared.prepare.copy.nuget.msbuild</DeployStepsPrepareCopyNuGet>
         <DeployStepsPrepareCopyHttp>$(MSBuildThisFileDirectory)..\shared.prepare.copy.http.msbuild</DeployStepsPrepareCopyHttp>
         <DeployStepsPrepareCopyFiles>$(MSBuildThisFileDirectory)..\shared.prepare.copy.file.msbuild</DeployStepsPrepareCopyFiles>
         <DeployStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</DeployStepsPrepareCopyArchive>
+        <DeployStepsPrepareFileHashes>$(MSBuildThisFileDirectory)..\shared.prepare.getfilehashes.msbuild</DeployStepsPrepareFileHashes>
 
         <DeployStepsPushToTags>$(MSBuildThisFileDirectory)deploy.pushto.tags.msbuild</DeployStepsPushToTags>
         <DeployStepsPushToNuget>$(MSBuildThisFileDirectory)deploy.pushto.nugetfeed.msbuild</DeployStepsPushToNuget>
         <DeployStepsPushToDirectory>$(MSBuildThisFileDirectory)deploy.pushto.directory.msbuild</DeployStepsPushToDirectory>
+        <DeployStepsPushToHttp>$(MSBuildThisFileDirectory)deploy.pushto.http.msbuild</DeployStepsPushToHttp>
         <DeployStepsPushToSymbolServer>$(MSBuildThisFileDirectory)deploy.pushto.symbolserver.msbuild</DeployStepsPushToSymbolServer>
         <DeployStepsPushToGitHubRelease>$(MSBuildThisFileDirectory)deploy.pushto.githubrelease.msbuild</DeployStepsPushToGitHubRelease>
         <DeployStepsPushToGitBranch>$(MSBuildThisFileDirectory)deploy.pushto.gitbranch.msbuild</DeployStepsPushToGitBranch>
@@ -88,6 +92,14 @@
             <Name>Deploy - restore NuGet packages</Name>
             <Path>$(DeployStepsRestoreNuGet)</Path>
         </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareReleaseNotes)'))">
+            <Description>
+                Gathers the release notes and stores them for later use during the deploy process.
+            </Description>
+            <Id>DeployStepsPrepareReleaseNotes</Id>
+            <Name>Deploy - gather release notes</Name>
+            <Path>$(DeployStepsPrepareReleaseNotes)</Path>
+        </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareCopyNuGet)'))">
             <Description>
                 Copies one or more files from a NuGet package.
@@ -120,6 +132,14 @@
             <Name>Deploy - copy archive</Name>
             <Path>$(DeployStepsPrepareCopyArchive)</Path>
         </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareFileHashes)'))">
+            <Description>
+                Calculate the hash of one or more files.
+            </Description>
+            <Id>DeployStepsPrepareFileHashes</Id>
+            <Name>Deploy - calculate file hashes</Name>
+            <Path>$(DeployStepsPrepareFileHashes)</Path>
+        </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToTags)'))">
             <Description>
                 Pushes the tags to a remote git repository
@@ -143,6 +163,14 @@
             <Id>DeployStepsPushToDirectory</Id>
             <Name>Deploy - copy artefacts to a directory</Name>
             <Path>$(DeployStepsPushToDirectory)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToHttp)'))">
+            <Description>
+                Pushes one or more artifacts to a web server
+            </Description>
+            <Id>DeployStepsPushToHttp</Id>
+            <Name>Deploy - copy artefacts to a web server</Name>
+            <Path>$(DeployStepsPushToHttp)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPushToSymbolServer)'))">
             <Description>

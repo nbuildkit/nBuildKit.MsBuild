@@ -320,15 +320,9 @@
         <!--<DirBuildTemp>$(DirBuild)\temp</DirBuildTemp>-->
 
         <!-- The directory that will contain all the test files generated during the test process -->
-        <!-- <DirBuildTest>$(DirBuild)\tests</DirBuildTest> -->
+        <!-- <DirBuildTests>$(DirBuild)\tests</DirBuildTests> -->
 
-        <DirBuildTestLatest>$(DirBuildTest)\latest</DirBuildTestLatest>
-        <DirBuildTestLatestCSharp>$(DirBuildTestLatest)\csharp</DirBuildTestLatestCSharp>
-        <DirBuildTestLatestVbNet>$(DirBuildTestLatest)\vbnet</DirBuildTestLatestVbNet>
-
-        <DirBuildTestOldest>$(DirBuildTest)\oldest</DirBuildTestOldest>
-        <DirBuildTestOldestCSharp>$(DirBuildTestOldest)\csharp</DirBuildTestOldestCSharp>
-        <DirBuildTestOldestVbNet>$(DirBuildTestOldest)\vbnet</DirBuildTestOldestVbNet>
+        <DirBuildTestIntegration>$(DirBuildTests)\integration</DirBuildTestIntegration>
 
         <!-- The directory that contains all the NuGet packages for the project -->
         <!-- <DirPackages>$(DirWorkspace)\packages</DirPackages> -->
@@ -363,6 +357,16 @@
             workflow is being used.
         -->
         <IsGitFlow>true</IsGitFlow>
+    </PropertyGroup>
+
+    <!--
+        Security
+    -->
+    <PropertyGroup>
+        <!--
+            The GPG key server that will be used to pull GPG keys from.
+        -->
+        <!-- <GpgKeyServer>pgp.mit.edu</GpgKeyServer> -->
     </PropertyGroup>
 
 

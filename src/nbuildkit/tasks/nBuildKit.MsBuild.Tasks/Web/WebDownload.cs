@@ -23,6 +23,33 @@ namespace NBuildKit.MsBuild.Tasks.Web
         private const string ErrorIdUrlInvalid = "NBuildKit.WebDownload.UrlInvalid";
         private const string ErrorIdUrlMissing = "NBuildKit.WebDownload.UrlMissing";
 
+        private readonly Func<IInternalWebClient> _webClientBuilder;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebDownload"/> class.
+        /// </summary>
+        public WebDownload()
+            : this(() => new InternalWebClient())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebDownload"/> class.
+        /// </summary>
+        /// <param name="builder">The function that creates <see cref="IInternalWebClient"/> instances.</param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if <paramref name="builder"/> is <see langword="null"/>.
+        /// </exception>
+        public WebDownload(Func<IInternalWebClient> builder)
+        {
+            if (ReferenceEquals(builder, null))
+            {
+                throw new ArgumentNullException("builder");
+            }
+
+            _webClientBuilder = builder;
+        }
+
         /// <summary>
         /// Gets or sets the directory into which the file should be placed.
         /// </summary>
@@ -123,11 +150,28 @@ namespace NBuildKit.MsBuild.Tasks.Web
                 Directory.CreateDirectory(destinationDirectory);
             }
 
-            var fileName = Path.GetFileName(source.AbsolutePath);
+            var fileName = !string.IsNullOrWhiteSpace(Name) ? Name : Path.GetFileName(source.AbsolutePath);
             var targetPath = Path.Combine(destinationDirectory, fileName);
 
-            using (var client = new WebClient())
+            // Make sure that we can establish secure connections. See here: https://stackoverflow.com/a/37572417/539846
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            using (var client = _webClientBuilder())
             {
+                if (ReferenceEquals(client, null))
+                {
+                    Log.LogError(
+                        string.Empty,
+                        ErrorCodeById(ErrorIdFailed),
+                        ErrorIdFailed,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "Failed to create a new client instance.");
+                    return false;
+                }
+
                 client.Credentials = GetConfiguredCredentials();
                 try
                 {
@@ -176,6 +220,15 @@ namespace NBuildKit.MsBuild.Tasks.Web
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets or sets the optional name of the file in the local file system.
+        /// </summary>
+        public string Name
+        {
+            get;
+            set;
         }
 
         /// <summary>

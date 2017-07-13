@@ -18,7 +18,13 @@
         <!--
         <HttpFilesToCopy Include="">
             <Destination></Destination>
+            <GpgKey></GpgKey>
+            <Hash></Hash>
+            <HashAlgorithm></HashAlgorithm>
+            <HashFile></HashFile>
+            <Name></Name>
             <Password></Password>
+            <SignatureFile></SignatureFile>
             <UseDefaultCredentials></UseDefaultCredentials>
             <UserName></UserName>
             <Unzip></Unzip>
@@ -36,6 +42,11 @@
         <!--
         <ArchiveFilesToCopy Include="">
             <Destination></Destination>
+            <GpgKey></GpgKey>
+            <Hash></Hash>
+            <HashAlgorithm></HashAlgorithm>
+            <HashFile></HashFile>
+            <SignatureFile></SignatureFile>
         </ArchiveFilesToCopy>
         -->
     </ItemGroup>
@@ -61,6 +72,34 @@
             <ExcludedFiles>
             </ExcludedFiles>
         </PushToDirectorySpecs>-->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - HTTP / FTP SERVER ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a given HTTP or FTP server.
+
+        The IncludedFiles and the ExcludedFiles are lists of files that
+        should be included (or excluded) in the list of files to deploy. Each entry is separated by a semi-colon(;).
+
+        The PushToWebSpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates,
+        e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadPushToWebSpecs)' == 'true' ">
+        <!--
+        <PushToWebSpecs Include="http://myserver/${ProductNameInFilePath}/${VersionSemantic}">
+            <IncludedFiles>
+                $(DirBuildDeploy)\myfile.zip
+            </IncludedFiles>
+            <ExcludedFiles>
+            </ExcludedFiles>
+            <Password></Password>
+            <UseDefaultCredentials></UseDefaultCredentials>
+            <UserName></UserName>
+        </PushToWebSpecs>
+        -->
     </ItemGroup>
 
 
@@ -272,42 +311,51 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadDeployStepsToExecute)' == 'true' ">
         <DeployStepsToExecute Include="$(DeployStepsBuildTargetsAssembly)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.bootstrap;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsBuildTargetsAssembly</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsGenerateTargetsFile)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.bootstrap;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsGenerateTargetsFile</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </DeployStepsToExecute>
 
         <DeployStepsToExecute Include="$(DeployStepsRestoreNuGet)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.restore;
                 prepare.restore.nuget;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsRestoreNuGet</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </DeployStepsToExecute>
 
         <!--
@@ -315,30 +363,36 @@
             building.
         -->
         <DeployStepsToExecute Include="$(DeployStepsPrepareVcsBranch)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.buildserver;
                 prepare.buildserver.vcssetbranch;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPrepareVcsBranch</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.get;
                 prepare.get.issueids;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPrepareGetIssueIds</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </DeployStepsToExecute>
 
         <!--
@@ -346,184 +400,240 @@
             build on because we might have done some merging / restoring from a different repository.
         -->
         <DeployStepsToExecute Include="$(DeployStepsPrepareGetVersion)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.get;
                 prepare.get.version;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPrepareGetVersion</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsPrepareTagVcs)">
-            <Properties>
-                Configuration=$(ProductionConfiguration);
-                Platform=$(Platform);
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.vcs;
                 prepare.vcs.tag;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPrepareTagVcs</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
         </DeployStepsToExecute>
 
         <DeployStepsToExecute Include="$(DeployStepsPrepareCopyNuGet)">
-            <Properties>
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.copy;
                 prepare.copy.nuget;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPrepareCopyNuGet</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyHttp)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyHttp)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.copy;
                 prepare.copy.url;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPrepareCopyHttp</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyFiles)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyFiles)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.copy;
                 prepare.copy.files;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPrepareCopyFiles</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyArchive)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
             </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareCopyArchive)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 prepare;
                 prepare.copy;
                 prepare.copy.archive;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPrepareCopyArchive</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
         </DeployStepsToExecute>
 
         <DeployStepsToExecute Include="$(DeployStepsPushToTags)">
-            <Properties>
-                Configuration=$(ProductionConfiguration);
-                Platform=$(Platform);
-            </Properties>
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 deploy;
                 deploy.vcs.tags;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPushToTags</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPushToNuget)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
-            <Groups>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToNuget)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
+             <Groups>
                 deploy;
                 deploy.package.nuget;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPushToNuget</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPushToDirectory)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToDirectory)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 deploy;
                 deploy.package.directory;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPushToDirectory</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPushToSymbolServer)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToHttp)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
+            <Groups>
+                deploy;
+                deploy.package.http;
+            </Groups>
+            <Id>DeployStepsPushToHttp</Id>
+            <PostSteps>
+            </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToSymbolServer)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 deploy;
                 deploy.package.symbols;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPushToSymbolServer</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPushToGitHubRelease)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitHubRelease)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 deploy;
                 deploy.github;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPushToGitHubRelease</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitBranch)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 deploy;
                 deploy.vcs.git.branch;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPushToGitBranch</Id>
             <PostSteps>
             </PostSteps>
-        </DeployStepsToExecute>
-        <DeployStepsToExecute Include="$(DeployStepsPushToGitRepository)">
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform);
             </Properties>
+        </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPushToGitRepository)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
             <Groups>
                 deploy;
                 deploy.vcs.git.repository;
             </Groups>
-            <PreSteps>
-            </PreSteps>
+            <Id>DeployStepsPushToGitRepository</Id>
             <PostSteps>
             </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform);
+            </Properties>
         </DeployStepsToExecute>
     </ItemGroup>
 

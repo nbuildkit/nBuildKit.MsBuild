@@ -59,7 +59,7 @@
         ${DirLogs}                 - The full path to the directory that contain the build logs, e.g. c:\myproject\build\logs
         ${DirSrc}                  - The full path to the directory that contains the source files, e.g. c:\myproject\src
         ${DirTemp}                 - The full path to the directory that contains the temporary build files, e.g c:\myproject\build\temp
-        ${DirTest}                 - The full path to the directory that contains the test files, e.g. c:\myproject\tests
+        ${DirTests}                 - The full path to the directory that contains the test files, e.g. c:\myproject\tests
 
         ${DirNBuildKit}            - The full path to the directory that contains the nBuildKit scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build
         ${DirNBuildKitExtensions}  - The full path to the directory that contains the nBuildKit extension scripts, e.g. c:\myproject\packages\nbuildkit.msbuild.0.1.0\build\extensions
@@ -235,7 +235,7 @@
         <DirBuildTemp Condition=" '$(DirBuildTemp)' == '' ">$(DirBuild)\temp</DirBuildTemp>
 
         <!-- The directory that will contain all the test files generated during the test process -->
-        <DirBuildTest Condition=" '$(DirBuildTest)' == '' ">$(DirBuild)\tests</DirBuildTest>
+        <DirBuildTests Condition=" '$(DirBuildTests)' == '' ">$(DirBuild)\tests</DirBuildTests>
 
         <!-- The directory that contains the documentation files -->
         <DirDoc Condition=" '$(DirDoc)' == '' ">$(DirWorkspace)\doc</DirDoc>
@@ -252,8 +252,8 @@
         <!-- The directory that contains the template files for the project -->
         <DirTemplates Condition=" '$(DirTemplates)' == '' ">$(DirWorkspace)\templates</DirTemplates>
 
-        <!-- The directory that contains all the test files for the project -->
-        <DirTest Condition=" '$(DirTest)' == '' ">$(DirWorkspace)\tests</DirTest>
+        <!-- The directories that contains all the test files for the project -->
+        <DirTests Condition=" '$(DirTests)' == '' ">$(DirWorkspace)\tests</DirTests>
 
         <!-- The directory in which the transformed user configuration files will be stored while running nBuildKit. -->
         <DirUserConfiguration Condition=" '$(DirUserConfiguration)' == '' ">$(DirWorkspace)\build\configurations</DirUserConfiguration>
@@ -282,6 +282,47 @@
             workflow is being used.
         -->
         <IsGitFlow Condition=" '$(IsGitFlow)' == '' ">UNDEFINED</IsGitFlow>
+    </PropertyGroup>
+
+    <!--
+        Security
+    -->
+    <PropertyGroup>
+        <!--
+            The GPG key server that will be used to pull GPG keys from.
+        -->
+        <GpgKeyServer Condition=" '$(GpgKeyServer)' == '' ">pgp.mit.edu</GpgKeyServer>
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - MERGE ****
+    -->
+    <PropertyGroup>
+        <!--
+            The flag that indicates if the input branch is a Git master branch.
+        -->
+        <IsMasterBranch Condition=" '$(IsMasterBranch)' == '' AND '$(IsGitWorkspace)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(master)%24'))</IsMasterBranch>
+
+        <!--
+            The flag that indicates if the input branch is a Git develop branch.
+        -->
+        <IsDevelopBranch Condition=" '$(IsDevelopBranch)' == '' AND '$(IsGitWorkspace)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(develop)%24'))</IsDevelopBranch>
+
+        <!--
+            The flag that indicates if the input branch is a GitFlow feature branch.
+        -->
+        <IsFeatureBranch Condition=" '$(IsFeatureBranch)' == '' AND '$(IsGitWorkspace)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(feature\/).*'))</IsFeatureBranch>
+
+        <!--
+            The flag that indicates if the input branch is a GitFlow release branch.
+        -->
+        <IsReleaseBranch Condition=" '$(IsReleaseBranch)' == '' AND '$(IsGitWorkspace)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(release\/).*'))</IsReleaseBranch>
+
+        <!--
+            The flag that indicates if the input branch is a GitFlow hotfix branch.
+        -->
+        <IsHotfixBranch Condition=" '$(IsHotfixBranch)' == '' AND '$(IsGitWorkspace)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '^(hotfix\/).*'))</IsHotfixBranch>
     </PropertyGroup>
 
 
@@ -503,7 +544,13 @@
             The full path and version of the GitVersion command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath>
-        <ToolsExternalGitVersionVersion Condition=" '$(ToolsExternalGitVersionVersion)' == '' ">3.6.4</ToolsExternalGitVersionVersion>
+        <ToolsExternalGitVersionVersion Condition=" '$(ToolsExternalGitVersionVersion)' == '' ">4.0.0-beta0012</ToolsExternalGitVersionVersion>
+
+        <!--
+            The full path and version of the GPG command line executable. If not defined the packages directory is searched.
+        -->
+        <ToolsExternalGpgPath Condition=" '$(ToolsExternalGpgPath)' == '' ">UNDEFINED</ToolsExternalGpgPath>
+        <ToolsExternalGpgVersion Condition=" '$(ToolsExternalGpgVersion)' == '' ">2.1.18</ToolsExternalGpgVersion>
 
         <!--
             The full path and version of the Node.js command line executable. If not defined the packages directory is searched.

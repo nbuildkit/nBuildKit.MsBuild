@@ -18,7 +18,12 @@
         <!--
         <HttpFilesToCopy Include="">
             <Destination></Destination>
+            <GpgKey></GpgKey>
+            <Hash></Hash>
+            <HashAlgorithm></HashAlgorithm>
+            <HashFile></HashFile>
             <Password></Password>
+            <SignatureFile></SignatureFile>
             <UseDefaultCredentials></UseDefaultCredentials>
             <UserName></UserName>
             <Unzip></Unzip>
@@ -36,7 +41,37 @@
         <!--
         <ArchiveFilesToCopy Include="">
             <Destination></Destination>
+            <GpgKey></GpgKey>
+            <Hash></Hash>
+            <HashAlgorithm></HashAlgorithm>
+            <HashFile></HashFile>
+            <SignatureFile></SignatureFile>
         </ArchiveFilesToCopy>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - CALCULATE HASHES ****
+    -->
+    <!--
+        The collection of files for which the hashes need to be calculated. The available hash algorithms
+        are:
+
+        - MD5
+        - SHA1
+        - SHA256
+        - SHA384
+        - SHA512
+
+        Hash values are stored in a file in the temp directory and can be retrieved with the
+        'ReadHashFromFile' task
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadFilesToHash)' == 'true' AND '@(FilesToHash)' == '' ">
+        <!-->
+        <FilesToHash Include="">
+            <Algorithm></Algorithm>
+        </FilesToHash>
         -->
     </ItemGroup>
 
@@ -62,6 +97,34 @@
             <ExcludedFiles>
             </ExcludedFiles>
         </PushToDirectorySpecs>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PUSHTO - HTTP / FTP SERVER ****
+    -->
+    <!--
+        The ItemGroup defining the files that should be pushed to a given HTTP or FTP server.
+
+        The IncludedFiles and the ExcludedFiles are lists of files that
+        should be included (or excluded) in the list of files to deploy. Each entry is separated by a semi-colon(;).
+
+        The PushToWebSpecs, IncludedFiles and ExcludedFiles all allow the insertion of build templates,
+        e.g. \\MyServer\${ProductNameInFilePath}\${VersionSemantic}
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadPushToWebSpecs)' == 'true' AND '@(PushToWebSpecs)' == '' ">
+        <!--
+        <PushToWebSpecs Include="http://myserver/${ProductNameInFilePath}/${VersionSemantic}">
+            <IncludedFiles>
+                $(DirBuildDeploy)\myfile.zip
+            </IncludedFiles>
+            <ExcludedFiles>
+            </ExcludedFiles>
+            <Password></Password>
+            <UseDefaultCredentials></UseDefaultCredentials>
+            <UserName></UserName>
+        </PushToWebSpecs>
         -->
     </ItemGroup>
 
@@ -177,19 +240,22 @@
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadDeployStepsToExecute)' == 'true' AND '@(DeployStepsToExecute)' == '' ">
         <DeployStepsToExecute Include="$(DeployStepsShowHelp)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
+            <Groups>
+                Help;
+            </Groups>
+            <Id>deploy.help</Id>
+            <PostSteps>
+            </PostSteps>
+            <PreSteps>
+            </PreSteps>
             <Properties>
                 HelpFilePathSharedSettings=$(DirNBuildKitMsBuildActions)\shared.importdeploysharedsettings.props;
                 HelpFileSettings=deploy.settings.props;
                 HelpProcess=deploy;
                 HelpStepGroup=DeployStepsToExecute;
             </Properties>
-            <Groups>
-                Help;
-            </Groups>
-            <PreSteps>
-            </PreSteps>
-            <PostSteps>
-            </PostSteps>
         </DeployStepsToExecute>
     </ItemGroup>
 

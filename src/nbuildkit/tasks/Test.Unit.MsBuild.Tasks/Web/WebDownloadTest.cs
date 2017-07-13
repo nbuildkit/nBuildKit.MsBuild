@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using Microsoft.Build.Utilities;
+using Moq;
 using NBuildKit.MsBuild.Tasks.Tests;
 using Nuclei;
 using NUnit.Framework;
@@ -29,12 +30,28 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var baseDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
             var targetDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
 
+            var targetUri = "http://www.example.com/default.aspx";
+
+            var webClient = new Mock<IInternalWebClient>();
+            {
+                webClient.Setup(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                    .Callback<Uri, string>(
+                        (uri, path) =>
+                        {
+                            Assert.AreEqual(new Uri(targetUri), uri);
+                            Assert.AreEqual(Path.Combine(targetDirectory, "default.aspx"), path);
+                        })
+                    .Verifiable();
+            }
+
+            Func<IInternalWebClient> builder = () => webClient.Object;
+
             InitializeBuildEngine();
 
-            var task = new WebDownload();
+            var task = new WebDownload(builder);
             task.BuildEngine = BuildEngine.Object;
             task.DestinationDirectory = new TaskItem(targetDirectory);
-            task.Source = new TaskItem("http://www.microsoft.com/default.aspx");
+            task.Source = new TaskItem(targetUri);
             task.UseDefaultCredentials = false;
 
             var result = task.Execute();
@@ -42,9 +59,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             Assert.IsTrue(Directory.Exists(targetDirectory), "Expected the task to create the target directory");
 
-            var file = Path.Combine(targetDirectory, "default.aspx");
-            Assert.IsTrue(File.Exists(file), "Expected the task to download the file");
-            Assert.Greater(new FileInfo(file).Length, 0);
+            webClient.Verify(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Once());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 2);
         }
@@ -55,18 +70,27 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var baseDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
             var targetDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
 
+            var webClient = new Mock<IInternalWebClient>();
+            {
+                webClient.Setup(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                    .Verifiable();
+            }
+
+            Func<IInternalWebClient> builder = () => webClient.Object;
+
             InitializeBuildEngine();
 
-            var task = new WebDownload();
+            var task = new WebDownload(builder);
             task.BuildEngine = BuildEngine.Object;
             task.DestinationDirectory = new TaskItem(string.Empty);
-            task.Source = new TaskItem("http://www.microsoft.com/default.aspx");
+            task.Source = new TaskItem("http://www.example.com/default.aspx");
             task.UseDefaultCredentials = false;
 
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
             Assert.IsFalse(Directory.Exists(targetDirectory), "Expected the task to not create the target directory");
+            webClient.Verify(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
@@ -77,9 +101,17 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var baseDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
             var targetDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
 
+            var webClient = new Mock<IInternalWebClient>();
+            {
+                webClient.Setup(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                    .Verifiable();
+            }
+
+            Func<IInternalWebClient> builder = () => webClient.Object;
+
             InitializeBuildEngine();
 
-            var task = new WebDownload();
+            var task = new WebDownload(builder);
             task.BuildEngine = BuildEngine.Object;
             task.DestinationDirectory = new TaskItem(targetDirectory);
             task.Source = new TaskItem(string.Empty);
@@ -89,6 +121,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
             Assert.IsFalse(Directory.Exists(targetDirectory), "Expected the task to not create the target directory");
+            webClient.Verify(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
@@ -99,9 +132,17 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var baseDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
             var targetDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
 
+            var webClient = new Mock<IInternalWebClient>();
+            {
+                webClient.Setup(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                    .Verifiable();
+            }
+
+            Func<IInternalWebClient> builder = () => webClient.Object;
+
             InitializeBuildEngine();
 
-            var task = new WebDownload();
+            var task = new WebDownload(builder);
             task.BuildEngine = BuildEngine.Object;
             task.DestinationDirectory = new TaskItem(targetDirectory);
             task.Source = new TaskItem("this is not a valid URL");
@@ -111,8 +152,51 @@ namespace NBuildKit.MsBuild.Tasks.Web
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
             Assert.IsFalse(Directory.Exists(targetDirectory), "Expected the task to not create the target directory");
+            webClient.Verify(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
+        }
+
+        [Test]
+        public void ExecuteWithName()
+        {
+            var baseDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var targetDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
+
+            var targetUri = "http://www.example.com/default.aspx";
+            var fileName = "not_the_original_name.aspx";
+
+            var webClient = new Mock<IInternalWebClient>();
+            {
+                webClient.Setup(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                    .Callback<Uri, string>(
+                        (uri, path) =>
+                        {
+                            Assert.AreEqual(new Uri(targetUri), uri);
+                            Assert.AreEqual(Path.Combine(targetDirectory, fileName), path);
+                        })
+                    .Verifiable();
+            }
+
+            Func<IInternalWebClient> builder = () => webClient.Object;
+
+            InitializeBuildEngine();
+
+            var task = new WebDownload(builder);
+            task.BuildEngine = BuildEngine.Object;
+            task.DestinationDirectory = new TaskItem(targetDirectory);
+            task.Name = fileName;
+            task.Source = new TaskItem(targetUri);
+            task.UseDefaultCredentials = false;
+
+            var result = task.Execute();
+            Assert.IsTrue(result, "Expected the task to finish successfully");
+
+            Assert.IsTrue(Directory.Exists(targetDirectory), "Expected the task to create the target directory");
+
+            webClient.Verify(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Once());
+
+            VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 2);
         }
 
         [Test]
@@ -121,17 +205,26 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var baseDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
             var targetDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
 
+            var webClient = new Mock<IInternalWebClient>();
+            {
+                webClient.Setup(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                    .Verifiable();
+            }
+
+            Func<IInternalWebClient> builder = () => webClient.Object;
+
             InitializeBuildEngine();
 
-            var task = new WebDownload();
+            var task = new WebDownload(builder);
             task.BuildEngine = BuildEngine.Object;
-            task.Source = new TaskItem("http://www.microsoft.com/default.aspx");
+            task.Source = new TaskItem("http://www.example.com/default.aspx");
             task.UseDefaultCredentials = false;
 
             var result = task.Execute();
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
             Assert.IsFalse(Directory.Exists(targetDirectory), "Expected the task to not create the target directory");
+            webClient.Verify(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }
@@ -142,9 +235,17 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var baseDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
             var targetDirectory = Path.Combine(baseDirectory, Guid.NewGuid().ToString());
 
+            var webClient = new Mock<IInternalWebClient>();
+            {
+                webClient.Setup(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()))
+                    .Verifiable();
+            }
+
+            Func<IInternalWebClient> builder = () => webClient.Object;
+
             InitializeBuildEngine();
 
-            var task = new WebDownload();
+            var task = new WebDownload(builder);
             task.BuildEngine = BuildEngine.Object;
             task.DestinationDirectory = new TaskItem(targetDirectory);
             task.UseDefaultCredentials = false;
@@ -153,6 +254,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             Assert.IsFalse(result, "Expected the task to not finish successfully");
 
             Assert.IsFalse(Directory.Exists(targetDirectory), "Expected the task to not create the target directory");
+            webClient.Verify(w => w.DownloadFile(It.IsAny<Uri>(), It.IsAny<string>()), Times.Never());
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 1, numberOfWarningMessages: 0, numberOfNormalMessages: 0);
         }

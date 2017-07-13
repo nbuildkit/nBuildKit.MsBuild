@@ -26,7 +26,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         }
 
         /// <summary>
-        /// Invokes the GIT command line tool with the given arguments in the provided workspace directory.
+        /// Invokes the NuGet command line tool with the given arguments in the provided workspace directory.
         /// </summary>
         /// <param name="arguments">The collection of arguments.</param>
         /// <param name="standardOutputHandler">

@@ -37,9 +37,15 @@
       <HintPath>..\..\..\..\packages\Consul.0.6.4.7\lib\net45\Consul.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Flurl, Version=2.3.0.0, Culture=neutral, PublicKeyToken=1308302a96879dfb, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Flurl.Signed.2.3.0\lib\portable40-net40+sl5+win8+wp8+wpa81\Flurl.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Nuclei, Version=0.9.0.0, Culture=neutral, PublicKeyToken=ee5b68ec5ad4ef93, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\Nuclei.0.9.2\lib\net452\Nuclei.dll</HintPath>
       <Private>True</Private>
@@ -81,8 +87,12 @@
     <Compile Include="Code\AddOrUpdateAttributeInCode.cs" />
     <Compile Include="Code\GetProjectsFromVisualStudioSolution.cs" />
     <Compile Include="Code\ILRepack.cs" />
+    <Compile Include="FileSystem\CalculateFileHash.cs" />
     <Compile Include="FileSystem\CopyFilesFromNuGetPackages.cs" />
+    <Compile Include="FileSystem\FileHashTask.cs" />
+    <Compile Include="FileSystem\ReadHashesFromFile.cs" />
     <Compile Include="FileSystem\SearchPackagesDirectoryForNuGetPackage.cs" />
+    <Compile Include="FileSystem\ValidateHash.cs" />
     <Compile Include="MsBuildLog.cs" />
     <Compile Include="NugetHelpers.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -95,6 +105,7 @@
     <Compile Include="Script\InvokePowershellCommand.cs" />
     <Compile Include="Script\InvokePowershellFile.cs" />
     <Compile Include="Script\InvokeStandaloneMsBuild.cs" />
+    <Compile Include="Script\StepId.cs" />
     <Compile Include="Templating\GenerateSpecialParameterTemplateTokens.cs" />
     <Compile Include="Validation\FxCopInvocationProperties.cs" />
     <Compile Include="Versions\CalculateSemanticVersionWithGitVersion.cs" />
@@ -165,7 +176,13 @@
     <Compile Include="Code\UpdateAttributeInCode.cs" />
     <Compile Include="Validation\ValidateXmlAgainstSchema.cs" />
     <Compile Include="Package\Zip.cs" />
+    <Compile Include="Web\IInternalWebClient.cs" />
+    <Compile Include="Web\InternalWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Web\WebDelete.cs" />
     <Compile Include="Web\WebDownload.cs" />
+    <Compile Include="Web\WebUpload.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

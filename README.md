@@ -30,7 +30,7 @@ for a project.
 [docs-intro]:                      http://nbuildkit.github.io/nBuildKit.MsBuild/
 [docs-usage]:                      http://nbuildkit.github.io/nBuildKit.MsBuild/usage
 [github-release-badge]:            https://img.shields.io/github/release/nbuildkit/nbuildkit.msbuild.svg
-[github-release]:                  https://github.com/GitTools/GitVersion/releases/latest
+[github-release]:                  https://github.com/nbuildkit/nBuildKit.MsBuild/releases/latest
 [gitter-badge]:                    https://badges.gitter.im/Join+Chat.svg
 [gitter]:                          https://gitter.im/nbuildkit/nbuildkit.msbuild
 [nuget-actions-badge]:             https://img.shields.io/nuget/v/nBuildKit.MsBuild.Actions.svg

@@ -29,6 +29,9 @@
         <NBuildKitErrorIdStepsInvalidConfiguration>NBuildKit.Steps.InvalidConfiguration</NBuildKitErrorIdStepsInvalidConfiguration>
         <NBuildKitErrorCodeStepsInvalidConfiguration>NBK0024</NBuildKitErrorCodeStepsInvalidConfiguration>
 
+        <NBuildKitErrorIdStepsInvalidDependencies>NBuildKit.Steps.InvalidDependencies</NBuildKitErrorIdStepsInvalidDependencies>
+        <NBuildKitErrorCodeStepsInvalidDependencies>NBK0025</NBuildKitErrorCodeStepsInvalidDependencies>
+
 
         <!-- IO -->
         <!-- Directories -->
@@ -94,6 +97,10 @@
         <NBuildKitErrorIdTasksGenerateTargetsFailedToSaveFile>NBuildKit.GenerateTargets.FailedToSaveFile</NBuildKitErrorIdTasksGenerateTargetsFailedToSaveFile>
         <NBuildKitErrorCodeTasksGenerateTargetsFailedToSaveFile>NBK0357</NBuildKitErrorCodeTasksGenerateTargetsFailedToSaveFile>
 
+        <!-- File Hash: Error codes from 0360 - 0379 -->
+        <OpsToolsBuildErrorIdCalculateHashFailure>NBuildKit.CalculateHash.Failure</OpsToolsBuildErrorIdCalculateHashFailure>
+        <OpsToolsBuildErrorCodeCalculateHashFailure>NBK0361</OpsToolsBuildErrorCodeCalculateHashFailure>
+
 
         <!-- Application interaction -->
         <!-- Error codes from 0500 to 0699 -->
@@ -158,6 +165,30 @@
 
         <NBuildKitErrorIdCopyFromHttpFailed>NBuildKit.WebDownload.Failed</NBuildKitErrorIdCopyFromHttpFailed>
         <NBuildKitErrorCodeCopyFromHttpFailed>NBK1523</NBuildKitErrorCodeCopyFromHttpFailed>
+
+        <NBuildKitErrorIdCopyToHttpUrlMissing>NBuildKit.WebUpload.UrlMissing</NBuildKitErrorIdCopyToHttpUrlMissing>
+        <NBuildKitErrorCodeCopyToHttpUrlMissing>NBK1524</NBuildKitErrorCodeCopyToHttpUrlMissing>
+
+        <NBuildKitErrorIdCopyToHttpUrlInvalid>NBuildKit.WebUpload.UrlInvalid</NBuildKitErrorIdCopyToHttpUrlInvalid>
+        <NBuildKitErrorCodeCopyToHttpUrlInvalid>NBK1525</NBuildKitErrorCodeCopyToHttpUrlInvalid>
+
+        <NBuildKitErrorIdCopyToHttpFailed>NBuildKit.WebUpload.Failed</NBuildKitErrorIdCopyToHttpFailed>
+        <NBuildKitErrorCodeCopyToHttpFailed>NBK1526</NBuildKitErrorCodeCopyToHttpFailed>
+
+        <NBuildKitErrorIdCopyToHttpNoFiles>NBuildKit.WebUpload.NoFiles</NBuildKitErrorIdCopyToHttpNoFiles>
+        <NBuildKitErrorCodeCopyToHttpNoFiles>NBK1527</NBuildKitErrorCodeCopyToHttpNoFiles>
+
+        <NBuildKitErrorIdDeleteFromHttpUrlMissing>NBuildKit.WebDelete.UrlMissing</NBuildKitErrorIdDeleteFromHttpUrlMissing>
+        <NBuildKitErrorCodeDeleteFromHttpUrlMissing>NBK1528</NBuildKitErrorCodeDeleteFromHttpUrlMissing>
+
+        <NBuildKitErrorIdDeleteFromHttpUrlInvalid>NBuildKit.WebDelete.UrlInvalid</NBuildKitErrorIdDeleteFromHttpUrlInvalid>
+        <NBuildKitErrorCodeDeleteFromHttpUrlInvalid>NBK1529</NBuildKitErrorCodeDeleteFromHttpUrlInvalid>
+
+        <NBuildKitErrorIdDeleteFromHttpFailed>NBuildKit.WebDelete.Failed</NBuildKitErrorIdDeleteFromHttpFailed>
+        <NBuildKitErrorCodeDeleteFromHttpFailed>NBK1530</NBuildKitErrorCodeDeleteFromHttpFailed>
+
+        <NBuildKitErrorIdDeleteFromHttpNoFiles>NBuildKit.WebDelete.NoFiles</NBuildKitErrorIdDeleteFromHttpNoFiles>
+        <NBuildKitErrorCodeDeleteFromHttpNoFiles>NBK1531</NBuildKitErrorCodeDeleteFromHttpNoFiles>
 
 
         <!-- Generate files -->
@@ -239,6 +270,10 @@
 
         <NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>NBuildKit.Deploy.GitHub.NoReleaseDescription</NBuildKitErrorIdDeployPushToGithubNoReleaseDescription>
         <NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>NBK7216</NBuildKitErrorCodeDeployPushToGithubNoReleaseDescription>
+
+        <!-- Push to remote web server: Error codes from 7220 to 7249 -->
+        <NBuildKitErrorIdDeployPushToHttpNoFiles>NBuildKit.Deploy.PushToHttp.NoFiles</NBuildKitErrorIdDeployPushToHttpNoFiles>
+        <NBuildKitErrorCodeDeployPushToHttpNoFiles>NBK7221</NBuildKitErrorCodeDeployPushToHttpNoFiles>
     </PropertyGroup>
 
     <ItemGroup>
@@ -263,6 +298,10 @@
         <ErrorInformation Include="$(NBuildKitErrorIdStepsInvalidConfiguration)">
             <Code>$(NBuildKitErrorCodeStepsInvalidConfiguration)</Code>
             <Description>The configuration of the steps to execute is not valid.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdStepsInvalidDependencies)">
+            <Code>$(NBuildKitErrorCodeStepsInvalidDependencies)</Code>
+            <Description>The dependencies of one of the steps to execute is not valid.</Description>
         </ErrorInformation>
 
         <ErrorInformation Include="$(NBuildKitErrorIdDirectoryNotFound)">
@@ -334,6 +373,39 @@
         <ErrorInformation Include="$(NBuildKitErrorIdCopyFromHttpFailed)">
             <Code>$(NBuildKitErrorCodeCopyFromHttpFailed)</Code>
             <Description>Failed to download the desired file from the provided URL.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdCopyToHttpUrlMissing)">
+            <Code>$(NBuildKitErrorCodeCopyToHttpUrlMissing)</Code>
+            <Description>No URL was provided.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdCopyToHttpUrlInvalid)">
+            <Code>$(NBuildKitErrorCodeCopyToHttpUrlInvalid)</Code>
+            <Description>The provided URL was not a valid URL.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdCopyToHttpFailed)">
+            <Code>$(NBuildKitErrorCodeCopyToHttpFailed)</Code>
+            <Description>Failed to upload the desired file to the provided URL.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdCopyToHttpNoFiles)">
+            <Code>$(NBuildKitErrorCodeCopyToHttpNoFiles)</Code>
+            <Description>No files were found to be uploaded to the provided URL.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdDeleteFromHttpUrlMissing)">
+            <Code>$(NBuildKitErrorCodeCopyToHttpUrlMissing)</Code>
+            <Description>No URL was provided.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeleteFromHttpUrlInvalid)">
+            <Code>$(NBuildKitErrorCodeDeleteFromHttpUrlInvalid)</Code>
+            <Description>The provided URL was not a valid URL.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeleteFromHttpFailed)">
+            <Code>$(NBuildKitErrorCodeDeleteFromHttpFailed)</Code>
+            <Description>Failed to delete the given files from the provided URL.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdDeleteFromHttpNoFiles)">
+            <Code>$(NBuildKitErrorCodeDeleteFromHttpNoFiles)</Code>
+            <Description>No files were found to be deleted from the provided URL.</Description>
         </ErrorInformation>
 
         <ErrorInformation Include="$(NBuildKitErrorIdTasksGenerateInternalsVisibleToNoFiles)">
