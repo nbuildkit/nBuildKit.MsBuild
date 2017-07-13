@@ -16,33 +16,33 @@ using NBuildKit.MsBuild.Tasks.Core;
 namespace NBuildKit.MsBuild.Tasks.Web
 {
     /// <summary>
-    /// Defines a task that uploads one or more files from a remote server.
+    /// Defines a task that deletes one or more files from a remote server.
     /// </summary>
-    public sealed class WebUpload : BaseTask
+    public sealed class WebDelete : BaseTask
     {
-        private const string ErrorIdFailed = "NBuildKit.WebUpload.Failed";
-        private const string ErrorIdUrlInvalid = "NBuildKit.WebUpload.UrlInvalid";
-        private const string ErrorIdUrlMissing = "NBuildKit.WebUpload.UrlMissing";
-        private const string ErrorIdNoFiles = "NBuildKit.WebUpload.NoFiles";
+        private const string ErrorIdFailed = "NBuildKit.WebDelete.Failed";
+        private const string ErrorIdUrlInvalid = "NBuildKit.WebDelete.UrlInvalid";
+        private const string ErrorIdUrlMissing = "NBuildKit.WebDelete.UrlMissing";
+        private const string ErrorIdNoFiles = "NBuildKit.WebDelete.NoFiles";
 
         private readonly Func<IInternalWebClient> _webClientBuilder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WebUpload"/> class.
+        /// Initializes a new instance of the <see cref="WebDelete"/> class.
         /// </summary>
-        public WebUpload()
-            : this(() => new InternalWebClient(true))
+        public WebDelete()
+            : this(() => new InternalWebClient())
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WebUpload"/> class.
+        /// Initializes a new instance of the <see cref="WebDelete"/> class.
         /// </summary>
         /// <param name="builder">The function that creates <see cref="IInternalWebClient"/> instances.</param>
         /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="builder"/> is <see langword="null"/>.
         /// </exception>
-        public WebUpload(Func<IInternalWebClient> builder)
+        public WebDelete(Func<IInternalWebClient> builder)
         {
             if (ReferenceEquals(builder, null))
             {
@@ -122,7 +122,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                     0,
                     0,
                     0,
-                    "No files to upload provided");
+                    "No files to delete provided");
                 return false;
             }
 
@@ -159,10 +159,9 @@ namespace NBuildKit.MsBuild.Tasks.Web
                     {
                         Log.LogMessage(
                             MessageImportance.Normal,
-                            "Uploading from: {0}. To: {1}",
-                            itemPath,
+                            "Deleting from: {0}",
                             targetUri);
-                        var response = client.UploadFile(targetUri, "PUT", itemPath);
+                        var response = client.DeleteFile(targetUri);
                         var responseText = System.Text.Encoding.ASCII.GetString(response);
                         Log.LogMessage(
                             MessageImportance.Normal,
@@ -180,7 +179,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                             0,
                             0,
                             0,
-                            "Failed to upload a file to the url: {0}. The error was: {1}",
+                            "Failed to delete a file from the url: {0}. The error was: {1}",
                             baseUri,
                             e);
                     }
