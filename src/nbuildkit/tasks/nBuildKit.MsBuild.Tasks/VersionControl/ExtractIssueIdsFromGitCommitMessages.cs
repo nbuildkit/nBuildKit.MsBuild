@@ -141,7 +141,11 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                 {
                     string.Format(CultureInfo.InvariantCulture, "cherry {0}", MergeTargetBranch)
                 });
-            return gitOutput.Replace("+ ", Environment.NewLine).Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            return gitOutput
+                .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(l => l.StartsWith("+ ", StringComparison.OrdinalIgnoreCase))
+                .Select(l => l.Replace("+ ", string.Empty))
+                .ToArray();
         }
     }
 }
