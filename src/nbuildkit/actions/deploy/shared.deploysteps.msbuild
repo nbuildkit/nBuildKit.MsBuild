@@ -11,8 +11,12 @@
     <PropertyGroup>
         <DeployStepsShowHelp>$(MSBuildThisFileDirectory)..\shared.show.help.msbuild</DeployStepsShowHelp>
 
+        <DeployStepsBuildTargetsAssembly>$(MSBuildThisFileDirectory)..\shared.bootstrap.build.tasks.msbuild</DeployStepsBuildTargetsAssembly>
+        <DeployStepsGenerateTargetsFile>$(MSBuildThisFileDirectory)..\shared.bootstrap.generate.targetsfile.msbuild</DeployStepsGenerateTargetsFile>
+
         <DeployStepsPrepareVcsBranch>$(MSBuildThisFileDirectory)..\shared.prepare.vcssetbranch.msbuild</DeployStepsPrepareVcsBranch>
         <DeployStepsPrepareGetVersion>$(MSBuildThisFileDirectory)..\shared.prepare.getversion.msbuild</DeployStepsPrepareGetVersion>
+        <DeployStepsPrepareVcsInfo>$(MSBuildThisFileDirectory)..\shared.prepare.vcsinfo.msbuild</DeployStepsPrepareVcsInfo>
         <DeployStepsPrepareTagVcs>$(MSBuildThisFileDirectory)..\shared.prepare.tag.vcs.msbuild</DeployStepsPrepareTagVcs>
 
         <DeployStepsPrepareGetIssueIds>$(MSBuildThisFileDirectory)..\shared.prepare.getissueids.msbuild</DeployStepsPrepareGetIssueIds>
@@ -67,6 +71,14 @@
             <Id>DeployStepsPrepareGetVersion</Id>
             <Name>Deploy - gather version numbers</Name>
             <Path>$(DeployStepsPrepareGetVersion)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareVcsInfo)'))">
+            <Description>
+                Stores the Version Control System (VCS) information in a file for later use. Currently supported version control systems is GIT
+            </Description>
+            <Id>DeployStepsPrepareVcsInfo</Id>
+            <Name>Deploy - gather VCS information</Name>
+            <Path>$(DeployStepsPrepareVcsInfo)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(DeployStepsPrepareTagVcs)'))">
             <Description>
