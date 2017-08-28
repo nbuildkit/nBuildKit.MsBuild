@@ -378,6 +378,22 @@
             <Properties>
             </Properties>
         </DeployStepsToExecute>
+        <DeployStepsToExecute Include="$(DeployStepsPrepareVcsInfo)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
+            <Groups>
+                prepare;
+                prepare.get;
+                prepare.get.vcsinfo;
+            </Groups>
+            <Id>DeployStepsPrepareVcsInfo</Id>
+            <PostSteps>
+            </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+            </Properties>
+        </DeployStepsToExecute>
         <DeployStepsToExecute Include="$(DeployStepsPrepareGetIssueIds)">
             <ExecuteAfter></ExecuteAfter>
             <ExecuteBefore></ExecuteBefore>
