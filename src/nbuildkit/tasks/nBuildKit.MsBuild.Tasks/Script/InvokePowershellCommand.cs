@@ -51,8 +51,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdApplicationMissingArgument),
-                    ErrorIdApplicationMissingArgument,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationMissingArgument),
+                    Core.ErrorInformation.ErrorIdApplicationMissingArgument,
                     string.Empty,
                     0,
                     0,

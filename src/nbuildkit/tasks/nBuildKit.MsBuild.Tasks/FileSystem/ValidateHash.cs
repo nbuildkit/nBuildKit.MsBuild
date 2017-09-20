@@ -26,8 +26,8 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdFileNotFound),
-                    ErrorIdFileNotFound,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdFileNotFound),
+                    Core.ErrorInformation.ErrorIdFileNotFound,
                     string.Empty,
                     0,
                     0,
@@ -43,8 +43,8 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdCalculationFailure),
-                    ErrorIdCalculationFailure,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdHashCalculationFailure),
+                    Core.ErrorInformation.ErrorIdHashCalculationFailure,
                     string.Empty,
                     0,
                     0,

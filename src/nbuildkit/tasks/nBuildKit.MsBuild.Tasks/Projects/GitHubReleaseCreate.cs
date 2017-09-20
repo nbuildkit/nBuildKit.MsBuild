@@ -70,8 +70,8 @@ namespace NBuildKit.MsBuild.Tasks.Projects
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
-                    ErrorIdApplicationNonzeroExitCode,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode),
+                    Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode,
                     string.Empty,
                     0,
                     0,

@@ -43,8 +43,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdFileNotFound),
-                    ErrorIdFileNotFound,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdFileNotFound),
+                    Core.ErrorInformation.ErrorIdFileNotFound,
                     string.Empty,
                     0,
                     0,
@@ -58,8 +58,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdFileNotFound),
-                    ErrorIdFileNotFound,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdFileNotFound),
+                    Core.ErrorInformation.ErrorIdFileNotFound,
                     string.Empty,
                     0,
                     0,
