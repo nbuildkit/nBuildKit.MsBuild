@@ -75,7 +75,6 @@
 	<div id="infobar-headings"><h6>On This Page</h6><p><a href="#Summary">Summary</a></p>
 <p><a href="#Syntax">Syntax</a></p>
 <p><a href="#Constructors">Constructors</a></p>
-<p><a href="#fields">Fields</a></p>
 <p><a href="#Properties">Properties</a></p>
 <p><a href="#Methods">Methods</a></p>
 <hr class="infobar-hidden">
@@ -135,6 +134,7 @@
 				<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/ApplicationInvoker">ApplicationInvoker</a></li>
 				<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask">BaseTask</a></li>
 				<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/CommandLineToolTask">CommandLineToolTask</a></li>
+				<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/ErrorInformation">ErrorInformation</a></li>
 				<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/EscapingUtilities">EscapingUtilities</a></li>
 				<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/FxCopCommandLineToolTask">Fx<wbr>Cop<wbr>Command<wbr>Line<wbr>Tool<wbr>Task</a></li>
 				<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/GitCommandLineToolTask">Git<wbr>Command<wbr>Line<wbr>Tool<wbr>Task</a></li>
@@ -192,9 +192,9 @@
 								<dd>
 									<ul class="list-unstyled">
 											<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/InvokePesterOnFile">InvokePesterOnFile</a></li>								
+											<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellFile">InvokePowershellFile</a></li>								
 											<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellCommand">Invoke<wbr>Powershell<wbr>Command</a></li>								
 											<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/InvokePesterOnDirectory">Invoke<wbr>Pester<wbr>On<wbr>Directory</a></li>								
-											<li><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellFile">InvokePowershellFile</a></li>								
 									</ul>
 								</dd>			
 							
@@ -212,12 +212,12 @@
 class Type type-node
 	Type--&gt;Derived0["InvokePesterOnFile"]
 	click Derived0 "/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/InvokePesterOnFile"
-	Type--&gt;Derived1["InvokePowershellCommand"]
-	click Derived1 "/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellCommand"
-	Type--&gt;Derived2["InvokePesterOnDirectory"]
-	click Derived2 "/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/InvokePesterOnDirectory"
-	Type--&gt;Derived3["InvokePowershellFile"]
-	click Derived3 "/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellFile"
+	Type--&gt;Derived1["InvokePowershellFile"]
+	click Derived1 "/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellFile"
+	Type--&gt;Derived2["InvokePowershellCommand"]
+	click Derived2 "/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Script/InvokePowershellCommand"
+	Type--&gt;Derived3["InvokePesterOnDirectory"]
+	click Derived3 "/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Testing/InvokePesterOnDirectory"
 
 						</div>
 					</div>
@@ -255,109 +255,6 @@ class Type type-node
 		
 
 
-			<h1 id="fields">Fields</h1>
-			<div class="box">
-				<div class="box-body no-padding table-responsive">
-					<table class="table table-striped table-hover three-cols">
-						<thead>
-							<tr>
-								<th>Name</th>
-								<th>Constant Value</th>
-								<th>Summary</th>
-							</tr>
-						</thead>
-							<tbody><tr>
-								<td><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/CommandLineToolTask/CC7F4615">Error<wbr>Id<wbr>Application<wbr>Error<wbr>Stream</a></td>
-								<td>NBuildKit.Application.WroteToErrorStream</td>
-								<td>
-									<div>
-    Defines the error ID for an error describing an application writing to the error stream.
-    </div>
-											<div><small><em>Inherited from <a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/CommandLineToolTask">CommandLineToolTask</a></em></small></div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/CommandLineToolTask/7337283A">Error<wbr>Id<wbr>Application<wbr>Missing<wbr>Argument</a></td>
-								<td>NBuildKit.Application.MissingArgument</td>
-								<td>
-									<div>
-    Defines the error ID for an error indicating that a required application argument has not been provided.
-    </div>
-											<div><small><em>Inherited from <a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/CommandLineToolTask">CommandLineToolTask</a></em></small></div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/CommandLineToolTask/E73730CB">Error<wbr>Id<wbr>Application<wbr>Nonzero<wbr>Exit<wbr>Code</a></td>
-								<td>NBuildKit.Application.NonzeroExitCode</td>
-								<td>
-									<div>
-    Defines the error ID for an error describing an application exiting with a non-zero exit code.
-    </div>
-											<div><small><em>Inherited from <a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/CommandLineToolTask">CommandLineToolTask</a></em></small></div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/CommandLineToolTask/D9887576">Error<wbr>Id<wbr>Application<wbr>Path<wbr>Not<wbr>Found</a></td>
-								<td>NBuildKit.FileNotFound.ExecutableTool</td>
-								<td>
-									<div>
-    Defines the error ID for an error indicating that the path to the selected tool was not found.
-    </div>
-											<div><small><em>Inherited from <a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/CommandLineToolTask">CommandLineToolTask</a></em></small></div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask/E9D317A3">Error<wbr>Id<wbr>Directory<wbr>Not<wbr>Found</a></td>
-								<td>NBuildKit.DirectoryNotFound</td>
-								<td>
-									<div>
-    Defines the error ID for an error that occurs when a directory cannot be found.
-    </div>
-											<div><small><em>Inherited from <a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask">BaseTask</a></em></small></div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask/1439106C">ErrorIdFileLoad</a></td>
-								<td>NBuildKit.FileLoad</td>
-								<td>
-									<div>
-    Defines the error ID for an error that occurs when a file cannot be loaded.
-    </div>
-											<div><small><em>Inherited from <a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask">BaseTask</a></em></small></div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask/5EB8A2F1">ErrorIdFileNotFound</a></td>
-								<td>NBuildKit.FileNotFound</td>
-								<td>
-									<div>
-    Defines the error ID for an error that occurs when a file cannot be found.
-    </div>
-											<div><small><em>Inherited from <a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask">BaseTask</a></em></small></div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask/6E9C41D1">ErrorIdFileRead</a></td>
-								<td>NBuildKit.FileRead</td>
-								<td>
-									<div>
-    Defines the error ID for an error that occurs when a file cannot be read.
-    </div>
-											<div><small><em>Inherited from <a href="/nBuildKit.MsBuild/api/NBuildKit.MsBuild.Tasks.Core/BaseTask">BaseTask</a></em></small></div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-					</tbody></table>
-				</div>
-			</div>
-		
 
 			<h1 id="Properties">Properties</h1>
 			<div class="box">
