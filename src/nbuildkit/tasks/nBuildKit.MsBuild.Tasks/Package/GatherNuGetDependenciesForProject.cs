@@ -95,8 +95,8 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 {
                     Log.LogError(
                         string.Empty,
-                        ErrorCodeById(ErrorIdFileLoad),
-                        ErrorIdFileLoad,
+                        ErrorCodeById(Core.ErrorInformation.ErrorIdFileLoad),
+                        Core.ErrorInformation.ErrorIdFileLoad,
                         string.Empty,
                         0,
                         0,

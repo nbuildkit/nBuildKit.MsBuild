@@ -43,8 +43,8 @@ namespace NBuildKit.MsBuild.Tasks.Testing
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdApplicationMissingArgument),
-                    ErrorIdApplicationMissingArgument,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationMissingArgument),
+                    Core.ErrorInformation.ErrorIdApplicationMissingArgument,
                     string.Empty,
                     0,
                     0,
@@ -78,8 +78,8 @@ namespace NBuildKit.MsBuild.Tasks.Testing
                 {
                     Log.LogError(
                         string.Empty,
-                        ErrorCodeById(ErrorIdApplicationMissingArgument),
-                        ErrorIdApplicationMissingArgument,
+                        ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationMissingArgument),
+                        Core.ErrorInformation.ErrorIdApplicationMissingArgument,
                         string.Empty,
                         0,
                         0,
@@ -105,8 +105,8 @@ namespace NBuildKit.MsBuild.Tasks.Testing
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
-                    ErrorIdApplicationNonzeroExitCode,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode),
+                    Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode,
                     string.Empty,
                     0,
                     0,
