@@ -48,8 +48,8 @@ namespace NBuildKit.MsBuild.Tasks.Core
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
-                    ErrorIdApplicationNonzeroExitCode,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode),
+                    Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode,
                     string.Empty,
                     0,
                     0,
@@ -116,8 +116,8 @@ namespace NBuildKit.MsBuild.Tasks.Core
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdApplicationNonzeroExitCode),
-                    ErrorIdApplicationNonzeroExitCode,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode),
+                    Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode,
                     string.Empty,
                     0,
                     0,

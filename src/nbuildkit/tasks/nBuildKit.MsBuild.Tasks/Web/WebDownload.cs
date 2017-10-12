@@ -118,8 +118,8 @@ namespace NBuildKit.MsBuild.Tasks.Web
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdDirectoryNotFound),
-                    ErrorIdDirectoryNotFound,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdDirectoryNotFound),
+                    Core.ErrorInformation.ErrorIdDirectoryNotFound,
                     string.Empty,
                     0,
                     0,
@@ -133,8 +133,8 @@ namespace NBuildKit.MsBuild.Tasks.Web
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdDirectoryNotFound),
-                    ErrorIdDirectoryNotFound,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdDirectoryNotFound),
+                    Core.ErrorInformation.ErrorIdDirectoryNotFound,
                     string.Empty,
                     0,
                     0,

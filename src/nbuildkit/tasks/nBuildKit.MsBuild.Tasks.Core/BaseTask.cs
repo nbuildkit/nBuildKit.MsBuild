@@ -21,28 +21,6 @@ namespace NBuildKit.MsBuild.Tasks.Core
     public abstract class BaseTask : Task
     {
         /// <summary>
-        /// Defines the error ID for an error that occurs when a directory cannot be found.
-        /// </summary>
-        protected const string ErrorIdDirectoryNotFound = "NBuildKit.DirectoryNotFound";
-
-        /// <summary>
-        /// Defines the error ID for an error that occurs when a file cannot be loaded.
-        /// </summary>
-        protected const string ErrorIdFileLoad = "NBuildKit.FileLoad";
-
-        /// <summary>
-        /// Defines the error ID for an error that occurs when a file cannot be found.
-        /// </summary>
-        protected const string ErrorIdFileNotFound = "NBuildKit.FileNotFound";
-
-        /// <summary>
-        /// Defines the error ID for an error that occurs when a file cannot be read.
-        /// </summary>
-        protected const string ErrorIdFileRead = "NBuildKit.FileRead";
-
-        private const string MetadataCodeTag = "Code";
-
-        /// <summary>
         /// Gets the verbosity that the current MsBuild instance is running at.
         /// </summary>
         /// <returns>The verbosity of the MsBuild logger.</returns>
@@ -95,16 +73,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <returns>The error code that matches the given ID.</returns>
         protected string ErrorCodeById(string errorId)
         {
-            var result = string.Empty;
-            if (ErrorInformation != null)
-            {
-                var code = ErrorInformation.Where(t => string.Equals(errorId, t.ItemSpec, StringComparison.OrdinalIgnoreCase))
-                    .Select(t => t.GetMetadata(MetadataCodeTag))
-                    .FirstOrDefault();
-                result = code ?? string.Empty;
-            }
-
-            return result;
+            return Core.ErrorInformation.ErrorCodeById(errorId, ErrorInformation);
         }
 
         /// <summary>

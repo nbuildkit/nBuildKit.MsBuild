@@ -23,26 +23,6 @@ namespace NBuildKit.MsBuild.Tasks.Core
     /// </summary>
     public abstract class CommandLineToolTask : BaseTask
     {
-        /// <summary>
-        /// Defines the error ID for an error describing an application writing to the error stream.
-        /// </summary>
-        protected const string ErrorIdApplicationErrorStream = "NBuildKit.Application.WroteToErrorStream";
-
-        /// <summary>
-        /// Defines the error ID for an error indicating that a required application argument has not been provided.
-        /// </summary>
-        protected const string ErrorIdApplicationMissingArgument = "NBuildKit.Application.MissingArgument";
-
-        /// <summary>
-        /// Defines the error ID for an error describing an application exiting with a non-zero exit code.
-        /// </summary>
-        protected const string ErrorIdApplicationNonzeroExitCode = "NBuildKit.Application.NonzeroExitCode";
-
-        /// <summary>
-        /// Defines the error ID for an error indicating that the path to the selected tool was not found.
-        /// </summary>
-        protected const string ErrorIdApplicationPathNotFound = "NBuildKit.FileNotFound.ExecutableTool";
-
         private readonly IApplicationInvoker _invoker;
 
         /// <summary>
@@ -106,8 +86,8 @@ namespace NBuildKit.MsBuild.Tasks.Core
 
                         Log.LogError(
                             string.Empty,
-                            ErrorCodeById(ErrorIdApplicationErrorStream),
-                            ErrorIdApplicationErrorStream,
+                            ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationErrorStream),
+                            Core.ErrorInformation.ErrorIdApplicationErrorStream,
                             string.Empty,
                             0,
                             0,
@@ -255,8 +235,8 @@ namespace NBuildKit.MsBuild.Tasks.Core
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdApplicationPathNotFound),
-                    ErrorIdApplicationPathNotFound,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationPathNotFound),
+                    Core.ErrorInformation.ErrorIdApplicationPathNotFound,
                     string.Empty,
                     0,
                     0,

@@ -27,8 +27,8 @@ namespace NBuildKit.MsBuild.Tasks.Templating
             {
                 Log.LogError(
                     string.Empty,
-                    ErrorCodeById(ErrorIdFileNotFound),
-                    ErrorIdFileNotFound,
+                    ErrorCodeById(Core.ErrorInformation.ErrorIdFileNotFound),
+                    Core.ErrorInformation.ErrorIdFileNotFound,
                     string.Empty,
                     0,
                     0,

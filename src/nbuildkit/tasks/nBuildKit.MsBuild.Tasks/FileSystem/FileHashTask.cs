@@ -18,11 +18,6 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
     public abstract class FileHashTask : BaseTask
     {
         /// <summary>
-        /// Defines the error ID for an error that occurs when a file hash cannot be calculated.
-        /// </summary>
-        protected const string ErrorIdCalculationFailure = "nBuildKit.CalculateHash.Failure";
-
-        /// <summary>
         /// Converts a byte array containing a hash to a hexadecimal string.
         /// </summary>
         /// <param name="hash">The hash.</param>
