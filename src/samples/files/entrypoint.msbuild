@@ -185,11 +185,11 @@
         be used to execute the build.
     -->
     <Target
-        DependsOnTargets="EntryPoint_SetTarget_Build;EntryPoint_Execute"
+        DependsOnTargets="_EntryPoint_SetTargets_Build;_EntryPoint_Execute"
         Name="Build">
     </Target>
 
-    <Target Name="EntryPoint_SetTarget_Build">
+    <Target Name="_EntryPoint_SetTargets_Build">
         <PropertyGroup>
             <TargetToExecute>Build</TargetToExecute>
         </PropertyGroup>
@@ -201,11 +201,11 @@
         be used to execute the tests.
     -->
     <Target
-        DependsOnTargets="EntryPoint_SetTarget_Test;EntryPoint_Execute"
+        DependsOnTargets="_EntryPoint_SetTargets_Test;_EntryPoint_Execute"
         Name="Test">
     </Target>
 
-    <Target Name="EntryPoint_SetTarget_Test">
+    <Target Name="_EntryPoint_SetTargets_Test">
         <PropertyGroup>
             <TargetToExecute>Test</TargetToExecute>
         </PropertyGroup>
@@ -217,19 +217,19 @@
         be used to execute the deploy.
     -->
     <Target
-        DependsOnTargets="EntryPoint_SetTarget_Deploy;EntryPoint_Execute"
+        DependsOnTargets="_EntryPoint_SetTargets_Deploy;_EntryPoint_Execute"
         Name="Deploy">
     </Target>
 
-    <Target Name="EntryPoint_SetTarget_Deploy">
+    <Target Name="_EntryPoint_SetTargets_Deploy">
         <PropertyGroup>
             <TargetToExecute>Deploy</TargetToExecute>
         </PropertyGroup>
     </Target>
 
     <Target
-        DependsOnTargets="EntryPoint_LocateEntryPoint"
-        Name="EntryPoint_Execute">
+        DependsOnTargets="_EntryPoint_LocateEntryPoint"
+        Name="_EntryPoint_Execute">
         <Error
             Code="NBKEP0100"
             Condition=" '$(DirEntryPointPackage)' == '' OR !Exists('$(DirEntryPointPackage)')"
@@ -254,11 +254,11 @@
     </Target>
 
     <!--
-        Get the full path to the nBuildkit package directory so that we can invoked the build scripts from there.
+        Get the full path to the entrypoint package directory so that we can invoked the build scripts from there.
     -->
     <Target
-        DependsOnTargets="EntryPoint_LocatePackagesDir;EntryPoint_RestoreGlobalNugetPackages;EntryPoint_LocateEntryPointViaPackagesConfig;EntryPoint_LocatePackageViaHighestAvailableVersion"
-        Name="EntryPoint_LocateEntryPoint">
+        DependsOnTargets="_EntryPoint_LocatePackagesDir;_EntryPoint_RestoreGlobalNugetPackages;_EntryPoint_LocateEntryPointViaPackagesConfig;_EntryPoint_LocatePackageViaHighestAvailableVersion"
+        Name="_EntryPoint_LocateEntryPoint">
         <Message Text="DirEntryPointPackage after search: $(DirEntryPointPackage)" />
 
         <Error
@@ -273,8 +273,8 @@
         so that we can be sure that the nBuildKit main package is extacted to the package directory.
     -->
     <Target
-        DependsOnTargets="EntryPoint_LocatePackagesDir"
-        Name="EntryPoint_RestoreGlobalNugetPackages">
+        DependsOnTargets="_EntryPoint_LocatePackagesDir"
+        Name="_EntryPoint_RestoreGlobalNugetPackages">
         <EntryPoint_LocalTask_NuGetRestore
             Condition="Exists('$(NuGetPackageFile)')"
             NuGetPath="$(ToolsExternalNuGetPath)"
@@ -285,21 +285,21 @@
 
     <Target
         Condition="Exists('$(DirPackages)')"
-        Name="EntryPoint_LocateEntryPointViaPackagesConfig">
+        Name="_EntryPoint_LocateEntryPointViaPackagesConfig">
         <!-- Get the version of nBuildKit that is expected from the global packages file -->
         <XmlPeek
             Condition="Exists('$(NuGetPackageFile)')"
             Query="//package[@id='$(PackageNameEntryPoint)']/@version"
             XmlInputPath="$(NuGetPackageFile)">
             <Output
-                ItemName="VersionNBuildKit"
+                ItemName="VersionEntrypointPackage"
                 TaskParameter="Result" />
         </XmlPeek>
-        <Message Text="Version: @(VersionNBuildKit)" />
+        <Message Text="Version: @(VersionEntrypointPackage)" />
 
         <CreateProperty
-            Condition=" '@(VersionNBuildKit)' != '' "
-            Value="%(VersionNBuildKit.Identity)">
+            Condition=" '@(VersionEntrypointPackage)' != '' "
+            Value="%(VersionEntrypointPackage.Identity)">
             <Output
                 PropertyName="PackageVersion"
                 TaskParameter="Value" />
@@ -329,61 +329,20 @@
 
     <Target
         Condition="!Exists('$(DirEntryPointPackage)')"
-        Name="EntryPoint_LocatePackageViaHighestAvailableVersion">
-        <CreateProperty
-            Condition=" '$(PackageMinimumVersion)' != '' "
-            Value="$(PackageMinimumVersion)">
-            <Output
-                PropertyName="VersionPackageMinimum"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <CreateProperty
-            Condition=" '$(PackageMaximumVersion)' != '' "
-            Value="$(PackageMaximumVersion)">
-            <Output
-                PropertyName="VersionPackageMaximum"
-                TaskParameter="Value" />
-        </CreateProperty>
-
-        <XmlPeek
-            Condition=" '$(PackageMinimumVersion)' == '' "
-            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="/x:Project/x:PropertyGroup/x:PackageMinimumVersion/text()"
-            XmlInputPath="$(SharedPropertyFile)">
-            <Output
-                ItemName="VersionPackageMinimumItem"
-                TaskParameter="Result" />
-        </XmlPeek>
-        <CreateProperty
-            Condition=" '$(PackageMinimumVersion)' == '' "
-            Value="%(VersionPackageMinimumItem.Identity)">
-            <Output
-                PropertyName="VersionPackageMinimum"
-                TaskParameter="Value" />
-        </CreateProperty>
-
-        <XmlPeek
-            Condition=" '$(PackageMaximumVersion)' == '' "
-            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="/x:Project/x:PropertyGroup/x:PackageMaximumVersion/text()"
-            XmlInputPath="$(SharedPropertyFile)">
-            <Output
-                ItemName="VersionPackageMaximumItem"
-                TaskParameter="Result" />
-        </XmlPeek>
-        <CreateProperty
-            Condition=" '$(PackageMaximumVersion)' == '' "
-            Value="%(VersionPackageMaximumItem.Identity)">
-            <Output
-                PropertyName="VersionPackageMaximum"
-                TaskParameter="Value" />
-        </CreateProperty>
+        Name="_EntryPoint_LocatePackageViaHighestAvailableVersion">
+        <ItemGroup>
+            <NuGetSourcesToSearch
+                Condition=" '$(AllowTestVersions)' != 'true' "
+                Include="$(UriNuGetProductionRead)" />
+            <NuGetSourcesToSearch
+                Condition=" '$(AllowTestVersions)' == 'true' AND '@(NuGetSources)' != '' "
+                Include="@(NuGetSources)" />
+        </ItemGroup>
 
         <EntryPoint_LocalTask_GetHighestSuitablePackageVersionFromNuGet
-            MaximumVersion="$(VersionPackageMaximum)"
-            MinimumVersion="$(VersionPackageMinimum)"
             NuGetPath="$(ToolsExternalNuGetPath)"
-            PackageName="$(PackageNameEntryPoint)">
+            PackageName="$(PackageNameEntryPoint)"
+            Sources="@(NuGetSourcesToSearch)" >
             <Output
                 PropertyName="PackageVersion"
                 TaskParameter="Version" />
@@ -393,7 +352,7 @@
             PackageDirectory="$(DirPackages)"
             PackageName="$(PackageNameEntryPoint)"
             PackageVersion="$(PackageVersion)"
-            Sources="@(NuGetSources)" />
+            Sources="@(NuGetSourcesToSearch)" />
 
         <CreateProperty
             Condition="Exists('$(DirPackages)')"
@@ -409,7 +368,7 @@
     <!--
         Get the full path to the packages directory.
     -->
-    <Target Name="EntryPoint_LocatePackagesDir">
+    <Target Name="_EntryPoint_LocatePackagesDir">
         <!-- Determine if a packages folder exists at the same level as this script. If so use that  -->
         <CreateProperty
             Condition="Exists('$(DirDefaultPackages)')"
@@ -585,15 +544,12 @@
             <NuGetPath
                 ParameterType="System.String"
                 Required="true" />
-            <MaximumVersion
-                ParameterType="System.String"
-                Required="true" />
-            <MinimumVersion
-                ParameterType="System.String"
-                Required="true" />
             <PackageName
                 ParameterType="System.String"
                 Required="true" />
+            <Sources
+                ParameterType="Microsoft.Build.Framework.ITaskItem[]"
+                Required="false" />
             <Version
                 Output="true"
                 ParameterType="System.String" />
@@ -605,37 +561,159 @@
                 <![CDATA[
                     public override bool Execute()
                     {
-                        Log.LogMessage(MessageImportance.Low, "Getting versions for nBuildKit from nuget.org");
+                        if ((Sources == null) || (Sources.Length == 0))
+                        {
+                            Log.LogMessage(
+                                MessageImportance.Low,
+                                string.Format(
+                                    System.Globalization.CultureInfo.InvariantCulture,
+                                    "Getting versions for {0} from default sources",
+                                    PackageName));
+                        }
+                        else
+                        {
+                            Log.LogMessage(
+                                MessageImportance.Low,
+                                string.Format(
+                                    System.Globalization.CultureInfo.InvariantCulture,
+                                    "Getting versions for {0} from: {1} ",
+                                    PackageName,
+                                    string.Join(", ", Sources.Select(t => t.ItemSpec))));
+                        }
 
                         try
                         {
-                            var webClient = new System.Net.WebClient();
-                            var response = webClient.DownloadString(
-                                string.Format(
-                                    "https://api.nuget.org/v3-flatcontainer/{0}/index.json",
-                                    PackageName.ToLowerInvariant()));
-                            var subResponse = response
-                                .Replace(" ", "")
-                                .Replace(System.Environment.NewLine, "");
-                            subResponse = subResponse.Substring(subResponse.IndexOf("[") + 1, subResponse.IndexOf("]") - subResponse.IndexOf("[") - 1);
-                            var versions = subResponse.Split(',');
-
-                            var highestVersion = new Version(MinimumVersion);
-                            var notAllowedVersion = new Version(MaximumVersion);
-                            foreach (var versionText in versions)
+                            var builder = new System.Text.StringBuilder();
                             {
-                                var version = new Version(versionText.Trim('"'));
-                                if ((version > highestVersion) && (version < notAllowedVersion))
+                                builder.Append(string.Format("list \"{0}\" ", PackageName));
+                                builder.Append("-NonInteractive ");
+
+                                // If the user has specified any sources to install from then only search those sources.
+                                if (Sources != null)
                                 {
-                                    highestVersion = version;
+                                    foreach (var source in Sources)
+                                    {
+                                        // Make sure we remove the back-slash because if we don't then
+                                        // the closing quote will be eaten by the command line parser. Note that
+                                        // this is only necessary because we're dealing with a directory
+                                        builder.Append(string.Format("-Source \"{0}\" ", source.ItemSpec.TrimEnd('\\')));
+                                    }
                                 }
                             }
 
-                            Version = highestVersion.ToString(3);
+                            var info = new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = NuGetPath,
+                                Arguments = builder.ToString(),
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+                            };
+
+                            Log.LogMessage(
+                                MessageImportance.Low,
+                                "Executing {0} with arguments: {1}",
+                                NuGetPath,
+                                info.Arguments);
+
+                            var text = new System.Collections.Generic.List<string>();
+                            var process = new System.Diagnostics.Process();
+                            process.StartInfo = info;
+                            process.OutputDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        text.Add(e.Data);
+                                    }
+                                };
+                            process.ErrorDataReceived +=
+                                (s, e) =>
+                                {
+                                    if (!string.IsNullOrWhiteSpace(e.Data))
+                                    {
+                                        Log.LogError(e.Data);
+                                    }
+                                };
+                            process.Start();
+
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
+                            process.WaitForExit();
+
+                            if (process.ExitCode != 0)
+                            {
+                                Log.LogError(
+                                    string.Format(
+                                        "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                        System.IO.Path.GetFileName(process.StartInfo.FileName),
+                                        process.ExitCode));
+                                return false;
+                            }
+
+                            Log.LogMessage(
+                                MessageImportance.Low,
+                                "{0} produced the following output: {1}",
+                                NuGetPath,
+                                string.Join(Environment.NewLine, text));
+
+                            // Expecting something like:
+                            // A 1.2.3
+                            // A.B 1.2.3
+                            // A.C 4.5.6
+                            // A.C.D 7.8.9
+                            // A.E 0.0.1
+                            //
+                            // So find the exact package name by searching for the string that has the package name
+                            // followed by a space
+                            var packageNameInText = PackageName + " ";
+
+                            string selectedPackage = null;
+                            var selectedVersion = new Version();
+                            foreach(var line in text)
+                            {
+                                if (line.StartsWith(packageNameInText))
+                                {
+                                    var versionText = line.Substring(packageNameInText.Length);
+
+                                    System.Version packageVersion;
+                                    if (!System.Version.TryParse(versionText, out packageVersion))
+                                    {
+                                        Log.LogMessage(
+                                            MessageImportance.Low,
+                                            "Package {0} is not a match for package {1}",
+                                            line,
+                                            PackageName);
+
+                                        continue;
+                                    }
+
+                                    if (packageVersion > selectedVersion)
+                                    {
+                                        Log.LogMessage(
+                                            MessageImportance.Low,
+                                            "Path {0} is a better match for package {1} than {2}",
+                                            line,
+                                            PackageName,
+                                            selectedPackage);
+
+                                        selectedVersion = packageVersion;
+                                        selectedPackage = line;
+                                    }
+                                }
+                            }
+
+                            if (string.IsNullOrEmpty(selectedPackage))
+                            {
+                                Log.LogError("Failed to find the correct package version.");
+                                return false;
+                            }
+
+                            Version = selectedVersion.ToString(3);
                         }
                         catch(Exception e)
                         {
-                            Version = MinimumVersion;
+                            Log.LogError(e.ToString());
                         }
 
                         // Log.HasLoggedErrors is true if the task logged any errors -- even if they were logged
