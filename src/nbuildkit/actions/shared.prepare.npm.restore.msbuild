@@ -22,6 +22,7 @@
     </Target>
 
     <Target
+        Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' OR '$(ToolsExternalNpmPath)' == 'UNDEFINED' "
         Name="_nBuildKit_Shared_Prepare_Npm_Restore_GetToolPaths">
         <NuGetInstall
             Condition=" '$(ToolsExternalNodeJsPath)' == 'UNDEFINED' "
