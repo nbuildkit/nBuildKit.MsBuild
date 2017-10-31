@@ -256,29 +256,32 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                     excludedPathExpressions.Select(
                         e =>
                         {
-                            return Path.IsPathRooted(e) ? GetFilePathRelativeToDirectory(e, baseDirectory) : e;
+                            var path = e.Trim();
+                            return Path.IsPathRooted(path) ? GetFilePathRelativeToDirectory(path, baseDirectory) : path;
                         }));
             }
 
-            var relativeExpression = pathExpression;
-            if (Path.IsPathRooted(pathExpression))
+            var localBaseDirectory = baseDirectory.Trim();
+            var localPathExpression = pathExpression.Trim();
+            var relativeExpression = localPathExpression;
+            if (Path.IsPathRooted(localPathExpression))
             {
                 // If the path has a root drive then we assume the user gave us a full path. The matcher doesn't seem
                 // to handle full paths very well so now we need to create a 'relative expression'.
                 //
                 // First grab the longest part of the expression that doesn't have any '*' characters in it
-                var baseExpression = BaseDirectory(pathExpression);
+                var baseExpression = BaseDirectory(localPathExpression);
 
                 // Get the left overs of the expression with all the wild cards etc.
-                var remainder = pathExpression.Substring(baseExpression.Length).TrimStart('\\');
+                var remainder = localPathExpression.Substring(baseExpression.Length).TrimStart('\\');
 
                 // Get the relative directory
-                var relativeDirectory = GetDirectoryPathRelativeToDirectory(baseExpression, baseDirectory);
+                var relativeDirectory = GetDirectoryPathRelativeToDirectory(baseExpression, localBaseDirectory);
                 relativeExpression = Path.Combine(relativeDirectory, remainder).TrimStart('\\');
             }
 
             matcher.AddInclude(relativeExpression);
-            return matcher.GetResultsInFullPath(baseDirectory);
+            return matcher.GetResultsInFullPath(localBaseDirectory);
         }
     }
 }

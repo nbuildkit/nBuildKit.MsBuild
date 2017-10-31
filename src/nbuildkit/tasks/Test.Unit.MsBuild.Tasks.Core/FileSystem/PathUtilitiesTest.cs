@@ -198,6 +198,95 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         }
 
         [Test]
+        public void IncludedPathsWithAbsolutePathsAndUnnecessaryWhiteSpace()
+        {
+            var directory = CreateTempDirectory();
+            var file1 = Path.Combine(directory, "temp", "file.txt");
+            CreateTempFile(file1);
+
+            var file2 = Path.Combine(directory, "other path", "temp", "file.txt");
+            CreateTempFile(file2);
+
+            var file3 = Path.Combine(directory, "file.txt");
+            CreateTempFile(file3);
+
+            Assert.That(
+                PathUtilities.IncludedPaths(file3 + " ", directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file3
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(" " + file1, directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        " {0}\\temp\\*.txt ",
+                        directory),
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "  {0}\\**\\*.txt  ",
+                        directory),
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file2,
+                        file3,
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        " {0}\\other*\\**\\*.txt ",
+                        directory),
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file2
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        " {0}\\other\\**\\*.txt ",
+                        directory),
+                    directory),
+                Is.EquivalentTo(
+                    new string[0]));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "      {0}\\**\\temp\\*.txt  ",
+                        directory),
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file2
+                    }));
+        }
+
+        [Test]
         public void IncludedPathsWithExclusionsAndAbsolutePaths()
         {
             var directory = CreateTempDirectory();
@@ -293,6 +382,101 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         }
 
         [Test]
+        public void IncludedPathsWithExclusionsAndAbsolutePathsAndUnnecessaryWhiteSpace()
+        {
+            var directory = CreateTempDirectory();
+            var file1 = Path.Combine(directory, "temp", "file.txt");
+            CreateTempFile(file1);
+
+            var file2 = Path.Combine(directory, "temp", "other.txt");
+            CreateTempFile(file2);
+
+            var file3 = Path.Combine(directory, "other path", "temp", "file.txt");
+            CreateTempFile(file3);
+
+            var file4 = Path.Combine(directory, "other", "temp", "other.txt");
+            CreateTempFile(file4);
+
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @" {0}\**\*.txt ",
+                        directory),
+                    Enumerable.Empty<string>(),
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file2,
+                        file3,
+                        file4,
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\**\*.txt ",
+                        directory),
+                    new[]
+                        {
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                @" {0}\other*\**\*.* ",
+                                directory)
+                        },
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file2,
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @" {0}\**\*.txt",
+                        directory),
+                    new[]
+                        {
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                @"{0}\temp\other.* ",
+                                directory)
+                        },
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file3,
+                        file4,
+                    }));
+            Assert.That(
+                PathUtilities.IncludedPaths(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        @"{0}\**\*.txt   ",
+                        directory),
+                    new[]
+                        {
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                @"  {0}\**\other.*",
+                                directory)
+                        },
+                    directory),
+                Is.EquivalentTo(
+                    new[]
+                    {
+                        file1,
+                        file3
+                    }));
+        }
+
+        [Test]
         public void IncludedPathsWithExclusionsAndRelativePaths()
         {
             var directory = CreateTempDirectory();
@@ -375,7 +559,6 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                     }));
         }
 
-        // [Ignore("Ignoring files without directories doesn't work yet.")]
         [Test]
         public void IncludedPathsWithFileExclusions()
         {
@@ -392,7 +575,6 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
             var file4 = Path.Combine(directory, "other", "temp", "other.txt");
             CreateTempFile(file4);
 
-            // This doesn't work yet
             Assert.That(
                 PathUtilities.IncludedPaths(
                     @"**\*.txt",
