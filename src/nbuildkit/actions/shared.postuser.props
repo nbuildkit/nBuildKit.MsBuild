@@ -90,10 +90,6 @@
         <NuGetPackageFiles
             Condition="Exists('$(DirWorkspace)\packages.config')"
             Include="$(DirWorkspace)\packages.config" />
-        <NuGetPackageFiles
-            Condition=" '$(DirSrc)' != '' "
-            Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config"
-            Include="$(DirSrc)\**\packages.config" />
     </ItemGroup>
 
 
