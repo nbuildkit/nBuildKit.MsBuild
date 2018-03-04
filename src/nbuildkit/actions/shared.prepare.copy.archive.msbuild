@@ -8,6 +8,7 @@
     </PropertyGroup>
     <PropertyGroup>
         <ShouldLoadArchiveFilesToCopy>true</ShouldLoadArchiveFilesToCopy>
+        <ShouldLoadGpgKeyServers>true</ShouldLoadGpgKeyServers>
         <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
         <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
         <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
@@ -45,13 +46,13 @@
         <CallTarget
             Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
             Targets="_nBuildKit_Shared_Prepare_Copy_FromArchive_GetToolPaths" />
-        <Exec
+        <ValidateGpgSignature
             Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
-            Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) --recv-keys %(ArchiveFilesToCopy.GpgKey)" />
-
-        <Exec
-            Condition=" '%(ArchiveFilesToCopy.HashFile)' != '' AND '%(ArchiveFilesToCopy.SignatureFile)' != '' "
-            Command="&quot;$(ToolsExternalGpgPath)&quot; --verify &quot;%(ArchiveFilesToCopy.SignatureFile)&quot; &quot;%(ArchiveFilesToCopy.HashFile)&quot;" />
+            GpgExecutablePath="$(ToolsExternalGpgPath)"
+            GpgKey="%(ArchiveFilesToCopy.GpgKey)"
+            KeyServers="@(GpgKeyServers)"
+            Path="%(ArchiveFilesToCopy.HashFile)"
+            SignatureFile="%(ArchiveFilesToCopy.SignatureFile)" />
 
         <ValidateHash
             Algorithm="%(ArchiveFilesToCopy.HashAlgorithm)"

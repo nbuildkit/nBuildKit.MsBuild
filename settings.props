@@ -362,12 +362,14 @@
     <!--
         Security
     -->
-    <PropertyGroup>
+    <ItemGroup Condition=" 'ShouldLoadGpgKeyServers' == 'true' ">
         <!--
             The GPG key server that will be used to pull GPG keys from.
         -->
-        <!-- <GpgKeyServer>pgp.mit.edu</GpgKeyServer> -->
-    </PropertyGroup>
+        <!--
+        <GpgKeyServers Include="pgp.mit.edu" />
+        -->
+    </ItemGroup>
 
 
     <!--

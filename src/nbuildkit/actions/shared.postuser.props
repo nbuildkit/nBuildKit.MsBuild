@@ -82,6 +82,20 @@
         </SystemTemplateVersion>
     </ItemGroup>
 
+    <!--
+        Security
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadGpgKeyServers)' == 'true' AND '@(GpgKeyServers)' == '' ">
+        <!--
+            The GPG key servers that will be used to pull GPG keys from.
+        -->
+        <GpgKeyServers Include="ha.pool.sks-keyservers.net" />
+        <GpgKeyServers Include="hkp://p80.pool.sks-keyservers.net:80" />
+        <GpgKeyServers Include="keyserver.ubuntu.com" />
+        <GpgKeyServers Include="hkp://keyserver.ubuntu.com:80" />
+        <GpgKeyServers Include="pgp.mit.edu" />
+    </ItemGroup>
+
 
     <!--
         **** PREPARE - NUGET RESTORE ****

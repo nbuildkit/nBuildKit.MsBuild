@@ -97,9 +97,19 @@
         <NBuildKitErrorIdTasksGenerateTargetsFailedToSaveFile>NBuildKit.GenerateTargets.FailedToSaveFile</NBuildKitErrorIdTasksGenerateTargetsFailedToSaveFile>
         <NBuildKitErrorCodeTasksGenerateTargetsFailedToSaveFile>NBK0357</NBuildKitErrorCodeTasksGenerateTargetsFailedToSaveFile>
 
-        <!-- File Hash: Error codes from 0360 - 0379 -->
-        <OpsToolsBuildErrorIdCalculateHashFailure>NBuildKit.CalculateHash.Failure</OpsToolsBuildErrorIdCalculateHashFailure>
-        <OpsToolsBuildErrorCodeCalculateHashFailure>NBK0361</OpsToolsBuildErrorCodeCalculateHashFailure>
+        <!-- File Hash: Error codes from 0360 - 0369 -->
+        <NBuildKitErrorIdCalculateHashFailure>NBuildKit.CalculateHash.Failure</NBuildKitErrorIdCalculateHashFailure>
+        <NBuildKitErrorCodeCalculateHashFailure>NBK0361</NBuildKitErrorCodeCalculateHashFailure>
+
+        <!-- GPG signature: Error codes from 0370 - 0379 -->
+        <NBuildKitErrorIdValidateGpgSignatureNoGpgKey>NBuildKit.ValidateGpgSignature.NoGpgKey</NBuildKitErrorIdValidateGpgSignatureNoGpgKey>
+        <NBuildKitErrorCodeValidateGpgSignatureNoGpgKey>NBK0371</NBuildKitErrorCodeValidateGpgSignatureNoGpgKey>
+
+        <NBuildKitErrorIdValidateGpgSignatureNoGpgServers>NBuildKit.ValidateGpgSignature.NoGpgServers</NBuildKitErrorIdValidateGpgSignatureNoGpgServers>
+        <NBuildKitErrorCodeValidateGpgSignatureNoGpgServers>NBK0372</NBuildKitErrorCodeValidateGpgSignatureNoGpgServers>
+
+        <NBuildKitErrorIdValidateGpgSignatureFailure>NBuildKit.ValidateGpgSignature.Failure</NBuildKitErrorIdValidateGpgSignatureFailure>
+        <NBuildKitErrorCodeValidateGpgSignatureFailure>NBK0373</NBuildKitErrorCodeValidateGpgSignatureFailure>
 
 
         <!-- Application interaction -->
@@ -415,6 +425,24 @@
         <ErrorInformation Include="$(NBuildKitErrorIdTasksGenerateTargetsFailedToSaveFile)">
             <Code>$(NBuildKitErrorCodeTasksGenerateTargetsFailedToSaveFile)</Code>
             <Description>Failed to load the task types from the targets assembly.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdCalculateHashFailure)">
+            <Code>$(NBuildKitErrorCodeCalculateHashFailure)</Code>
+            <Description>The provided hash value did not match the calculated hash value.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdValidateGpgSignatureNoGpgKey)">
+            <Code>$(NBuildKitErrorCodeValidateGpgSignatureNoGpgKey)</Code>
+            <Description>No GPG key was provided. Cannot validate the GPG signature.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdValidateGpgSignatureNoGpgServers)">
+            <Code>$(NBuildKitErrorCodeValidateGpgSignatureNoGpgServers)</Code>
+            <Description></Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdValidateGpgSignatureFailure)">
+            <Code>$(NBuildKitErrorCodeValidateGpgSignatureFailure)</Code>
+            <Description>GPG signature verification failed.</Description>
         </ErrorInformation>
 
         <ErrorInformation Include="$(NBuildKitErrorIdFxCopNoProjectFileDefined)">
