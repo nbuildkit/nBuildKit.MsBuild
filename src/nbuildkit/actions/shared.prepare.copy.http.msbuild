@@ -7,6 +7,7 @@
         <ExistsSharedPrepareCopyHttp>true</ExistsSharedPrepareCopyHttp>
     </PropertyGroup>
     <PropertyGroup>
+        <ShouldLoadGpgKeyServers>true</ShouldLoadGpgKeyServers>
         <ShouldLoadHttpFilesToCopy>true</ShouldLoadHttpFilesToCopy>
         <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
         <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
@@ -105,13 +106,13 @@
         <CallTarget
             Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
             Targets="_nBuildKit_Shared_Prepare_Copy_FromUrl_GetToolPaths" />
-        <Exec
+        <ValidateGpgSignature
             Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
-            Command="&quot;$(ToolsExternalGpgPath)&quot; --keyserver $(GpgKeyServer) --recv-keys %(HttpFilesToCopy.GpgKey)" />
-
-        <Exec
-            Condition=" '$(HashFile)' != '' AND '$(SignatureFile)' != '' "
-            Command="&quot;$(ToolsExternalGpgPath)&quot; --verify &quot;$(SignatureFile)&quot; &quot;$(HashFile)&quot;" />
+            GpgExecutablePath="$(ToolsExternalGpgPath)"
+            GpgKey="%(HttpFilesToCopy.GpgKey)"
+            KeyServers="@(GpgKeyServers)"
+            Path="$(HashFile)"
+            SignatureFile="$(SignatureFile)" />
 
         <ValidateHash
             Algorithm="%(HttpFilesToCopy.HashAlgorithm)"
