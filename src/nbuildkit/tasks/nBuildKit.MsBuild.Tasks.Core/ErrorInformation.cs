@@ -24,6 +24,11 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <summary>
         /// Defines the error ID for an error indicating that a required application argument has not been provided.
         /// </summary>
+        public const string ErrorIdApplicationInvalidArgument = "NBuildKit.Application.InvalidArgument";
+
+        /// <summary>
+        /// Defines the error ID for an error indicating that a required application argument has not been provided.
+        /// </summary>
         public const string ErrorIdApplicationMissingArgument = "NBuildKit.Application.MissingArgument";
 
         /// <summary>
