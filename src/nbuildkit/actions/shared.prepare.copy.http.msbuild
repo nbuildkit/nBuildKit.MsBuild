@@ -21,7 +21,7 @@
     <Target
         Condition=" '@(HttpFilesToCopy)' != '' "
         Name="nBuildKit_Shared_Prepare_Copy_FromUrl"
-        Outputs="%(HttpFilesToCopy.Destination)">
+        Outputs="%(HttpFilesToCopy.Destination)\%(HttpFilesToCopy.Name)">
 
         <PropertyGroup>
             <DestinationPath>%(HttpFilesToCopy.Destination)</DestinationPath>

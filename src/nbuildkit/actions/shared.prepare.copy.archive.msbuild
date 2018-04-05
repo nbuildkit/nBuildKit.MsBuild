@@ -21,7 +21,7 @@
     <Target
         Condition=" '@(ArchiveFilesToCopy)' != '' "
         Name="nBuildKit_Shared_Prepare_Copy_FromArchive"
-        Outputs="%(ArchiveFilesToCopy.Destination)">
+        Outputs="%(ArchiveFilesToCopy.Identity)_%(ArchiveFilesToCopy.Destination)">
 
         <TemplateText
             Condition=" '%(ArchiveFilesToCopy.FullPath)' != '' "
