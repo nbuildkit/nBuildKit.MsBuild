@@ -20,6 +20,7 @@
 
     <Target
         Condition=" '@(ArchiveFilesToCopy)' != '' "
+        Inputs="%(ArchiveFilesToCopy.Identity)"
         Name="nBuildKit_Shared_Prepare_Copy_FromArchive"
         Outputs="%(ArchiveFilesToCopy.Destination)">
 

@@ -17,7 +17,7 @@
     <Target
         Condition=" '@(FilesToCopy)' != '' "
         Name="nBuildKit_Shared_Prepare_Copy_FromFileSystem"
-        Outputs="%(FilesToCopy.Destination)">
+        Outputs="%(FilesToCopy.Destination)\%(RecursiveDir)%(Filename)%(Extension)">
         <PropertyGroup>
             <DestinationPath>%(FilesToCopy.Destination)</DestinationPath>
         </PropertyGroup>
