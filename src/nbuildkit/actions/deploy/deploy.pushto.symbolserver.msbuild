@@ -19,6 +19,7 @@
         Project="$(FileImports)" />
 
     <Target
+        Condition=" '@(SymbolPackagesToPush)' != '' "
         Name="nBuildKit_Deploy_PushTo_SymbolServer_Run">
         <CallTarget
             Condition=" '$(NuGetSymbolSourceUrl)' != '' AND '$(NuGetSymbolSourceUrl)' != 'UNDEFINED' "
