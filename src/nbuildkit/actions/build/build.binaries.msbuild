@@ -80,14 +80,6 @@
             <BuildProperties>%(SolutionsToBuild.Properties)</BuildProperties>
             <BuildPlatform>%(SolutionsToBuild.Platform)</BuildPlatform>
         </PropertyGroup>
-        <CreateItem Include="$(BuildProperties.Split(';'))">
-            <Output
-                ItemName="PropertyItems"
-                TaskParameter="Include" />
-        </CreateItem>
-        <PropertyGroup>
-            <BuildProperties>@(PropertyItems)</BuildProperties>
-        </PropertyGroup>
         <TemplateText
             ErrorInformation="@(ErrorInformation)"
             Template="$(BuildProperties)"
@@ -96,6 +88,14 @@
                 PropertyName="BuildProperties"
                 TaskParameter="Result" />
         </TemplateText>
+        <CreateItem Include="$(BuildProperties.Split(';'))">
+            <Output
+                ItemName="PropertyItems"
+                TaskParameter="Include" />
+        </CreateItem>
+        <PropertyGroup>
+            <BuildProperties>@(PropertyItems)</BuildProperties>
+        </PropertyGroup>
 
         <MSBuild
             BuildInParallel="False"
