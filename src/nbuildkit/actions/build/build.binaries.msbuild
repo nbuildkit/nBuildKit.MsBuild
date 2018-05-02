@@ -80,6 +80,14 @@
             <BuildProperties>%(SolutionsToBuild.Properties)</BuildProperties>
             <BuildPlatform>%(SolutionsToBuild.Platform)</BuildPlatform>
         </PropertyGroup>
+        <TemplateText
+            ErrorInformation="@(ErrorInformation)"
+            Template="$(BuildProperties)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="BuildProperties"
+                TaskParameter="Result" />
+        </TemplateText>
         <CreateItem Include="$(BuildProperties.Split(';'))">
             <Output
                 ItemName="PropertyItems"
