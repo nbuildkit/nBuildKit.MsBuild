@@ -88,6 +88,14 @@
         <PropertyGroup>
             <BuildProperties>@(PropertyItems)</BuildProperties>
         </PropertyGroup>
+        <TemplateText
+            ErrorInformation="@(ErrorInformation)"
+            Template="$(BuildProperties)"
+            Tokens="@(TemplateTokens)">
+            <Output
+                PropertyName="BuildProperties"
+                TaskParameter="Result" />
+        </TemplateText>
 
         <MSBuild
             BuildInParallel="False"
