@@ -44,6 +44,16 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             set;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the '--force' argument should be provided to the 'checkout'
+        /// command.
+        /// </summary>
+        public bool Force
+        {
+            get;
+            set;
+        }
+
         /// <inheritdoc/>
         public override bool Execute()
         {
@@ -51,6 +61,10 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             {
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "checkout \"{0}\" ", Branch.TrimEnd('\\')));
                 arguments.Add("--quiet ");
+                if (Force)
+                {
+                    arguments.Add("--force");
+                }
             }
 
             InvokeGit(arguments);
