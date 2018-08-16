@@ -126,6 +126,7 @@
         <TfsCurrentBranch
             ErrorInformation="@(ErrorInformation)"
             TfExecutablePath="$(ToolsExternalTfsPath)"
+            UserName="$(UserName)"
             Workspace="$(DirWorkspace)">
             <Output
                 PropertyName="TfsCurrentBranch"
@@ -134,15 +135,16 @@
         <TfsCurrentChangeSet
             ErrorInformation="@(ErrorInformation)"
             TfExecutablePath="$(ToolsExternalTfsPath)"
+            UserName="$(UserName)"
             Workspace="$(DirWorkspace)">
             <Output
-                PropertyName="TfsCurrentRevision"
-                TaskParameter="CurrentRevision" />
+                PropertyName="TfsCurrentChangeSet"
+                TaskParameter="CurrentChangeSet" />
         </TfsCurrentChangeSet>
 
         <ItemGroup>
             <TfsInfoItems Include="{" />
-            <TfsInfoItems Include="    &quot;revision&quot;: &quot;$(TfsCurrentRevision)&quot;," />
+            <TfsInfoItems Include="    &quot;revision&quot;: &quot;$(TfsCurrentChangeSet)&quot;," />
             <TfsInfoItems Include="    &quot;branch&quot;: &quot;$(TfsCurrentBranch)&quot;" />
             <TfsInfoItems Include="}" />
         </ItemGroup>
