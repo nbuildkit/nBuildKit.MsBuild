@@ -80,23 +80,36 @@ namespace NBuildKit.MsBuild.Tasks.Script
                 {
                     if (!string.IsNullOrWhiteSpace(e.Data))
                     {
-                        if (IgnoreErrors)
+                        if (e.Data.StartsWith("npm warn", StringComparison.OrdinalIgnoreCase))
                         {
                             Log.LogWarning(e.Data);
+                            return;
                         }
-                        else
+
+                        if (e.Data.IndexOf("error: ", StringComparison.OrdinalIgnoreCase) > 0)
                         {
-                            Log.LogError(
-                                string.Empty,
-                                ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationErrorStream),
-                                Core.ErrorInformation.ErrorIdApplicationErrorStream,
-                                string.Empty,
-                                0,
-                                0,
-                                0,
-                                0,
-                                e.Data);
+                            if (IgnoreErrors)
+                            {
+                                Log.LogWarning(e.Data);
+                            }
+                            else
+                            {
+                                Log.LogError(
+                                    string.Empty,
+                                    ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationErrorStream),
+                                    Core.ErrorInformation.ErrorIdApplicationErrorStream,
+                                    string.Empty,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    e.Data);
+                            }
+
+                            return;
                         }
+
+                        Log.LogMessage(e.Data);
                     }
                 };
             var exitCode = InvokeCommandLineTool(
