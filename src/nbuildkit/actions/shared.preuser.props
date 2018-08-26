@@ -585,6 +585,7 @@
         <!--
             The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable.
         -->
+        <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' AND Exists('c:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe') ">c:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe</ToolsExternalTfsPath>
         <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath>
     </PropertyGroup>
 
