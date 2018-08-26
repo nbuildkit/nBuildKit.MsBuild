@@ -81,6 +81,9 @@
         <NBuildKitErrorIdGitNotFound>NBuildKit.FileNotFound.Git</NBuildKitErrorIdGitNotFound>
         <NBuildKitErrorCodeGitNotFound>NBK0322</NBuildKitErrorCodeGitNotFound>
 
+        <NBuildKitErrorIdTfsNotFound>NBuildKit.FileNotFound.Tfs</NBuildKitErrorIdTfsNotFound>
+        <NBuildKitErrorCodeTfsNotFound>NBK0323</NBuildKitErrorCodeTfsNotFound>
+
         <!-- Bootstrap file issues: Error codes from 0340 to 0359 -->
         <NBuildKitErrorIdBootstrapBuildTaskFileNotFound>NBuildKit.Bootstrap.BuildTask.FileNotFound</NBuildKitErrorIdBootstrapBuildTaskFileNotFound>
         <NBuildKitErrorCodeBootstrapBuildTaskFileNotFound>NBK0340</NBuildKitErrorCodeBootstrapBuildTaskFileNotFound>
@@ -144,6 +147,16 @@
 
         <NBuildKitErrorIdDeployPushToGitBranchNoFiles>NBuildKit.Deploy.GitBranch.NoFiles</NBuildKitErrorIdDeployPushToGitBranchNoFiles>
         <NBuildKitErrorCodeDeployPushToGitBranchNoFiles>NBK0791</NBuildKitErrorCodeDeployPushToGitBranchNoFiles>
+
+        <!-- TFS issues: Error codes from 0800 to 820 -->
+        <NBuildKitErrorIdVcsTfsNoWorkspace>NBuildKit.Vcs.Tfs.NoWorkspace</NBuildKitErrorIdVcsTfsNoWorkspace>
+        <NBuildKitErrorCodeVcsTfsNoWorkspace>NBK0800</NBuildKitErrorCodeVcsTfsNoWorkspace>
+
+        <NBuildKitErrorIdVcsTfsNoChangeSet>NBuildKit.Vcs.Tfs.NoChangeSet</NBuildKitErrorIdVcsTfsNoChangeSet>
+        <NBuildKitErrorCodeVcsTfsNoChangeSet>NBK0801</NBuildKitErrorCodeVcsTfsNoChangeSet>
+
+        <NBuildKitErrorIdVcsTfsNoMapping>NBuildKit.Vcs.Tfs.NoMapping</NBuildKitErrorIdVcsTfsNoMapping>
+        <NBuildKitErrorCodeVcsTfsNoMapping>NBK0802</NBuildKitErrorCodeVcsTfsNoMapping>
 
 
         <!-- Work items / Issues -->
@@ -356,6 +369,19 @@
         <ErrorInformation Include="$(NBuildKitErrorIdTasksApplicationInvalidArgument)">
             <Code>$(NBuildKitErrorCodeTasksApplicationInvalidArgument)</Code>
             <Description>The target application was provided with at least one invalid argument.</Description>
+        </ErrorInformation>
+
+        <ErrorInformation Include="$(NBuildKitErrorIdVcsTfsNoWorkspace)">
+            <Code>$(NBuildKitErrorCodeVcsTfsNoWorkspace)</Code>
+            <Description>No workspace could be found to gather TFS information from.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdVcsTfsNoChangeSet)">
+            <Code>$(NBuildKitErrorCodeVcsTfsNoChangeSet)</Code>
+            <Description>No change set could be obtained from the workspace.</Description>
+        </ErrorInformation>
+        <ErrorInformation Include="$(NBuildKitErrorIdVcsTfsNoMapping)">
+            <Code>$(NBuildKitErrorCodeVcsTfsNoMapping)</Code>
+            <Description>No mapping could be obtained from the workspace.</Description>
         </ErrorInformation>
 
         <ErrorInformation Include="$(NBuildKitErrorIdGetVersionGitVersionInvalidOutput)">

@@ -21,6 +21,7 @@
         Condition="!Exists('$(FileVcsInfo)')"
         Name="nBuildKit_Shared_Prepare_VcsInfo_Run">
         <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo" />
+        <CallTarget Targets="_nBuildKit_Shared_Prepare_VcsInfo_GatherTfsInfo" />
 
         <Copy
             DestinationFolder="$(DirTemplateGenerators)"
@@ -57,7 +58,7 @@
     </Target>
 
     <Target
-        Condition="$(IsGitWorkspace)"
+        Condition=" '$(IsGitWorkspace)' == 'true' "
         Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherGitInfo">
         <Error
             Code="$(NBuildKitErrorCodeGitNotFound)"
@@ -101,6 +102,56 @@
         <WriteLinesToFile
             File="$(FileVcsInfo)"
             Lines="@(GitInfoItems)"
+            Overwrite="true" />
+    </Target>
+
+    <Target
+        Condition=" '$(IsTfsWorkspace)' == 'true' "
+        Name="_nBuildKit_Shared_Prepare_VcsInfo_GatherTfsInfo">
+        <Error
+            Code="$(NBuildKitErrorCodeTfsNotFound)"
+            Condition=" '$(ToolsExternalTfsPath)' == '' "
+            HelpKeyword="$(NBuildKitErrorIdTfsNotFound)"
+            Text="No TF executable defined. Will not be able to gather the VCS information for the TFS workspace." />
+
+        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('$(FileVcsInfo)'))">
+            <Output
+                PropertyName="DirToCreate"
+                TaskParameter="Value" />
+        </CreateProperty>
+        <MakeDir
+            Condition="!Exists('$(DirToCreate)') "
+            Directories="$(DirToCreate)" />
+
+        <TfsCurrentBranch
+            ErrorInformation="@(ErrorInformation)"
+            TfExecutablePath="$(ToolsExternalTfsPath)"
+            UserName="$(UserName)"
+            Workspace="$(DirWorkspace)">
+            <Output
+                PropertyName="TfsCurrentBranch"
+                TaskParameter="CurrentBranch" />
+        </TfsCurrentBranch>
+        <TfsCurrentChangeSet
+            ErrorInformation="@(ErrorInformation)"
+            TfExecutablePath="$(ToolsExternalTfsPath)"
+            UserName="$(UserName)"
+            Workspace="$(DirWorkspace)">
+            <Output
+                PropertyName="TfsCurrentChangeSet"
+                TaskParameter="CurrentChangeSet" />
+        </TfsCurrentChangeSet>
+
+        <ItemGroup>
+            <TfsInfoItems Include="{" />
+            <TfsInfoItems Include="    &quot;revision&quot;: &quot;$(TfsCurrentChangeSet)&quot;," />
+            <TfsInfoItems Include="    &quot;branch&quot;: &quot;$(TfsCurrentBranch)&quot;" />
+            <TfsInfoItems Include="}" />
+        </ItemGroup>
+
+        <WriteLinesToFile
+            File="$(FileVcsInfo)"
+            Lines="@(TfsInfoItems)"
             Overwrite="true" />
     </Target>
  </Project>
