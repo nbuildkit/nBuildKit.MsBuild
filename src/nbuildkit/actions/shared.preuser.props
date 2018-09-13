@@ -520,6 +520,16 @@
     <!-- Overrides for the tools paths -->
     <PropertyGroup>
         <!--
+            The full path to the Visual Studio installation directory
+        -->
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools')">C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise')">C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional')">C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 14.0')">C:\Program Files (x86)\Microsoft Visual Studio 14.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0')">C:\Program Files (x86)\Microsoft Visual Studio 12.0</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0')">C:\Program Files (x86)\Microsoft Visual Studio 11.0</ToolsExternalVisualStudioDir>
+
+        <!--
             The full path and version of the Bower command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalBowerPath Condition=" '$(ToolsExternalBowerPath)' == '' ">UNDEFINED</ToolsExternalBowerPath>
@@ -585,7 +595,7 @@
         <!--
             The full path to the TFS command line executable. Normally expected to be found via the PATH environment variable.
         -->
-        <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' AND Exists('c:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe') ">c:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe</ToolsExternalTfsPath>
+        <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' AND Exists('$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe') ">$(ToolsExternalVisualStudioDir)\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe</ToolsExternalTfsPath>
         <ToolsExternalTfsPath Condition=" '$(ToolsExternalTfsPath)' == '' ">tf.exe</ToolsExternalTfsPath>
     </PropertyGroup>
 
