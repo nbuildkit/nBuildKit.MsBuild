@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
 
@@ -23,7 +24,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
         public override bool Execute()
         {
             var inputFile = GetAbsolutePath(Input);
-            if (!System.IO.File.Exists(inputFile))
+            if (!File.Exists(inputFile))
             {
                 Log.LogError(
                     string.Empty,
@@ -54,7 +55,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
                 }
 
                 string text;
-                using (var streamReader = new System.IO.StreamReader(inputFile))
+                using (var streamReader = new StreamReader(inputFile))
                 {
                     text = streamReader.ReadToEnd();
                 }
@@ -68,7 +69,16 @@ namespace NBuildKit.MsBuild.Tasks.Templating
                     }
                 }
 
-                using (var streamWriter = new System.IO.StreamWriter(inputFile))
+                if (File.Exists(inputFile))
+                {
+                    var fileAttributes = File.GetAttributes(inputFile);
+                    if (fileAttributes.HasFlag(FileAttributes.ReadOnly))
+                    {
+                        File.SetAttributes(inputFile, ~FileAttributes.ReadOnly);
+                    }
+                }
+
+                using (var streamWriter = new StreamWriter(inputFile))
                 {
                     streamWriter.WriteLine(text);
                     streamWriter.Flush();

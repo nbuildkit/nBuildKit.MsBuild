@@ -154,6 +154,15 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 encoding = System.Text.Encoding.GetEncoding(Encoding);
             }
 
+            if (File.Exists(filePath))
+            {
+                var fileAttributes = File.GetAttributes(filePath);
+                if (fileAttributes.HasFlag(FileAttributes.ReadOnly))
+                {
+                    File.SetAttributes(filePath, ~FileAttributes.ReadOnly);
+                }
+            }
+
             using (var writer = new StreamWriter(filePath, false, encoding))
             {
                 for (int i = 0; i < lines.Count; i++)
