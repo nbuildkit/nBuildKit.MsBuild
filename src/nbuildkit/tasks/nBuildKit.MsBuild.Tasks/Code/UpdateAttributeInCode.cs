@@ -116,11 +116,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     var path = GetAbsolutePath(InputFile);
                     if (File.Exists(path))
                     {
-                        var fileAttributes = File.GetAttributes(path);
-                        if (fileAttributes.HasFlag(FileAttributes.ReadOnly))
-                        {
-                            File.SetAttributes(path, ~FileAttributes.ReadOnly);
-                        }
+                        File.SetAttributes(path, FileAttributes.Normal);
                     }
 
                     using (var writer = new StreamWriter(path, false, encoding))

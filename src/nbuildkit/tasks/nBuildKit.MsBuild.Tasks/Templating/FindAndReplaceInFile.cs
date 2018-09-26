@@ -71,11 +71,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
 
                 if (File.Exists(inputFile))
                 {
-                    var fileAttributes = File.GetAttributes(inputFile);
-                    if (fileAttributes.HasFlag(FileAttributes.ReadOnly))
-                    {
-                        File.SetAttributes(inputFile, ~FileAttributes.ReadOnly);
-                    }
+                    File.SetAttributes(inputFile, FileAttributes.Normal);
                 }
 
                 using (var streamWriter = new StreamWriter(inputFile))
