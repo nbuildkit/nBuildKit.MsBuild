@@ -81,6 +81,7 @@
             <BuildPlatform>%(SolutionsToBuild.Platform)</BuildPlatform>
         </PropertyGroup>
         <TemplateText
+            Condition=" '$(BuildProperties)' != '' "
             ErrorInformation="@(ErrorInformation)"
             Template="$(BuildProperties)"
             Tokens="@(TemplateTokens)">
