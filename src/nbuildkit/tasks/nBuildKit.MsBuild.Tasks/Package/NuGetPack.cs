@@ -66,6 +66,19 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                     arguments.Add("-Symbols ");
                 }
 
+                // If the user has specified the MsBuild path then we include it here.
+                if (!string.IsNullOrWhiteSpace(MsBuildExecutablePath.ItemSpec))
+                {
+                    // Make sure we remove the back-slash because if we don't then
+                    // the closing quote will be eaten by the command line parser. Note that
+                    // this is only necessary because we're dealing with a directory
+                    arguments.Add(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "-MSBuildPath \"{0}\"",
+                            MsBuildExecutablePath.ItemSpec.TrimEnd('\\')));
+                }
+
                 // Make sure we remove the back-slash because if we don't then
                 // the closing quote will be eaten by the command line parser. Note that
                 // this is only necessary because we're dealing with a directory
@@ -103,6 +116,16 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         /// </summary>
         [Required]
         public ITaskItem File
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the path to the MsBuild command line executable that should be used by
+        /// NuGet.
+        /// </summary>
+        public ITaskItem MsBuildExecutablePath
         {
             get;
             set;

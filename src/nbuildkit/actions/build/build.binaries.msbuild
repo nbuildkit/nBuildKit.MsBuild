@@ -69,6 +69,7 @@
         <NuGetRestore
             Condition=" '$(FileExtension)' == '.sln'"
             ErrorInformation="@(ErrorInformation)"
+            MsBuildExecutablePath="$(MSBuildBinPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageFile="$(FileSln)"
@@ -81,6 +82,7 @@
             <BuildPlatform>%(SolutionsToBuild.Platform)</BuildPlatform>
         </PropertyGroup>
         <TemplateText
+            Condition=" '$(BuildProperties)' != '' "
             ErrorInformation="@(ErrorInformation)"
             Template="$(BuildProperties)"
             Tokens="@(TemplateTokens)">

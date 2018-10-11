@@ -59,6 +59,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                 {
                     arguments.Add(string.Format(CultureInfo.InvariantCulture, "push \"{0}\" ", package.TrimEnd('\\')));
                     arguments.Add("-NonInteractive -Verbosity detailed ");
+
                     if (!string.IsNullOrEmpty(Source))
                     {
                         arguments.Add(string.Format(CultureInfo.InvariantCulture, "-Source \"{0}\" ", Source.TrimEnd('\\')));
