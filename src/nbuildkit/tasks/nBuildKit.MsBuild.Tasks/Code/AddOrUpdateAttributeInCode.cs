@@ -154,6 +154,18 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 encoding = System.Text.Encoding.GetEncoding(Encoding);
             }
 
+            if (File.Exists(filePath))
+            {
+                File.SetAttributes(filePath, FileAttributes.Normal);
+            }
+
+            Log.LogMessage(
+                MessageImportance.Low,
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "File at: {0}. Exists: \"{1}\"",
+                    filePath,
+                    File.Exists(filePath)));
             using (var writer = new StreamWriter(filePath, false, encoding))
             {
                 for (int i = 0; i < lines.Count; i++)

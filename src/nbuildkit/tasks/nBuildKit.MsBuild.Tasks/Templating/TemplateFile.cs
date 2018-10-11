@@ -110,7 +110,13 @@ namespace NBuildKit.MsBuild.Tasks.Templating
                     encoding = System.Text.Encoding.GetEncoding(Encoding);
                 }
 
-                using (var streamWriter = new StreamWriter(GetAbsolutePath(OutputFileName), false, encoding))
+                var path = GetAbsolutePath(OutputFileName);
+                if (File.Exists(path))
+                {
+                    File.SetAttributes(path, FileAttributes.Normal);
+                }
+
+                using (var streamWriter = new StreamWriter(path, false, encoding))
                 {
                     for (int i = 0; i < outputLines.Count; i++)
                     {

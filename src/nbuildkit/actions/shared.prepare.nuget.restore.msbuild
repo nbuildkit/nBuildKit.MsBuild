@@ -51,6 +51,7 @@
         <NuGetRestore
             Condition=" '@(NuGetPackageFiles)' != '' "
             ErrorInformation="@(ErrorInformation)"
+            MsBuildExecutablePath="$(MSBuildBinPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackageDirectory="$(DirPackages)"
             PackageFile="%(NuGetPackageFiles.FullPath)"

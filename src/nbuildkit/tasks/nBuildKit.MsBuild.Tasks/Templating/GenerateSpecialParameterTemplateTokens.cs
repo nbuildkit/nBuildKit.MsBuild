@@ -91,7 +91,10 @@ namespace NBuildKit.MsBuild.Tasks.Templating
                     ITaskItem taskItem = processedTokens[i];
                     if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                     {
-                        tokenPairs.Add(taskItem.ItemSpec, taskItem.GetMetadata(MetadataReplacementValueTag));
+                        if (!tokenPairs.ContainsKey(taskItem.ItemSpec))
+                        {
+                            tokenPairs.Add(taskItem.ItemSpec, taskItem.GetMetadata(MetadataReplacementValueTag));
+                        }
                     }
                 }
             }
