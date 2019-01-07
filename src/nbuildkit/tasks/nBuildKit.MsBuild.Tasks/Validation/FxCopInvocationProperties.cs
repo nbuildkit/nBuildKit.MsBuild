@@ -79,28 +79,6 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         /// </summary>
         /// <param name="targetFramework">The target framework.</param>
         /// <param name="ruleSetPath">The path to the rule set file.</param>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown if <paramref name="targetFramework"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// Thrown if <paramref name="targetFramework"/> is an empty string.
-        /// </exception>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown if <paramref name="ruleSetPath"/> is <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// Thrown if <paramref name="ruleSetPath"/> is an empty string.
-        /// </exception>
-        public FxCopInvocationProperties(string targetFramework, string ruleSetPath)
-            : this(targetFramework, ruleSetPath, string.Empty)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FxCopInvocationProperties"/> class
-        /// </summary>
-        /// <param name="targetFramework">The target framework.</param>
-        /// <param name="ruleSetPath">The path to the rule set file.</param>
         /// <param name="customDictionaryPath">The path to the custom dictionary XML file.</param>
         /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="targetFramework"/> is <see langword="null"/>.

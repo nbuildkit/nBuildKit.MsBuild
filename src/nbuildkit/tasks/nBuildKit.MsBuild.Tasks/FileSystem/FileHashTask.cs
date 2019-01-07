@@ -5,6 +5,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Build.Framework;
@@ -32,7 +33,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
             var builder = new StringBuilder();
             for (int i = 0; i < hash.Length; i++)
             {
-                builder.AppendFormat("{0:X2}", hash[i]);
+                builder.AppendFormat(CultureInfo.InvariantCulture, "{0:X2}", hash[i]);
             }
 
             return builder.ToString();
