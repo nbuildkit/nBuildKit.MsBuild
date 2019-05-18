@@ -19,7 +19,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.Fusion
     /// <summary>
     /// Provides constants for use with AssemblyName objects.
     /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.Fusion", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.Fusion", "")]
     internal static class AssemblyNameElements
     {
         /// <summary>

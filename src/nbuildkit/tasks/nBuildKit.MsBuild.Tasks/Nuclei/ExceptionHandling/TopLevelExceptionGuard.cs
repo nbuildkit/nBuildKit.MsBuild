@@ -24,7 +24,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling
     /// Defines a top level exception handler which stops all exceptions from propagating out of the application, thus
     /// providing a chance for logging and semi-graceful termination of the application.
     /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "")]
     internal static class TopLevelExceptionGuard
     {
         /// <summary>
