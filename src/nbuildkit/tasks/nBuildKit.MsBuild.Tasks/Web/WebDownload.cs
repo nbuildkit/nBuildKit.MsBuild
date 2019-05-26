@@ -44,7 +44,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         {
             if (ReferenceEquals(builder, null))
             {
-                throw new ArgumentNullException("builder");
+                throw new ArgumentNullException(nameof(builder));
             }
 
             _webClientBuilder = builder;

@@ -96,22 +96,22 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         {
             if (targetFramework == null)
             {
-                throw new ArgumentNullException("targetFramework");
+                throw new ArgumentNullException(nameof(targetFramework));
             }
 
             if (string.IsNullOrWhiteSpace(targetFramework))
             {
-                throw new ArgumentException(Resources.Exceptions_Messages_ParameterShouldNotBeAnEmptyString, "targetFramework");
+                throw new ArgumentException(Resources.Exceptions_Messages_ParameterShouldNotBeAnEmptyString, nameof(targetFramework));
             }
 
             if (ruleSetPath == null)
             {
-                throw new ArgumentNullException("ruleSetPath");
+                throw new ArgumentNullException(nameof(ruleSetPath));
             }
 
             if (string.IsNullOrWhiteSpace(ruleSetPath))
             {
-                throw new ArgumentException(Resources.Exceptions_Messages_ParameterShouldNotBeAnEmptyString, "ruleSetPath");
+                throw new ArgumentException(Resources.Exceptions_Messages_ParameterShouldNotBeAnEmptyString, nameof(ruleSetPath));
             }
 
             _customDictionaryPath = customDictionaryPath ?? string.Empty;
@@ -157,9 +157,9 @@ namespace NBuildKit.MsBuild.Tasks.Validation
             // we overload the == operator. If other isn't actually null then
             // we get an infinite loop where we're constantly trying to compare to null.
             return !ReferenceEquals(other, null)
-                && _customDictionaryPath.Equals(other.CustomDictionaryFilePath)
-                && _ruleSetPath.Equals(other.RuleSetFilePath)
-                && _targetFramework.Equals(other.TargetFramework);
+                && _customDictionaryPath.Equals(other.CustomDictionaryFilePath, StringComparison.OrdinalIgnoreCase)
+                && _ruleSetPath.Equals(other.RuleSetFilePath, StringComparison.OrdinalIgnoreCase)
+                && _targetFramework.Equals(other.TargetFramework, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

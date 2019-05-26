@@ -46,7 +46,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         {
             if (ReferenceEquals(builder, null))
             {
-                throw new ArgumentNullException("builder");
+                throw new ArgumentNullException(nameof(builder));
             }
 
             _webClientBuilder = builder;
@@ -212,6 +212,10 @@ namespace NBuildKit.MsBuild.Tasks.Web
         /// Gets or sets the items that should be uploaded.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Items
         {
             get;

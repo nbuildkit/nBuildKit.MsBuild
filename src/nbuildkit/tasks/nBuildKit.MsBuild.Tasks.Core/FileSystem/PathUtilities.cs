@@ -34,7 +34,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
             }
 
             path = path.Trim();
-            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
             {
                 return path + Path.DirectorySeparatorChar;
             }
@@ -75,7 +75,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                     return pathSections[0].Trim(Path.DirectorySeparatorChar);
                 }
 
-                if (pathSections[0].EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (pathSections[0].EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
                 {
                     // The path section is most likely a directory because it has a trailing slash / backslash
                     return pathSections[0].Trim(Path.DirectorySeparatorChar);
@@ -157,12 +157,12 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         {
             if (string.IsNullOrWhiteSpace(fromPath))
             {
-                throw new ArgumentNullException("fromPath");
+                throw new ArgumentNullException(nameof(fromPath));
             }
 
             if (string.IsNullOrWhiteSpace(directoryPath))
             {
-                throw new ArgumentNullException("directoryPath");
+                throw new ArgumentNullException(nameof(directoryPath));
             }
 
             // The Uri class treats paths that are directories but don't end in a directory separator as files.
@@ -203,12 +203,12 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         {
             if (string.IsNullOrWhiteSpace(fromPath))
             {
-                throw new ArgumentNullException("fromPath");
+                throw new ArgumentNullException(nameof(fromPath));
             }
 
             if (string.IsNullOrWhiteSpace(directoryPath))
             {
-                throw new ArgumentNullException("directoryPath");
+                throw new ArgumentNullException(nameof(directoryPath));
             }
 
             fromPath = fromPath.Trim();

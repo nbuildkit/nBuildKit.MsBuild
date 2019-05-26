@@ -39,7 +39,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         {
             if (fileSystem == null)
             {
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException(nameof(fileSystem));
             }
 
             _fileSystem = fileSystem;

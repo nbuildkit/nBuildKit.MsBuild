@@ -176,6 +176,10 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// Gets or sets the collection of tokens.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Tokens
         {
             get;

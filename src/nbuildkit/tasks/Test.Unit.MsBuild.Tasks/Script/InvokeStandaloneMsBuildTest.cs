@@ -120,7 +120,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath) };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.RunEachTargetSeparately = false;
             task.SkipNonexistentProjects = false;
             task.StopOnFirstFailure = true;
@@ -194,7 +194,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath) };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.RunEachTargetSeparately = false;
             task.SkipNonexistentProjects = false;
             task.StopOnFirstFailure = true;
@@ -264,7 +264,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(nonExistingPath), new TaskItem(existingPath) };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.RunEachTargetSeparately = false;
             task.SkipNonexistentProjects = true;
             task.StopOnFirstFailure = true;
@@ -341,7 +341,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath1), new TaskItem(scriptPath2) };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.RunEachTargetSeparately = false;
             task.SkipNonexistentProjects = false;
             task.StopOnFirstFailure = true;
@@ -420,7 +420,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath1), new TaskItem(scriptPath2) };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.RunEachTargetSeparately = false;
             task.SkipNonexistentProjects = false;
             task.StopOnFirstFailure = false;
@@ -498,7 +498,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath1), new TaskItem(scriptPath2) };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.RunEachTargetSeparately = false;
             task.SkipNonexistentProjects = false;
             task.StopOnFirstFailure = true;
@@ -569,7 +569,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(nonexistingPath) };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.RunEachTargetSeparately = false;
             task.SkipNonexistentProjects = true;
             task.StopOnFirstFailure = true;
@@ -641,7 +641,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             var task = new InvokeStandaloneMsBuild(invoker.Object);
             task.BuildEngine = BuildEngine.Object;
             task.Projects = new[] { new TaskItem(scriptPath) };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.RunEachTargetSeparately = false;
             task.SkipNonexistentProjects = false;
             task.StopOnFirstFailure = true;

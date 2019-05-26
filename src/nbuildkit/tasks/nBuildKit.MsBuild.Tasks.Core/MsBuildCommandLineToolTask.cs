@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -238,6 +239,10 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// be executed.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Projects
         {
             get;
@@ -247,6 +252,10 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <summary>
         /// Gets or sets the additional MsBuild properties.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Properties
         {
             get;

@@ -31,7 +31,7 @@ namespace NBuildKit.MsBuild.Tasks.Tests
         {
             if (string.IsNullOrEmpty(testData))
             {
-                throw new ArgumentException("testData is null or empty.", "testData");
+                throw new ArgumentException("testData is null or empty.", nameof(testData));
             }
 
             DataReceivedEventArgs mockEventArgs =

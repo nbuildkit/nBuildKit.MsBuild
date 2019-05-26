@@ -181,7 +181,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         directory),
                     directory),
                 Is.EquivalentTo(
-                    new string[0]));
+                    Array.Empty<string>()));
             Assert.That(
                 PathUtilities.IncludedPaths(
                     string.Format(
@@ -270,7 +270,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         directory),
                     directory),
                 Is.EquivalentTo(
-                    new string[0]));
+                    Array.Empty<string>()));
             Assert.That(
                 PathUtilities.IncludedPaths(
                     string.Format(

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -26,8 +27,6 @@ namespace NBuildKit.MsBuild.Tasks.Code
     {
         private const string ErrorIdFailedToExtractPublicKey = "NBuildKit.GenerateInternalsVisibleTo.FailedToExtractPublicKey";
         private const string ErrorIdNoFiles = "NBuildKit.GenerateInternalsVisibleTo.NoFiles";
-
-        private const string MetadataValueTag = "ReplacementValue";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenerateInternalsVisibleToAttributes"/> class.
@@ -371,6 +370,10 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// Gets or sets the collection of items that describe which projects should have an <see cref="InternalsVisibleToAttribute"/> added.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Items
         {
             get;

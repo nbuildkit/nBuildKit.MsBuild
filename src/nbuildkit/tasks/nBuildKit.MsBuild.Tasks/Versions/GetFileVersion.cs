@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
 
@@ -19,7 +20,7 @@ namespace NBuildKit.MsBuild.Tasks.Versions
         /// <inheritdoc/>
         public override bool Execute()
         {
-            FileVersion = FileVersionInfo.GetVersionInfo(GetAbsolutePath(FilePath)).FileVersion.ToString();
+            FileVersion = FileVersionInfo.GetVersionInfo(GetAbsolutePath(FilePath)).FileVersion.ToString(CultureInfo.InvariantCulture);
             return true;
         }
 

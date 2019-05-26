@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
@@ -98,6 +99,10 @@ namespace NBuildKit.MsBuild.Tasks.Templating
         /// Gets or sets the collection of replacement tokens.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Tokens
         {
             get;

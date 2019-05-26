@@ -384,7 +384,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 if (assemblyFileToScan == null)
                 {
-                    throw new ArgumentNullException("assemblyFileToScan");
+                    throw new ArgumentNullException(nameof(assemblyFileToScan));
                 }
 
                 try

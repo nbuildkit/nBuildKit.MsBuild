@@ -35,7 +35,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         {
             if (logger == null)
             {
-                throw new ArgumentNullException("logger");
+                throw new ArgumentNullException(nameof(logger));
             }
 
             _logger = logger;
