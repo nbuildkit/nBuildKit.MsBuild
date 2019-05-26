@@ -17,7 +17,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
 {
     /// <summary>
     /// Defines a <see cref="ITask"/> which validates that the GPG signature of a file matches the
-    /// expected signature
+    /// expected signature.
     /// </summary>
     public sealed class ValidateGpgSignature : CommandLineToolTask
     {
@@ -189,7 +189,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         }
 
         /// <summary>
-        /// Gets or sets the collection of GPG keys for which the
+        /// Gets or sets the GPG keys for which the signature should be verified.
         /// </summary>
         [Required]
         public ITaskItem GpgKey
@@ -206,7 +206,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         ///     The event handler that handles the standard output stream of the command line application. If no value is provided
         ///     then all messages are logged.
         /// </param>
-        /// <returns>The output of the GIT process</returns>
+        /// <returns>The output of the GPG process.</returns>
         private int InvokeGpg(IEnumerable<string> arguments, DataReceivedEventHandler standardOutputHandler = null)
         {
             if (standardOutputHandler == null)

@@ -79,7 +79,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// if escaping is necessary at all.  This can save lots of calls to copy around item metadata
         /// that is really the same whether escaped or not.
         /// </summary>
-        /// <param name="text">The unescaped string</param>
+        /// <param name="text">The unescaped string.</param>
         /// <returns>true if the string contains any of the characters that need to be escaped, otherwise false.</returns>
         private static bool ContainsReservedCharacters(string text)
         {
@@ -91,7 +91,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// XX is the hex value of the ASCII code for the char.
         /// </summary>
         /// <param name="text">The string to escape.</param>
-        /// <returns>escaped string</returns>
+        /// <returns>escaped string.</returns>
         public static string Escape(string text)
         {
             return EscapeWithOptionalCaching(text, cache: false);
@@ -151,7 +151,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <summary>
         /// Convert the given integer into its hexadecimal representation.
         /// </summary>
-        /// <param name="x">The number to convert, which must be non-negative and less than 16</param>
+        /// <param name="x">The number to convert, which must be non-negative and less than 16.</param>
         /// <returns>The character which is the hexadecimal representation of <paramref name="x"/>.</returns>
         private static char HexDigitChar(int x)
         {
@@ -170,7 +170,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// by the hexadecimal number XX.
         /// </summary>
         /// <param name="text">The string to unescape.</param>
-        /// <returns>unescaped string</returns>
+        /// <returns>unescaped string.</returns>
         public static string UnescapeAll(string text)
         {
             bool throwAwayBool;
@@ -183,7 +183,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// </summary>
         /// <param name="text">The string to unescape.</param>
         /// <param name="escapingWasNecessary">Whether any replacements were made.</param>
-        /// <returns>unescaped string</returns>
+        /// <returns>unescaped string.</returns>
         public static string UnescapeAll(string text, out bool escapingWasNecessary)
         {
             escapingWasNecessary = false;

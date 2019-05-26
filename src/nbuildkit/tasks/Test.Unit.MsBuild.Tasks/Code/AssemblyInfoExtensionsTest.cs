@@ -3,6 +3,7 @@
 // Licensed under the Apache License, Version 2.0 license. See LICENCE.md file in the project root for full license information.
 // </copyright>
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -13,6 +14,10 @@ using NUnit.Framework;
 namespace NBuildKit.MsBuild.Tasks.Code
 {
     [TestFixture]
+    [SuppressMessage(
+        "Microsoft.StyleCop.CSharp.DocumentationRules",
+        "SA1600:ElementsMustBeDocumented",
+        Justification = "Unit tests do not need documentation.")]
     public sealed class AssemblyInfoExtensionsTest
     {
         [Test]

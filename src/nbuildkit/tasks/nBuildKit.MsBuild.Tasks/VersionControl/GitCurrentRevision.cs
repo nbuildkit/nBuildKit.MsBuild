@@ -54,7 +54,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "rev-parse {0}",
-                            !string.IsNullOrEmpty(RevisionSpec) ? RevisionSpec : "HEAD")
+                            !string.IsNullOrEmpty(RevisionSpec) ? RevisionSpec : "HEAD"),
                     });
                 CurrentRevision = output.Trim();
             }

@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -17,6 +18,10 @@ using NUnit.Framework;
 namespace NBuildKit.MsBuild.Tasks.FileSystem
 {
     [TestFixture]
+    [SuppressMessage(
+        "Microsoft.StyleCop.CSharp.DocumentationRules",
+        "SA1600:ElementsMustBeDocumented",
+        Justification = "Unit tests do not need documentation.")]
     public sealed class ValidateHashTest : TaskTest
     {
         [Test]

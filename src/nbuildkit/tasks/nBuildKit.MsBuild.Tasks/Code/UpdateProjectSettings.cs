@@ -152,6 +152,17 @@ namespace NBuildKit.MsBuild.Tasks.Code
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the build information attributes should be added
+        /// to the AssemblyInfo file.
+        /// </summary>
+        [Required]
+        public bool GenerateBuildInformation
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets or sets the path to the project file which should be updated.
         /// </summary>
         [Required]
@@ -300,7 +311,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 UpdateProject(doc, projectPath, tokens);
             }
 
-            if (!string.IsNullOrWhiteSpace(assemblyInfoPath) && File.Exists(assemblyInfoPath))
+            if (GenerateBuildInformation && !string.IsNullOrWhiteSpace(assemblyInfoPath) && File.Exists(assemblyInfoPath))
             {
                 var attributesToUpdate = new List<Tuple<string, string, bool>>
                 {

@@ -31,7 +31,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// Invokes the GIT command line tool with the given arguments in the provided workspace directory.
         /// </summary>
         /// <param name="arguments">The collection of arguments.</param>
-        /// <returns>The output of the GIT process</returns>
+        /// <returns>The output of the GIT process.</returns>
         protected string GetGitOutput(IEnumerable<string> arguments)
         {
             var text = new StringBuilder();
@@ -84,7 +84,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         ///     The event handler that handles the standard output stream of the command line application. If no value is provided
         ///     then all messages are logged.
         /// </param>
-        /// <returns>The output of the GIT process</returns>
+        /// <returns>The output of the GIT process.</returns>
         protected int InvokeGit(IEnumerable<string> arguments, DataReceivedEventHandler standardOutputHandler = null)
         {
             if (standardOutputHandler == null)

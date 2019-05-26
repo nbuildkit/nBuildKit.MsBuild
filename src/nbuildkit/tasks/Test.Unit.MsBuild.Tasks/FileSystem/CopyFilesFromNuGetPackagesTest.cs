@@ -112,7 +112,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                                 "{0};{1}",
                                 destination1,
                                 destination2)
-                        }
+                        },
                     }),
                 new TaskItem(
                     "A.B.C",
@@ -129,7 +129,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                                 "{0};{1}",
                                 destination1,
                                 destination2)
-                        }
+                        },
                     }),
             };
 
@@ -275,7 +275,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                         {
                             "Destinations",
                             destination1
-                        }
+                        },
                     }),
                 new TaskItem(
                     "A.B.C",
@@ -288,7 +288,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                         {
                             "Destinations",
                             destination2
-                        }
+                        },
                     }),
             };
 
@@ -398,7 +398,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                                 "{0};{1}",
                                 destination1,
                                 destination2)
-                        }
+                        },
                     }),
             };
 
@@ -502,7 +502,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                         {
                             "Destinations",
                             destination
-                        }
+                        },
                     }),
             };
 
@@ -598,7 +598,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                         {
                             "Destinations",
                             destination
-                        }
+                        },
                     }),
             };
 

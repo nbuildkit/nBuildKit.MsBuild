@@ -5,6 +5,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using Microsoft.Build.Utilities;
@@ -15,6 +16,10 @@ using NUnit.Framework;
 namespace NBuildKit.MsBuild.Tasks.FileSystem
 {
     [TestFixture]
+    [SuppressMessage(
+        "Microsoft.StyleCop.CSharp.DocumentationRules",
+        "SA1600:ElementsMustBeDocumented",
+        Justification = "Unit tests do not need documentation.")]
     public sealed class CalculateFileHashTest : TaskTest
     {
         [Test]

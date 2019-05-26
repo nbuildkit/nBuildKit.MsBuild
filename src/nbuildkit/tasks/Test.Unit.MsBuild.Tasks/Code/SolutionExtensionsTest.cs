@@ -3,24 +3,35 @@
 // Licensed under the Apache License, Version 2.0 license. See LICENCE.md file in the project root for full license information.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Nuclei;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Code
 {
     [TestFixture]
+    [SuppressMessage(
+        "Microsoft.StyleCop.CSharp.DocumentationRules",
+        "SA1600:ElementsMustBeDocumented",
+        Justification = "Unit tests do not need documentation.")]
     public sealed class SolutionExtensionsTest
     {
         [Test]
         public void GetProjects()
         {
+            // The current assembly will live in the bin folder
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+
+            // Go up 2 directories
+            var projectDirectory = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(directory)));
+            var solutionFile = Path.Combine(projectDirectory, "TestFiles", "OldSolution", "OldSolution.sln");
+
+            var projects = SolutionExtensions.GetProjects(solutionFile);
+            Assert.IsNotNull(projects);
+            Assert.AreEqual(2, projects.Count());
         }
 
         [Test]

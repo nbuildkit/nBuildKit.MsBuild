@@ -103,7 +103,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// Returns the most complete path for the given executable tool. May return just the name of the tool if the tool path is found via the
         /// PATH environment variable.
         /// </summary>
-        /// <param name="path">The path</param>
+        /// <param name="path">The path.</param>
         /// <returns>The most complete path for the given executable tool.</returns>
         protected string GetFullToolPath(ITaskItem path)
         {
@@ -119,7 +119,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// Returns the most complete path for the given executable tool. May return just the name of the tool if the tool path is found via the
         /// PATH environment variable.
         /// </summary>
-        /// <param name="path">The path</param>
+        /// <param name="path">The path.</param>
         /// <returns>The most complete path for the given executable tool.</returns>
         protected string GetFullToolPath(string path)
         {

@@ -23,7 +23,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// </summary>
         /// <param name="filePath">The full path to the AssemblyInfo file.</param>
         /// <param name="attributeName">The name of the attribute that should be updated.</param>
-        /// <param name="value">The value of the attribute</param>
+        /// <param name="value">The value of the attribute.</param>
         /// <param name="encoding">The encoding used for the AssemblyInfo file.</param>
         /// <param name="log">The function used to log messages.</param>
         /// <param name="addIfNotFound">A flag that indicates that the attribute should be added if it was not found.</param>

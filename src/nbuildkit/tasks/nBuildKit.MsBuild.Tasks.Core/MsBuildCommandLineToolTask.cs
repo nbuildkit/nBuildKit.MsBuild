@@ -245,7 +245,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         }
 
         /// <summary>
-        /// Gets or sets the additional MsBuild properties
+        /// Gets or sets the additional MsBuild properties.
         /// </summary>
         public ITaskItem[] Properties
         {
