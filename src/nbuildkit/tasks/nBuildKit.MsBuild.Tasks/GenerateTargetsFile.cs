@@ -176,7 +176,10 @@ namespace NBuildKit.MsBuild.Tasks
                 </Project>
             */
 
-            var doc = new XmlDocument();
+            var doc = new XmlDocument
+            {
+                XmlResolver = null,
+            };
 
             var xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
             var root = doc.DocumentElement;

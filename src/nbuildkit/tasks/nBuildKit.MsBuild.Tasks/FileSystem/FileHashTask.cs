@@ -5,6 +5,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -53,6 +54,14 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         /// </summary>
         /// <param name="filePath">The full path to the file that should be hashed.</param>
         /// <returns>A byte array indicating the hash of the file.</returns>
+        [SuppressMessage(
+            "Microsoft.Cryptography",
+            "CA5351:DoNotUseBrokenCryptographicAlgorithms",
+            Justification = "The algorithms are selected by the user.")]
+        [SuppressMessage(
+            "Microsoft.Cryptography",
+            "CA5350:DoNotUseWeakCryptographicAlgorithms",
+            Justification = "The algorithms are selected by the user.")]
         protected byte[] ComputeHash(string filePath)
         {
             var algorithm = Algorithm.ToUpperInvariant();

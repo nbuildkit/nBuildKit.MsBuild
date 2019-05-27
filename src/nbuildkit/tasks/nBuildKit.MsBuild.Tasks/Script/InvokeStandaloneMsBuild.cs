@@ -127,8 +127,20 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         </targetoutput>
                     </msbuildresults>
                 */
-                var doc = new XmlDocument();
-                doc.Load(targetOutputPath);
+                var doc = new XmlDocument
+                {
+                    XmlResolver = null,
+                };
+
+                var reader = new XmlTextReader(new StreamReader(targetOutputPath))
+                {
+                    DtdProcessing = DtdProcessing.Prohibit,
+                };
+                using (reader)
+                {
+                    doc.Load(reader);
+                }
+
                 var nodes = doc.SelectNodes("/msbuildresults/targetoutput");
                 foreach (var node in nodes)
                 {
