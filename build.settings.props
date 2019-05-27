@@ -101,23 +101,6 @@
         **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
     -->
     <!--
-        The list of all assembly info files that should be updated with version and copyright information.
-
-        For additional information see the ShouldGenerateAssemblyXXXX properties below.
-    -->
-    <ItemGroup Condition=" '$(ShouldLoadAssemblyInfoFilesToUpdate)' == 'true' ">
-        <!--
-        <AssemblyInfoFilesToUpdate
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\**\AssemblyInfo.cs" />
-        <AssemblyInfoFilesToUpdate
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\**\AssemblyInfo.vb" />
-        -->
-    </ItemGroup>
-
-
-    <!--
         **** PREPARE - GENERATE FILES ****
     -->
     <!--
@@ -865,13 +848,13 @@
             </PostSteps>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute Include="$(BuildStepsPrepareAssemblyInfo)">
+        <BuildStepsToExecute Include="$(BuildStepsPrepareUpdateProjectInfo)">
             <Properties>
             </Properties>
             <Groups>
                 prepare;
                 prepare.generate;
-                prepare.generate.assemblyinfo;
+                prepare.generate.projectinfo;
             </Groups>
             <PreSteps>
             </PreSteps>

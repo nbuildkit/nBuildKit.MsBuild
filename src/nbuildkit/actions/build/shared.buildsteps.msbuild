@@ -31,7 +31,8 @@
         <BuildStepsPrepareCopyArchive>$(MSBuildThisFileDirectory)..\shared.prepare.copy.archive.msbuild</BuildStepsPrepareCopyArchive>
         <BuildStepsPrepareFileHashes>$(MSBuildThisFileDirectory)..\shared.prepare.getfilehashes.msbuild</BuildStepsPrepareFileHashes>
 
-        <BuildStepsPrepareAssemblyInfo>$(MSBuildThisFileDirectory)build.prepare.updateassemblyinfo.msbuild</BuildStepsPrepareAssemblyInfo>
+        <BuildStepsPrepareUpdateProjectInfo>$(MSBuildThisFileDirectory)build.prepare.updateprojectInfo.msbuild</BuildStepsPrepareUpdateProjectInfo>
+
         <BuildStepsPrepareGenerateLicenses>$(MSBuildThisFileDirectory)build.prepare.generatelicenses.msbuild</BuildStepsPrepareGenerateLicenses>
         <BuildStepsPrepareGenerateFiles>$(MSBuildThisFileDirectory)build.prepare.generatefiles.msbuild</BuildStepsPrepareGenerateFiles>
 
@@ -182,13 +183,13 @@
             <Name>Build - Calculate file hashes</Name>
             <Path>$(BuildStepsPrepareFileHashes)</Path>
         </AvailableStepMetadata>
-        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareAssemblyInfo)'))">
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareUpdateProjectInfo)'))">
             <Description>
-                Updates all existing AssemblyInfo.cs and AssemblyInfo.vb files with the version numbers, company information, copyright information and optionally build time and build information.
+                Updates all referenced Visual Studio project files with the version numbers, company information, copyright information and optionally build time and build information.
             </Description>
-            <Id>BuildStepsPrepareAssemblyInfo</Id>
-            <Name>Build - update assemblyinfo files</Name>
-            <Path>$(BuildStepsPrepareAssemblyInfo)</Path>
+            <Id>BuildStepsPrepareUpdateProjectInfo</Id>
+            <Name>Build - update visual studio project files</Name>
+            <Path>$(BuildStepsPrepareUpdateProjectInfo)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsPrepareGenerateLicenses)'))">
             <Description>
