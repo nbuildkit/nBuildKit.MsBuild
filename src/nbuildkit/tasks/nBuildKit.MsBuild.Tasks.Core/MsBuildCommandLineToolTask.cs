@@ -56,6 +56,15 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             }
 
+            var msBuildInstances = Find
+            var vsBasePath = Path.Combine(programFilesPath, "Microsoft Visual Studio");
+
+            // VS2019
+            var vs2019BasePath = Path.Combine(vsBasePath, "2019");
+
+            // VS2017
+
+            // MsBuild 14 and older
             var msbuildBasePath = Path.Combine(programFilesPath, "MSBuild");
             return Directory.GetFiles(msbuildBasePath, "msbuild.exe", SearchOption.AllDirectories)
                 .OrderByDescending(f => f)
