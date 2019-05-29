@@ -211,5 +211,14 @@ using System.Runtime.InteropServices;
         public void ExecuteWithOldVBProjects()
         {
         }
+
+        [OneTimeSetUp]
+        public void RunBeforeAnyTests()
+        {
+            // nUnit3 doesn't set the current directory anymore:
+            // https://github.com/nunit/nunit/issues/1072
+            // Le sigh ...
+            Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
+        }
     }
 }

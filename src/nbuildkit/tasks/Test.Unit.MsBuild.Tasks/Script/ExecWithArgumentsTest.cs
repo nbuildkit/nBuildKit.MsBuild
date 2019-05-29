@@ -904,5 +904,14 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 3);
         }
+
+        [OneTimeSetUp]
+        public void RunBeforeAnyTests()
+        {
+            // nUnit3 doesn't set the current directory anymore:
+            // https://github.com/nunit/nunit/issues/1072
+            // Le sigh ...
+            Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
+        }
     }
 }

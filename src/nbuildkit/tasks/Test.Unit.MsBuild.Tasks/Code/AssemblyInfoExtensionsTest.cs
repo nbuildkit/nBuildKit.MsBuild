@@ -3,6 +3,7 @@
 // Licensed under the Apache License, Version 2.0 license. See LICENCE.md file in the project root for full license information.
 // </copyright>
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -108,6 +109,15 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     attributeName,
                     value),
                 File.ReadAllText(filePath));
+        }
+
+        [OneTimeSetUp]
+        public void RunBeforeAnyTests()
+        {
+            // nUnit3 doesn't set the current directory anymore:
+            // https://github.com/nunit/nunit/issues/1072
+            // Le sigh ...
+            Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
         }
     }
 }
