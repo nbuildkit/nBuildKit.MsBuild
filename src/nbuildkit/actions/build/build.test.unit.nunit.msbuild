@@ -44,14 +44,14 @@
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
-            PackageName="NUnit.Runners"
+            PackageName="NUnit.ConsoleRunner"
             PackageVersion="$(ToolsExternalNUnitConsoleVersion)"
             Sources="@(NuGetSources)"
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
             Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' "
             ErrorInformation="@(ErrorInformation)"
-            FileToLocate="nunit-console.exe"
+            FileToLocate="nunit3-console.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
                 PropertyName="ToolsExternalNUnitConsolePath"
