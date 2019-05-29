@@ -48,6 +48,29 @@ namespace NBuildKit.MsBuild.Tasks.Core
             return false;
         }
 
+        private static IEnumerable<string> FindVisualStudioMsBuildInstances(string programFilesPath)
+        {
+            var vsBasePath = Path.Combine(programFilesPath, "Microsoft Visual Studio");
+
+            var vsVersions = new string[] { "2017", "2019" };
+            var msBuildVersions = new string[] { "15.0", "Current" };
+
+            var result = new List<string>();
+
+            foreach (var vsVersion in vsVersions)
+            {
+                var vsPath = Path.Combine(vsBasePath, vsVersion);
+                foreach (var msBuildVersion in msBuildVersions)
+                {
+                }
+            }
+
+            // VS2019
+            var vs2019BasePath = Path.Combine(vsBasePath, "2019");
+
+            // VS2017
+        }
+
         private static IEnumerable<string> GetPotentialMsBuildPaths()
         {
             var programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
@@ -56,19 +79,14 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             }
 
-            var msBuildInstances = Find
-            var vsBasePath = Path.Combine(programFilesPath, "Microsoft Visual Studio");
-
-            // VS2019
-            var vs2019BasePath = Path.Combine(vsBasePath, "2019");
-
-            // VS2017
+            var msBuildInstances = FindVisualStudioMsBuildInstances(programFilesPath);
 
             // MsBuild 14 and older
             var msbuildBasePath = Path.Combine(programFilesPath, "MSBuild");
-            return Directory.GetFiles(msbuildBasePath, "msbuild.exe", SearchOption.AllDirectories)
-                .OrderByDescending(f => f)
-                .ToList();
+            var oldMsBuildPaths = Directory.GetFiles(msbuildBasePath, "msbuild.exe", SearchOption.AllDirectories)
+                .OrderByDescending(f => f);
+
+            return msBuildInstances.Concat(oldMsBuildPaths);
         }
 
         /// <summary>
