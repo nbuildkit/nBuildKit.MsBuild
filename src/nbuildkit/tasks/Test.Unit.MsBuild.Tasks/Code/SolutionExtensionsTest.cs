@@ -27,7 +27,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
 
             // Go up 2 directories
-            var projectDirectory = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(directory)));
+            var projectDirectory = Path.GetDirectoryName(Path.GetDirectoryName(directory));
             var solutionFile = Path.Combine(projectDirectory, "TestFiles", "OldSolution", "OldSolution.sln");
 
             var projects = SolutionExtensions.GetProjects(solutionFile);

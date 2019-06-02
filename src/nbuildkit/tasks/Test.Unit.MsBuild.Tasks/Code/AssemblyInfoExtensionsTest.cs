@@ -41,7 +41,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "[assembly: {0}({1})]",
+                    "[assembly: {0}({1})]" + Environment.NewLine,
                     attributeName,
                     value),
                 File.ReadAllText(filePath));
@@ -53,14 +53,19 @@ namespace NBuildKit.MsBuild.Tasks.Code
             var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
             var filePath = Path.Combine(directory, "CSharpWithNewAttribute.cs");
 
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
             var attributeName = "TestAttribute";
             var value = "\"TestValue\"";
 
-            AssemblyInfoExtensions.UpdateAssemblyAttribute(filePath, attributeName, value, Encoding.Unicode, (i, m) => { }, false);
+            AssemblyInfoExtensions.UpdateAssemblyAttribute(filePath, attributeName, value, Encoding.Unicode, (i, m) => { }, true);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "[assembly: {0}({1})]",
+                    "[assembly: {0}({1})]" + Environment.NewLine,
                     attributeName,
                     value),
                 File.ReadAllText(filePath));
@@ -86,7 +91,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "<Assembly: {0}({1})>",
+                    "<Assembly: {0}({1})>" + Environment.NewLine,
                     attributeName,
                     value),
                 File.ReadAllText(filePath));
@@ -98,14 +103,19 @@ namespace NBuildKit.MsBuild.Tasks.Code
             var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
             var filePath = Path.Combine(directory, "VbWithNewAttribute.vb");
 
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
             var attributeName = "TestAttribute";
             var value = "\"TestValue\"";
 
-            AssemblyInfoExtensions.UpdateAssemblyAttribute(filePath, attributeName, value, Encoding.Unicode, (i, m) => { }, false);
+            AssemblyInfoExtensions.UpdateAssemblyAttribute(filePath, attributeName, value, Encoding.Unicode, (i, m) => { }, true);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
-                    "<Assembly: {0}({1})>",
+                    "<Assembly: {0}({1})>" + Environment.NewLine,
                     attributeName,
                     value),
                 File.ReadAllText(filePath));

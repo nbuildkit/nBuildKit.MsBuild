@@ -92,12 +92,15 @@ namespace NBuildKit.MsBuild.Tasks.Code
             }
 
             var lines = new List<string>();
-            using (var reader = new StreamReader(filePath))
+            if (File.Exists(filePath))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                using (var reader = new StreamReader(filePath))
                 {
-                    lines.Add(line);
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        lines.Add(line);
+                    }
                 }
             }
 
