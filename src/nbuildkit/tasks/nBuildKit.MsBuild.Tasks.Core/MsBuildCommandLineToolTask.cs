@@ -13,8 +13,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 
 namespace NBuildKit.MsBuild.Tasks.Core
 {
@@ -48,45 +50,73 @@ namespace NBuildKit.MsBuild.Tasks.Core
             return false;
         }
 
-        private static IEnumerable<string> FindVisualStudioMsBuildInstances(string programFilesPath)
+        private static IEnumerable<string> GetPotentialMsBuildPaths()
         {
-            var vsBasePath = Path.Combine(programFilesPath, "Microsoft Visual Studio");
-
-            var vsVersions = new string[] { "2017", "2019" };
-            var msBuildVersions = new string[] { "15.0", "Current" };
+            // Use vswhere to find MsBuild: https://github.com/microsoft/vswhere/wiki/Find-MSBuild
+            var arguments = new string[]
+            {
+                "-latest",
+                "-requires Microsoft.Component.MSBuild",
+                "-find MSBuild\\**\\Bin\\MSBuild.exe",
+            };
 
             var result = new List<string>();
-
-            foreach (var vsVersion in vsVersions)
-            {
-                var vsPath = Path.Combine(vsBasePath, vsVersion);
-                foreach (var msBuildVersion in msBuildVersions)
+            DataReceivedEventHandler standardOutputHandler =
+                (s, e) =>
                 {
+                    if (!string.IsNullOrWhiteSpace(e.Data))
+                    {
+                        result.Add(e.Data);
+                    }
+                };
+
+            var errorsReported = false;
+            DataReceivedEventHandler standardErrorHandler =
+                (s, e) =>
+                {
+                    if (!string.IsNullOrWhiteSpace(e.Data))
+                    {
+                        errorsReported = true;
+                    }
+                };
+
+            var argumentBuilder = new StringBuilder();
+            {
+                foreach (var argument in arguments)
+                {
+                    argumentBuilder.Append(argument);
+                    argumentBuilder.Append(" ");
                 }
             }
 
-            // VS2019
-            var vs2019BasePath = Path.Combine(vsBasePath, "2019");
-
-            // VS2017
-        }
-
-        private static IEnumerable<string> GetPotentialMsBuildPaths()
-        {
-            var programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-            if (!Environment.Is64BitOperatingSystem)
+            var info = new ProcessStartInfo
             {
-                programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                FileName = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere.exe"),
+                Arguments = argumentBuilder.ToString(),
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+            };
+
+            var process = new Process();
+            process.StartInfo = info;
+            process.OutputDataReceived += standardOutputHandler;
+            process.ErrorDataReceived += standardErrorHandler;
+
+            process.Start();
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+
+            if (process.ExitCode != 0 || errorsReported)
+            {
+                return Array.Empty<string>();
             }
 
-            var msBuildInstances = FindVisualStudioMsBuildInstances(programFilesPath);
-
-            // MsBuild 14 and older
-            var msbuildBasePath = Path.Combine(programFilesPath, "MSBuild");
-            var oldMsBuildPaths = Directory.GetFiles(msbuildBasePath, "msbuild.exe", SearchOption.AllDirectories)
-                .OrderByDescending(f => f);
-
-            return msBuildInstances.Concat(oldMsBuildPaths);
+            return result;
         }
 
         /// <summary>
