@@ -9,7 +9,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Build.Evaluation;
+using Microsoft.Build.Construction;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -24,8 +24,9 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// Gets the paths for the project files in the solution.
         /// </summary>
         /// <param name="path">The full path to the solution file.</param>
+        /// <param name="log">The MsBuild logger.</param>
         /// <returns>A collection containing the full paths to the projects in the solution.</returns>
-        public static IEnumerable<ITaskItem> GetProjects(string path)
+        public static IEnumerable<ITaskItem> GetProjects(string path, TaskLoggingHelper log = null)
         {
             // The loaded version of Microsoft.Build might not be the version we're compiled against so we need to
             // find the correct assembly first
@@ -45,28 +46,64 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 throw new InvalidOperationException("Can not find solution file type.");
             }
 
+            log?.LogMessage(
+                MessageImportance.Low,
+                "Using the MsBuild solution parser from '{0}' with type '{1}'",
+                microsoftBuildAssembly.FullName,
+                solutionParserType);
+
             var parseSolutionMethod = solutionParserType.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static);
             dynamic solutionFile = parseSolutionMethod.Invoke(null, new object[] { path });
 
-            var projects = (IReadOnlyList<dynamic>)solutionFile.ProjectsInOrder;
+            var projects = (IReadOnlyList<ProjectInSolution>)solutionFile.ProjectsInOrder;
+            log?.LogMessage(
+                MessageImportance.Low,
+                "Found {0} projects. Project paths:",
+                projects.Count);
+            if (log != null)
+            {
+                foreach (var project in projects)
+                {
+                    log?.LogMessage(
+                        MessageImportance.Low,
+                        (string)project.RelativePath);
+                }
+            }
+
             return projects
                 .Where(
                     p =>
                     {
                         var projectType = ((object)p.ProjectType).ToString();
-                        return string.Equals(projectType, "KnownToBeMSBuildFormat", StringComparison.OrdinalIgnoreCase);
+                        var result = string.Equals(projectType, "KnownToBeMSBuildFormat", StringComparison.OrdinalIgnoreCase);
+
+                        log?.LogMessage(
+                            MessageImportance.Low,
+                            result
+                                ? "Project {0} is an MsBuild project"
+                                : "Project {0} is not an MsBuild project",
+                            (string)p.RelativePath);
+
+                        return result;
                     })
                 .Select(
                     p =>
                     {
                         var projectRelativePath = (string)p.RelativePath;
                         var projectAbsolutePath = Path.Combine(Path.GetDirectoryName(path), projectRelativePath);
-                        return new Project(projectAbsolutePath);
+
+                        log?.LogMessage(
+                            MessageImportance.Low,
+                            "Project {0} has absolute path {1}",
+                            projectRelativePath,
+                            projectAbsolutePath);
+
+                        return projectAbsolutePath;
                     })
                 .Select(
                     p =>
                     {
-                        var item = new TaskItem(p.FullPath);
+                        var item = new TaskItem(p);
                         return item;
                     })
                 .ToArray();

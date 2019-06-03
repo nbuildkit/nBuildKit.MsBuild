@@ -59,7 +59,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 return false;
             }
 
-            Projects = SolutionExtensions.GetProjects(solutionPath).ToArray();
+            Projects = SolutionExtensions.GetProjects(solutionPath, Log).ToArray();
 
             return !Log.HasLoggedErrors;
         }
