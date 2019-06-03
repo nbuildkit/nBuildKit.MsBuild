@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
@@ -44,16 +45,41 @@ namespace NBuildKit.MsBuild.Tasks.Code
 
         private static string FindAssemblyInfoFile(string projectPath)
         {
-            return Directory.GetFiles(
-                    Path.GetDirectoryName(projectPath),
-                    "AssemblyInfo.*",
-                    SearchOption.TopDirectoryOnly)
-                .Concat(
-                    Directory.GetFiles(
-                        Path.Combine(Path.GetDirectoryName(projectPath), "Properties"),
-                        "AssemblyInfo.*",
-                        SearchOption.TopDirectoryOnly))
-                .FirstOrDefault();
+            var projectLevelAssemblyInfoFiles = Directory.GetFiles(
+                Path.GetDirectoryName(projectPath),
+                "AssemblyInfo.*",
+                SearchOption.TopDirectoryOnly);
+            if (string.Equals(Path.GetExtension(projectPath), ".csproj", StringComparison.OrdinalIgnoreCase))
+            {
+                var propertiesDirectory = Path.Combine(Path.GetDirectoryName(projectPath), "Properties");
+                if (Directory.Exists(propertiesDirectory))
+                {
+                    return projectLevelAssemblyInfoFiles
+                        .Concat(
+                            Directory.GetFiles(
+                                propertiesDirectory,
+                                "AssemblyInfo.*",
+                                SearchOption.TopDirectoryOnly))
+                        .FirstOrDefault();
+                }
+            }
+
+            if (string.Equals(Path.GetExtension(projectPath), ".vbproj", StringComparison.OrdinalIgnoreCase))
+            {
+                var myProjectDirectory = Path.Combine(Path.GetDirectoryName(projectPath), "My Project");
+                if (Directory.Exists(myProjectDirectory))
+                {
+                    return projectLevelAssemblyInfoFiles
+                        .Concat(
+                            Directory.GetFiles(
+                                myProjectDirectory,
+                                "AssemblyInfo.*",
+                                SearchOption.TopDirectoryOnly))
+                        .FirstOrDefault();
+                }
+            }
+
+            return projectLevelAssemblyInfoFiles.FirstOrDefault();
         }
 
         private static XElement FindElementInPropertyGroup(XElement parent, string elementName)
@@ -139,7 +165,18 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 tokens.TryGetValue("CopyrightLong", out value) ? value : string.Empty,
                 ref propertyGroupNode);
 
-            document.Save(projectPath);
+            var settings = new XmlWriterSettings
+            {
+                OmitXmlDeclaration = true,
+                Indent = true,
+                IndentChars = "  ",
+                WriteEndDocumentOnClose = true,
+            };
+
+            using (var xw = XmlWriter.Create(projectPath, settings))
+            {
+                document.Save(xw);
+            }
         }
 
         /// <summary>
