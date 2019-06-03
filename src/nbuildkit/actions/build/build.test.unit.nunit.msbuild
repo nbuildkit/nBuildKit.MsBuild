@@ -283,7 +283,7 @@
             OpenCoverExe="$(ToolsExternalOpenCoverPath)"
             OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
             OpenCoverOutput="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-%(UnitTestDirectories.Index)$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))"
-            UnitTestArguments="/framework:net-$(TargetFrameworkVersion.TrimStart('v')) /result:&quot;nunit-console-%(UnitTestDirectories.Index).xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:multiple $(AssembliesToTest)"
+            UnitTestArguments="/framework:net-$(TargetFrameworkVersion.TrimStart('v')) /result:&quot;nunit-console-%(UnitTestDirectories.Index).xml&quot; /work:&quot;$(DirBuildLogs)&quot; /domain:multiple $(AssembliesToTest)"
             UnitTestExe="$(ToolsExternalNUnitConsolePath)" />
     </Target>
 
