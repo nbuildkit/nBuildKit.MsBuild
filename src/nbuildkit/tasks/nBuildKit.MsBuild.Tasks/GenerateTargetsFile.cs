@@ -418,6 +418,10 @@ namespace NBuildKit.MsBuild.Tasks
             }
         }
 
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "This class is instantiated via AppDomain.CreateInstanceAndUnwrap.")]
         private sealed class RemoteAssemblyScannerLoader : MarshalByRefObject
         {
             [SuppressMessage(
