@@ -24,114 +24,9 @@
         </ItemGroup>
     </Target>
 
-    <Target Condition="  '@(AssemblyInfoFilesToUpdate)' != '' AND '@(InternalsVisibleTo)' != '' "
-        Name="_nBuildKit_Build_Prepare_UpdateProjectInfo_InternalsVisibleTo"
-        Outputs="%(AssemblyInfoFilesToUpdate.Identity)">
-        <CreateProperty Value="$([System.IO.Path]::GetDirectoryName('%(AssemblyInfoFilesToUpdate.Identity)'))">
-            <Output PropertyName="AssemblyInfoDirectory"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <ItemGroup>
-            <PossibleProjectFiles Condition="!$(AssemblyInfoDirectory.EndsWith('Properties'))"
-                Include="$(AssemblyInfoDirectory)\**\*.csproj" />
-            <PossibleProjectFiles Condition="$(AssemblyInfoDirectory.EndsWith('Properties'))"
-                Include="$(AssemblyInfoDirectory)\..\**\*.csproj" />
-            <PossibleProjectFiles Condition="!$(AssemblyInfoDirectory.EndsWith('My Project'))"
-                Include="$(AssemblyInfoDirectory)\**\*.vbproj" />
-            <PossibleProjectFiles Condition="$(AssemblyInfoDirectory.EndsWith('My Project'))"
-                Include="$(AssemblyInfoDirectory)\..\**\*.vbproj" />
-        </ItemGroup>
-        <Error Code="$(NBuildKitErrorCodeUpdateAssemblyInfoMultipleProjectFiles)"
-            Condition="$([System.String]::new('@(PossibleProjectFiles)').Contains(';'))"
-            HelpKeyword="$(NBuildKitErrorIdUpdateAssemblyInfoMultipleProjectFiles)"
-            Text="Found multiple project files that may be referencing the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity). The project files are: @(PossibleProjectFiles)" />
-
-        <CreateProperty Condition=" '@(PossibleProjectFiles)' != '' AND !$([System.String]::new('@(PossibleProjectFiles)').Contains(';')) "
-            Value="%(PossibleProjectFiles.FullPath)">
-            <Output PropertyName="ProjectFile"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <Error Code="$(NBuildKitErrorCodeUpdateAssemblyInfoNoProjectFiles)"
-            Condition="!Exists('$(ProjectFile)')"
-            HelpKeyword="$(NBuildKitErrorIdUpdateAssemblyInfoNoProjectFiles)"
-            Text="Did not find a project file that references the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity)" />
-        <Message Condition="Exists('$(ProjectFile)')"
-            Text="The project file at $(ProjectFile) is referencing the AssemblyInfo file at: %(AssemblyInfoFilesToUpdate.Identity). Using the project file to determine the assembly name." />
-
-        <XmlPeek Condition="Exists('$(ProjectFile)')"
-            Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;"
-            Query="/x:Project/x:PropertyGroup/x:AssemblyName/text()"
-            XmlInputPath="$(ProjectFile)">
-            <Output ItemName="AssemblyNames"
-                TaskParameter="Result" />
-        </XmlPeek>
-        <CreateProperty Condition=" '@(AssemblyNames)' != '' "
-            Value="%(AssemblyNames.Identity)">
-            <Output PropertyName="AssemblyName"
-                TaskParameter="Value" />
-        </CreateProperty>
-
-        <PropertyGroup>
-            <InternalsVisibleToForSignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' ">[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)]</InternalsVisibleToForSignedAssembliesTemplate>
-            <InternalsVisibleToForUnsignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' ">[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}&quot;)]</InternalsVisibleToForUnsignedAssembliesTemplate>
-            <InternalsVisibleToForSignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' ">&lt;Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}, PublicKey=${Key}&quot;)&gt;</InternalsVisibleToForSignedAssembliesTemplate>
-            <InternalsVisibleToForUnsignedAssembliesTemplate Condition=" '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' ">&lt;Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;${AssemblyName}&quot;)&gt;</InternalsVisibleToForUnsignedAssembliesTemplate>
-        </PropertyGroup>
-        <GenerateInternalsVisibleToAttributes AttributeTemplateForSignedAssemblies="$(InternalsVisibleToForSignedAssembliesTemplate)"
-            AttributeTemplateForUnsignedAssemblies="$(InternalsVisibleToForUnsignedAssembliesTemplate)"
-            Condition=" '@(InternalsVisibleTo)' != '' AND '$(AssemblyName)' != '' "
-            ErrorInformation="@(ErrorInformation)"
-            Items="@(InternalsVisibleTo)"
-            PackagesDirectory="$(DirPackages)"
-            Project="$(AssemblyName)"
-            SnExe="$(ToolsExternalSnPath)"
-            TemporaryDirectory="$(DirBuildTemp)">
-            <Output PropertyName="InternalsVisibleToAttributes"
-                TaskParameter="Result" />
-        </GenerateInternalsVisibleToAttributes>
-
-        <CreateItem Condition=" '$(InternalsVisibletoCompilerConstants)' != '' AND '$(InternalsVisibleToAttributes)' != '' "
-            Include="$(InternalsVisibletoCompilerConstants.Split(';'))">
-            <Output ItemName="CompilerConstants"
-                TaskParameter="Include" />
-        </CreateItem>
-
-        <CreateProperty Condition=" '@(CompilerConstants)' != '' "
-            Value="@(CompilerConstants->'%(Identity)', ' || ')">
-            <Output PropertyName="CompilerConstantsCombined"
-                TaskParameter="Value" />
-        </CreateProperty>
-        <ItemGroup Condition=" '$(InternalsVisibleToAttributes)' != '' ">
-            <InternalsVisibleToLines Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' "
-                Include="#if $(CompilerConstantsCombined)" />
-            <InternalsVisibleToLines Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' "
-                Include="#If $(CompilerConstantsCombined)" />
-
-            <InternalsVisibleToLines Include="$(InternalsVisibleToAttributes)" />
-
-            <InternalsVisibleToLines Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.cs' "
-                Include="#endif" />
-            <InternalsVisibleToLines Condition=" '$(CompilerConstantsCombined)' != '' AND '%(AssemblyInfoFilesToUpdate.Extension)' == '.vb' "
-                Include="#End If" />
-        </ItemGroup>
-
-        <PropertyGroup>
-            <CurrentFileContent>$([System.IO.File]::ReadAllText(%(AssemblyInfoFilesToUpdate.FullPath)))</CurrentFileContent>
-            <HasInternalsVisibleToAttributes>$(CurrentFileContent.Contains('assembly: System.Runtime.CompilerServices.InternalsVisibleTo'))</HasInternalsVisibleToAttributes>
-        </PropertyGroup>
-
-        <WriteLinesToFile
-            File="%(AssemblyInfoFilesToUpdate.FullPath)"
-            Lines="@(InternalsVisibleToLines)"
-            Overwrite="false"
-            Condition=" '$(HasInternalsVisibleToAttributes)' != 'true' " />
-    </Target>
-
     <Target Name="nBuildKit_Build_Prepare_UpdateProjectInfo_Run">
         <CallTarget
             Targets="_nBuildKit_Build_Prepare_UpdateProjectInfo_UpdateSolutions" />
-        <CallTarget
-            Targets="_nBuildKit_Build_Prepare_UpdateProjectInfo_InternalsVisibleTo" />
     </Target>
 
     <Target
@@ -150,9 +45,12 @@
             AssemblyInfoEncoding="utf-8"
             ErrorInformation="@(ErrorInformation)"
             GenerateBuildInformation="$(ShouldGenerateAssemblyBuildInfo)"
+            InternalsVisibleTo="@(InternalsVisibleTo)"
+            InternalsVisibleToCompilerDirective="$(InternalsVisibletoCompilerConstants)"
+            PackagesDirectory="$(DirPackages)"
             Project="%(ProjectsToUpdate.FullPath)"
+            SnExe="$(ToolsExternalSnPath)"
+            TemporaryDirectory="$(DirBuildTemp)"
             Tokens="@(TemplateTokens)" />
     </Target>
-
-
 </Project>

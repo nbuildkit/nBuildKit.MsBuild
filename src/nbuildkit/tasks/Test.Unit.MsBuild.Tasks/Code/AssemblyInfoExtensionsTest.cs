@@ -4,12 +4,15 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using Moq;
 using Nuclei;
+using Nuclei.Diagnostics.Logging;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Code
@@ -37,7 +40,13 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     attributeName,
                     "not-the-correct-value"));
 
-            AssemblyInfoExtensions.UpdateAssemblyAttribute(filePath, attributeName, value, Encoding.Unicode, (i, m) => { }, false);
+            AssemblyInfoExtensions.UpdateAssemblyAttribute(
+                filePath,
+                attributeName,
+                value,
+                Encoding.Unicode,
+                new Mock<ILogger>().Object,
+                false);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -61,7 +70,13 @@ namespace NBuildKit.MsBuild.Tasks.Code
             var attributeName = "TestAttribute";
             var value = "\"TestValue\"";
 
-            AssemblyInfoExtensions.UpdateAssemblyAttribute(filePath, attributeName, value, Encoding.Unicode, (i, m) => { }, true);
+            AssemblyInfoExtensions.UpdateAssemblyAttribute(
+                filePath,
+                attributeName,
+                value,
+                Encoding.Unicode,
+                new Mock<ILogger>().Object,
+                true);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -87,7 +102,13 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     attributeName,
                     "not-the-correct-value"));
 
-            AssemblyInfoExtensions.UpdateAssemblyAttribute(filePath, attributeName, value, Encoding.Unicode, (i, m) => { }, false);
+            AssemblyInfoExtensions.UpdateAssemblyAttribute(
+                filePath,
+                attributeName,
+                value,
+                Encoding.Unicode,
+                new Mock<ILogger>().Object,
+                false);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -111,7 +132,13 @@ namespace NBuildKit.MsBuild.Tasks.Code
             var attributeName = "TestAttribute";
             var value = "\"TestValue\"";
 
-            AssemblyInfoExtensions.UpdateAssemblyAttribute(filePath, attributeName, value, Encoding.Unicode, (i, m) => { }, true);
+            AssemblyInfoExtensions.UpdateAssemblyAttribute(
+                filePath,
+                attributeName,
+                value,
+                Encoding.Unicode,
+                new Mock<ILogger>().Object,
+                true);
             Assert.AreEqual(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -119,6 +146,157 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     attributeName,
                     value),
                 File.ReadAllText(filePath));
+        }
+
+        [Test]
+        public void UpdateInternalsVisibleToAttributesForCSharpWithExistingAttributes()
+        {
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var filePath = Path.Combine(directory, "CSharpWithExistingAttributes.cs");
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            var attributeName = "System.Runtime.CompilerServices.InternalsVisibleTo";
+            File.WriteAllLines(
+                filePath,
+                new[]
+                {
+                    "#if NOTACOMPILERDIRECTIVE",
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "[Assembly: {0}(\"{1}\")]",
+                        attributeName,
+                        "not-the-correct-value"),
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "[Assembly: {0}(\"{1}\")]",
+                        attributeName,
+                        "another-not-the-correct-value"),
+                    "#endif",
+                });
+
+            var compilerDirective = "COMPILERDIRECTIVE";
+            AssemblyInfoExtensions.UpdateInternalsVisibleToAttributes(
+                filePath,
+                compilerDirective,
+                new List<Tuple<string, string>>
+                {
+                    Tuple.Create("a", "b"),
+                    Tuple.Create("c", (string)null),
+                },
+                Encoding.Unicode,
+                new Mock<ILogger>().Object);
+            Assert.AreEqual(
+                @"#if COMPILERDIRECTIVE
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""c"")]
+#endif",
+                File.ReadAllText(filePath));
+        }
+
+        [Test]
+        public void UpdateInternalsVisibleToAttributesForCSharpWithExistingAttributesSpacedToWide()
+        {
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var filePath = Path.Combine(directory, "CSharpWithExistingAttributes.cs");
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            var attributeName = "System.Runtime.CompilerServices.InternalsVisibleTo";
+            var content = new[]
+                {
+                    "#if NOTACOMPILERDIRECTIVE",
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "[Assembly: {0}(\"{1}\")]",
+                        attributeName,
+                        "not-the-correct-value"),
+                    string.Empty,
+                    string.Empty,
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "[Assembly: {0}(\"{1}\")]",
+                        attributeName,
+                        "another-not-the-correct-value"),
+                    "#endif",
+                };
+            File.WriteAllLines(
+                filePath,
+                content);
+
+            var compilerDirective = "COMPILERDIRECTIVE";
+            AssemblyInfoExtensions.UpdateInternalsVisibleToAttributes(
+                filePath,
+                compilerDirective,
+                new List<Tuple<string, string>>
+                {
+                    Tuple.Create("a", "b"),
+                    Tuple.Create("c", (string)null),
+                },
+                Encoding.Unicode,
+                new Mock<ILogger>().Object);
+            Assert.AreEqual(
+                @"#if COMPILERDIRECTIVE
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""c"")]
+#endif",
+                File.ReadAllText(filePath));
+        }
+
+        [Test]
+        public void UpdateInternalsVisibleToAttributesForCSharpWithNewAttributes()
+        {
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var filePath = Path.Combine(directory, "CSharpWithExistingAttributes.cs");
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            File.Create(filePath);
+
+            var compilerDirective = "COMPILERDIRECTIVE";
+            AssemblyInfoExtensions.UpdateInternalsVisibleToAttributes(
+                filePath,
+                compilerDirective,
+                new List<Tuple<string, string>>
+                {
+                    Tuple.Create("a", "b"),
+                    Tuple.Create("c", (string)null),
+                },
+                Encoding.Unicode,
+                new Mock<ILogger>().Object);
+            Assert.AreEqual(
+                @"#if COMPILERDIRECTIVE
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""c"")]
+#endif",
+                File.ReadAllText(filePath));
+        }
+
+        [Test]
+        public void UpdateInternalsVisibleToAttributesForVbWithExistingAttributes()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void UpdateInternalsVisibleToAttributesForVbWithExistingAttributesToWide()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void UpdateInternalsVisibleToAttributesForVbWithNewAttributes()
+        {
+            Assert.Fail();
         }
 
         [OneTimeSetUp]
