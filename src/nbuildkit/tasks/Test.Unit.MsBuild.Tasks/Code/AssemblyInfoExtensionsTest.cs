@@ -152,7 +152,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
         public void UpdateInternalsVisibleToAttributesForCSharpWithExistingAttributes()
         {
             var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var filePath = Path.Combine(directory, "CSharpWithExistingAttributes.cs");
+            var filePath = Path.Combine(directory, "CSharpWithExistingInternalsVisibleToAttributes.cs");
 
             if (File.Exists(filePath))
             {
@@ -167,12 +167,12 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     "#if NOTACOMPILERDIRECTIVE",
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        "[Assembly: {0}(\"{1}\")]",
+                        "[assembly: {0}(\"{1}\")]",
                         attributeName,
                         "not-the-correct-value"),
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        "[Assembly: {0}(\"{1}\")]",
+                        "[assembly: {0}(\"{1}\")]",
                         attributeName,
                         "another-not-the-correct-value"),
                     "#endif",
@@ -193,7 +193,8 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 @"#if COMPILERDIRECTIVE
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""c"")]
-#endif",
+#endif
+",
                 File.ReadAllText(filePath));
         }
 
@@ -201,7 +202,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
         public void UpdateInternalsVisibleToAttributesForCSharpWithExistingAttributesSpacedToWide()
         {
             var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var filePath = Path.Combine(directory, "CSharpWithExistingAttributes.cs");
+            var filePath = Path.Combine(directory, "CSharpWithExistingInternalsVisibleToAttributesSpacedTooMuch.cs");
 
             if (File.Exists(filePath))
             {
@@ -214,14 +215,14 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     "#if NOTACOMPILERDIRECTIVE",
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        "[Assembly: {0}(\"{1}\")]",
+                        "[assembly: {0}(\"{1}\")]",
                         attributeName,
                         "not-the-correct-value"),
                     string.Empty,
                     string.Empty,
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        "[Assembly: {0}(\"{1}\")]",
+                        "[assembly: {0}(\"{1}\")]",
                         attributeName,
                         "another-not-the-correct-value"),
                     "#endif",
@@ -242,10 +243,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 Encoding.Unicode,
                 new Mock<ILogger>().Object);
             Assert.AreEqual(
-                @"#if COMPILERDIRECTIVE
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""c"")]
-#endif",
+                string.Join(Environment.NewLine, content) + Environment.NewLine,
                 File.ReadAllText(filePath));
         }
 
@@ -253,14 +251,14 @@ namespace NBuildKit.MsBuild.Tasks.Code
         public void UpdateInternalsVisibleToAttributesForCSharpWithNewAttributes()
         {
             var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var filePath = Path.Combine(directory, "CSharpWithExistingAttributes.cs");
+            var filePath = Path.Combine(directory, "CSharpWithNewInternalsVisibleToAttributes.cs");
 
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
 
-            File.Create(filePath);
+            File.WriteAllText(filePath, string.Empty);
 
             var compilerDirective = "COMPILERDIRECTIVE";
             AssemblyInfoExtensions.UpdateInternalsVisibleToAttributes(
@@ -277,26 +275,141 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 @"#if COMPILERDIRECTIVE
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""c"")]
-#endif",
+#endif
+",
                 File.ReadAllText(filePath));
         }
 
         [Test]
         public void UpdateInternalsVisibleToAttributesForVbWithExistingAttributes()
         {
-            Assert.Fail();
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var filePath = Path.Combine(directory, "VbWithExistingInternalsVisibleToAttributes.vb");
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            var attributeName = "System.Runtime.CompilerServices.InternalsVisibleTo";
+            File.WriteAllLines(
+                filePath,
+                new[]
+                {
+                    "#If NOTACOMPILERDIRECTIVE",
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "<Assembly: {0}(\"{1}\")>",
+                        attributeName,
+                        "not-the-correct-value"),
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "<Assembly: {0}(\"{1}\")>",
+                        attributeName,
+                        "another-not-the-correct-value"),
+                    "#End If",
+                });
+
+            var compilerDirective = "COMPILERDIRECTIVE";
+            AssemblyInfoExtensions.UpdateInternalsVisibleToAttributes(
+                filePath,
+                compilerDirective,
+                new List<Tuple<string, string>>
+                {
+                    Tuple.Create("a", "b"),
+                    Tuple.Create("c", (string)null),
+                },
+                Encoding.Unicode,
+                new Mock<ILogger>().Object);
+            Assert.AreEqual(
+                @"#If COMPILERDIRECTIVE
+<Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")>
+<Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""c"")>
+#End If
+",
+                File.ReadAllText(filePath));
         }
 
         [Test]
         public void UpdateInternalsVisibleToAttributesForVbWithExistingAttributesToWide()
         {
-            Assert.Fail();
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var filePath = Path.Combine(directory, "VbWithExistingInternalsVisibleToAttributesSpacedTooMuch.vb");
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            var attributeName = "System.Runtime.CompilerServices.InternalsVisibleTo";
+            var content = new[]
+                {
+                    "#If NOTACOMPILERDIRECTIVE",
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "<Assembly: {0}(\"{1}\")>",
+                        attributeName,
+                        "not-the-correct-value"),
+                    string.Empty,
+                    string.Empty,
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "<Assembly: {0}(\"{1}\")>",
+                        attributeName,
+                        "another-not-the-correct-value"),
+                    "#End If",
+                };
+            File.WriteAllLines(
+                filePath,
+                content);
+
+            var compilerDirective = "COMPILERDIRECTIVE";
+            AssemblyInfoExtensions.UpdateInternalsVisibleToAttributes(
+                filePath,
+                compilerDirective,
+                new List<Tuple<string, string>>
+                {
+                    Tuple.Create("a", "b"),
+                    Tuple.Create("c", (string)null),
+                },
+                Encoding.Unicode,
+                new Mock<ILogger>().Object);
+            Assert.AreEqual(
+                string.Join(Environment.NewLine, content) + Environment.NewLine,
+                File.ReadAllText(filePath));
         }
 
         [Test]
         public void UpdateInternalsVisibleToAttributesForVbWithNewAttributes()
         {
-            Assert.Fail();
+            var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var filePath = Path.Combine(directory, "VbWithNewInternalsVisibleToAttributes.vb");
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            File.WriteAllText(filePath, string.Empty);
+
+            var compilerDirective = "COMPILERDIRECTIVE";
+            AssemblyInfoExtensions.UpdateInternalsVisibleToAttributes(
+                filePath,
+                compilerDirective,
+                new List<Tuple<string, string>>
+                {
+                    Tuple.Create("a", "b"),
+                    Tuple.Create("c", (string)null),
+                },
+                Encoding.Unicode,
+                new Mock<ILogger>().Object);
+            Assert.AreEqual(
+                @"#If COMPILERDIRECTIVE
+<Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")>
+<Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""c"")>
+#End If
+",
+                File.ReadAllText(filePath));
         }
 
         [OneTimeSetUp]

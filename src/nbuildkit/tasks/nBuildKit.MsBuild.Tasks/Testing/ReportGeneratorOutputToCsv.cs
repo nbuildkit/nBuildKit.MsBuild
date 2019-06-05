@@ -73,10 +73,7 @@ namespace NBuildKit.MsBuild.Tasks.Testing
             }
 
             builder.AppendLine(line.ToString());
-            using (var writer = new StreamWriter(GetAbsolutePath(OutputFile)))
-            {
-                writer.Write(builder.ToString());
-            }
+            File.WriteAllText(GetAbsolutePath(OutputFile), builder.ToString());
 
             return true;
         }

@@ -98,18 +98,9 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     break;
             }
 
-            var lines = new List<string>();
-            if (File.Exists(filePath))
-            {
-                using (var reader = new StreamReader(filePath))
-                {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        lines.Add(line);
-                    }
-                }
-            }
+            var lines = File.Exists(filePath)
+                ? File.ReadLines(filePath).ToList()
+                : new List<string>();
 
             var found = false;
             for (int i = 0; i < lines.Count; i++)
@@ -160,13 +151,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                         "File at: {0}. Exists: \"{1}\"",
                         filePath,
                         File.Exists(filePath))));
-            using (var writer = new StreamWriter(filePath, false, encoding ?? Encoding.Default))
-            {
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    writer.WriteLine(lines[i]);
-                }
-            }
+            File.WriteAllLines(filePath, lines, encoding);
         }
 
         /// <summary>
@@ -202,7 +187,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 throw new ArgumentNullException(nameof(internalsVisibleToAttributeParameters));
             }
 
-            if (internalsVisibleToAttributeParameters.Any())
+            if (!internalsVisibleToAttributeParameters.Any())
             {
                 return;
             }
@@ -218,25 +203,22 @@ namespace NBuildKit.MsBuild.Tasks.Code
             switch (ext)
             {
                 case "cs":
-                    assemblyAttributeMatcher = AttributeMatcherForCSharp(InternalsVisbleToAttributeName);
+                    assemblyAttributeMatcher = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "[assembly: {0}(",
+                        InternalsVisbleToAttributeName);
                     break;
                 case "vb":
-                    assemblyAttributeMatcher = AttributeMatcherForVb(InternalsVisbleToAttributeName);
+                    assemblyAttributeMatcher = string.Format(
+                        CultureInfo.InvariantCulture,
+                        "<Assembly: {0}(",
+                        InternalsVisbleToAttributeName);
                     break;
             }
 
-            var lines = new List<string>();
-            if (File.Exists(filePath))
-            {
-                using (var reader = new StreamReader(filePath))
-                {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        lines.Add(line);
-                    }
-                }
-            }
+            var lines = File.Exists(filePath)
+                ? File.ReadLines(filePath).ToList()
+                : new List<string>();
 
             var shouldContinue = RemoveInternalsVisibleToAttributes(lines, assemblyAttributeMatcher, log);
             if (!shouldContinue)
@@ -268,13 +250,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                         "File at: {0}. Exists: \"{1}\"",
                         filePath,
                         File.Exists(filePath))));
-            using (var writer = new StreamWriter(filePath, false, encoding ?? Encoding.Default))
-            {
-                for (int i = 0; i < lines.Count; i++)
-                {
-                    writer.WriteLine(lines[i]);
-                }
-            }
+            File.WriteAllLines(filePath, lines, encoding);
         }
 
         private static void AddInternalsVisibleToAttributesForCSharp(
@@ -302,6 +278,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 var attribute = AttributeTextForCSharp(
                     InternalsVisbleToAttributeName,
                     attributeText);
+                lines.Add(attribute);
             }
 
             if (!string.IsNullOrWhiteSpace(compilerDirectives))
@@ -335,6 +312,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 var attribute = AttributeTextForVb(
                     InternalsVisbleToAttributeName,
                     attributeText);
+                lines.Add(attribute);
             }
 
             if (!string.IsNullOrWhiteSpace(compilerDirectives))
@@ -411,7 +389,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             {
                 var text = lines[i];
 
-                if (System.Text.RegularExpressions.Regex.IsMatch(text, assemblyAttributeMatcher))
+                if (text.StartsWith(assemblyAttributeMatcher, StringComparison.OrdinalIgnoreCase))
                 {
                     if (first == -1)
                     {
@@ -462,9 +440,12 @@ namespace NBuildKit.MsBuild.Tasks.Code
             }
 
             // Delete the attribute lines
-            for (int i = last; i >= first; i--)
+            if ((first > -1) && (last > -1))
             {
-                lines.RemoveAt(i);
+                for (int i = last; i >= first; i--)
+                {
+                    lines.RemoveAt(i);
+                }
             }
 
             return true;
