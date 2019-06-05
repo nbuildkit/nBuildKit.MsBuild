@@ -261,7 +261,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// should be included.
         /// </summary>
         [Required]
-        public string InternalsVisbleToCompilerDirective
+        public string InternalsVisibleToCompilerDirective
         {
             get;
             set;
@@ -843,7 +843,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
 
                 AssemblyInfoExtensions.UpdateInternalsVisibleToAttributes(
                     assemblyInfoPath,
-                    InternalsVisbleToCompilerDirective,
+                    InternalsVisibleToCompilerDirective,
                     attributes,
                     encoding,
                     new MsBuildLogger(Log));
