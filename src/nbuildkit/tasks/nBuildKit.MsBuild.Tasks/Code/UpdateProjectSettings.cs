@@ -754,6 +754,11 @@ namespace NBuildKit.MsBuild.Tasks.Code
         private void WriteInternalsVisibleToAttributes(XDocument project, string projectPath, string assemblyInfoPath, Encoding encoding)
         {
             var assemblyName = FindAssemblyName(project);
+            Log.LogMessage(
+                MessageImportance.Normal,
+                "Determining if any InternalsVisibleTo attributes should be added for project at: {0} with assembly name: {1}",
+                projectPath,
+                assemblyName);
 
             var attributes = new List<Tuple<string, string>>();
             for (int i = 0; i < InternalsVisibleTo.Length; i++)
@@ -774,12 +779,22 @@ namespace NBuildKit.MsBuild.Tasks.Code
                         continue;
                     }
 
+                    Log.LogMessage(
+                        MessageImportance.Low,
+                        "Projects to find: {0}",
+                        projects);
+
                     var projectsAsArray = projects.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
                         .Where(s => !string.IsNullOrWhiteSpace(s))
                         .Select(s => s.Trim())
                         .ToArray();
                     if (!projectsAsArray.Any(p => string.Equals(p, assemblyName, StringComparison.OrdinalIgnoreCase)))
                     {
+                        Log.LogMessage(
+                            MessageImportance.Low,
+                            "InternalsVisibleTo for: {0} should be {1}",
+                            taskItem.ItemSpec,
+                            string.Join(",", projectsAsArray));
                         continue;
                     }
 
