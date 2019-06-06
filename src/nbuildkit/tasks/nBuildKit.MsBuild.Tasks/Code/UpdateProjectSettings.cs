@@ -86,7 +86,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             return projectLevelAssemblyInfoFiles.FirstOrDefault();
         }
 
-        private static string FindAssemblyName(XDocument doc)
+        private static string FindAssemblyName(XDocument doc, string projectPath)
         {
             // The document may have a namespace
             var ns = doc.Root.GetDefaultNamespace();
@@ -102,7 +102,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 return assemblyNameNode.Value;
             }
 
-            return null;
+            return Path.GetFileNameWithoutExtension(projectPath);
         }
 
         private static XElement FindElementInPropertyGroup(XElement parent, string elementName)
@@ -753,7 +753,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
 
         private void WriteInternalsVisibleToAttributes(XDocument project, string projectPath, string assemblyInfoPath, Encoding encoding)
         {
-            var assemblyName = FindAssemblyName(project);
+            var assemblyName = FindAssemblyName(project, projectPath);
             Log.LogMessage(
                 MessageImportance.Normal,
                 "Determining if any InternalsVisibleTo attributes should be added for project at: {0} with assembly name: {1}",
