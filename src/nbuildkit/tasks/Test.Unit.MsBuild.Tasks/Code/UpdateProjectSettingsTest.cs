@@ -367,6 +367,86 @@ Imports System.Runtime.InteropServices
         }
 
         [Test]
+        public void ExecuteWithNewVBProjectWithInternalsVisibleTo()
+        {
+            var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
+            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "NewSolutionWithAssemblyInfo", "VBNetLibrary");
+            var testProjectPath = Path.Combine(testProjectDirectory, "VBNetLibrary.vbproj");
+
+            var fileToAlter = Path.Combine(testProjectDirectory, "AssemblyInfo.vb");
+            using (var undo = new UndoFileChanges(fileToAlter))
+            {
+                InitializeBuildEngine();
+
+                var task = new UpdateProjectSettings();
+                task.BuildEngine = BuildEngine.Object;
+                task.GenerateBuildInformation = false;
+                task.InternalsVisibleTo = new ITaskItem[]
+                     {
+                    new TaskItem(
+                        "SomeProject",
+                        new Hashtable
+                        {
+                            { "Projects", "VBNetLibrary" },
+                        }),
+                     };
+                task.InternalsVisibleToCompilerDirective = "COMPILERDIRECTIVE";
+                task.Project = new TaskItem(testProjectPath);
+                task.Tokens = GenerateTokens();
+
+                var result = task.Execute();
+                Assert.IsTrue(result);
+
+                VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 18);
+
+                var expectedContent = @"Imports System
+Imports System.Reflection
+Imports System.Runtime.InteropServices
+
+' General Information about an assembly is controlled through the following
+' set of attributes. Change these attribute values to modify the information
+' associated with an assembly.
+
+' Review the values of the assembly attributes
+
+<Assembly: AssemblyTitle(""VBNetLibrary"")>
+<Assembly: AssemblyDescription("""")>
+<Assembly: AssemblyCompany(""CompanyName"")>
+<Assembly: AssemblyProduct(""VBNetLibrary"")>
+<Assembly: AssemblyCopyright(""CopyrightLong"")>
+<Assembly: AssemblyTrademark("""")>
+
+<Assembly: ComVisible(False)>
+
+'The following GUID is for the ID of the typelib if this project is exposed to COM
+<Assembly: Guid(""f6c43178-bd7d-4d1f-85d2-5a37fcb3794d"")>
+
+' Version information for an assembly consists of the following four values:
+'
+'      Major Version
+'      Minor Version
+'      Build Number
+'      Revision
+'
+' You can specify all the values or you can default the Build and Revision Numbers
+' by using the '*' as shown below:
+' <Assembly: AssemblyVersion(""1.0.*"")>
+
+<Assembly: AssemblyVersion(""VersionAssembly"")>
+<Assembly: AssemblyFileVersion(""VersionAssemblyFile"")>
+<Assembly: AssemblyInformationalVersion(""VersionProduct"")>
+<Assembly: AssemblyConfiguration(""Configuration"")>
+#If COMPILERDIRECTIVE
+<Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""SomeProject"")>
+#End If
+";
+
+                Assert.AreEqual(expectedContent, File.ReadAllText(fileToAlter));
+            }
+        }
+
+        [Test]
         public void ExecuteWithNewVBProjectWithoutAssemblyInfo()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
@@ -506,12 +586,12 @@ using System.Runtime.InteropServices;
                 task.GenerateBuildInformation = false;
                 task.InternalsVisibleTo = new ITaskItem[]
                 {
-                new TaskItem(
-                    "SomeProject",
-                    new Hashtable
-                    {
-                        { "Projects", "CSharpLibrary" },
-                    }),
+                    new TaskItem(
+                        "SomeProject",
+                        new Hashtable
+                        {
+                            { "Projects", "CSharpLibrary" },
+                        }),
                 };
                 task.InternalsVisibleToCompilerDirective = "COMPILERDIRECTIVE";
                 task.Project = new TaskItem(testProjectPath);
@@ -629,6 +709,86 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyFileVersion(""VersionAssemblyFile"")>
 <Assembly: AssemblyInformationalVersion(""VersionProduct"")>
 <Assembly: AssemblyConfiguration(""Configuration"")>
+";
+
+                Assert.AreEqual(expectedContent, File.ReadAllText(fileToAlter));
+            }
+        }
+
+        [Test]
+        public void ExecuteWithOldVBProjectsWithInternalsVisibleTo()
+        {
+            var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
+            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "OldSolution", "VBNetLibrary");
+            var testProjectPath = Path.Combine(testProjectDirectory, "VBNetLibrary.vbproj");
+
+            var fileToAlter = Path.Combine(testProjectDirectory, "My Project", "AssemblyInfo.vb");
+            using (var undo = new UndoFileChanges(fileToAlter))
+            {
+                InitializeBuildEngine();
+
+                var task = new UpdateProjectSettings();
+                task.BuildEngine = BuildEngine.Object;
+                task.GenerateBuildInformation = false;
+                task.InternalsVisibleTo = new ITaskItem[]
+                    {
+                        new TaskItem(
+                            "SomeProject",
+                            new Hashtable
+                            {
+                                { "Projects", "VBNetLibrary" },
+                            }),
+                    };
+                task.InternalsVisibleToCompilerDirective = "COMPILERDIRECTIVE";
+                task.Project = new TaskItem(testProjectPath);
+                task.Tokens = GenerateTokens();
+
+                var result = task.Execute();
+                Assert.IsTrue(result);
+
+                VerifyNumberOfLogMessages(numberOfErrorMessages: 0, numberOfWarningMessages: 0, numberOfNormalMessages: 18);
+
+                var expectedContent = @"Imports System
+Imports System.Reflection
+Imports System.Runtime.InteropServices
+
+' General Information about an assembly is controlled through the following
+' set of attributes. Change these attribute values to modify the information
+' associated with an assembly.
+
+' Review the values of the assembly attributes
+
+<Assembly: AssemblyTitle(""VBNetLibrary"")>
+<Assembly: AssemblyDescription("""")>
+<Assembly: AssemblyCompany(""CompanyName"")>
+<Assembly: AssemblyProduct(""VBNetLibrary"")>
+<Assembly: AssemblyCopyright(""CopyrightLong"")>
+<Assembly: AssemblyTrademark("""")>
+
+<Assembly: ComVisible(False)>
+
+'The following GUID is for the ID of the typelib if this project is exposed to COM
+<Assembly: Guid(""f6c43178-bd7d-4d1f-85d2-5a37fcb3794d"")>
+
+' Version information for an assembly consists of the following four values:
+'
+'      Major Version
+'      Minor Version
+'      Build Number
+'      Revision
+'
+' You can specify all the values or you can default the Build and Revision Numbers
+' by using the '*' as shown below:
+' <Assembly: AssemblyVersion(""1.0.*"")>
+
+<Assembly: AssemblyVersion(""VersionAssembly"")>
+<Assembly: AssemblyFileVersion(""VersionAssemblyFile"")>
+<Assembly: AssemblyInformationalVersion(""VersionProduct"")>
+<Assembly: AssemblyConfiguration(""Configuration"")>
+#If COMPILERDIRECTIVE
+<Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""SomeProject"")>
+#End If
 ";
 
                 Assert.AreEqual(expectedContent, File.ReadAllText(fileToAlter));
