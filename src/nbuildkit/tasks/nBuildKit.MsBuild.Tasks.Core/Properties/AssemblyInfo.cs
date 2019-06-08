@@ -6,11 +6,9 @@
 //-----------------------------------------------------------------------
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
-using Nuclei.Build;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
