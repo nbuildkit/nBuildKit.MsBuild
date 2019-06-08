@@ -174,6 +174,13 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 tokens.TryGetValue("VersionAssemblyFile", out value) ? value : string.Empty,
                 ref propertyGroupNode);
 
+            // AU AssemblyFileVersion -> FileVersion
+            CreateOrUpdateNode(
+                projectNode,
+                "InformationalVersion",
+                tokens.TryGetValue("VersionProduct", out value) ? value : string.Empty,
+                ref propertyGroupNode);
+
             // AU AssemblyCompany -> Company
             CreateOrUpdateNode(
                 projectNode,

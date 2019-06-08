@@ -291,6 +291,7 @@ using System.Runtime.InteropServices;
     <Version>VersionSemantic</Version>
     <AssemblyVersion>VersionAssembly</AssemblyVersion>
     <FileVersion>VersionAssemblyFile</FileVersion>
+    <InformationalVersion>VersionProduct</InformationalVersion>
     <Company>CompanyName</Company>
     <Copyright>CopyrightLong</Copyright>
   </PropertyGroup>
@@ -478,6 +479,7 @@ Imports System.Runtime.InteropServices
     <Version>VersionSemantic</Version>
     <AssemblyVersion>VersionAssembly</AssemblyVersion>
     <FileVersion>VersionAssemblyFile</FileVersion>
+    <InformationalVersion>VersionProduct</InformationalVersion>
     <Company>CompanyName</Company>
     <Copyright>CopyrightLong</Copyright>
   </PropertyGroup>
