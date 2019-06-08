@@ -56,12 +56,3 @@ using Nuclei.Build;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: AssemblyInformationalVersion("1.0.0.0")]
 
-// The time the assembly was build
-[assembly: AssemblyBuildTime(buildTime: "1900-01-01T00:00:00.0000000+00:00")]
-
-// The version from which the assembly was build
-[module: SuppressMessage(
-    "Microsoft.Usage",
-    "CA2243:AttributeStringLiteralsShouldParseCorrectly",
-    Justification = "It's a VCS revision, not a version")]
-[assembly: AssemblyBuildInformation(buildNumber: 0, versionControlInformation: "0")]
