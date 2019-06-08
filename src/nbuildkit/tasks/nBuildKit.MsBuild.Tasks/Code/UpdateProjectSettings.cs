@@ -507,14 +507,14 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 var attributesToUpdate = new List<Tuple<string, string, bool>>
                 {
                     Tuple.Create(
-                        "AssemblyBuildTime",
+                        "Nuclei.Build.AssemblyBuildTime",
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "buildTime: \"{0}\"",
                             DateTimeOffset.Now.ToString("o", CultureInfo.InvariantCulture)),
                         true),
                     Tuple.Create(
-                        "AssemblyBuildInformation",
+                        "Nuclei.Build.AssemblyBuildInformation",
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "buildNumber: {0}, versionControlInformation: \"{1}\"",
