@@ -77,7 +77,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                     string.Format(
                         CultureInfo.InvariantCulture,
                         "/owner:{0}",
-                        UserName ?? Environment.UserName)
+                        UserName ?? Environment.UserName),
                 },
                 standardOutputHandler);
             if (exitCode != 0)

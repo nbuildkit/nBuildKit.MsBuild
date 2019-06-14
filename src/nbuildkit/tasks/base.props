@@ -43,7 +43,7 @@
             The version of the .NET framework at which the assemblies should be targeted. This value is set
             for all projects that include the MsBuild.Projects.XXXX NuGet package.
         -->
-        <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
 
         <!--
             The platform against which the code should be compiled. Note that the target should not have space in it,
@@ -114,8 +114,6 @@
         <Optimize>false</Optimize>
         <OutputPath Condition=" '$(IsWebProject)' == 'false' ">bin\Debug\</OutputPath>
         <OutputPath Condition=" '$(IsWebProject)' == 'true' ">bin\</OutputPath>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunCodeAnalysis>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">true</RunCodeAnalysis>
     </PropertyGroup>
 
     <!--
@@ -130,8 +128,6 @@
         <Optimize>true</Optimize>
         <OutputPath Condition=" '$(IsWebProject)' == 'false' ">bin\Release\</OutputPath>
         <OutputPath Condition=" '$(IsWebProject)' == 'true' ">bin\</OutputPath>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunCodeAnalysis>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">true</RunCodeAnalysis>
     </PropertyGroup>
 
     <!--
@@ -145,27 +141,14 @@
         <Optimize>true</Optimize>
         <OutputPath Condition=" '$(IsWebProject)' == 'false' ">bin\Deploy\</OutputPath>
         <OutputPath Condition=" '$(IsWebProject)' == 'true' ">bin\</OutputPath>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunCodeAnalysis>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">false</RunCodeAnalysis>
     </PropertyGroup>
 
     <!-- Generate the XML documentation file -->
     <PropertyGroup>
         <!--
-            A flag indicating whether or not the XML documentation file should be generated during the compilation process.
-            Note that if 'WarningsAsErrors' is enabled then missing documentation will generate errors that stop the
-            build process.
-
-            If documentation should only be generated for non-test assemblies then add the '!$(IsTest)' condition
-            to the property.
-        -->
-        <GenerateDocumentation>false</GenerateDocumentation>
-        <GenerateDocumentation Condition=" '$(IsTest)' == 'false' ">true</GenerateDocumentation>
-
-        <!--
             The full file path where the XML documentation file should be created.
         -->
-        <DocumentationFile Condition=" '$(GenerateDocumentation)' == 'true' AND '$(IsTest)' == 'false'">$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
+        <DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
     </PropertyGroup>
 
     <!-- Default includes -->

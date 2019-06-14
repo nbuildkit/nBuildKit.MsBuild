@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -51,6 +52,10 @@ namespace NBuildKit.MsBuild.Tasks.Groups
         /// Gets or sets a collection of items for which the collection should be checked.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Items
         {
             get;

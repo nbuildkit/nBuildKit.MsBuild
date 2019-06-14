@@ -25,7 +25,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling
     /// <design>
     /// This class must be public because we use it in the AppDomainBuilder.
     /// </design>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "")]
     [Serializable]
     public sealed class ExceptionHandler
     {

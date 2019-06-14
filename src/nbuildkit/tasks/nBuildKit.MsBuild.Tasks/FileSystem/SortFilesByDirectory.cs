@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Build.Framework;
@@ -23,6 +24,10 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         /// Gets or sets the collection containing the directories.
         /// </summary>
         [Output]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Directories
         {
             get;
@@ -73,6 +78,10 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         /// Gets or sets the collection containing the files to be sorted.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Files
         {
             get;

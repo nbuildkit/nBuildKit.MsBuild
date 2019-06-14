@@ -20,7 +20,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling
     /// Defines a set of event category types used to indicate what category
     /// an event log entry belongs to.
     /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "")]
     internal enum EventType
     {
         /// <summary>

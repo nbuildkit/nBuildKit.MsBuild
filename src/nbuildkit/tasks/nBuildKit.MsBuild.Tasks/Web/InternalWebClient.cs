@@ -25,11 +25,11 @@ namespace NBuildKit.MsBuild.Tasks.Web
         /// <summary>
         /// Deletes the specific file from the remote file server.
         /// </summary>
-        /// <param name="address">The URI of the resource that should be removed. For example http://localhost/samplefile.txt</param>
+        /// <param name="address">The URI of the resource that should be removed. For example http://localhost/samplefile.txt.</param>
         /// <returns>The response of the server.</returns>
         public byte[] DeleteFile(Uri address)
         {
-            return UploadData(address, "DELETE", new byte[0]);
+            return UploadData(address, "DELETE", Array.Empty<byte>());
         }
 
         protected override WebRequest GetWebRequest(Uri uri)

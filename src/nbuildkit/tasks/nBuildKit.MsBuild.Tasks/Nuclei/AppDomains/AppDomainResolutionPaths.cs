@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using NBuildKit.MsBuild.Tasks.Properties;
 
 namespace NBuildKit.MsBuild.Tasks.Nuclei.AppDomains
 {
@@ -31,7 +32,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.AppDomains
         "Microsoft.Performance",
         "CA1811:AvoidUncalledPrivateCode",
         Justification = "This class is embedded in an user assembly and called from there. Hence all methods are internal.")]
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.AppDomains", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.AppDomains", "")]
     internal sealed class AppDomainResolutionPaths
     {
         /// <summary>
@@ -100,7 +101,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.AppDomains
 
             if (string.IsNullOrWhiteSpace(basePath))
             {
-                throw new ArgumentException("The parameter should not be an empty string.", "basePath");
+                throw new ArgumentException(Resources.Exceptions_Messages_ParameterShouldNotBeAnEmptyString, "basePath");
             }
 
             BasePath = basePath;

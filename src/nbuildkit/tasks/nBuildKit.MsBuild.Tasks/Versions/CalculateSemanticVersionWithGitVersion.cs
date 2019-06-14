@@ -371,7 +371,7 @@ namespace NBuildKit.MsBuild.Tasks.Versions
         }
 
         /// <summary>
-        /// Gets or sets the full path to the working directory
+        /// Gets or sets the full path to the working directory.
         /// </summary>
         [Required]
         public ITaskItem WorkingDirectory

@@ -17,6 +17,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization; // Required only in debug mode.
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -49,7 +50,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling
     /// <source>
     /// http://blogs.msdn.com/b/rmbyers/archive/2010/01/30/sample-reflection-emit-code-for-using-exception-filters-from-c.aspx
     /// </source>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "")]
     internal static class ExceptionFilter
     {
         private static Action<Action, Func<Exception, bool>, Action<Exception>> _filter = GenerateFilter();
@@ -257,7 +258,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling
                 Debug.Assert(
                     typeof(TExceptionBase).IsAssignableFrom(tc),
                     string.Format(
-                        System.Globalization.CultureInfo.InvariantCulture,
+                        CultureInfo.InvariantCulture,
                         "Error: {0} is not a sub-class of {1}",
                         tc.FullName,
                         typeof(TExceptionBase).FullName));

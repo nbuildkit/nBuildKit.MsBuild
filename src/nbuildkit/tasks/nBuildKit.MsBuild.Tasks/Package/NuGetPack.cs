@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
@@ -144,6 +145,10 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         /// <summary>
         /// Gets or sets the collection of properties that should be passed to NuGet for the packaging process.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Properties
         {
             get;

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
@@ -40,6 +41,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// <summary>
         /// Gets or sets the paths that should be added to the PATH environment variable.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] AdditionalEnvironmentPaths
         {
             get;
@@ -67,7 +72,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             //
             // If we got passed the path to a js file then we assume that the tools are a local install and
             // we invoke them through node.
-            var isJsFile = Path.GetExtension(ToolPath.ItemSpec).Equals(".js");
+            var isJsFile = Path.GetExtension(ToolPath.ItemSpec).Equals(".js", StringComparison.Ordinal);
             var toolFileName = (!isJsFile)
                 ? "cmd.exe"
                 : GetFullToolPath(NodeExecutablePath);

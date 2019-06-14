@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
@@ -40,6 +41,10 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// Gets or sets the collection of assemblies that should be merged into the primary assembly.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] AssembliesToMerge
         {
             get;
@@ -193,7 +198,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
         }
 
         /// <summary>
-        /// Gets or sets the full path to the working directory
+        /// Gets or sets the full path to the working directory.
         /// </summary>
         [Required]
         public ITaskItem WorkingDirectory

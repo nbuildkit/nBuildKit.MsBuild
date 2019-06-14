@@ -45,7 +45,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         {
             if (diagnostics == null)
             {
-                throw new ArgumentNullException("diagnostics");
+                throw new ArgumentNullException(nameof(diagnostics));
             }
 
             _diagnostics = diagnostics;

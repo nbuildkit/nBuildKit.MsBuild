@@ -40,7 +40,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                         {
                             Assert.AreEqual(new Uri(targetUri + "/" + Path.GetFileName(fileToDelete)), uri);
                         })
-                    .Returns(new byte[0])
+                    .Returns(Array.Empty<byte>())
                     .Verifiable();
             }
 
@@ -135,7 +135,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             var task = new WebDelete(builder);
             task.BuildEngine = BuildEngine.Object;
-            task.Items = new ITaskItem[0];
+            task.Items = Array.Empty<ITaskItem>();
             task.Source = new TaskItem("http://www.microsoft.com/default.aspx");
             task.UseDefaultCredentials = false;
 

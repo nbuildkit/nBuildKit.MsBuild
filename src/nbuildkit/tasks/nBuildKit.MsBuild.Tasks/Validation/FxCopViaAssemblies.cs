@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -104,11 +105,15 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         /// </summary>
         /// <remarks>
         /// Expecting that the taskItems have:
-        /// - taskItem.ItemSpec:        Name of the assembly to include in the attribute
-        /// - taskItem.TargetFramework: Name of the group the assemblies belong to
-        /// - taskItem.RuleSet:         File path of the rule set that should be used
+        /// - taskItem.ItemSpec:        Name of the assembly to include in the attribute.
+        /// - taskItem.TargetFramework: Name of the group the assemblies belong to.
+        /// - taskItem.RuleSet:         File path of the rule set that should be used.
         /// </remarks>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Assemblies
         {
             get;
@@ -204,6 +209,10 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         /// <summary>
         /// Gets or sets the collection of reference directories from which FxCop can load additional assemblies.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] ReferenceDirectories
         {
             get;
@@ -213,6 +222,10 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         /// <summary>
         /// Gets or sets the collection of reference files which FxCop can load if additional referenced assemblies are required.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] ReferenceFiles
         {
             get;

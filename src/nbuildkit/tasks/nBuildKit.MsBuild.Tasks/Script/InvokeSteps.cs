@@ -62,9 +62,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
             result.Add(StepMetadataPath, stepPath);
 
-            result.Add("IsFirstStep", isFirst.ToString().ToLower(CultureInfo.InvariantCulture));
+            result.Add("IsFirstStep", isFirst.ToString(CultureInfo.InvariantCulture).ToLower(CultureInfo.InvariantCulture));
 
-            result.Add("IsLastStep", isLast.ToString().ToLower(CultureInfo.InvariantCulture));
+            result.Add("IsLastStep", isLast.ToString(CultureInfo.InvariantCulture).ToLower(CultureInfo.InvariantCulture));
 
             return result;
         }
@@ -481,7 +481,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should fail if a post-step fails
+        /// Gets or sets a value indicating whether the process should fail if a post-step fails.
         /// </summary>
         public bool FailOnPostStepFailure
         {
@@ -490,7 +490,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should fail if a pre-step fails
+        /// Gets or sets a value indicating whether the process should fail if a pre-step fails.
         /// </summary>
         public bool FailOnPreStepFailure
         {
@@ -501,6 +501,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// <summary>
         /// Gets or sets the steps that should be taken if a step fails.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] FailureSteps
         {
             get;
@@ -516,6 +520,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// Gets or sets the collection of tags that mark which steps should be executed. If no groups are specified
         /// it is assumed that all valid steps should be executed.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] GroupsToExecute
         {
             get;
@@ -740,6 +748,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// <summary>
         /// Gets or sets the steps that should be executed after each step.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] PostSteps
         {
             get;
@@ -749,6 +761,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// <summary>
         /// Gets or sets the steps that should be executed prior to each step.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] PreSteps
         {
             get;
@@ -759,6 +775,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// Gets or sets the steps that should be taken for the current process.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Projects
         {
             get;
@@ -768,6 +788,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// <summary>
         /// Gets or sets the properties for the steps.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Properties
         {
             get;
@@ -809,6 +833,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// Gets or sets the collection containing the metadata describing the different steps.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] StepMetadata
         {
             get;
@@ -826,7 +854,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should stop if a pre-step fails
+        /// Gets or sets a value indicating whether the process should stop if a pre-step fails.
         /// </summary>
         public bool StopOnPreStepFailure
         {
@@ -835,7 +863,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should stop if a post-step fails
+        /// Gets or sets a value indicating whether the process should stop if a post-step fails.
         /// </summary>
         public bool StopOnPostStepFailure
         {

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -36,6 +37,10 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         /// Gets or sets the collection containing the names of the NuGet packages which are considered
         /// design time packages, and should thus not be referenced in the dependencies list.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] DesignTimePackages
         {
             get;
@@ -134,7 +139,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
 
                     var packageVersion = new NuGetVersion(package.Version);
                     var versionRange = package.Version;
-                    if (!string.IsNullOrEmpty(VersionRangeType) && !"none".Equals(VersionRangeType.ToLowerInvariant()))
+                    if (!string.IsNullOrEmpty(VersionRangeType) && !"none".Equals(VersionRangeType.ToLowerInvariant(), StringComparison.Ordinal))
                     {
                         switch (VersionRangeType.ToLowerInvariant())
                         {
@@ -174,6 +179,10 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         /// Gets or sets the collection of package.config files from which additional dependencies should be calculated.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Packages
         {
             get;

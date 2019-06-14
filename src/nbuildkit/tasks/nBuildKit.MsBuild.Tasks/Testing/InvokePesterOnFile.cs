@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -142,6 +143,10 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         /// <summary>
         /// Gets or sets the collection containing the test arguments.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] TestArguments
         {
             get;
@@ -152,6 +157,10 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         /// Gets or sets the full path to a directory that can be used to write temporary files.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem TemporaryDirectory
         {
             get;

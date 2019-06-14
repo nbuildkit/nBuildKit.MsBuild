@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
 using Microsoft.Build.Framework;
@@ -43,7 +44,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         {
             if (fileSystem == null)
             {
-                throw new ArgumentNullException("fileSystem");
+                throw new ArgumentNullException(nameof(fileSystem));
             }
 
             _fileSystem = fileSystem;
@@ -146,6 +147,10 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         /// and where they should be dropped.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Items
         {
             get;

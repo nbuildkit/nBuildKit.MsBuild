@@ -44,7 +44,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         {
             if (ReferenceEquals(builder, null))
             {
-                throw new ArgumentNullException("builder");
+                throw new ArgumentNullException(nameof(builder));
             }
 
             _webClientBuilder = builder;
@@ -154,7 +154,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
             var targetPath = Path.Combine(destinationDirectory, fileName);
 
             // Make sure that we can establish secure connections. See here: https://stackoverflow.com/a/37572417/539846
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             using (var client = _webClientBuilder())
             {
                 if (ReferenceEquals(client, null))
@@ -204,7 +204,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         }
 
         /// <summary>
-        /// Determines which credentials to pass with the web request
+        /// Determines which credentials to pass with the web request.
         /// </summary>
         /// <returns>The credentials that should be passed to the HTTP resource.</returns>
         private ICredentials GetConfiguredCredentials()

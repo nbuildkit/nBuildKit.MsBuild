@@ -13,7 +13,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-
+                
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -27,7 +27,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.AppDomains
     /// <summary>
     /// Builds AppDomains with unhandled exception handlers and fusion loading events.
     /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.AppDomains", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.AppDomains", "")]
     internal static partial class AppDomainBuilder
     {
         /// <summary>

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core;
@@ -60,6 +61,10 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
         /// Gets or sets the collection containing all the new files.
         /// </summary>
         [Output]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] NewFiles
         {
             get;

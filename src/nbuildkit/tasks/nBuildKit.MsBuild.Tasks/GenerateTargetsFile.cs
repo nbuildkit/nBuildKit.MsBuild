@@ -82,7 +82,7 @@ namespace NBuildKit.MsBuild.Tasks
                     new List<string>
                     {
                         // The directory in which the newly created task assembly lives
-                        applicationBase
+                        applicationBase,
                     }));
         }
 
@@ -176,7 +176,10 @@ namespace NBuildKit.MsBuild.Tasks
                 </Project>
             */
 
-            var doc = new XmlDocument();
+            var doc = new XmlDocument
+            {
+                XmlResolver = null,
+            };
 
             var xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
             var root = doc.DocumentElement;
@@ -384,7 +387,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 if (assemblyFileToScan == null)
                 {
-                    throw new ArgumentNullException("assemblyFileToScan");
+                    throw new ArgumentNullException(nameof(assemblyFileToScan));
                 }
 
                 try
@@ -415,6 +418,10 @@ namespace NBuildKit.MsBuild.Tasks
             }
         }
 
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "This class is instantiated via AppDomain.CreateInstanceAndUnwrap.")]
         private sealed class RemoteAssemblyScannerLoader : MarshalByRefObject
         {
             [SuppressMessage(

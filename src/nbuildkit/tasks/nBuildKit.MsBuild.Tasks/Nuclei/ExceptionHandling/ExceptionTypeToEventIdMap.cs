@@ -25,7 +25,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling
     /// Defines methods that map an <see cref="Exception"/> to an ID number for error reporting
     /// purposes.
     /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "")]
     internal static class ExceptionTypeToEventIdMap
     {
         /// <summary>

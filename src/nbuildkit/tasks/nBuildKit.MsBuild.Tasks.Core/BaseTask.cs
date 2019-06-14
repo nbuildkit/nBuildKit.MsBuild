@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -79,6 +80,10 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <summary>
         /// Gets or sets the collection containing the error codes for the task.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] ErrorInformation
         {
             get;
@@ -88,7 +93,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <summary>
         /// Returns the absolute path for the given path item.
         /// </summary>
-        /// <param name="path">The path</param>
+        /// <param name="path">The path.</param>
         /// <returns>The absolute path.</returns>
         protected string GetAbsolutePath(ITaskItem path)
         {
@@ -105,7 +110,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <summary>
         /// Returns the absolute path for the given path item.
         /// </summary>
-        /// <param name="path">The path</param>
+        /// <param name="path">The path.</param>
         /// <returns>The absolute path.</returns>
         protected string GetAbsolutePath(string path)
         {
@@ -122,7 +127,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <summary>
         /// Returns the absolute path for the given path item.
         /// </summary>
-        /// <param name="path">The path</param>
+        /// <param name="path">The path.</param>
         /// <param name="basePath">The full path to the base directory.</param>
         /// <returns>The absolute path.</returns>
         protected string GetAbsolutePath(ITaskItem path, ITaskItem basePath)

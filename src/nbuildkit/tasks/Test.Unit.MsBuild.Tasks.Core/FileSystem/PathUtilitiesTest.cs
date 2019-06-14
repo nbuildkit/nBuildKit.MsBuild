@@ -126,14 +126,14 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 Is.EquivalentTo(
                     new[]
                     {
-                        file3
+                        file3,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths(file1, directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        file1
+                        file1,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths(
@@ -171,7 +171,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 Is.EquivalentTo(
                     new[]
                     {
-                        file2
+                        file2,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths(
@@ -181,7 +181,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         directory),
                     directory),
                 Is.EquivalentTo(
-                    new string[0]));
+                    Array.Empty<string>()));
             Assert.That(
                 PathUtilities.IncludedPaths(
                     string.Format(
@@ -193,7 +193,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                     new[]
                     {
                         file1,
-                        file2
+                        file2,
                     }));
         }
 
@@ -215,14 +215,14 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 Is.EquivalentTo(
                     new[]
                     {
-                        file3
+                        file3,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths(" " + file1, directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        file1
+                        file1,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths(
@@ -260,7 +260,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 Is.EquivalentTo(
                     new[]
                     {
-                        file2
+                        file2,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths(
@@ -270,7 +270,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         directory),
                     directory),
                 Is.EquivalentTo(
-                    new string[0]));
+                    Array.Empty<string>()));
             Assert.That(
                 PathUtilities.IncludedPaths(
                     string.Format(
@@ -282,7 +282,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                     new[]
                     {
                         file1,
-                        file2
+                        file2,
                     }));
         }
 
@@ -329,7 +329,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 @"{0}\other*\**\*.*",
-                                directory)
+                                directory),
                         },
                     directory),
                 Is.EquivalentTo(
@@ -349,7 +349,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 @"{0}\temp\other.*",
-                                directory)
+                                directory),
                         },
                     directory),
                 Is.EquivalentTo(
@@ -370,14 +370,14 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 @"{0}\**\other.*",
-                                directory)
+                                directory),
                         },
                     directory),
                 Is.EquivalentTo(
                     new[]
                     {
                         file1,
-                        file3
+                        file3,
                     }));
         }
 
@@ -424,7 +424,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 @" {0}\other*\**\*.* ",
-                                directory)
+                                directory),
                         },
                     directory),
                 Is.EquivalentTo(
@@ -444,7 +444,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 @"{0}\temp\other.* ",
-                                directory)
+                                directory),
                         },
                     directory),
                 Is.EquivalentTo(
@@ -465,14 +465,14 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 @"  {0}\**\other.*",
-                                directory)
+                                directory),
                         },
                     directory),
                 Is.EquivalentTo(
                     new[]
                     {
                         file1,
-                        file3
+                        file3,
                     }));
         }
 
@@ -513,7 +513,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 @"{0}\other\**\*.*",
-                                directory)
+                                directory),
                         },
                     directory),
                 Is.EquivalentTo(
@@ -530,7 +530,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 @"{0}\temp\other.*",
-                                directory)
+                                directory),
                         },
                     directory),
                 Is.EquivalentTo(
@@ -548,14 +548,14 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 @"{0}\**\other.*",
-                                directory)
+                                directory),
                         },
                     directory),
                 Is.EquivalentTo(
                     new[]
                     {
                         file1,
-                        file3
+                        file3,
                     }));
         }
 
@@ -603,14 +603,14 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 Is.EquivalentTo(
                     new[]
                     {
-                        file1
+                        file1,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths("temp\\*.txt", directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        file1
+                        file1,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths("**\\*.txt", directory),
@@ -618,14 +618,14 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                     new[]
                     {
                         file1,
-                        file2
+                        file2,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths("other\\**\\*.txt", directory),
                 Is.EquivalentTo(
                     new[]
                     {
-                        file2
+                        file2,
                     }));
             Assert.That(
                 PathUtilities.IncludedPaths("**\\temp\\*.txt", directory),
@@ -633,7 +633,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                     new[]
                     {
                         file1,
-                        file2
+                        file2,
                     }));
         }
     }

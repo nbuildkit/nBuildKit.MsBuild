@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -72,6 +73,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
                     {
                         output = tokenPairs[m.Groups[2].Value];
                     }
+
                     return output;
                 });
         }
@@ -168,6 +170,10 @@ namespace NBuildKit.MsBuild.Tasks.Templating
         /// Gets or sets the collection of items that should be de-tokenized as defined by the system.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] SystemParameters
         {
             get;
@@ -178,6 +184,10 @@ namespace NBuildKit.MsBuild.Tasks.Templating
         /// Gets or sets the collection of replacement tokens.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Tokens
         {
             get;
@@ -187,6 +197,10 @@ namespace NBuildKit.MsBuild.Tasks.Templating
         /// <summary>
         /// Gets or sets the collection of items that should be de-tokenized as defined by the user.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] UserParameters
         {
             get;

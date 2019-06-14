@@ -9,11 +9,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 
 namespace NBuildKit.MsBuild.Tasks.Core
 {
@@ -49,16 +52,71 @@ namespace NBuildKit.MsBuild.Tasks.Core
 
         private static IEnumerable<string> GetPotentialMsBuildPaths()
         {
-            var programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-            if (!Environment.Is64BitOperatingSystem)
+            // Use vswhere to find MsBuild: https://github.com/microsoft/vswhere/wiki/Find-MSBuild
+            var arguments = new string[]
             {
-                programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                "-latest",
+                "-requires Microsoft.Component.MSBuild",
+                "-find MSBuild\\**\\Bin\\MSBuild.exe",
+            };
+
+            var result = new List<string>();
+            DataReceivedEventHandler standardOutputHandler =
+                (s, e) =>
+                {
+                    if (!string.IsNullOrWhiteSpace(e.Data))
+                    {
+                        result.Add(e.Data);
+                    }
+                };
+
+            var errorsReported = false;
+            DataReceivedEventHandler standardErrorHandler =
+                (s, e) =>
+                {
+                    if (!string.IsNullOrWhiteSpace(e.Data))
+                    {
+                        errorsReported = true;
+                    }
+                };
+
+            var argumentBuilder = new StringBuilder();
+            {
+                foreach (var argument in arguments)
+                {
+                    argumentBuilder.Append(argument);
+                    argumentBuilder.Append(" ");
+                }
             }
 
-            var msbuildBasePath = Path.Combine(programFilesPath, "MSBuild");
-            return Directory.GetFiles(msbuildBasePath, "msbuild.exe", SearchOption.AllDirectories)
-                .OrderByDescending(f => f)
-                .ToList();
+            var info = new ProcessStartInfo
+            {
+                FileName = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere.exe"),
+                Arguments = argumentBuilder.ToString(),
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+            };
+
+            var process = new Process();
+            process.StartInfo = info;
+            process.OutputDataReceived += standardOutputHandler;
+            process.ErrorDataReceived += standardErrorHandler;
+
+            process.Start();
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+
+            if (process.ExitCode != 0 || errorsReported)
+            {
+                return Array.Empty<string>();
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -238,6 +296,10 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// be executed.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Projects
         {
             get;
@@ -245,8 +307,12 @@ namespace NBuildKit.MsBuild.Tasks.Core
         }
 
         /// <summary>
-        /// Gets or sets the additional MsBuild properties
+        /// Gets or sets the additional MsBuild properties.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Properties
         {
             get;

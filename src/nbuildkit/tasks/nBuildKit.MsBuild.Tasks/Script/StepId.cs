@@ -5,6 +5,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using Nuclei;
 
 namespace NBuildKit.MsBuild.Tasks
@@ -12,6 +13,10 @@ namespace NBuildKit.MsBuild.Tasks
     /// <summary>
     /// Defines the ID of a executable step.
     /// </summary>
+    [SuppressMessage(
+        "Microsoft.Design",
+        "CA1067:Override Object.Equals(object) when implementing IEquatable<T>",
+        Justification = "Because the fxcop analyzers have a bug: https://github.com/dotnet/roslyn-analyzers/issues/2027.")]
     internal sealed class StepId : Id<StepId, string>
     {
         /// <summary>

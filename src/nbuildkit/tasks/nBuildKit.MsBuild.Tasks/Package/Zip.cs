@@ -82,8 +82,20 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
 
             var workingDirectory = GetAbsolutePath(WorkingDirectory);
 
-            var xmlDoc = new XmlDocument();
-            xmlDoc.Load(GetAbsolutePath(File));
+            var xmlDoc = new XmlDocument
+            {
+                XmlResolver = null,
+            };
+
+            var reader = new XmlTextReader(new StreamReader(GetAbsolutePath(File)))
+            {
+                DtdProcessing = DtdProcessing.Prohibit,
+            };
+            using (reader)
+            {
+                xmlDoc.Load(reader);
+            }
+
             var name = xmlDoc.SelectSingleNode("//archive/name/text()").InnerText;
             var outputFilePath = Path.Combine(GetAbsolutePath(OutputDirectory), string.Format(CultureInfo.InvariantCulture, "{0}.zip", name));
 
@@ -173,7 +185,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
         }
 
         /// <summary>
-        /// Gets or sets the full path to the working directory
+        /// Gets or sets the full path to the working directory.
         /// </summary>
         [Required]
         public ITaskItem WorkingDirectory

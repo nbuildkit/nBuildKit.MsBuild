@@ -51,7 +51,7 @@ namespace NBuildKit.MsBuild.Tasks
         }
 
         /// <summary>
-        /// Defines the verbosity levels for MsBuild
+        /// Defines the verbosity levels for MsBuild.
         /// </summary>
         public enum Verbosity
         {
@@ -59,7 +59,7 @@ namespace NBuildKit.MsBuild.Tasks
             Minimal = 1,
             Normal = 2,
             Detailed = 4,
-            Diagnostic = 8
+            Diagnostic = 8,
         }
     }
 }

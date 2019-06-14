@@ -114,9 +114,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -127,7 +127,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteAfter", scriptPath3 + ";" + scriptPath2 }
+                        { "ExecuteAfter", scriptPath3 + ";" + scriptPath2 },
                     }),
                 new TaskItem(
                     scriptPath2,
@@ -136,7 +136,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
+                        { "PostSteps", string.Empty },
                     }),
                 new TaskItem(
                     scriptPath3,
@@ -146,10 +146,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteBefore", scriptPath2 }
-                    })
+                        { "ExecuteBefore", scriptPath2 },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -169,7 +169,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -223,9 +223,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -236,7 +236,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteBefore", scriptPath3 + ";" + scriptPath2 }
+                        { "ExecuteBefore", scriptPath3 + ";" + scriptPath2 },
                     }),
                 new TaskItem(
                     scriptPath2,
@@ -245,7 +245,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
+                        { "PostSteps", string.Empty },
                     }),
                 new TaskItem(
                     scriptPath3,
@@ -255,10 +255,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteBefore", scriptPath2 }
-                    })
+                        { "ExecuteBefore", scriptPath2 },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -278,7 +278,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -332,9 +332,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -355,7 +355,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
+                        { "PostSteps", string.Empty },
                     }),
                 new TaskItem(
                     scriptPath3,
@@ -365,10 +365,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteBefore", scriptPath2 }
-                    })
+                        { "ExecuteBefore", scriptPath2 },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -388,7 +388,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -442,9 +442,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -455,7 +455,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteAfter", scriptPath3 }
+                        { "ExecuteAfter", scriptPath3 },
                     }),
                 new TaskItem(
                     scriptPath2,
@@ -464,7 +464,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
+                        { "PostSteps", string.Empty },
                     }),
                 new TaskItem(
                     scriptPath3,
@@ -474,10 +474,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteBefore", scriptPath1 }
-                    })
+                        { "ExecuteBefore", scriptPath1 },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -497,7 +497,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -546,9 +546,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -559,7 +559,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteAfter", scriptPath3 }
+                        { "ExecuteAfter", scriptPath3 },
                     }),
                 new TaskItem(
                     scriptPath2,
@@ -568,10 +568,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -591,7 +591,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -644,9 +644,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -667,7 +667,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
+                        { "PostSteps", string.Empty },
                     }),
                 new TaskItem(
                     scriptPath3,
@@ -677,10 +677,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteBefore", scriptPath2 }
-                    })
+                        { "ExecuteBefore", scriptPath2 },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -700,7 +700,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -739,7 +739,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
             task.PostSteps = new[]
             {
                 new TaskItem(
@@ -747,9 +747,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     new Hashtable
                     {
                         { "Properties", "c=d" },
-                    })
+                    }),
             };
-            task.PreSteps = new ITaskItem[0];
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -759,10 +759,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -782,7 +782,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "Path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -829,7 +829,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
             task.PostSteps = new[]
             {
                 new TaskItem(
@@ -837,9 +837,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     new Hashtable
                     {
                         { "Properties", "c=d" },
-                    })
+                    }),
             };
-            task.PreSteps = new ITaskItem[0];
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -849,10 +849,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -872,7 +872,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "Path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = false;
@@ -918,16 +918,16 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
             task.PreSteps = new[]
             {
                 new TaskItem(
                     scriptPath2,
                     new Hashtable
                     {
-                        { "Properties", "c=d" }
-                    })
+                        { "Properties", "c=d" },
+                    }),
             };
             task.Projects = new[]
             {
@@ -938,10 +938,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -961,7 +961,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1007,16 +1007,16 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
             task.PreSteps = new[]
             {
                 new TaskItem(
                     scriptPath2,
                     new Hashtable
                     {
-                        { "Properties", "c=d" }
-                    })
+                        { "Properties", "c=d" },
+                    }),
             };
             task.Projects = new[]
             {
@@ -1027,10 +1027,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1050,7 +1050,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1097,9 +1097,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1109,10 +1109,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", scriptPath2 }
-                    })
+                        { "PostSteps", scriptPath2 },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1132,7 +1132,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "Path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1178,9 +1178,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1190,10 +1190,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", scriptPath2 }
-                    })
+                        { "PostSteps", scriptPath2 },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1213,7 +1213,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "Path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = false;
@@ -1259,9 +1259,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1271,10 +1271,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", scriptPath2 },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1294,7 +1294,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1340,9 +1340,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1352,10 +1352,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", scriptPath2 },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1375,7 +1375,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1413,9 +1413,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1425,10 +1425,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", string.Empty },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1439,7 +1439,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1493,14 +1493,14 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     {
                         { "Properties", "c=d" },
                         { "Groups", "e" },
-                    })
+                    }),
             };
             task.GroupsToExecute = new[]
             {
                 new TaskItem("E"),
             };
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1510,10 +1510,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", "e" },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
+                        { "PostSteps", string.Empty },
                     }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1533,7 +1533,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1579,7 +1579,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
             task.PostSteps = new[]
             {
                 new TaskItem(
@@ -1587,9 +1587,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     new Hashtable
                     {
                         { "Properties", "c=d" },
-                    })
+                    }),
             };
-            task.PreSteps = new ITaskItem[0];
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1599,10 +1599,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1622,7 +1622,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "Path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1668,16 +1668,16 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
             task.PreSteps = new[]
             {
                 new TaskItem(
                     scriptPath2,
                     new Hashtable
                     {
-                        { "Properties", "c=d" }
-                    })
+                        { "Properties", "c=d" },
+                    }),
             };
             task.Projects = new[]
             {
@@ -1688,10 +1688,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1711,7 +1711,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1761,8 +1761,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
             {
                 new TaskItem("B"),
             };
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1772,7 +1772,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", "a" },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
+                        { "PostSteps", string.Empty },
                     }),
                 new TaskItem(
                     scriptPath2,
@@ -1781,10 +1781,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", "b" },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1804,7 +1804,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1850,9 +1850,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1862,10 +1862,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", scriptPath2 }
-                    })
+                        { "PostSteps", scriptPath2 },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1885,7 +1885,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "Path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -1931,9 +1931,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -1943,10 +1943,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", scriptPath2 },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -1966,7 +1966,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id2" },
                         { "Name", "name2" },
                         { "Path", "path2" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -2020,9 +2020,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -2033,7 +2033,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteAfter", scriptPath3 }
+                        { "ExecuteAfter", scriptPath3 },
                     }),
                 new TaskItem(
                     scriptPath2,
@@ -2042,7 +2042,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
+                        { "PostSteps", string.Empty },
                     }),
                 new TaskItem(
                     scriptPath3,
@@ -2052,10 +2052,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteBefore", scriptPath2 }
-                    })
+                        { "ExecuteBefore", scriptPath2 },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2075,7 +2075,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -2113,9 +2113,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -2125,10 +2125,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b;c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2139,7 +2139,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -2176,9 +2176,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -2188,10 +2188,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b;c=d;" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2202,7 +2202,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -2247,9 +2247,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -2259,7 +2259,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
+                        { "PostSteps", string.Empty },
                     }),
                 new TaskItem(
                     scriptPath2,
@@ -2268,10 +2268,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2291,7 +2291,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -2337,9 +2337,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -2350,7 +2350,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteAfter", scriptPath2 }
+                        { "ExecuteAfter", scriptPath2 },
                     }),
                 new TaskItem(
                     scriptPath2,
@@ -2359,10 +2359,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2382,7 +2382,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -2428,9 +2428,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -2441,7 +2441,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
                         { "PostSteps", string.Empty },
-                        { "ExecuteBefore", scriptPath2 }
+                        { "ExecuteBefore", scriptPath2 },
                     }),
                 new TaskItem(
                     scriptPath2,
@@ -2450,10 +2450,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "c=d" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2473,7 +2473,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -2511,9 +2511,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -2523,10 +2523,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2537,7 +2537,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -2574,9 +2574,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -2586,10 +2586,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", "a=b;" },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2600,7 +2600,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;
@@ -2634,9 +2634,9 @@ namespace NBuildKit.MsBuild.Tasks.Script
             task.BuildEngine = BuildEngine.Object;
             task.FailOnPostStepFailure = true;
             task.FailOnPreStepFailure = true;
-            task.GroupsToExecute = new ITaskItem[0];
-            task.PostSteps = new ITaskItem[0];
-            task.PreSteps = new ITaskItem[0];
+            task.GroupsToExecute = Array.Empty<ITaskItem>();
+            task.PostSteps = Array.Empty<ITaskItem>();
+            task.PreSteps = Array.Empty<ITaskItem>();
             task.Projects = new[]
             {
                 new TaskItem(
@@ -2646,10 +2646,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Properties", string.Empty },
                         { "Groups", string.Empty },
                         { "PreSteps", string.Empty },
-                        { "PostSteps", string.Empty }
-                    })
+                        { "PostSteps", string.Empty },
+                    }),
             };
-            task.Properties = new TaskItem[0];
+            task.Properties = Array.Empty<TaskItem>();
             task.StepMetadata = new[]
             {
                 new TaskItem(
@@ -2660,7 +2660,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         { "Id", "id" },
                         { "Name", "name" },
                         { "Path", "Path" },
-                    })
+                    }),
             };
             task.StopOnFirstFailure = true;
             task.StopOnPostStepFailure = true;

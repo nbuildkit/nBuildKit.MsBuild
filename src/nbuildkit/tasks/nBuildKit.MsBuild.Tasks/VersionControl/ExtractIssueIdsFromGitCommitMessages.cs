@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -63,7 +64,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "log -n 1 --pretty=format:%B {0}",
-                            commit)
+                            commit),
                     });
                 var issueIdMatch = regex.Match(logMessage);
                 if (issueIdMatch.Success)
@@ -87,6 +88,10 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
         /// Gets or sets the collection containing the issue IDs which were extracted from the set of unmerged commits.
         /// </summary>
         [Output]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] IssueIds
         {
             get;
@@ -119,7 +124,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             var localBranchesAsText = GetGitOutput(
                 new[]
                 {
-                    "branch"
+                    "branch",
                 });
             var hasMergeTarget = localBranchesAsText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(t => t.Contains(MergeTargetBranch))
@@ -131,7 +136,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                 InvokeGit(
                     new[]
                     {
-                        string.Format(CultureInfo.InvariantCulture, "branch --track {0} origin/{0}", MergeTargetBranch)
+                        string.Format(CultureInfo.InvariantCulture, "branch --track {0} origin/{0}", MergeTargetBranch),
                     });
             }
 
@@ -139,7 +144,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             var gitOutput = GetGitOutput(
                 new[]
                 {
-                    string.Format(CultureInfo.InvariantCulture, "cherry {0}", MergeTargetBranch)
+                    string.Format(CultureInfo.InvariantCulture, "cherry {0}", MergeTargetBranch),
                 });
             return gitOutput
                 .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)

@@ -23,10 +23,16 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         /// <inheritdoc/>
         public override bool Execute()
         {
-            var doc = XDocument.Load(GetAbsolutePath(InputFile));
+            var path = GetAbsolutePath(InputFile);
+            Log.LogMessage(
+                MessageImportance.Low,
+                "Input file: {0}",
+                path);
+
+            var doc = XDocument.Load(path);
             var metrics = (from node in doc
                               .Element("CoverageReport")
-                              .Element("Assemblies")
+                              .Element("Coverage")
                               .Descendants("Assembly")
                            select new
                            {
@@ -67,10 +73,7 @@ namespace NBuildKit.MsBuild.Tasks.Testing
             }
 
             builder.AppendLine(line.ToString());
-            using (var writer = new StreamWriter(GetAbsolutePath(OutputFile)))
-            {
-                writer.Write(builder.ToString());
-            }
+            File.WriteAllText(GetAbsolutePath(OutputFile), builder.ToString());
 
             return true;
         }

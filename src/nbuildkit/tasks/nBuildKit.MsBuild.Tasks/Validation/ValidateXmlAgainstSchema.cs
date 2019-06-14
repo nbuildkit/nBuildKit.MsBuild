@@ -78,7 +78,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         }
 
         /// <summary>
-        /// Gets or sets the target XML namespace
+        /// Gets or sets the target XML namespace.
         /// </summary>
         [Required]
         public string TargetNamespace

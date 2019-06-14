@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Build.Framework;
@@ -47,6 +48,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// <summary>
         /// Gets or sets the paths that should be added to the PATH environment variable.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] AdditionalEnvironmentPaths
         {
             get;
@@ -58,6 +63,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// name with a meta data item called 'Value' which provides the value for the argument.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Arguments
         {
             get;
