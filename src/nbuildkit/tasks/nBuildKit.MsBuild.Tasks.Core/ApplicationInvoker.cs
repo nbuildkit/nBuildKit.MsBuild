@@ -12,8 +12,6 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Nuclei.Diagnostics;
-using Nuclei.Diagnostics.Logging;
 
 namespace NBuildKit.MsBuild.Tasks.Core
 {
