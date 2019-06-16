@@ -13,8 +13,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core.FileSystem;
-using Nuclei.Diagnostics;
 
 namespace NBuildKit.MsBuild.Tasks.Core
 {
@@ -31,15 +31,15 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
         protected CommandLineToolTask(IApplicationInvoker invoker)
         {
-            _invoker = invoker ?? new ApplicationInvoker(new SystemDiagnostics(new MsBuildLogger(Log), null));
+            _invoker = invoker ?? new ApplicationInvoker(Log);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandLineToolTask"/> class.
         /// </summary>
-        /// <param name="diagnostics">The object that provides the diagnostics for the application.</param>
-        protected CommandLineToolTask(SystemDiagnostics diagnostics)
-            : this(new ApplicationInvoker(diagnostics))
+        /// <param name="logger">The object that provides the diagnostics for the application.</param>
+        protected CommandLineToolTask(TaskLoggingHelper logger)
+            : this(new ApplicationInvoker(logger))
         {
         }
 

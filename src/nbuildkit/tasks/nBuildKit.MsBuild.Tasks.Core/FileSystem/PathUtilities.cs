@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.IO.Abstractions;
 using System.Linq;
 using Microsoft.Extensions.FileSystemGlobbing;
 using NBuildKit.MsBuild.Tasks.Core.Properties;

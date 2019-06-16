@@ -12,6 +12,8 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 
 namespace NBuildKit.MsBuild.Tasks.Core
 {
@@ -33,20 +35,15 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <summary>
         /// The object that provides the diagnostics methods for the application.
         /// </summary>
-        private readonly SystemDiagnostics _diagnostics;
+        private readonly TaskLoggingHelper _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationInvoker"/> class.
         /// </summary>
-        /// <param name="diagnostics">The object that provides the diagnostics for the application.</param>
-        public ApplicationInvoker(SystemDiagnostics diagnostics)
+        /// <param name="logger">The object that provides the diagnostics for the application.</param>
+        public ApplicationInvoker(TaskLoggingHelper logger)
         {
-            if (diagnostics == null)
-            {
-                throw new ArgumentNullException(nameof(diagnostics));
-            }
-
-            _diagnostics = diagnostics;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -79,18 +76,14 @@ namespace NBuildKit.MsBuild.Tasks.Core
         {
             if (string.IsNullOrWhiteSpace(applicationPath))
             {
-                _diagnostics.Log(
-                    LevelToLog.Error,
-                    "The path to the application was null or empty. Cannot execute the application without a valid path.");
+                _logger.LogError("The path to the application was null or empty. Cannot execute the application without a valid path.");
 
                 return ApplicationNotFoundExitCode;
             }
 
             if (arguments == null)
             {
-                _diagnostics.Log(
-                    LevelToLog.Error,
-                    "The arguments collection is null.");
+                _logger.LogError("The arguments collection is null.");
                 return ApplicationConfigurationErrorExitCode;
             }
 
@@ -126,32 +119,31 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 CreateNoWindow = true,
             };
 
-            if (updateEnvironmentVariables != null)
-            {
-                updateEnvironmentVariables(info.EnvironmentVariables);
-            }
+            updateEnvironmentVariables?.Invoke(info.EnvironmentVariables);
 
-            _diagnostics.Log(
-                LevelToLog.Debug,
+            _logger.LogMessage(
+                MessageImportance.Low,
                 "Executing {0} in {1} with arguments: {2}",
                 applicationPath,
                 workingDirectory,
                 argumentsAsText);
             if (logEnvironmentVariables)
             {
-                _diagnostics.Log(LevelToLog.Debug, "Environment variables for the process are: ");
+                _logger.LogMessage(MessageImportance.Low, "Environment variables for the process are: ");
                 foreach (DictionaryEntry pair in info.EnvironmentVariables)
                 {
-                    _diagnostics.Log(
-                        LevelToLog.Debug,
+                    _logger.LogMessage(
+                        MessageImportance.Low,
                         "{0}: {1}",
                         pair.Key,
                         pair.Value);
                 }
             }
 
-            var process = new Process();
-            process.StartInfo = info;
+            var process = new Process
+                {
+                    StartInfo = info,
+                };
 
             if (standardOutputHandler != null)
             {

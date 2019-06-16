@@ -17,7 +17,6 @@ using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core;
-using Nuclei;
 
 namespace NBuildKit.MsBuild.Tasks.Script
 {

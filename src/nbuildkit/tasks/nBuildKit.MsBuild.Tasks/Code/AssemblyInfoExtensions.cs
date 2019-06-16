@@ -13,8 +13,6 @@ using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Properties;
-using Nuclei.Diagnostics.Logging;
-using ILogger = Nuclei.Diagnostics.Logging.ILogger;
 
 namespace NBuildKit.MsBuild.Tasks.Code
 {
@@ -54,7 +52,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             string attributeName,
             string value,
             Encoding encoding,
-            ILogger log,
+            TaskLoggingHelper log,
             bool addIfNotFound = false)
         {
             if (filePath is null)
@@ -109,15 +107,12 @@ namespace NBuildKit.MsBuild.Tasks.Code
 
                 if (System.Text.RegularExpressions.Regex.IsMatch(text, assemblyAttributeMatcher))
                 {
-                    log.Log(
-                        new LogMessage(
-                            LevelToLog.Debug,
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "Replacing in file: {0}. Old line \"{1}\". New line: \"{2}\"",
-                                filePath,
-                                lines[i],
-                                attribute)));
+                    log.LogMessage(
+                        MessageImportance.Low,
+                        "Replacing in file: {0}. Old line \"{1}\". New line: \"{2}\"",
+                        filePath,
+                        lines[i],
+                        attribute);
                     lines[i] = attribute;
 
                     found = true;
@@ -127,14 +122,11 @@ namespace NBuildKit.MsBuild.Tasks.Code
 
             if (!found && addIfNotFound)
             {
-                log.Log(
-                    new LogMessage(
-                        LevelToLog.Debug,
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Adding to file: {0}. Line: \"{1}\"",
-                            filePath,
-                            attribute)));
+                log.LogMessage(
+                    MessageImportance.Low,
+                    "Adding to file: {0}. Line: \"{1}\"",
+                    filePath,
+                    attribute);
                 lines.Add(attribute);
             }
 
@@ -143,14 +135,11 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 File.SetAttributes(filePath, FileAttributes.Normal);
             }
 
-            log.Log(
-                new LogMessage(
-                    LevelToLog.Debug,
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "File at: {0}. Exists: \"{1}\"",
-                        filePath,
-                        File.Exists(filePath))));
+            log.LogMessage(
+                MessageImportance.Low,
+                "File at: {0}. Exists: \"{1}\"",
+                filePath,
+                File.Exists(filePath));
             File.WriteAllLines(filePath, lines, encoding);
         }
 
@@ -170,7 +159,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             string compilerDirectives,
             IEnumerable<Tuple<string, string>> internalsVisibleToAttributeParameters,
             Encoding encoding,
-            ILogger log)
+            TaskLoggingHelper log)
         {
             if (filePath is null)
             {
@@ -242,14 +231,11 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 File.SetAttributes(filePath, FileAttributes.Normal);
             }
 
-            log.Log(
-                new LogMessage(
-                    LevelToLog.Debug,
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "File at: {0}. Exists: \"{1}\"",
-                        filePath,
-                        File.Exists(filePath))));
+            log.LogMessage(
+                MessageImportance.Low,
+                "File at: {0}. Exists: \"{1}\"",
+                filePath,
+                File.Exists(filePath));
             File.WriteAllLines(filePath, lines, encoding);
         }
 
@@ -381,7 +367,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 condition);
         }
 
-        private static bool RemoveInternalsVisibleToAttributes(List<string> lines, string assemblyAttributeMatcher, ILogger log)
+        private static bool RemoveInternalsVisibleToAttributes(List<string> lines, string assemblyAttributeMatcher, TaskLoggingHelper log)
         {
             var first = -1;
             var last = -1;
@@ -399,15 +385,12 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     // If the previous line isn't an InternalsVisibleToAttribute, then we're in trouble
                     if ((last > -1) && (last < (i - 1)))
                     {
-                        log.Log(
-                            new LogMessage(
-                                LevelToLog.Error,
-                                string.Format(
-                                    CultureInfo.InvariantCulture,
-                                    "Found multiple InternalsVisibleTo attributes on non-neighbouring lines." +
-                                        " This will cause failures as all the lines should be replaced in one operation." +
-                                        " Attributes starting at line {0}.",
-                                    first)));
+                        log.LogMessage(
+                            MessageImportance.Low,
+                            "Found multiple InternalsVisibleTo attributes on non-neighbouring lines." +
+                                " This will cause failures as all the lines should be replaced in one operation." +
+                                " Attributes starting at line {0}.",
+                            first);
                         return false;
                     }
 
