@@ -72,6 +72,7 @@ namespace NBuildKit.MsBuild.Tasks.Templating
                     {
                         output = tokenPairs[m.Groups[2].Value];
                     }
+
                     return output;
                 });
         }

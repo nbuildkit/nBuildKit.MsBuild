@@ -63,7 +63,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "log -n 1 --pretty=format:%B {0}",
-                            commit)
+                            commit),
                     });
                 var issueIdMatch = regex.Match(logMessage);
                 if (issueIdMatch.Success)
@@ -119,7 +119,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             var localBranchesAsText = GetGitOutput(
                 new[]
                 {
-                    "branch"
+                    "branch",
                 });
             var hasMergeTarget = localBranchesAsText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(t => t.Contains(MergeTargetBranch))
@@ -131,7 +131,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                 InvokeGit(
                     new[]
                     {
-                        string.Format(CultureInfo.InvariantCulture, "branch --track {0} origin/{0}", MergeTargetBranch)
+                        string.Format(CultureInfo.InvariantCulture, "branch --track {0} origin/{0}", MergeTargetBranch),
                     });
             }
 
@@ -139,7 +139,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
             var gitOutput = GetGitOutput(
                 new[]
                 {
-                    string.Format(CultureInfo.InvariantCulture, "cherry {0}", MergeTargetBranch)
+                    string.Format(CultureInfo.InvariantCulture, "cherry {0}", MergeTargetBranch),
                 });
             return gitOutput
                 .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)

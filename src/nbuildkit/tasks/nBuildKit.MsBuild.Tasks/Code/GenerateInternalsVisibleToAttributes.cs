@@ -334,6 +334,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                                 {
                                     output = tokenPairs[m.Groups[2].Value];
                                 }
+
                                 return output;
                             });
                         builder.AppendLine(attributeText);
@@ -353,6 +354,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                                 {
                                     output = tokenPairs[m.Groups[2].Value];
                                 }
+
                                 return output;
                             });
                         builder.AppendLine(attributeText);

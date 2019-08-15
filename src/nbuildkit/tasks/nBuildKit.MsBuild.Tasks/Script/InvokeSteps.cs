@@ -481,7 +481,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should fail if a post-step fails
+        /// Gets or sets a value indicating whether the process should fail if a post-step fails.
         /// </summary>
         public bool FailOnPostStepFailure
         {
@@ -490,7 +490,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should fail if a pre-step fails
+        /// Gets or sets a value indicating whether the process should fail if a pre-step fails.
         /// </summary>
         public bool FailOnPreStepFailure
         {
@@ -826,7 +826,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should stop if a pre-step fails
+        /// Gets or sets a value indicating whether the process should stop if a pre-step fails.
         /// </summary>
         public bool StopOnPreStepFailure
         {
@@ -835,7 +835,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the process should stop if a post-step fails
+        /// Gets or sets a value indicating whether the process should stop if a post-step fails.
         /// </summary>
         public bool StopOnPostStepFailure
         {

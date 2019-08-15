@@ -101,7 +101,7 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         }
 
         /// <summary>
-        /// Gets or sets the filters for OpenCover
+        /// Gets or sets the filters for OpenCover.
         /// </summary>
         [Required]
         public string OpenCoverFilters

@@ -82,7 +82,7 @@ namespace NBuildKit.MsBuild.Tasks
                     new List<string>
                     {
                         // The directory in which the newly created task assembly lives
-                        applicationBase
+                        applicationBase,
                     }));
         }
 

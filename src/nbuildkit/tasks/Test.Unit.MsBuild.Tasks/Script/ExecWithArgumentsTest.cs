@@ -73,8 +73,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value1" }
-                    })
+                        { "Value", "value1" },
+                    }),
             };
             task.IgnoreErrors = true;
             task.IgnoreExitCode = false;
@@ -145,8 +145,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value1" }
-                    })
+                        { "Value", "value1" },
+                    }),
             };
             task.IgnoreErrors = false;
             task.IgnoreExitCode = true;
@@ -220,8 +220,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value1" }
-                    })
+                        { "Value", "value1" },
+                    }),
             };
             task.IgnoreErrors = false;
             task.IgnoreExitCode = false;
@@ -296,8 +296,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value1" }
-                    })
+                        { "Value", "value1" },
+                    }),
             };
             task.ArgumentPrefix = "-";
             task.IgnoreErrors = false;
@@ -367,8 +367,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value1" }
-                    })
+                        { "Value", "value1" },
+                    }),
             };
             task.ArgumentSeparator = ":";
             task.IgnoreErrors = false;
@@ -439,8 +439,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", string.Empty }
-                    })
+                        { "Value", string.Empty },
+                    }),
             };
             task.IgnoreErrors = false;
             task.IgnoreExitCode = false;
@@ -510,8 +510,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument 1",
                     new Hashtable
                     {
-                        { "Value", string.Empty }
-                    })
+                        { "Value", string.Empty },
+                    }),
             };
             task.IgnoreErrors = false;
             task.IgnoreExitCode = false;
@@ -581,8 +581,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value 1" }
-                    })
+                        { "Value", "value 1" },
+                    }),
             };
             task.IgnoreErrors = false;
             task.IgnoreExitCode = false;
@@ -654,8 +654,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value1" }
-                    })
+                        { "Value", "value1" },
+                    }),
             };
             task.IgnoreErrors = false;
             task.IgnoreExitCode = false;
@@ -726,8 +726,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value1" }
-                    })
+                        { "Value", "value1" },
+                    }),
             };
             task.IgnoreErrors = false;
             task.IgnoreExitCode = false;
@@ -797,13 +797,13 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value1" }
+                        { "Value", "value1" },
                     }),
                 new TaskItem(
                     "argument2",
                     new Hashtable
                     {
-                        { "Value", "value2" }
+                        { "Value", "value2" },
                     }),
             };
             task.IgnoreErrors = false;
@@ -875,8 +875,8 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     "argument1",
                     new Hashtable
                     {
-                        { "Value", "value1" }
-                    })
+                        { "Value", "value1" },
+                    }),
             };
             task.IgnoreErrors = false;
             task.IgnoreExitCode = false;

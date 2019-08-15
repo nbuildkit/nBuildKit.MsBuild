@@ -104,9 +104,9 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         /// </summary>
         /// <remarks>
         /// Expecting that the taskItems have:
-        /// - taskItem.ItemSpec:        Name of the assembly to include in the attribute
-        /// - taskItem.TargetFramework: Name of the group the assemblies belong to
-        /// - taskItem.RuleSet:         File path of the rule set that should be used
+        /// - taskItem.ItemSpec:        Name of the assembly to include in the attribute.
+        /// - taskItem.TargetFramework: Name of the group the assemblies belong to.
+        /// - taskItem.RuleSet:         File path of the rule set that should be used.
         /// </remarks>
         [Required]
         public ITaskItem[] Assemblies
