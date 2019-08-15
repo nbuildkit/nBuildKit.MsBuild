@@ -52,7 +52,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.Fusion
     /// be called from one thread.
     /// </para>
     /// </design>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.Fusion", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.Fusion", "")]
     internal sealed class FusionHelper
     {
         /// <summary>

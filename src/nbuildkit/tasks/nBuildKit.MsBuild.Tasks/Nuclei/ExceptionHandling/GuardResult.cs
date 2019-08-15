@@ -19,7 +19,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling
     /// <summary>
     /// Defines the possible exit results for a guarded execution of a method.
     /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "")]
     internal enum GuardResult
     {
         /// <summary>
