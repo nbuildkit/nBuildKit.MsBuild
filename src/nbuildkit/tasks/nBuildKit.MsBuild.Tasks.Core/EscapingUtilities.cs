@@ -91,7 +91,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// XX is the hex value of the ASCII code for the char.
         /// </summary>
         /// <param name="text">The string to escape.</param>
-        /// <returns>escaped string.</returns>
+        /// <returns>The escaped string.</returns>
         public static string Escape(string text)
         {
             return EscapeWithOptionalCaching(text, cache: false);
@@ -170,7 +170,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// by the hexadecimal number XX.
         /// </summary>
         /// <param name="text">The string to unescape.</param>
-        /// <returns>unescaped string.</returns>
+        /// <returns>The unescaped string.</returns>
         public static string UnescapeAll(string text)
         {
             bool throwAwayBool;
@@ -183,7 +183,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// </summary>
         /// <param name="text">The string to unescape.</param>
         /// <param name="escapingWasNecessary">Whether any replacements were made.</param>
-        /// <returns>unescaped string.</returns>
+        /// <returns>The unescaped string.</returns>
         public static string UnescapeAll(string text, out bool escapingWasNecessary)
         {
             escapingWasNecessary = false;
