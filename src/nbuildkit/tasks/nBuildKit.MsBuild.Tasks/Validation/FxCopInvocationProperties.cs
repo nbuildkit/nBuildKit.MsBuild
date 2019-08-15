@@ -75,7 +75,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         private readonly string _targetFramework;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FxCopInvocationProperties"/> class
+        /// Initializes a new instance of the <see cref="FxCopInvocationProperties"/> class.
         /// </summary>
         /// <param name="targetFramework">The target framework.</param>
         /// <param name="ruleSetPath">The path to the rule set file.</param>
@@ -97,7 +97,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FxCopInvocationProperties"/> class
+        /// Initializes a new instance of the <see cref="FxCopInvocationProperties"/> class.
         /// </summary>
         /// <param name="targetFramework">The target framework.</param>
         /// <param name="ruleSetPath">The path to the rule set file.</param>

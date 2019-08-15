@@ -50,7 +50,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// Invokes the TF command line tool with the given arguments in the provided workspace directory.
         /// </summary>
         /// <param name="arguments">The collection of arguments.</param>
-        /// <returns>The output of the TF process</returns>
+        /// <returns>The output of the TF process.</returns>
         protected string GetTfOutput(IEnumerable<string> arguments)
         {
             var text = new StringBuilder();
@@ -93,7 +93,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         ///     The event handler that handles the standard output stream of the command line application. If no value is provided
         ///     then all messages are logged.
         /// </param>
-        /// <returns>The output of the TF process</returns>
+        /// <returns>The output of the TF process.</returns>
         protected int InvokeTf(IEnumerable<string> arguments, DataReceivedEventHandler standardOutputHandler = null)
         {
             if (standardOutputHandler == null)

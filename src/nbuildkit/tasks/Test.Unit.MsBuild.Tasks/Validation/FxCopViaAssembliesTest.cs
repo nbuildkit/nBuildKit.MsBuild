@@ -84,7 +84,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                     {
                         { "TargetFramework", "4.5" },
                         { "RuleSet", ruleset },
-                        { "CustomDictionary", dictionary }
+                        { "CustomDictionary", dictionary },
                     }),
             };
             task.FxCopDirectory = new TaskItem(directory);
@@ -201,7 +201,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                     new Hashtable
                     {
                         { "TargetFramework", "4.5" },
-                        { "RuleSet", ruleset }
+                        { "RuleSet", ruleset },
                     }),
             };
             task.FxCopDirectory = new TaskItem(directory);
@@ -310,14 +310,14 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                     new Hashtable
                     {
                         { "TargetFramework", "4.5" },
-                        { "RuleSet", ruleset }
+                        { "RuleSet", ruleset },
                     }),
                 new TaskItem(
                     assemblyPath,
                     new Hashtable
                     {
                         { "TargetFramework", "4.5" },
-                        { "RuleSet", ruleset }
+                        { "RuleSet", ruleset },
                     }),
             };
             task.FxCopDirectory = new TaskItem(directory);
@@ -430,7 +430,7 @@ namespace NBuildKit.MsBuild.Tasks.Validation
                     new Hashtable
                     {
                         { "TargetFramework", "4.5" },
-                        { "RuleSet", ruleset }
+                        { "RuleSet", ruleset },
                     }),
             };
             task.FxCopDirectory = new TaskItem(directory);

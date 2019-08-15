@@ -21,7 +21,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.AppDomains
     /// <summary>
     /// Defines the interface for classes which deal with assembly resolution.
     /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.AppDomains", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.AppDomains", "")]
     internal interface IAppDomainAssemblyResolver
     {
         /// <summary>

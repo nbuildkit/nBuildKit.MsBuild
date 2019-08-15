@@ -289,7 +289,7 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
             task.Sources = new ITaskItem[]
             {
                 new TaskItem("Source1"),
-                new TaskItem("Source2")
+                new TaskItem("Source2"),
             };
             task.WorkingDirectory = new TaskItem(directory);
 

@@ -33,7 +33,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         ///     The event handler that handles the standard output stream of the command line application. If no value is provided
         ///     then all messages are logged.
         /// </param>
-        /// <returns>The output of the GIT process</returns>
+        /// <returns>The output of the GIT process.</returns>
         protected int InvokeNuGet(IEnumerable<string> arguments, DataReceivedEventHandler standardOutputHandler = null)
         {
             if (standardOutputHandler == null)
@@ -67,7 +67,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
         }
 
         /// <summary>
-        /// Gets or sets the full path to the working directory
+        /// Gets or sets the full path to the working directory.
         /// </summary>
         [Required]
         public ITaskItem WorkingDirectory

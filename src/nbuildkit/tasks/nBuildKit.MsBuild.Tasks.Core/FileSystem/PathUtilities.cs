@@ -17,7 +17,7 @@ using NBuildKit.MsBuild.Tasks.Core.Properties;
 namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
 {
     /// <summary>
-    /// Provides utility methods for handling paths
+    /// Provides utility methods for handling paths.
     /// </summary>
     public static class PathUtilities
     {
@@ -103,7 +103,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         /// <summary>
         /// Returns the absolute path for the given path item.
         /// </summary>
-        /// <param name="path">The path</param>
+        /// <param name="path">The path.</param>
         /// <returns>The absolute path.</returns>
         public static string GetAbsolutePath(string path)
         {
@@ -125,7 +125,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         /// <summary>
         /// Returns the absolute path for the given path item.
         /// </summary>
-        /// <param name="path">The path</param>
+        /// <param name="path">The path.</param>
         /// <param name="basePath">The full path to the base directory.</param>
         /// <returns>The absolute path.</returns>
         public static string GetAbsolutePath(string path, string basePath)

@@ -83,7 +83,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                             {
                                 "Hash",
                                 (string)obj.Hash
-                            }
+                            },
                         }));
             }
 

@@ -204,7 +204,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
         }
 
         /// <summary>
-        /// Determines which credentials to pass with the web request
+        /// Determines which credentials to pass with the web request.
         /// </summary>
         /// <returns>The credentials that should be passed to the HTTP resource.</returns>
         private ICredentials GetConfiguredCredentials()

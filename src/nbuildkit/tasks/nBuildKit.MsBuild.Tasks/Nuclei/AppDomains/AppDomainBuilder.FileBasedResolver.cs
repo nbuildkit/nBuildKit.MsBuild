@@ -13,7 +13,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-
+                
 using System;
 using System.Collections.Generic;
 using NBuildKit.MsBuild.Tasks.Nuclei.Fusion;

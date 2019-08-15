@@ -22,7 +22,7 @@ namespace NBuildKit.MsBuild.Tasks.Nuclei.ExceptionHandling
     /// Defines the delegate used for actions that process unhandled exceptions.
     /// </summary>
     /// <param name="exception">The exception to process.</param>
-    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "0.9.0")]
+    [System.CodeDom.Compiler.GeneratedCode("Nuclei.ExceptionHandling", "")]
     public delegate void ExceptionProcessor(Exception exception);
 }
 
