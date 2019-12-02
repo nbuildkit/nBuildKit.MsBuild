@@ -144,6 +144,74 @@
         <Warning
             Condition="!Exists('$(ToolsExternalOpenCoverToCoberturaConverterPath)') "
             Text="Could not locate the OpenCoverToCoberturaConverter executable path. Cannot convert code coverage reports." />
+
+        <NuGetInstall
+            Condition=" '$(ToolsExternalNUnitXmlLoggerPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="NunitXml.TestLogger"
+            PackageVersion="$(ToolsExternalNUnitXmlLoggerVersion)"
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalNUnitXmlLoggerPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            FileToLocate="Microsoft.VisualStudio.TestPlatform.Extension.NUnit.Xml.TestLogger.dll"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalNUnitXmlLoggerPath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalNUnitXmlLoggerPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            Tool="$(ToolsExternalNUnitXmlLoggerPath)">
+            <Output
+                PropertyName="ToolsExternalNUnitXmlLoggerPath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalNUnitXmlLoggerPath)') "
+            Text="The NUnitXml.Logger test adapter was found at: $(ToolsExternalNUnitXmlLoggerPath)" />
+        <Warning
+            Condition="!Exists('$(ToolsExternalNUnitXmlLoggerPath)') "
+            Text="Could not locate the NUnitXml.Logger executable path. Cannot generate NUnit V3 xml unit test results." />
+        
+        <NuGetInstall
+            Condition=" '$(ToolsExternalXUnitXmlLoggerPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
+            NuGetExecutablePath="$(ToolsExternalNuGetPath)"
+            PackagesDirectory="$(DirPackages)"
+            PackageName="XunitXml.TestLogger"
+            PackageVersion="$(ToolsExternalXUnitXmlLoggerVersion)"
+            Sources="@(NuGetSources)"
+            WorkingDirectory="$(DirWorkspace)" />
+        <SearchPackagesDirectoryForToolPath
+            Condition=" '$(ToolsExternalXUnitXmlLoggerPath)' == 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            FileToLocate="Microsoft.VisualStudio.TestPlatform.Extension.Xunit.Xml.TestLogger.dll"
+            PackagesDirectory="$(DirPackages)">
+            <Output
+                PropertyName="ToolsExternalXUnitXmlLoggerPath"
+                TaskParameter="Path" />
+        </SearchPackagesDirectoryForToolPath>
+        <GetToolFullPath
+            Condition=" '$(ToolsExternalXUnitXmlLoggerPath)' != 'UNDEFINED' "
+            ErrorInformation="@(ErrorInformation)"
+            Tool="$(ToolsExternalXUnitXmlLoggerPath)">
+            <Output
+                PropertyName="ToolsExternalXUnitXmlLoggerPath"
+                TaskParameter="Path" />
+        </GetToolFullPath>
+        <Message
+            Condition="Exists('$(ToolsExternalXUnitXmlLoggerPath)') "
+            Text="The XUnitXml.Logger test adapter was found at: $(ToolsExternalXUnitXmlLoggerPath)" />
+        <Warning
+            Condition="!Exists('$(ToolsExternalXUnitXmlLoggerPath)') "
+            Text="Could not locate the XUnitXml.Logger executable path. Cannot generate XUnit xml unit test results." /> 
     </Target>
 
     <Target
@@ -232,14 +300,40 @@
             Condition=" '$(TF_BUILD)' == 'True' "
             Value="/logger:TfsPublisher&#59;Collection=$(TeamFoundationServerUrl)&#59;TeamProject=$(TF_PROJECT_NAME)&#59;BuildName=$(TF_BUILD_BUILDNUMBER)&#59;Flavor=$(Configuration)&#59;Platform=$(Platform)">
             <Output
-                PropertyName="VsTestAdditionalParams"
+                PropertyName="VsTestLogger"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <!-- Custom logger formats for vstest -->
+        <!-- Parameters for vstest and loggers were taken from here: https://github.com/microsoft/vstest-docs/blob/master/docs/report.md -->
+        <CreateProperty
+            Condition=" '$(VsTestLogger)' == '' AND '$(VsTestLoggerFormat)' == 'nunit-v3' "
+            Value="/logger:nunit /TestAdapterPath:$(ToolsExternalNUnitXmlLoggerPath)">
+            <Output
+                PropertyName="VsTestLogger"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <CreateProperty
+            Condition=" '$(VsTestLogger)' == '' AND '$(VsTestLoggerFormat)' == 'xunit' "
+            Value="/logger:xunit /TestAdapterPath:$(ToolsExternalXUnitXmlLoggerPath)">
+            <Output
+                PropertyName="VsTestLogger"
+                TaskParameter="Value" />
+        </CreateProperty>
+
+        <CreateProperty
+            Condition=" '$(VsTestLogger)' == '' "
+            Value="/logger:trx">
+            <Output
+                PropertyName="VsTestLogger"
                 TaskParameter="Value" />
         </CreateProperty>
 
         <Message Text="Executing unit tests for: " />
         <Message Text="--- %(UnitTestAssemblies.FullPath)" />
         <Exec
-            Command="&quot;$(ToolsExternalVsTestPath)&quot; @(UnitTestAssemblies->'%22%(FullPath)%22', ' ') /EnableCodeCoverage /InIsolation /Platform:x86 /settings:&quot;$(FileRunSettings)&quot; /logger:trx $(VsTestAdditionalParams)"
+            Command="&quot;$(ToolsExternalVsTestPath)&quot; @(UnitTestAssemblies->'%22%(FullPath)%22', ' ') /EnableCodeCoverage /InIsolation /Platform:x86 /settings:&quot;$(FileRunSettings)&quot; $(VsTestLogger) $(VsTestAdditionalParams)"
             IgnoreExitCode="False"
             IgnoreStandardErrorWarningFormat="False">
         </Exec>
