@@ -11,8 +11,6 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using Moq;
-using Nuclei;
-using Nuclei.Diagnostics.Logging;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Code

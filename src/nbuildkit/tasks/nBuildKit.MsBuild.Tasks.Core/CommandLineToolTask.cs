@@ -145,49 +145,51 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 };
 
                 var text = new StringBuilder();
-                var process = new Process();
-                process.StartInfo = info;
-                process.OutputDataReceived +=
-                    (s, e) =>
-                    {
-                        if (!string.IsNullOrWhiteSpace(e.Data))
+                using (var process = new Process())
+                {
+                    process.StartInfo = info;
+                    process.OutputDataReceived +=
+                        (s, e) =>
                         {
-                            text.AppendLine(e.Data);
-                        }
-                    };
-                process.ErrorDataReceived += DefaultErrorHandler;
-                try
-                {
-                    process.Start();
+                            if (!string.IsNullOrWhiteSpace(e.Data))
+                            {
+                                text.AppendLine(e.Data);
+                            }
+                        };
+                    process.ErrorDataReceived += DefaultErrorHandler;
+                    try
+                    {
+                        process.Start();
 
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-                    process.WaitForExit();
-                }
-                catch (System.ComponentModel.Win32Exception)
-                {
-                    Log.LogMessage(
-                        MessageImportance.Low,
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "{0} exited with a non-zero exit code. Exit code was: {1}",
-                            Path.GetFileName(process.StartInfo.FileName),
-                            process.ExitCode));
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+                    }
+                    catch (System.ComponentModel.Win32Exception)
+                    {
+                        Log.LogMessage(
+                            MessageImportance.Low,
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                Path.GetFileName(process.StartInfo.FileName),
+                                process.ExitCode));
 
-                    // The where command is probably not on the path. So we just return the
-                    // input value
-                    result = path;
-                }
+                        // The where command is probably not on the path. So we just return the
+                        // input value
+                        result = path;
+                    }
 
-                if (process.ExitCode != 0)
-                {
-                    Log.LogMessage(
-                        MessageImportance.Low,
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "{0} exited with a non-zero exit code. Exit code was: {1}",
-                            Path.GetFileName(process.StartInfo.FileName),
-                            process.ExitCode));
+                    if (process.ExitCode != 0)
+                    {
+                        Log.LogMessage(
+                            MessageImportance.Low,
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                Path.GetFileName(process.StartInfo.FileName),
+                                process.ExitCode));
+                    }
                 }
 
                 // just return first match

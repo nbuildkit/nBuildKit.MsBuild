@@ -247,6 +247,11 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                 return Enumerable.Empty<string>();
             }
 
+            if (string.IsNullOrWhiteSpace(baseDirectory))
+            {
+                return Enumerable.Empty<string>();
+            }
+
             var matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
 
             if (excludedPathExpressions != null)

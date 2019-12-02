@@ -100,23 +100,25 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 CreateNoWindow = true,
             };
 
-            var process = new Process();
-            process.StartInfo = info;
-            process.OutputDataReceived += standardOutputHandler;
-            process.ErrorDataReceived += standardErrorHandler;
-
-            process.Start();
-
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
-
-            if (process.ExitCode != 0 || errorsReported)
+            using (var process = new Process())
             {
-                return Array.Empty<string>();
-            }
+                process.StartInfo = info;
+                process.OutputDataReceived += standardOutputHandler;
+                process.ErrorDataReceived += standardErrorHandler;
 
-            return result;
+                process.Start();
+
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+
+                if (process.ExitCode != 0 || errorsReported)
+                {
+                    return Array.Empty<string>();
+                }
+
+                return result;
+            }
         }
 
         /// <summary>

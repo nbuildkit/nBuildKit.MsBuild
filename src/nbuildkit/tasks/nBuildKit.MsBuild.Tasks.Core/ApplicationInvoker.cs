@@ -145,24 +145,27 @@ namespace NBuildKit.MsBuild.Tasks.Core
                     StartInfo = info,
                 };
 
-            if (standardOutputHandler != null)
+            using (process)
             {
-                process.OutputDataReceived += standardOutputHandler;
+                if (standardOutputHandler != null)
+                {
+                    process.OutputDataReceived += standardOutputHandler;
+                }
+
+                if (standardErrorHandler != null)
+                {
+                    process.ErrorDataReceived += standardErrorHandler;
+                }
+
+                process.Start();
+
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+
+                var exitCode = process.ExitCode;
+                return exitCode;
             }
-
-            if (standardErrorHandler != null)
-            {
-                process.ErrorDataReceived += standardErrorHandler;
-            }
-
-            process.Start();
-
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
-
-            var exitCode = process.ExitCode;
-            return exitCode;
         }
     }
 }

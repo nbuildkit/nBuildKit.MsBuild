@@ -16,6 +16,7 @@ using System.Reflection;
 using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.AppDomains;
 using NBuildKit.MsBuild.Tasks.Core;
 
 namespace NBuildKit.MsBuild.Tasks

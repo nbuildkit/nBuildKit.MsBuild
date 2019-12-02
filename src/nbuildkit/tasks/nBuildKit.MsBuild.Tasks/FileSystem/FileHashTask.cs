@@ -73,17 +73,29 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                 switch (algorithm)
                 {
                     case "MD5":
-                        // Compute the MD5 hash of the fileStream.
-                        return MD5.Create().ComputeHash(fileStream);
+                        using (var hash = MD5.Create())
+                        {
+                            return hash.ComputeHash(fileStream);
+                        }
+
                     case "SHA1":
-                        // Compute the SHA1 hash of the fileStream.
-                        return SHA1.Create().ComputeHash(fileStream);
+                        using (var hash = SHA1.Create())
+                        {
+                            return hash.ComputeHash(fileStream);
+                        }
+
                     case "SHA256":
-                        // Compute the SHA256 hash of the fileStream.
-                        return SHA256.Create().ComputeHash(fileStream);
+                        using (var hash = SHA256.Create())
+                        {
+                            return hash.ComputeHash(fileStream);
+                        }
+
                     case "SHA512":
-                        // Compute the SHA512 hash of the fileStream.
-                        return SHA512.Create().ComputeHash(fileStream);
+                        using (var hash = SHA512.Create())
+                        {
+                            return hash.ComputeHash(fileStream);
+                        }
+
                     default:
                         Log.LogError(
                             "The specified hash algorithm of '{0}' is not valid. Please select on of: MD5, SHA1, SHA256, SHA384 or SHA512.",

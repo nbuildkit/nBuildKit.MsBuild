@@ -19,7 +19,6 @@ using Microsoft.Build.Utilities;
 using Moq;
 using NBuildKit.MsBuild.Tasks.Core;
 using NBuildKit.MsBuild.Tasks.Tests;
-using Nuclei;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Validation
