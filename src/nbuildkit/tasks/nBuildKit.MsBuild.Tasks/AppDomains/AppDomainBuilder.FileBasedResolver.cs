@@ -19,6 +19,10 @@ namespace NBuildKit.MsBuild.Tasks.AppDomains
         /// Attaches a method to the <see cref="AppDomain.AssemblyResolve"/> event and
         /// provides assembly resolution based on a set of predefined files.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Performance",
+            "CA1812:Avoid uninstantiated internal classes",
+            Justification = "Used by instantiation by type.")]
         private sealed class FileBasedResolver : MarshalByRefObject, IAppDomainAssemblyResolver
         {
             /// <summary>
@@ -41,7 +45,7 @@ namespace NBuildKit.MsBuild.Tasks.AppDomains
             {
                 if (filePaths == null)
                 {
-                    throw new ArgumentNullException("filePaths");
+                    throw new ArgumentNullException(nameof(filePaths));
                 }
 
                 _files = filePaths;
@@ -66,4 +70,3 @@ namespace NBuildKit.MsBuild.Tasks.AppDomains
         }
     }
 }
-

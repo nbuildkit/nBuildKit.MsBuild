@@ -21,6 +21,10 @@ namespace NBuildKit.MsBuild.Tasks.AppDomains
         /// Attaches a method to the <see cref="AppDomain.AssemblyResolve"/> event and provides
         /// assembly resolution based on the files available in a set of predefined directories.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Performance",
+            "CA1812:Avoid uninstantiated internal classes",
+            Justification = "Used by instantiation via type.")]
         private sealed class DirectoryBasedResolver : MarshalByRefObject, IAppDomainAssemblyResolver
         {
             /// <summary>
