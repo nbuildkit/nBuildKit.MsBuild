@@ -19,7 +19,7 @@ namespace NBuildKit.MsBuild.Tasks.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,6 +57,24 @@ namespace NBuildKit.MsBuild.Tasks.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not load template..
+        /// </summary>
+        internal static string Exceptions_Messages_CouldNotLoadTemplate {
+            get {
+                return ResourceManager.GetString("Exceptions_Messages_CouldNotLoadTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot compare these two objects, their types do not match [this: {0}; other: {1}].
+        /// </summary>
+        internal static string Exceptions_Messages_ErrorCode_CompareArgument {
+            get {
+                return ResourceManager.GetString("Exceptions_Messages_ErrorCode_CompareArgument", resourceCulture);
             }
         }
         

@@ -44,7 +44,7 @@ namespace NBuildKit.MsBuild.Tasks.Tests
                     BindingFlags.Instance |
                     BindingFlags.DeclaredOnly);
 
-            if (eventFields.Count() > 0)
+            if (eventFields.Length > 0)
             {
                 eventFields[0].SetValue(mockEventArgs, testData);
             }

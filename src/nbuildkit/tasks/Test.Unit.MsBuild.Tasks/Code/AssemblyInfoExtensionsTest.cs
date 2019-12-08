@@ -11,8 +11,6 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using Moq;
-using Nuclei;
-using Nuclei.Diagnostics.Logging;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Code
@@ -45,7 +43,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 attributeName,
                 value,
                 Encoding.Unicode,
-                new Mock<ILogger>().Object,
+                new Mock<Core.ILogger>().Object,
                 false);
             Assert.AreEqual(
                 string.Format(
@@ -75,7 +73,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 attributeName,
                 value,
                 Encoding.Unicode,
-                new Mock<ILogger>().Object,
+                new Mock<Core.ILogger>().Object,
                 true);
             Assert.AreEqual(
                 string.Format(
@@ -107,7 +105,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 attributeName,
                 value,
                 Encoding.Unicode,
-                new Mock<ILogger>().Object,
+                new Mock<Core.ILogger>().Object,
                 false);
             Assert.AreEqual(
                 string.Format(
@@ -137,7 +135,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 attributeName,
                 value,
                 Encoding.Unicode,
-                new Mock<ILogger>().Object,
+                new Mock<Core.ILogger>().Object,
                 true);
             Assert.AreEqual(
                 string.Format(
@@ -188,7 +186,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     Tuple.Create("c", (string)null),
                 },
                 Encoding.Unicode,
-                new Mock<ILogger>().Object);
+                new Mock<Core.ILogger>().Object);
             Assert.AreEqual(
                 @"#if COMPILERDIRECTIVE
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")]
@@ -241,7 +239,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     Tuple.Create("c", (string)null),
                 },
                 Encoding.Unicode,
-                new Mock<ILogger>().Object);
+                new Mock<Core.ILogger>().Object);
             Assert.AreEqual(
                 string.Join(Environment.NewLine, content) + Environment.NewLine,
                 File.ReadAllText(filePath));
@@ -270,7 +268,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     Tuple.Create("c", (string)null),
                 },
                 Encoding.Unicode,
-                new Mock<ILogger>().Object);
+                new Mock<Core.ILogger>().Object);
             Assert.AreEqual(
                 @"#if COMPILERDIRECTIVE
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")]
@@ -320,7 +318,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     Tuple.Create("c", (string)null),
                 },
                 Encoding.Unicode,
-                new Mock<ILogger>().Object);
+                new Mock<Core.ILogger>().Object);
             Assert.AreEqual(
                 @"#If COMPILERDIRECTIVE
 <Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")>
@@ -373,7 +371,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     Tuple.Create("c", (string)null),
                 },
                 Encoding.Unicode,
-                new Mock<ILogger>().Object);
+                new Mock<Core.ILogger>().Object);
             Assert.AreEqual(
                 string.Join(Environment.NewLine, content) + Environment.NewLine,
                 File.ReadAllText(filePath));
@@ -402,7 +400,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     Tuple.Create("c", (string)null),
                 },
                 Encoding.Unicode,
-                new Mock<ILogger>().Object);
+                new Mock<Core.ILogger>().Object);
             Assert.AreEqual(
                 @"#If COMPILERDIRECTIVE
 <Assembly: System.Runtime.CompilerServices.InternalsVisibleTo(""a, PublicKey=b"")>

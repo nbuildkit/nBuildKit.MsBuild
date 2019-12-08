@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.IO.Abstractions;
 using System.Linq;
 using Microsoft.Extensions.FileSystemGlobbing;
 using NBuildKit.MsBuild.Tasks.Core.Properties;
@@ -244,6 +243,11 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
         public static IEnumerable<string> IncludedPaths(string pathExpression, IEnumerable<string> excludedPathExpressions, string baseDirectory)
         {
             if (string.IsNullOrWhiteSpace(pathExpression))
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            if (string.IsNullOrWhiteSpace(baseDirectory))
             {
                 return Enumerable.Empty<string>();
             }

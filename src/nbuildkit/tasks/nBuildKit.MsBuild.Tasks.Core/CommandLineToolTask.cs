@@ -13,8 +13,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core.FileSystem;
-using Nuclei.Diagnostics;
 
 namespace NBuildKit.MsBuild.Tasks.Core
 {
@@ -31,15 +31,15 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
         protected CommandLineToolTask(IApplicationInvoker invoker)
         {
-            _invoker = invoker ?? new ApplicationInvoker(new SystemDiagnostics(new MsBuildLogger(Log), null));
+            _invoker = invoker ?? new ApplicationInvoker(Log);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandLineToolTask"/> class.
         /// </summary>
-        /// <param name="diagnostics">The object that provides the diagnostics for the application.</param>
-        protected CommandLineToolTask(SystemDiagnostics diagnostics)
-            : this(new ApplicationInvoker(diagnostics))
+        /// <param name="logger">The object that provides the diagnostics for the application.</param>
+        protected CommandLineToolTask(TaskLoggingHelper logger)
+            : this(new ApplicationInvoker(logger))
         {
         }
 
@@ -145,49 +145,51 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 };
 
                 var text = new StringBuilder();
-                var process = new Process();
-                process.StartInfo = info;
-                process.OutputDataReceived +=
-                    (s, e) =>
-                    {
-                        if (!string.IsNullOrWhiteSpace(e.Data))
+                using (var process = new Process())
+                {
+                    process.StartInfo = info;
+                    process.OutputDataReceived +=
+                        (s, e) =>
                         {
-                            text.AppendLine(e.Data);
-                        }
-                    };
-                process.ErrorDataReceived += DefaultErrorHandler;
-                try
-                {
-                    process.Start();
+                            if (!string.IsNullOrWhiteSpace(e.Data))
+                            {
+                                text.AppendLine(e.Data);
+                            }
+                        };
+                    process.ErrorDataReceived += DefaultErrorHandler;
+                    try
+                    {
+                        process.Start();
 
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-                    process.WaitForExit();
-                }
-                catch (System.ComponentModel.Win32Exception)
-                {
-                    Log.LogMessage(
-                        MessageImportance.Low,
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "{0} exited with a non-zero exit code. Exit code was: {1}",
-                            Path.GetFileName(process.StartInfo.FileName),
-                            process.ExitCode));
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        process.WaitForExit();
+                    }
+                    catch (System.ComponentModel.Win32Exception)
+                    {
+                        Log.LogMessage(
+                            MessageImportance.Low,
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                Path.GetFileName(process.StartInfo.FileName),
+                                process.ExitCode));
 
-                    // The where command is probably not on the path. So we just return the
-                    // input value
-                    result = path;
-                }
+                        // The where command is probably not on the path. So we just return the
+                        // input value
+                        result = path;
+                    }
 
-                if (process.ExitCode != 0)
-                {
-                    Log.LogMessage(
-                        MessageImportance.Low,
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "{0} exited with a non-zero exit code. Exit code was: {1}",
-                            Path.GetFileName(process.StartInfo.FileName),
-                            process.ExitCode));
+                    if (process.ExitCode != 0)
+                    {
+                        Log.LogMessage(
+                            MessageImportance.Low,
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                "{0} exited with a non-zero exit code. Exit code was: {1}",
+                                Path.GetFileName(process.StartInfo.FileName),
+                                process.ExitCode));
+                    }
                 }
 
                 // just return first match

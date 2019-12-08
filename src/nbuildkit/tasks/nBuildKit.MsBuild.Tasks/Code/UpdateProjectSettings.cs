@@ -15,7 +15,6 @@ using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
-using Nuclei.Diagnostics;
 
 namespace NBuildKit.MsBuild.Tasks.Code
 {
@@ -225,7 +224,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
         public UpdateProjectSettings(IApplicationInvoker invoker)
         {
-            _invoker = invoker ?? new ApplicationInvoker(new SystemDiagnostics(new MsBuildLogger(Log), null));
+            _invoker = invoker ?? new ApplicationInvoker(Log);
         }
 
         /// <summary>
