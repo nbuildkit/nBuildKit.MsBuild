@@ -52,7 +52,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             string attributeName,
             string value,
             Encoding encoding,
-            TaskLoggingHelper log,
+            Core.ILogger log,
             bool addIfNotFound = false)
         {
             if (filePath is null)
@@ -159,7 +159,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             string compilerDirectives,
             IEnumerable<Tuple<string, string>> internalsVisibleToAttributeParameters,
             Encoding encoding,
-            TaskLoggingHelper log)
+            Core.ILogger log)
         {
             if (filePath is null)
             {
@@ -367,7 +367,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 condition);
         }
 
-        private static bool RemoveInternalsVisibleToAttributes(List<string> lines, string assemblyAttributeMatcher, TaskLoggingHelper log)
+        private static bool RemoveInternalsVisibleToAttributes(List<string> lines, string assemblyAttributeMatcher, Core.ILogger log)
         {
             var first = -1;
             var last = -1;

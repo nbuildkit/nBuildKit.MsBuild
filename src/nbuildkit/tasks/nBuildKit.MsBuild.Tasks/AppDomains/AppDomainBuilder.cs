@@ -19,6 +19,35 @@ namespace NBuildKit.MsBuild.Tasks.AppDomains
     internal static partial class AppDomainBuilder
     {
         /// <summary>
+        /// Returns the local file path from where a specific <see cref="Assembly"/>
+        /// was loaded.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <returns>
+        /// The local file path from where the assembly was loaded.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown if <paramref name="assembly"/> is <see langword="null" />.
+        /// </exception>
+        internal static string LocalFilePath(Assembly assembly)
+        {
+            if (assembly == null)
+            {
+                throw new ArgumentNullException(nameof(assembly));
+            }
+
+            // Get the location of the assembly before it was shadow-copied
+            // Note that Assembly.Codebase gets the path to the manifest-containing
+            // file, not necessarily the path to the file that contains a
+            // specific type.
+            var uncPath = new Uri(assembly.CodeBase);
+
+            // Get the local path. This may not work if the assembly isn't
+            // local. For now we assume it is.
+            return uncPath.LocalPath;
+        }
+
+        /// <summary>
         /// A class used to attach an exception handler to the created domain.
         /// </summary>
         [SuppressMessage(
@@ -123,7 +152,7 @@ namespace NBuildKit.MsBuild.Tasks.AppDomains
             {
                 var resolver = Activator.CreateInstanceFrom(
                     domain,
-                    typeof(FileBasedResolver).Assembly.LocalFilePath(),
+                    LocalFilePath(typeof(FileBasedResolver).Assembly),
                     typeof(FileBasedResolver).FullName).Unwrap() as FileBasedResolver;
 
                 Debug.Assert(resolver != null, "Somehow we didn't create a resolver.");
@@ -138,7 +167,7 @@ namespace NBuildKit.MsBuild.Tasks.AppDomains
             {
                 var resolver = Activator.CreateInstanceFrom(
                     domain,
-                    typeof(DirectoryBasedResolver).Assembly.LocalFilePath(),
+                    LocalFilePath(typeof(DirectoryBasedResolver).Assembly),
                     typeof(DirectoryBasedResolver).FullName).Unwrap() as DirectoryBasedResolver;
 
                 Debug.Assert(resolver != null, "Somehow we didn't create a resolver.");
@@ -150,7 +179,7 @@ namespace NBuildKit.MsBuild.Tasks.AppDomains
             {
                 var attacher = Activator.CreateInstanceFrom(
                     domain,
-                    typeof(ExceptionHandlerAttacher).Assembly.LocalFilePath(),
+                    LocalFilePath(typeof(ExceptionHandlerAttacher).Assembly),
                     typeof(ExceptionHandlerAttacher).FullName).Unwrap() as ExceptionHandlerAttacher;
 
                 Debug.Assert(attacher != null, "Somehow we didn't create an exception handler attacher.");

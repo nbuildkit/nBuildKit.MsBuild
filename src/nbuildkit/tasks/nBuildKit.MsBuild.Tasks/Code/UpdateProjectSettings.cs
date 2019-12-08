@@ -752,7 +752,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     tuple.Item1,
                     tuple.Item2,
                     encoding,
-                    Log,
+                    new MsBuildLogger(Log),
                     tuple.Item3);
             }
         }
@@ -867,7 +867,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
                     InternalsVisibleToCompilerDirective,
                     attributes,
                     encoding,
-                    Log);
+                    new MsBuildLogger(Log));
             }
         }
     }

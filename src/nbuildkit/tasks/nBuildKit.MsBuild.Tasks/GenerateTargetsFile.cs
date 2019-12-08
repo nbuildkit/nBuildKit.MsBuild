@@ -76,7 +76,7 @@ namespace NBuildKit.MsBuild.Tasks
                     new List<string>
                     {
                         // the nBuildKit task assembly
-                        Assembly.GetExecutingAssembly().LocalFilePath(),
+                        AppDomainBuilder.LocalFilePath(Assembly.GetExecutingAssembly()),
                     },
                     new List<string>
                     {
