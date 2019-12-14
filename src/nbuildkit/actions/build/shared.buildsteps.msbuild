@@ -40,7 +40,8 @@
         <BuildStepsBuildTargetsAssembly>$(MSBuildThisFileDirectory)..\shared.bootstrap.build.tasks.msbuild</BuildStepsBuildTargetsAssembly>
         <BuildStepsGenerateTargetsFile>$(MSBuildThisFileDirectory)..\shared.bootstrap.generate.targetsfile.msbuild</BuildStepsGenerateTargetsFile>
 
-        <BuildStepsUnitTestNUnit>$(MSBuildThisFileDirectory)build.test.unit.nunit.msbuild</BuildStepsUnitTestNUnit>
+        <BuildStepsUnitTestNUnitV2>$(MSBuildThisFileDirectory)build.test.unit.nunit.v2.msbuild</BuildStepsUnitTestNUnitV2>
+        <BuildStepsUnitTestNUnitV3>$(MSBuildThisFileDirectory)build.test.unit.nunit.v3.msbuild</BuildStepsUnitTestNUnitV3>
         <BuildStepsUnitTestMsTest>$(MSBuildThisFileDirectory)build.test.unit.mstest.msbuild</BuildStepsUnitTestMsTest>
         <BuildStepsUnitTestVsTest>$(MSBuildThisFileDirectory)build.test.unit.vstest.msbuild</BuildStepsUnitTestVsTest>
 
@@ -231,13 +232,21 @@
             <Name>Build - generate MsBuild targets file</Name>
             <Path>$(BuildStepsGenerateTargetsFile)</Path>
         </AvailableStepMetadata>
-        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsUnitTestNUnit)'))">
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsUnitTestNUnitV2)'))">
             <Description>
-                Executes the unit tests with NUnit and measures code coverage with OpenCover.
+                Executes the unit tests with NUnit V2 and measures code coverage with OpenCover.
             </Description>
-            <Id>BuildStepsUnitTestNUnit</Id>
-            <Name>Build - execute nUnit</Name>
-            <Path>$(BuildStepsUnitTestNUnit)</Path>
+            <Id>BuildStepsUnitTestNUnitV2</Id>
+            <Name>Build - execute nUnit V2</Name>
+            <Path>$(BuildStepsUnitTestNUnitV2)</Path>
+        </AvailableStepMetadata>
+        <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsUnitTestNUnitV3)'))">
+            <Description>
+                Executes the unit tests with NUnit V3 and measures code coverage with OpenCover.
+            </Description>
+            <Id>BuildStepsUnitTestNUnitV3</Id>
+            <Name>Build - execute nUnit V3</Name>
+            <Path>$(BuildStepsUnitTestNUnitV3)</Path>
         </AvailableStepMetadata>
         <AvailableStepMetadata Include="$([System.IO.Path]::GetFileName('$(BuildStepsUnitTestMsTest)'))">
             <Description>

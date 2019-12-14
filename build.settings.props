@@ -900,7 +900,8 @@
             </PostSteps>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
+        <BuildStepsToExecute
+            Include="$(BuildStepsUnitTestNUnitV3)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
@@ -909,6 +910,7 @@
                 test;
                 test.unittest;
                 test.unittest.nunit;
+                test.unittest.nunit.v3;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -1109,8 +1111,11 @@
         <!--
             The full path and version to the nUnit command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalNUnitConsolePath>UNDEFINED</ToolsExternalNUnitConsolePath>
-        <ToolsExternalNUnitConsoleVersion>3.10.0</ToolsExternalNUnitConsoleVersion> -->
+        <!-- <ToolsExternalNUnitV2ConsolePath>UNDEFINED</ToolsExternalNUnitV2ConsolePath>
+        <ToolsExternalNUnitV2ConsoleVersion>2.7.0</ToolsExternalNUnitV2ConsoleVersion> -->
+
+        <!-- <ToolsExternalNUnitV3ConsolePath>UNDEFINED</ToolsExternalNUnitV3ConsolePath>
+        <ToolsExternalNUnitV3ConsoleVersion>3.10.0</ToolsExternalNUnitV3ConsoleVersion> -->
         <!--
             The full path and version to the OpenCover command line executable. If not defined the packages directory is searched.
         -->
