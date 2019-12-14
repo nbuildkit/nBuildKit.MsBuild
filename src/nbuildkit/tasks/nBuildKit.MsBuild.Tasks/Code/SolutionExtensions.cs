@@ -26,7 +26,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// <param name="path">The full path to the solution file.</param>
         /// <param name="log">The MsBuild logger.</param>
         /// <returns>A collection containing the full paths to the projects in the solution.</returns>
-        public static IEnumerable<ITaskItem> GetProjects(string path, TaskLoggingHelper log = null)
+        public static IEnumerable<ITaskItem> GetProjects(string path, Core.ILogger log = null)
         {
             // The loaded version of Microsoft.Build might not be the version we're compiled against so we need to
             // find the correct assembly first

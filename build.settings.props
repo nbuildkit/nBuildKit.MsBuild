@@ -10,10 +10,10 @@
         <!-- <RedirectBuildOutputToSingleFolder>false</RedirectBuildOutputToSingleFolder> -->
 
         <!-- The build configuration (debug / release / ...) that will be used to run all the unit tests and the static verification on -->
-        <TestConfiguration>Release</TestConfiguration>
+        <TestConfiguration>Debug</TestConfiguration>
 
         <!-- The build configuration (debug / release / ..) that will be used to create the binaries that should be deployed -->
-        <ProductionConfiguration>Deploy</ProductionConfiguration>
+        <ProductionConfiguration>Release</ProductionConfiguration>
 
         <!-- The platform for which the binaries will be build -->
         <!-- <Platform>Any CPU</Platform> -->
@@ -438,23 +438,24 @@
         <!--
             The full path to the XML file that contains the custom dictionary for FxCop.
         -->
-        <FxCopCustomDictionary>$(DirSrc)\nbuildkit\tasks\customdictionary.xml</FxCopCustomDictionary>
+        <!-- <FxCopCustomDictionary>$(DirSrc)\nbuildkit\tasks\customdictionary.xml</FxCopCustomDictionary> -->
 
         <!--
             The culture that FxCop should use for the spelling rules.
         -->
-        <FxCopCulture>en-US</FxCopCulture>
+        <!-- <FxCopCulture>en-US</FxCopCulture> -->
 
         <!--
             A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
             errors are marked as errors then any analysis error will stop the build.
         -->
-        <FxCopWarningsAsErrors>true</FxCopWarningsAsErrors>
+        <!-- <FxCopWarningsAsErrors>true</FxCopWarningsAsErrors> -->
     </PropertyGroup>
     <ItemGroup Condition=" '$(ShouldLoadFxCopFiles)' == 'true' ">
         <!--
             The locations of the files that should be analyzed by FxCop.
         -->
+        <!--
         <FxCopFiles
             Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\nBuildKit*.dll">
@@ -476,6 +477,7 @@
             <RuleSet>$(DirSrc)\tools\VSCoverageToReportGenerator\default.ruleset</RuleSet>
             <TargetFramework>4.5</TargetFramework>
         </FxCopFiles>
+        -->
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadFxCopReferenceFiles)' == 'true' ">
         <!--

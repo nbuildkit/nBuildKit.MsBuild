@@ -224,7 +224,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
         public UpdateProjectSettings(IApplicationInvoker invoker)
         {
-            _invoker = invoker ?? new ApplicationInvoker(Log);
+            _invoker = invoker ?? new ApplicationInvoker(new MsBuildLogger(Log));
         }
 
         /// <summary>
@@ -543,7 +543,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
 
         private string ExtractPublicKeyFromAssemblyFile(string assemblyFromPackage)
         {
-            var snExeFileName = Path.GetFileName(GetAbsolutePath(SnExe));
+            var snExeFileName = GetAbsolutePath(SnExe);
             Log.LogMessage(MessageImportance.Normal, "Extracting public key from assembly file: " + assemblyFromPackage);
 
             var assemblyPath = Directory.EnumerateFiles(GetAbsolutePath(PackagesDirectory), assemblyFromPackage, SearchOption.AllDirectories)

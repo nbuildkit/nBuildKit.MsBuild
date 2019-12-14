@@ -20,8 +20,8 @@ using System.Runtime.InteropServices;
 // Resources
 [assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.MainAssembly)]
 
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCompany("nbuildkit")]
+[assembly: AssemblyCopyright("Copyright (c) - nbuildkit 2014 - 2019. All rights reserved.")]
 
 [assembly: AssemblyCulture("")]
 
@@ -38,7 +38,7 @@ using System.Runtime.InteropServices;
 // Indicate that the assembly is CLS compliant.
 [assembly: CLSCompliant(true)]
 
-[assembly: AssemblyConfiguration("Release")]
+[assembly: AssemblyConfiguration("")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -51,5 +51,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.2.51")]
+[assembly: AssemblyInformationalVersion("1.0.2-nunit2.1+51")]

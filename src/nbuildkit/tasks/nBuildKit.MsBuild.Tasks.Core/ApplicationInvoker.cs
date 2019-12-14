@@ -35,13 +35,13 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <summary>
         /// The object that provides the diagnostics methods for the application.
         /// </summary>
-        private readonly TaskLoggingHelper _logger;
+        private readonly Core.ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationInvoker"/> class.
         /// </summary>
         /// <param name="logger">The object that provides the diagnostics for the application.</param>
-        public ApplicationInvoker(TaskLoggingHelper logger)
+        public ApplicationInvoker(Core.ILogger logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }

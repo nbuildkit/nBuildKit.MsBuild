@@ -182,7 +182,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
             }
 
             Hashtable result;
-            if (!PropertyParser.GetTableWithEscaping(Log, "GlobalProperties", "Properties", propertyArguments.ToArray(), out result))
+            if (!PropertyParser.GetTableWithEscaping(new MsBuildLogger(Log), "GlobalProperties", "Properties", propertyArguments.ToArray(), out result))
             {
                 return new Hashtable();
             }

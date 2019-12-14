@@ -134,7 +134,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
             if (!string.IsNullOrEmpty(stepProperties))
             {
                 Hashtable additionalProjectPropertiesTable = null;
-                if (!PropertyParser.GetTableWithEscaping(Log, "AdditionalProperties", "AdditionalProperties", stepProperties.Split(';'), out additionalProjectPropertiesTable))
+                if (!PropertyParser.GetTableWithEscaping(new MsBuildLogger(Log), "AdditionalProperties", "AdditionalProperties", stepProperties.Split(';'), out additionalProjectPropertiesTable))
                 {
                     // Ignore it ...
                 }
@@ -533,7 +533,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
         private bool InvokeBuildEngine(ITaskItem project)
         {
             Hashtable propertiesTable;
-            if (!PropertyParser.GetTableWithEscaping(Log, "GlobalProperties", "Properties", Properties.Select(t => t.ItemSpec).ToArray(), out propertiesTable))
+            if (!PropertyParser.GetTableWithEscaping(new MsBuildLogger(Log), "GlobalProperties", "Properties", Properties.Select(t => t.ItemSpec).ToArray(), out propertiesTable))
             {
                 return false;
             }
@@ -549,7 +549,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
                     if (!string.IsNullOrEmpty(projectProperties))
                     {
                         Hashtable additionalProjectPropertiesTable;
-                        if (!PropertyParser.GetTableWithEscaping(Log, "AdditionalProperties", "AdditionalProperties", projectProperties.Split(';'), out additionalProjectPropertiesTable))
+                        if (!PropertyParser.GetTableWithEscaping(new MsBuildLogger(Log), "AdditionalProperties", "AdditionalProperties", projectProperties.Split(';'), out additionalProjectPropertiesTable))
                         {
                             return false;
                         }

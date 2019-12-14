@@ -91,12 +91,12 @@
     <ItemGroup Condition=" '$(ShouldLoadAssembliesToMerge)' == 'true' ">
         <AssembliesToMerge
             Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\nBuildKit.MsBuild.Tasks.dll">
+            Include="$(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\net472\nBuildKit.MsBuild.Tasks.dll">
             <AssembliesToExclude>
-                $(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\Microsoft.Build*.dll
+                $(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\net472\Microsoft.Build*.dll
             </AssembliesToExclude>
             <AssembliesToInclude>
-                $(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\*.dll
+                $(DirSrc)\nbuildkit\tasks\nBuildKit.MsBuild.Tasks\bin\$(Configuration)\net472\*.dll
             </AssembliesToInclude>
             <Destination>
                 $(DirBuildBinPlatformConfig)\nBuildKit.MsBuild.Tasks.dll

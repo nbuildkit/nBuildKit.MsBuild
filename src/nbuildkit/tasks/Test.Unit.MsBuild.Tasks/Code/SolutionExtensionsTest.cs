@@ -26,9 +26,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             // The current assembly will live in the bin folder
             var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
 
-            // Go up 2 directories
-            var projectDirectory = Path.GetDirectoryName(Path.GetDirectoryName(directory));
-            var solutionFile = Path.Combine(projectDirectory, "TestFiles", "OldSolution", "OldSolution.sln");
+            var solutionFile = Path.Combine(directory, "TestFiles", "OldSolution", "OldSolution.sln");
 
             var projects = SolutionExtensions.GetProjects(solutionFile);
             Assert.IsNotNull(projects);
@@ -41,9 +39,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
             // The current assembly will live in the bin folder
             var directory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
 
-            // Go up 2 directories
-            var projectDirectory = Path.GetDirectoryName(Path.GetDirectoryName(directory));
-            var solutionFile = Path.Combine(projectDirectory, "TestFiles", "EmptySolution", "EmptySolution.sln");
+            var solutionFile = Path.Combine(directory, "TestFiles", "EmptySolution", "EmptySolution.sln");
 
             var projects = SolutionExtensions.GetProjects(solutionFile);
             Assert.IsNotNull(projects);

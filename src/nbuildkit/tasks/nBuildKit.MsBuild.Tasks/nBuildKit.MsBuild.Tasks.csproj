@@ -1,260 +1,46 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.8\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\..\..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.8\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
-  <Import Project="..\..\..\..\packages\Microsoft.NetFramework.Analyzers.2.9.8\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\..\..\..\packages\Microsoft.NetFramework.Analyzers.2.9.8\build\Microsoft.NetFramework.Analyzers.props')" />
-  <Import Project="..\..\..\..\packages\Microsoft.NetCore.Analyzers.2.9.8\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\..\..\..\packages\Microsoft.NetCore.Analyzers.2.9.8\build\Microsoft.NetCore.Analyzers.props')" />
-  <Import Project="..\..\..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.8\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('..\..\..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.8\build\Microsoft.CodeQuality.Analyzers.props')" />
-  <Import Project="..\..\..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.8\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('..\..\..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.8\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">$(MSBuildProjectDirectory)\..</SolutionDir>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8450F57F-6333-4AD6-8833-1048CA754C4B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NBuildKit.MsBuild.Tasks</RootNamespace>
-    <AssemblyName>nBuildKit.MsBuild.Tasks</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ShouldRunAnalyzers Condition=" '$(ShouldRunAnalyzers)' == '' ">true</ShouldRunAnalyzers>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFrameworks>net472</TargetFrameworks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+  <PropertyGroup>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+  <PropertyGroup>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)/base.props" />
+  <Import Project="$(MSBuildThisFileDirectory)/../base.props" />
   <ItemGroup>
-    <Reference Include="Flurl, Version=2.8.0.0, Culture=neutral, PublicKeyToken=46974597867576d1, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\Flurl.Signed.2.8.0\lib\net40\Flurl.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\Microsoft.Build.16.0.461\lib\net472\Microsoft.Build.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\Microsoft.Build.Framework.16.0.461\lib\net472\Microsoft.Build.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Build.Utilities.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\Microsoft.Build.Utilities.Core.16.0.461\lib\net472\Microsoft.Build.Utilities.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Setup.Configuration.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\Microsoft.VisualStudio.Setup.Configuration.Interop.1.16.30\lib\net35\Microsoft.VisualStudio.Setup.Configuration.Interop.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Versioning, Version=5.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\NuGet.Versioning.5.3.1\lib\net472\NuGet.Versioning.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable, Version=1.2.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\System.Collections.Immutable.1.6.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Abstractions, Version=7.0.0.0, Culture=neutral, PublicKeyToken=96bf224d23c43e59, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\System.IO.Abstractions.7.0.7\lib\net40\System.IO.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\packages\System.Threading.Tasks.Dataflow.4.10.0\lib\netstandard2.0\System.Threading.Tasks.Dataflow.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AppDomains\AppDomainBuilder.cs" />
-    <Compile Include="AppDomains\AppDomainBuilder.DirectoryBasedResolver.cs" />
-    <Compile Include="AppDomains\AppDomainBuilder.FileBasedResolver.cs" />
-    <Compile Include="AppDomains\AppDomainResolutionPaths.cs" />
-    <Compile Include="AppDomains\AssemblyNameElements.cs" />
-    <Compile Include="AppDomains\ExceptionHandler.cs" />
-    <Compile Include="AppDomains\ExceptionProcessor.cs" />
-    <Compile Include="AppDomains\FusionHelper.cs" />
-    <Compile Include="Code\AssemblyInfoExtensions.cs" />
-    <Compile Include="Code\GetProjectsFromVisualStudioSolution.cs" />
-    <Compile Include="Code\ILRepack.cs" />
-    <Compile Include="Code\SolutionExtensions.cs" />
-    <Compile Include="Code\UpdateProjectSettings.cs" />
-    <Compile Include="EmbeddedResourceExtracter.cs" />
-    <Compile Include="FileSystem\CalculateFileHash.cs" />
-    <Compile Include="FileSystem\CopyFilesFromNuGetPackages.cs" />
-    <Compile Include="FileSystem\FileHashTask.cs" />
-    <Compile Include="FileSystem\ReadHashesFromFile.cs" />
-    <Compile Include="FileSystem\SearchPackagesDirectoryForNuGetPackage.cs" />
-    <Compile Include="FileSystem\ValidateGpgSignature.cs" />
-    <Compile Include="FileSystem\ValidateHash.cs" />
-    <Compile Include="AppDomains\IAppDomainAssemblyResolver.cs" />
-    <Compile Include="NugetHelpers.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Script\ExecWithArguments.cs" />
-    <Compile Include="Script\InvokeSteps.cs" />
-    <Compile Include="Script\InvokePowershellCommand.cs" />
-    <Compile Include="Script\InvokePowershellFile.cs" />
-    <Compile Include="Script\InvokeStandaloneMsBuild.cs" />
-    <Compile Include="Script\StepId.cs" />
-    <Compile Include="TemplateLoadException.cs" />
-    <Compile Include="Templating\GenerateSpecialParameterTemplateTokens.cs" />
-    <Compile Include="Validation\FxCopInvocationProperties.cs" />
-    <Compile Include="VersionControl\TfsCurrentBranch.cs" />
-    <Compile Include="VersionControl\TfsCurrentChangeSet.cs" />
-    <Compile Include="Versions\CalculateSemanticVersionWithGitVersion.cs" />
-    <Compile Include="VersionControl\ExtractIssueIdsFromGitCommitMessages.cs" />
-    <Compile Include="Templating\FindAndReplaceInFile.cs" />
-    <Compile Include="Templating\FindAndReplaceInText.cs" />
-    <Compile Include="Validation\FxCopViaAssemblies.cs" />
-    <Compile Include="Validation\FxCopViaProject.cs" />
-    <Compile Include="Package\GatherNuGetDependenciesForProject.cs" />
-    <Compile Include="GenerateTargetsFile.cs" />
-    <Compile Include="Versions\GetFileVersion.cs" />
-    <Compile Include="Projects\GetIssuesForGitHubMilestone.cs" />
-    <Compile Include="Versions\GetSemanticVersionFromFile.cs" />
-    <Compile Include="FileSystem\GetToolFullPath.cs" />
-    <Compile Include="VersionControl\GetVcsInfoFromFile.cs" />
-    <Compile Include="VersionControl\GitAdd.cs" />
-    <Compile Include="VersionControl\GitCheckout.cs" />
-    <Compile Include="VersionControl\GitClone.cs" />
-    <Compile Include="VersionControl\GitCommit.cs" />
-    <Compile Include="VersionControl\GitCurrentBranch.cs" />
-    <Compile Include="VersionControl\GitCurrentRevision.cs" />
-    <Compile Include="Projects\GitHubReleaseCreate.cs" />
-    <Compile Include="Projects\GitHubReleaseUpload.cs" />
-    <Compile Include="VersionControl\GitMerge.cs" />
-    <Compile Include="VersionControl\GitNewFiles.cs" />
-    <Compile Include="VersionControl\GitPush.cs" />
-    <Compile Include="VersionControl\GitReset.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="HtmlEncodeText.cs" />
-    <Compile Include="Script\InvokeNodeTool.cs" />
-    <Compile Include="Testing\InvokePesterOnDirectory.cs" />
-    <Compile Include="Testing\InvokePesterOnFile.cs" />
-    <Compile Include="Groups\IsInCollection.cs" />
-    <Compile Include="Groups\LastItemInGroup.cs" />
-    <Compile Include="Package\NuGetInstall.cs" />
-    <Compile Include="Package\NuGetPack.cs" />
-    <Compile Include="Package\NuGetPush.cs" />
-    <Compile Include="Package\NuGetRestore.cs" />
-    <Compile Include="Testing\OpenCover.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PublicKeySignatureFromKeyFile.cs" />
-    <Compile Include="Testing\ReportGenerator.cs" />
-    <Compile Include="Testing\ReportGeneratorOutputToCsv.cs" />
-    <Compile Include="FileSystem\SearchPackagesDirectoryForToolDirectory.cs" />
-    <Compile Include="FileSystem\SearchPackagesDirectoryForToolPath.cs" />
-    <Compile Include="SetEnvironmentVariable.cs" />
-    <Compile Include="FileSystem\SortFilesByDirectory.cs" />
-    <Compile Include="FileSystem\SortItemGroupByKey.cs" />
-    <Compile Include="Templating\TemplateFile.cs" />
-    <Compile Include="Templating\TemplateText.cs" />
-    <Compile Include="Package\Unzip.cs" />
-    <Compile Include="Validation\ValidateXmlAgainstSchema.cs" />
-    <Compile Include="Package\Zip.cs" />
-    <Compile Include="Web\IInternalWebClient.cs" />
-    <Compile Include="Web\InternalWebClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Web\WebDelete.cs" />
-    <Compile Include="Web\WebDownload.cs" />
-    <Compile Include="Web\WebUpload.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <None Remove="Script\MsBuildTemplate.xml" />
     <EmbeddedResource Include="Script\MsBuildTemplate.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\nBuildKit.MsBuild.Tasks.Core\nBuildKit.MsBuild.Tasks.Core.csproj">
-      <Project>{419a1a8e-f3cc-4ce1-9294-6b7fbb7ee96d}</Project>
-      <Name>nBuildKit.MsBuild.Tasks.Core</Name>
-    </ProjectReference>
+    <PackageReference Include="Flurl.Signed" version="2.8.0" />
+    <PackageReference Include="Microsoft.Build" version="16.0.461" />
+    <PackageReference Include="Microsoft.Build.Framework" version="16.0.461" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" version="16.0.461" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" version="2.9.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" version="12.0.3" />
+    <PackageReference Include="NuGet.Versioning" version="5.3.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.IO.Abstractions" version="7.0.7" />
+    <PackageReference Include="System.IO.Compression" version="4.3.0" />
+    <PackageReference Include="System.Memory" version="4.5.3" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.8\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
-    <Analyzer Include="..\..\..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.8\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
-    <Analyzer Include="..\..\..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.8\analyzers\dotnet\cs\Humanizer.dll" />
-    <Analyzer Include="..\..\..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.8\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll" />
-    <Analyzer Include="..\..\..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.8\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll" />
-    <Analyzer Include="..\..\..\..\packages\Microsoft.NetCore.Analyzers.2.9.8\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll" />
-    <Analyzer Include="..\..\..\..\packages\Microsoft.NetCore.Analyzers.2.9.8\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
-    <Analyzer Include="..\..\..\..\packages\Microsoft.NetFramework.Analyzers.2.9.8\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
-    <Analyzer Include="..\..\..\..\packages\Microsoft.NetFramework.Analyzers.2.9.8\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
-    <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+    <ProjectReference Include="..\nBuildKit.MsBuild.Tasks.Core\nBuildKit.MsBuild.Tasks.Core.csproj" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.8\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.8\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.8\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.CodeQuality.Analyzers.2.9.8\build\Microsoft.CodeQuality.Analyzers.props'))" />
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.NetCore.Analyzers.2.9.8\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.NetCore.Analyzers.2.9.8\build\Microsoft.NetCore.Analyzers.props'))" />
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.NetFramework.Analyzers.2.9.8\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.NetFramework.Analyzers.2.9.8\build\Microsoft.NetFramework.Analyzers.props'))" />
-    <Error Condition="!Exists('..\..\..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.8\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.2.9.8\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <Reference Include="System.Web" />
+  </ItemGroup>
 </Project>

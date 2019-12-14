@@ -317,7 +317,7 @@ namespace NBuildKit.MsBuild.Tasks
                     return null;
                 }
 
-                string fileName = Path.GetFileNameWithoutExtension(file);
+                var fileName = Path.GetFileNameWithoutExtension(file);
                 try
                 {
                     return Assembly.Load(fileName);

@@ -36,6 +36,16 @@ namespace NBuildKit.MsBuild.Tasks.Core
         }
 
         /// <summary>
+        /// Logs the specified error.
+        /// </summary>
+        /// <param name="format">The message format.</param>
+        /// <param name="arguments">The message arguments.</param>
+        public void LogError(string format, params object[] arguments)
+        {
+            _logger.LogError(format, arguments);
+        }
+
+        /// <summary>
         /// Logs the specified message.
         /// </summary>
         /// <param name="importance">The message importance.</param>
