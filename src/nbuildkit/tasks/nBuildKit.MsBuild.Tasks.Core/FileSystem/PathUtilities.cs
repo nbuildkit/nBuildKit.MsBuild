@@ -137,7 +137,14 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
 
             if (!Path.IsPathRooted(result))
             {
-                result = Path.GetFullPath(Path.Combine(basePath, result));
+                if (string.IsNullOrEmpty(basePath))
+                {
+                    result = Path.GetFullPath(result);
+                }
+                else
+                {
+                    result = Path.GetFullPath(Path.Combine(basePath, result));
+                }
             }
 
             return result;
