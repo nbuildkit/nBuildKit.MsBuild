@@ -52,7 +52,8 @@ namespace NBuildKit.MsBuild.Tasks.Testing
         {
             var arguments = new List<string>();
             {
-                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-register:user "));
+                // arguments.Add(string.Format(CultureInfo.InvariantCulture, "-register:user "));
+                arguments.Add(string.Format(CultureInfo.InvariantCulture, "-register:Path64 "));
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "-returntargetcode:3000 "));
                 arguments.Add(string.Format(CultureInfo.InvariantCulture, "-target:\"{0}\" ", UnitTestExe));
 
