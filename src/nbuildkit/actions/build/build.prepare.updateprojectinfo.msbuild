@@ -30,6 +30,7 @@
     </Target>
 
     <Target
+        Condition=" '@(DistinctSolutionsToBuild)' != '' "
         DependsOnTargets="_nBuildKit_Build_Prepare_UpdateProjectInfo_GetSolutions"
         Name="_nBuildKit_Build_Prepare_UpdateProjectInfo_UpdateSolutions"
         Outputs="%(DistinctSolutionsToBuild.Identity)">
@@ -43,6 +44,7 @@
 
         <UpdateProjectSettings
             AssemblyInfoEncoding="utf-8"
+            Condition=" '@(ProjectsToUpdate)' != '' "
             ErrorInformation="@(ErrorInformation)"
             GenerateBuildInformation="$(ShouldGenerateAssemblyBuildInfo)"
             InternalsVisibleTo="@(InternalsVisibleTo)"
