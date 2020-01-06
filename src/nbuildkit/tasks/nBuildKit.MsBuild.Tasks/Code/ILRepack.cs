@@ -89,7 +89,6 @@ namespace NBuildKit.MsBuild.Tasks.Code
             {
                 arguments.Add("/union ");
                 arguments.Add("/internalize ");
-                arguments.Add("/renameInternalized");
                 arguments.Add("/wildcards ");
 
                 var verbosity = ToVerbosity(VerbosityForCurrentMsBuildInstance());
