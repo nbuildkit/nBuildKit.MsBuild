@@ -88,13 +88,13 @@ namespace NBuildKit.MsBuild.Tasks.Code
         private static string FindAssemblyName(XDocument doc, string projectPath)
         {
             // The document may have a namespace
-            var ns = doc.Root.GetDefaultNamespace();
+            var ns = doc.Root.GetDefaultNamespace().NamespaceName;
 
-            var namespacedProjectName = XName.Get(ProjectNodeName, ns.NamespaceName);
+            var namespacedProjectName = XName.Get(ProjectNodeName, ns);
             var projectNode = doc.Element(namespacedProjectName);
 
-            // New project format. See if we redirect to the assembly info file
-            var assemblyNameNode = FindElementInPropertyGroup(projectNode, "AssemblyName");
+            var namespacedAssemblyName = XName.Get("AssemblyName", ns);
+            var assemblyNameNode = projectNode.Descendants(namespacedAssemblyName).FirstOrDefault();
 
             if (assemblyNameNode != null)
             {
