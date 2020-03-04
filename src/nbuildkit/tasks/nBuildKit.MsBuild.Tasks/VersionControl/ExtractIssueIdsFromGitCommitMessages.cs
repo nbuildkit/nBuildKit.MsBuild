@@ -127,7 +127,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                     "branch",
                 });
             var hasMergeTarget = localBranchesAsText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(t => t.TrimStart(new[]{ '*' }).Trim().Equals(MergeTargetBranch, StringComparison.Ordinal))
+                .Where(t => t.TrimStart(new[] { '*' }).Trim().Equals(MergeTargetBranch, StringComparison.Ordinal))
                 .Any();
 
             // If the MergeTargetBranch doesn't exist, create it in the same location as the tracking branch (which should exist).
