@@ -236,7 +236,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                 standardErrorHandler: standardErrorHandler);
             if (exitCode != 0)
             {
-                Log.LogError(
+                Log.LogMessage(
                     string.Empty,
                     ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode),
                     Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode,
