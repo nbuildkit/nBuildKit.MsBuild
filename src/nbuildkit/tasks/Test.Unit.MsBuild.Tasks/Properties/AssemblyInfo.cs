@@ -16,8 +16,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyProduct("Test.Unit.MsBuild.Tasks")]
 
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCompany("nbuildkit")]
+[assembly: AssemblyCopyright("Copyright (c) - nbuildkit 2014 - 2019. All rights reserved.")]
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 // Indicate that the assembly is CLS compliant.
 [assembly: CLSCompliant(true)]
 
-[assembly: AssemblyConfiguration("Release")]
+[assembly: AssemblyConfiguration("")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -45,6 +45,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0.0")]
-
+[assembly: AssemblyFileVersion("1.0.2.51")]
+[assembly: AssemblyInformationalVersion("1.0.2-nunit2.1+51")]

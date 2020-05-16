@@ -16,54 +16,10 @@
 function Get-MsBuildPath
 {
     [CmdletBinding()]
-    param(
-        [switch] $use32BitMsBuild
-    )
+    param()
 
-    $registryPathToMsBuildToolsVersions = 'HKLM:\SOFTWARE\Microsoft\MSBuild\ToolsVersions\'
-    if ($use32BitMsBuild)
-    {
-        # If the 32-bit path exists, use it, otherwise stick with the current path (which will be the 64-bit path on
-        # 64-bit machines, and the 32-bit path on 32-bit machines).
-        $registryPathTo32BitMsBuildToolsVersions = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\MSBuild\ToolsVersions\'
-        if (Test-Path -Path $registryPathTo32BitMsBuildToolsVersions)
-        {
-            $registryPathToMsBuildToolsVersions = $registryPathTo32BitMsBuildToolsVersions
-        }
-    }
-
-    # Get the path to the directory that the latest version of MsBuild is in.
-    $msBuildToolsVersionsStrings = Get-ChildItem -Path $registryPathToMsBuildToolsVersions |
-        Where-Object { $_ -match '[0-9]+\.[0-9]' } |
-        Select-Object -ExpandProperty PsChildName
-
-    $msBuildToolsVersions = @{}
-    $msBuildToolsVersionsStrings |
-        ForEach-Object {
-            $msBuildToolsVersions.Add($_ -as [double], $_)
-        }
-
-    $largestMsBuildToolsVersion = ($msBuildToolsVersions.GetEnumerator() |
-        Sort-Object -Descending -Property Name |
-        Select-Object -First 1).Value
-
-    $registryPathToMsBuildToolsLatestVersion = Join-Path -Path $registryPathToMsBuildToolsVersions -ChildPath ("{0:n1}" -f $largestMsBuildToolsVersion)
-    $msBuildToolsVersionsKeyToUse = Get-Item -Path $registryPathToMsBuildToolsLatestVersion
-    $msBuildDirectoryPath = $msBuildToolsVersionsKeyToUse |
-        Get-ItemProperty -Name 'MSBuildToolsPath' |
-        Select -ExpandProperty 'MSBuildToolsPath'
-
-    if (($msBuildDirectoryPath -eq $null) -or ($msBuildDirectoryPath -eq ''))
-    {
-        throw 'The registry on this system does not appear to contain the path to the MsBuild.exe directory.'
-    }
-
-    # Get the path to the MsBuild executable.
-    $msBuildPath = Join-Path -Path $msBuildDirectoryPath -ChildPath 'msbuild.exe'
-    if(-not (Test-Path $msBuildPath -PathType Leaf))
-    {
-        throw "MsBuild.exe was not found on this system at the path specified in the registry, '$msBuildPath'."
-    }
+    $vswherePath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+    $msBuildPath = & $vswherePath -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe | select-object -first 1
 
     return $msBuildPath
 }

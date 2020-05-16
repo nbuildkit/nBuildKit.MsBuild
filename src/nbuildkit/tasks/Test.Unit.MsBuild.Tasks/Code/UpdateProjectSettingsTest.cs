@@ -117,8 +117,7 @@ namespace NBuildKit.MsBuild.Tasks.Code
         public void ExecuteWithNewCSharpProjectWithAssemblyInfo()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "NewSolutionWithAssemblyInfo", "CSharpLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "NewSolutionWithAssemblyInfo", "CSharpLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "CSharpLibrary.csproj");
 
             var fileToAlter = Path.Combine(testProjectDirectory, "AssemblyInfo.cs");
@@ -184,8 +183,7 @@ using System.Runtime.InteropServices;
         public void ExecuteWithNewCSharpProjectWithInternalsVisibleTo()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "NewSolutionWithAssemblyInfo", "CSharpLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "NewSolutionWithAssemblyInfo", "CSharpLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "CSharpLibrary.csproj");
 
             var fileToAlter = Path.Combine(testProjectDirectory, "AssemblyInfo.cs");
@@ -264,8 +262,7 @@ using System.Runtime.InteropServices;
         public void ExecuteWithNewCSharpProjectWithoutAssemblyInfo()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "NewSolution", "CSharpLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "NewSolution", "CSharpLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "CSharpLibrary.csproj");
 
             using (var undo = new UndoFileChanges(testProjectPath))
@@ -304,8 +301,7 @@ using System.Runtime.InteropServices;
         public void ExecuteWithNewVBProjectWithAssemblyInfo()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "NewSolutionWithAssemblyInfo", "VBNetLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "NewSolutionWithAssemblyInfo", "VBNetLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "VBNetLibrary.vbproj");
 
             var fileToAlter = Path.Combine(testProjectDirectory, "AssemblyInfo.vb");
@@ -371,8 +367,7 @@ Imports System.Runtime.InteropServices
         public void ExecuteWithNewVBProjectWithInternalsVisibleTo()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "NewSolutionWithAssemblyInfo", "VBNetLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "NewSolutionWithAssemblyInfo", "VBNetLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "VBNetLibrary.vbproj");
 
             var fileToAlter = Path.Combine(testProjectDirectory, "AssemblyInfo.vb");
@@ -451,8 +446,7 @@ Imports System.Runtime.InteropServices
         public void ExecuteWithNewVBProjectWithoutAssemblyInfo()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "NewSolution", "VBNetLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "NewSolution", "VBNetLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "VBNetLibrary.vbproj");
 
             using (var undo = new UndoFileChanges(testProjectPath))
@@ -507,8 +501,7 @@ Imports System.Runtime.InteropServices
         public void ExecuteWithOldCSharpProjects()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "OldSolution", "CSharpLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "OldSolution", "CSharpLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "CSharpLibrary.csproj");
 
             var fileToAlter = Path.Combine(testProjectDirectory, "Properties", "AssemblyInfo.cs");
@@ -574,8 +567,7 @@ using System.Runtime.InteropServices;
         public void ExecuteWithOldCSharpProjectWithInternalsVisibleTo()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "OldSolution", "CSharpLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "OldSolution", "CSharpLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "CSharpLibrary.csproj");
 
             var fileToAlter = Path.Combine(testProjectDirectory, "Properties", "AssemblyInfo.cs");
@@ -654,8 +646,7 @@ using System.Runtime.InteropServices;
         public void ExecuteWithOldVBProjects()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "OldSolution", "VBNetLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "OldSolution", "VBNetLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "VBNetLibrary.vbproj");
 
             var fileToAlter = Path.Combine(testProjectDirectory, "My Project", "AssemblyInfo.vb");
@@ -721,8 +712,7 @@ Imports System.Runtime.InteropServices
         public void ExecuteWithOldVBProjectsWithInternalsVisibleTo()
         {
             var currentDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
-            var projectPath = Path.GetDirectoryName(Path.GetDirectoryName(currentDirectory));
-            var testProjectDirectory = Path.Combine(projectPath, "TestFiles", "OldSolution", "VBNetLibrary");
+            var testProjectDirectory = Path.Combine(currentDirectory, "TestFiles", "OldSolution", "VBNetLibrary");
             var testProjectPath = Path.Combine(testProjectDirectory, "VBNetLibrary.vbproj");
 
             var fileToAlter = Path.Combine(testProjectDirectory, "My Project", "AssemblyInfo.vb");

@@ -97,6 +97,13 @@ namespace NBuildKit.MsBuild.Tasks.Templating
                         {
                             tokenPairs.Add(taskItem.ItemSpec, taskItem.GetMetadata(MetadataReplacementValueTag));
                         }
+                        else
+                        {
+                            Log.LogError(
+                                "A template token with the name {0} already exists in the list. Was going to add token: {0} - replacement value: {1}",
+                                taskItem.ItemSpec,
+                                taskItem.GetMetadata(MetadataReplacementValueTag));
+                        }
                     }
                 }
             }

@@ -31,14 +31,14 @@ namespace NBuildKit.MsBuild.Tasks.Core
         /// <param name="invoker">The object which handles the invocation of the command line applications.</param>
         protected CommandLineToolTask(IApplicationInvoker invoker)
         {
-            _invoker = invoker ?? new ApplicationInvoker(Log);
+            _invoker = invoker ?? new ApplicationInvoker(new MsBuildLogger(Log));
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandLineToolTask"/> class.
         /// </summary>
         /// <param name="logger">The object that provides the diagnostics for the application.</param>
-        protected CommandLineToolTask(TaskLoggingHelper logger)
+        protected CommandLineToolTask(Core.ILogger logger)
             : this(new ApplicationInvoker(logger))
         {
         }

@@ -168,7 +168,7 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
         private void GenerateIntermediateMsBuildScript(string path, string targetOutputPath)
         {
-            var text = EmbeddedResourceExtracter.LoadEmbeddedTextFile(Assembly.GetExecutingAssembly(), "NBuildKit.MsBuild.Tasks.Script.MsBuildTemplate.xml");
+            var text = EmbeddedResourceExtracter.LoadEmbeddedTextFile(Assembly.GetExecutingAssembly(), "nBuildKit.MsBuild.Tasks.Script.MsBuildTemplate.xml");
             text = text.Replace("${TOOLS_VERSION}$", ToolsVersion);
             text = text.Replace("${OUTPUT_PATH}$", targetOutputPath);
             text = text.Replace("${PROJECTS}$", string.Join(";", Projects.Select(p => GetAbsolutePath(p))));

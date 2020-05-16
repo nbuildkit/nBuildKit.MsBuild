@@ -34,7 +34,7 @@
         Name="_nBuildKit_Build_Prepare_UpdateProjectInfo_UpdateSolutions"
         Outputs="%(DistinctSolutionsToBuild.Identity)">
         <GetProjectsFromVisualStudioSolution
-            Condition="Exists('%(DistinctSolutionsToBuild.Identity)')"
+            Condition="'@(DistinctSolutionsToBuild)' != '' AND Exists('%(DistinctSolutionsToBuild.Identity)')"
             ErrorInformation="@(ErrorInformation)"
             SolutionFile="%(DistinctSolutionsToBuild.Identity)">
             <Output ItemName="ProjectsToUpdate"
@@ -43,6 +43,7 @@
 
         <UpdateProjectSettings
             AssemblyInfoEncoding="utf-8"
+            Condition=" '@(ProjectsToUpdate)' != '' "
             ErrorInformation="@(ErrorInformation)"
             GenerateBuildInformation="$(ShouldGenerateAssemblyBuildInfo)"
             InternalsVisibleTo="@(InternalsVisibleTo)"

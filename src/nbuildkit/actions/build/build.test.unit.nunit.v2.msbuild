@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project
-    DefaultTargets="nBuildKit_Build_Test_Unit_NUnit_Run"
+    DefaultTargets="nBuildKit_Build_Test_Unit_NUnit_V2_Run"
     ToolsVersion="14.0"
     xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
@@ -22,16 +22,16 @@
 
     <Target
         Condition=" '@(UnitTestAssemblies)' != '' "
-        Name="nBuildKit_Build_Test_Unit_NUnit_Run">
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths" />
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates" />
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace" />
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory" />
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_Execute" />
-        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_GenerateCoberturaReports" />
+        Name="nBuildKit_Build_Test_Unit_NUnit_V2_Run">
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_V2_GetToolPaths" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_V2_ReplaceBuildTemplates" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_V2_PrepareWorkspace" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_V2_SortFilesByDirectory" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_V2_Execute" />
+        <CallTarget Targets="_nBuildKit_Build_Test_Unit_NUnit_V2_GenerateCoberturaReports" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths">
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_V2_GetToolPaths">
         <Error
             Code="$(NBuildKitErrorCodePackagesDirectoryNotFound)"
             Condition="!Exists('$(DirPackages)') "
@@ -39,41 +39,41 @@
             Text="The packages directory does not exist. Cannot search for the unit test executables." />
 
         <NuGetInstall
-            Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' "
+            Condition=" '$(ToolsExternalNUnitV2ConsolePath)' == 'UNDEFINED' "
             ErrorInformation="@(ErrorInformation)"
             ExcludeVersion="$(ShouldRestoreNuGetPackagesWithoutVersionInPath)"
             NuGetExecutablePath="$(ToolsExternalNuGetPath)"
             PackagesDirectory="$(DirPackages)"
-            PackageName="NUnit.ConsoleRunner"
-            PackageVersion="$(ToolsExternalNUnitConsoleVersion)"
+            PackageName="NUnit.Runners"
+            PackageVersion="$(ToolsExternalNUnitV2ConsoleVersion)"
             Sources="@(NuGetSources)"
             WorkingDirectory="$(DirWorkspace)" />
         <SearchPackagesDirectoryForToolPath
-            Condition=" '$(ToolsExternalNUnitConsolePath)' == 'UNDEFINED' "
+            Condition=" '$(ToolsExternalNUnitV2ConsolePath)' == 'UNDEFINED' "
             ErrorInformation="@(ErrorInformation)"
-            FileToLocate="nunit3-console.exe"
+            FileToLocate="nunit-console.exe"
             PackagesDirectory="$(DirPackages)">
             <Output
-                PropertyName="ToolsExternalNUnitConsolePath"
+                PropertyName="ToolsExternalNUnitV2ConsolePath"
                 TaskParameter="Path" />
         </SearchPackagesDirectoryForToolPath>
         <GetToolFullPath
-            Condition=" '$(ToolsExternalNUnitConsolePath)' != 'UNDEFINED' "
+            Condition=" '$(ToolsExternalNUnitV2ConsolePath)' != 'UNDEFINED' "
             ErrorInformation="@(ErrorInformation)"
-            Tool="$(ToolsExternalNUnitConsolePath)">
+            Tool="$(ToolsExternalNUnitV2ConsolePath)">
             <Output
-                PropertyName="ToolsExternalNUnitConsolePath"
+                PropertyName="ToolsExternalNUnitV2ConsolePath"
                 TaskParameter="Path" />
         </GetToolFullPath>
         <Message
-            Condition="Exists('$(ToolsExternalNUnitConsolePath)') "
+            Condition="Exists('$(ToolsExternalNUnitV2ConsolePath)') "
             Importance="low"
-            Text="The NUnit executable was found at: $(ToolsExternalNUnitConsolePath)" />
+            Text="The NUnit executable was found at: $(ToolsExternalNUnitV2ConsolePath)" />
         <Error
             Code="$(NBuildKitErrorCodeToolFileNotFound)"
-            Condition="!Exists('$(ToolsExternalNUnitConsolePath)') "
+            Condition="!Exists('$(ToolsExternalNUnitV2ConsolePath)') "
             HelpKeyword="$(NBuildKitErrorIdToolFileNotFound)"
-            Text="Could not locate the NUnit executable path. Cannot execute unit tests." />
+            Text="Could not locate the NUnit V2 executable path. Cannot execute unit tests." />
 
         <NuGetInstall
             Condition=" '$(ToolsExternalOpenCoverPath)' == 'UNDEFINED' "
@@ -183,7 +183,7 @@
     </Target>
 
     <Target
-        Name="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates">
+        Name="_nBuildKit_Build_Test_Unit_NUnit_V2_ReplaceBuildTemplates">
         <Message
             Importance="low"
             Text="Resolving build templates ..." />
@@ -217,8 +217,8 @@
     </Target>
 
     <Target
-        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates"
-        Name="_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace">
+        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_V2_ReplaceBuildTemplates"
+        Name="_nBuildKit_Build_Test_Unit_NUnit_V2_PrepareWorkspace">
         <CreateProperty
             Value="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))">
             <Output
@@ -244,7 +244,7 @@
             Directories="$(DirReportGeneratorOutput)" />
     </Target>
 
-    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory">
+    <Target Name="_nBuildKit_Build_Test_Unit_NUnit_V2_SortFilesByDirectory">
         <SortFilesByDirectory
             ErrorInformation="@(ErrorInformation)"
             Files="@(UnitTestAssemblies)" >
@@ -255,8 +255,8 @@
     </Target>
 
     <Target
-        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_GetToolPaths;_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_NUnit_PrepareWorkspace;_nBuildKit_Build_Test_Unit_NUnit_SortFilesByDirectory"
-        Name="_nBuildKit_Build_Test_Unit_NUnit_RunTests"
+        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_V2_GetToolPaths;_nBuildKit_Build_Test_Unit_NUnit_V2_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_NUnit_V2_PrepareWorkspace;_nBuildKit_Build_Test_Unit_NUnit_V2_SortFilesByDirectory"
+        Name="_nBuildKit_Build_Test_Unit_NUnit_V2_RunTests"
         Outputs="%(UnitTestDirectories.Identity)">
         <!--
             Create the ItemGroup dynamically because creating an ItemGroup in the target with the dynamically
@@ -283,16 +283,16 @@
             OpenCoverExe="$(ToolsExternalOpenCoverPath)"
             OpenCoverFilters="@(OpenCoverFilters->'%(Identity)', ' ')"
             OpenCoverOutput="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-%(UnitTestDirectories.Index)$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))"
-            UnitTestArguments="/framework:net-$(TargetFrameworkVersion.TrimStart('v')) /result:&quot;nunit-console-%(UnitTestDirectories.Index).xml&quot; /work:&quot;$(DirBuildLogs)&quot; /domain:multiple $(AssembliesToTest)"
-            UnitTestExe="$(ToolsExternalNUnitConsolePath)" />
+            UnitTestArguments="/framework:net-$(TargetFrameworkVersion.TrimStart('v')) /result:&quot;nunit-console-%(UnitTestDirectories.Index).xml&quot; /work:&quot;$(DirBuildLogs)&quot; /noshadow /domain:multiple $(AssembliesToTest)"
+            UnitTestExe="$(ToolsExternalNUnitV2ConsolePath)" />
     </Target>
 
     <PropertyGroup>
         <FileReportReportGeneratorXmlSummary>$(DirReportGeneratorOutput)\Summary.xml</FileReportReportGeneratorXmlSummary>
     </PropertyGroup>
     <Target
-        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_NUnit_RunTests"
-        Name="_nBuildKit_Build_Test_Unit_NUnit_Execute">
+        DependsOnTargets="_nBuildKit_Build_Test_Unit_NUnit_V2_ReplaceBuildTemplates;_nBuildKit_Build_Test_Unit_NUnit_V2_RunTests"
+        Name="_nBuildKit_Build_Test_Unit_NUnit_V2_Execute">
         <ItemGroup>
             <FilesReportOpenCoverXml Include="$([System.IO.Path]::GetDirectoryName('$(FileReportOpenCoverXmlExpanded)'))\$([System.IO.Path]::GetFileNameWithoutExtension('$(FileReportOpenCoverXmlExpanded)'))-*$([System.IO.Path]::GetExtension('$(FileReportOpenCoverXmlExpanded)'))" />
         </ItemGroup>
@@ -312,7 +312,7 @@
     </Target>
 
     <Target
-        Name="_nBuildKit_Build_Test_Unit_NUnit_GenerateCoberturaReports"
+        Name="_nBuildKit_Build_Test_Unit_NUnit_V2_GenerateCoberturaReports"
         Outputs="%(FilesReportOpenCoverXml.Identity)">
 
         <ItemGroup>

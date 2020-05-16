@@ -83,28 +83,28 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 if (Test-Path $repositoryLocation)
 {
-    Remove-Item -Path $repositoryLocation -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path $repositoryLocation -Force -Recurse -Verbose -ErrorAction SilentlyContinue
 }
 
 if (Test-Path $workspaceLocation)
 {
-    Remove-Item -Path $workspaceLocation -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path $workspaceLocation -Force -Recurse -Verbose -ErrorAction SilentlyContinue
 }
 
 if (Test-Path $logLocation)
 {
-    Remove-Item -Path $logLocation -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path $logLocation -Force -Recurse -Verbose -ErrorAction SilentlyContinue
 }
 
 if (Test-Path $tempLocation)
 {
-    Remove-Item -Path $tempLocation -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item -Path $tempLocation -Force -Recurse -Verbose -ErrorAction SilentlyContinue
 }
 
-New-Item -Path $repositoryLocation -ItemType Directory | Out-Null
-New-Item -Path $workspaceLocation -ItemType Directory | Out-Null
-New-Item -Path $logLocation -ItemType Directory | Out-Null
-New-Item -Path $tempLocation -ItemType Directory | Out-Null
+New-Item -Path $repositoryLocation -ItemType Directory -Verbose | Out-Null
+New-Item -Path $workspaceLocation -ItemType Directory -Verbose | Out-Null
+New-Item -Path $logLocation -ItemType Directory -Verbose | Out-Null
+New-Item -Path $tempLocation -ItemType Directory -Verbose | Out-Null
 
 [array]$additionalNuGetSources = @()
 if (($localNuGetFeed -ne $null) -and ($localNuGetFeed -ne ''))
@@ -296,7 +296,8 @@ foreach($testPair in $tests)
                 -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
                 -target 'build' `
                 -properties $msBuildProperties `
-                -logPath (Join-Path $logLocation "integration-0.9.0.1.$($testId).build.log")
+                -logPath (Join-Path $logLocation "integration-0.9.0.1.$($testId).build.log") `
+                -Verbose
 
             $hasBuild = ($exitCode -eq 0)
             It 'and completes with a zero exit code' {
@@ -389,7 +390,8 @@ foreach($testPair in $tests)
                 -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
                 -target 'deploy' `
                 -properties $msBuildProperties `
-                -logPath (Join-Path $logLocation "integration-0.9.0.1.$($testId).deploy.log")
+                -logPath (Join-Path $logLocation "integration-0.9.0.1.$($testId).deploy.log") `
+                -Verbose
 
             $hasBuild = ($exitCode -eq 0)
             It 'and completes with a zero exit code' {

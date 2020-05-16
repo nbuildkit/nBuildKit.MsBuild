@@ -855,7 +855,7 @@
             <Groups>
                 prepare;
                 prepare.generate;
-                prepare.generate.assemblyinfo;
+                prepare.generate.projectinfo;
             </Groups>
             <Id>build.help</Id>
             <PostSteps>
@@ -914,15 +914,35 @@
             </Properties>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnitV2)">
             <ExecuteAfter></ExecuteAfter>
             <ExecuteBefore></ExecuteBefore>
             <Groups>
                 test;
                 test.unittest;
                 test.unittest.nunit;
+                test.unittest.nunit.v2;
             </Groups>
-            <Id>BuildStepsUnitTestNUnit</Id>
+            <Id>BuildStepsUnitTestNUnitV2</Id>
+            <PostSteps>
+            </PostSteps>
+            <PreSteps>
+            </PreSteps>
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnitV3)">
+            <ExecuteAfter></ExecuteAfter>
+            <ExecuteBefore></ExecuteBefore>
+            <Groups>
+                test;
+                test.unittest;
+                test.unittest.nunit;
+                test.unittest.nunit.v3;
+            </Groups>
+            <Id>BuildStepsUnitTestNUnitV3</Id>
             <PostSteps>
             </PostSteps>
             <PreSteps>
