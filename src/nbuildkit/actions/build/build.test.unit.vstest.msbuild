@@ -178,6 +178,13 @@
         <Warning
             Condition="!Exists('$(ToolsExternalNUnitXmlLoggerPath)') "
             Text="Could not locate the NUnitXml.Logger executable path. Cannot generate NUnit V3 xml unit test results." />
+        <CreateProperty
+            Condition="'$(ToolsExternalNUnitXmlLoggerPath)' != 'UNDEFINED'"
+            Value="$([System.IO.Path]::GetDirectoryName($(ToolsExternalNUnitXmlLoggerPath)))">
+            <Output
+                PropertyName="ToolsExternalNUnitXmlLoggerDirectory"
+                TaskParameter="Value" />
+        </CreateProperty>
         
         <NuGetInstall
             Condition=" '$(ToolsExternalXUnitXmlLoggerPath)' == 'UNDEFINED' "
@@ -211,7 +218,14 @@
             Text="The XUnitXml.Logger test adapter was found at: $(ToolsExternalXUnitXmlLoggerPath)" />
         <Warning
             Condition="!Exists('$(ToolsExternalXUnitXmlLoggerPath)') "
-            Text="Could not locate the XUnitXml.Logger executable path. Cannot generate XUnit xml unit test results." /> 
+            Text="Could not locate the XUnitXml.Logger executable path. Cannot generate XUnit xml unit test results." />
+        <CreateProperty
+            Condition="'$(ToolsExternalXUnitXmlLoggerPath)' != 'UNDEFINED'"
+            Value="$([System.IO.Path]::GetDirectoryName($(ToolsExternalXUnitXmlLoggerPath)))">
+            <Output
+                PropertyName="ToolsExternalXUnitXmlLoggerDirectory"
+                TaskParameter="Value" />
+        </CreateProperty>
     </Target>
 
     <Target
@@ -308,7 +322,7 @@
         <!-- Parameters for vstest and loggers were taken from here: https://github.com/microsoft/vstest-docs/blob/master/docs/report.md -->
         <CreateProperty
             Condition=" '$(VsTestLogger)' == '' AND '$(VsTestLoggerFormat)' == 'nunit-v3' "
-            Value="/logger:nunit /TestAdapterPath:$(ToolsExternalNUnitXmlLoggerPath)">
+            Value="/logger:nunit /TestAdapterPath:$(ToolsExternalNUnitXmlLoggerDirectory)">
             <Output
                 PropertyName="VsTestLogger"
                 TaskParameter="Value" />
@@ -316,7 +330,7 @@
 
         <CreateProperty
             Condition=" '$(VsTestLogger)' == '' AND '$(VsTestLoggerFormat)' == 'xunit' "
-            Value="/logger:xunit /TestAdapterPath:$(ToolsExternalXUnitXmlLoggerPath)">
+            Value="/logger:xunit /TestAdapterPath:$(ToolsExternalXUnitXmlLoggerDirectory)">
             <Output
                 PropertyName="VsTestLogger"
                 TaskParameter="Value" />
