@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -189,7 +190,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         }
 
         /// <summary>
-        /// Gets or sets the collection of GPG keys.
+        /// Gets or sets the GPG keys for which the signature should be verified.
         /// </summary>
         [Required]
         public ITaskItem GpgKey
@@ -206,7 +207,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         ///     The event handler that handles the standard output stream of the command line application. If no value is provided
         ///     then all messages are logged.
         /// </param>
-        /// <returns>The output of the GIT process.</returns>
+        /// <returns>The output of the GPG process.</returns>
         private int InvokeGpg(IEnumerable<string> arguments, DataReceivedEventHandler standardOutputHandler = null)
         {
             if (standardOutputHandler == null)
@@ -235,7 +236,7 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
                 standardErrorHandler: standardErrorHandler);
             if (exitCode != 0)
             {
-                Log.LogError(
+                Log.LogMessage(
                     string.Empty,
                     ErrorCodeById(Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode),
                     Core.ErrorInformation.ErrorIdApplicationNonzeroExitCode,
@@ -256,6 +257,10 @@ namespace NBuildKit.MsBuild.Tasks.FileSystem
         /// Gets or sets an array containing the URLs for the GPG key servers that should be used to verify the file signature.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] KeyServers
         {
             get;

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="nBuildKit_Build_Prepare_UpdateProjectInfo_Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- Defines whether the current script file has been loaded / imported or not -->
+        <ExistsBuildPrepareUpdateProjectInfo>true</ExistsBuildPrepareUpdateProjectInfo>
+    </PropertyGroup>
+    <PropertyGroup>
+        <ShouldLoadProjectFilesToUpdate>true</ShouldLoadProjectFilesToUpdate>
+        <ShouldLoadInternalsVisibleTo>true</ShouldLoadInternalsVisibleTo>
+        <ShouldLoadSolutionsToBuild>true</ShouldLoadSolutionsToBuild>
+        <ShouldLoadTemplateTokens>true</ShouldLoadTemplateTokens>
+        <ShouldLoadTemplateVersion>true</ShouldLoadTemplateVersion>
+        <ShouldLoadSystemTemplateVersion>true</ShouldLoadSystemTemplateVersion>
+    </PropertyGroup>
+
+    <Import Condition="Exists('$(FileImports)') AND '$(ExistsFileImports)' != 'true' "
+        Project="$(FileImports)" />
+
+    <Target Name="_nBuildKit_Build_Prepare_UpdateProjectInfo_GetSolutions">
+        <ItemGroup>
+            <DistinctSolutionsToBuild Include="@(SolutionsToBuild->Distinct())"></DistinctSolutionsToBuild>
+        </ItemGroup>
+    </Target>
+
+    <Target Name="nBuildKit_Build_Prepare_UpdateProjectInfo_Run">
+        <CallTarget
+            Targets="_nBuildKit_Build_Prepare_UpdateProjectInfo_UpdateSolutions" />
+    </Target>
+
+    <Target
+        DependsOnTargets="_nBuildKit_Build_Prepare_UpdateProjectInfo_GetSolutions"
+        Name="_nBuildKit_Build_Prepare_UpdateProjectInfo_UpdateSolutions"
+        Outputs="%(DistinctSolutionsToBuild.Identity)">
+        <GetProjectsFromVisualStudioSolution
+            Condition="'@(DistinctSolutionsToBuild)' != '' AND Exists('%(DistinctSolutionsToBuild.Identity)')"
+            ErrorInformation="@(ErrorInformation)"
+            SolutionFile="%(DistinctSolutionsToBuild.Identity)">
+            <Output ItemName="ProjectsToUpdate"
+                TaskParameter="Projects" />
+        </GetProjectsFromVisualStudioSolution>
+
+        <UpdateProjectSettings
+            AssemblyInfoEncoding="utf-8"
+            Condition=" '@(ProjectsToUpdate)' != '' "
+            ErrorInformation="@(ErrorInformation)"
+            GenerateBuildInformation="$(ShouldGenerateAssemblyBuildInfo)"
+            InternalsVisibleTo="@(InternalsVisibleTo)"
+            InternalsVisibleToCompilerDirective="$(InternalsVisibletoCompilerConstants)"
+            PackagesDirectory="$(DirPackages)"
+            Project="%(ProjectsToUpdate.FullPath)"
+            SnExe="$(ToolsExternalSnPath)"
+            TemporaryDirectory="$(DirBuildTemp)"
+            Tokens="@(TemplateTokens)" />
+    </Target>
+</Project>

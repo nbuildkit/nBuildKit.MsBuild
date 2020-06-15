@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0"
-         DefaultTargets="Run"
-         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
     <PropertyGroup>
         <!--
             A flag that indicates whether the current project is a Test project. The value will be set in the Visual
@@ -10,26 +7,7 @@
             This value is defined here just so that there is a value when no other value is specified. Do not comment this
             value out unless you know what you are doing!
         -->
-        <IsTest Condition=" '$(IsTest)' == '' ">$(ProjectTypeGuids.ToUpper().Contains('{3AC096D0-A1C2-E12C-1390-A8335801FDAB}').ToString().ToLower())</IsTest>
-
-        <!--
-            A flag that indicates whether the current project is a Web project. The value will be set in the Visual
-            Studio project files based on whether the project is a web project (as determined by the ProjectType GUID).
-
-            This value is defined here just so that there is a value when no other value is specified. Do not comment this
-            value out unless you know what you are doing!
-        -->
-        <IsWebProject Condition=" '$(IsWebProject)' == '' ">false</IsWebProject>
-        <!-- ASP.NET MVC 1 -->
-        <IsWebProject Condition=" '$(IsWebProject)' == 'false' ">$(ProjectTypeGuids.ToUpper().Contains('{603C0E0B-DB56-11DC-BE95-000D561079B0}').ToString().ToLower())</IsWebProject>
-        <!-- ASP.NET MVC 2 -->
-        <IsWebProject Condition=" '$(IsWebProject)' == 'false' ">$(ProjectTypeGuids.ToUpper().Contains('{F85E285D-A4E0-4152-9332-AB1D724D3325}').ToString().ToLower())</IsWebProject>
-        <!-- ASP.NET MVC 3 -->
-        <IsWebProject Condition=" '$(IsWebProject)' == 'false' ">$(ProjectTypeGuids.ToUpper().Contains('{E53F8FEA-EAE0-44A6-8774-FFD645390401}').ToString().ToLower())</IsWebProject>
-        <!-- ASP.NET MVC 4 -->
-        <IsWebProject Condition=" '$(IsWebProject)' == 'false' ">$(ProjectTypeGuids.ToUpper().Contains('{E3E379DF-F4C6-4180-9B81-6769533ABE47}').ToString().ToLower())</IsWebProject>
-        <!-- ASP.NET MVC 5 -->
-        <IsWebProject Condition=" '$(IsWebProject)' == 'false' ">$(ProjectTypeGuids.ToUpper().Contains('{349C5851-65DF-11DA-9384-00065B846F21}').ToString().ToLower())</IsWebProject>
+        <IsTest Condition=" '$(IsTest)' == '' ">$(AssemblyName.StartsWith('Test.Unit').ToString().ToLower())</IsTest>
     </PropertyGroup>
 
     <!-- Build configuration -->
@@ -39,17 +17,14 @@
             for all projects that include the MsBuild.Projects.XXXX NuGet package.
         -->
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <!--
-            The version of the .NET framework at which the assemblies should be targeted. This value is set
-            for all projects that include the MsBuild.Projects.XXXX NuGet package.
-        -->
-        <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
 
         <!--
             The platform against which the code should be compiled. Note that the target should not have space in it,
             i.e. AnyCPU, x86, x64 etc.
         -->
         <PlatformTarget>AnyCPU</PlatformTarget>
+
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     </PropertyGroup>
 
     <!-- Execute code analysis after the build -->
@@ -62,12 +37,12 @@
         <!--
             The code analysis rule set that should be used for non-test assemblies.
         -->
-        <CodeAnalysisRuleSet Condition=" '$(IsTest)' == 'false' ">$([System.IO.Path]::GetFullPath('$(SolutionDir)\default.ruleset'))</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet Condition=" '$(IsTest)' == 'false' ">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\default.ruleset'))</CodeAnalysisRuleSet>
         <!--
             The code analysis rule set that should be used for test assemblies. If no code analysis should be executed on test
             assemblies then it can be turned off in the settings for the different build configurations below.
         -->
-        <CodeAnalysisRuleSet Condition=" '$(IsTest)' == 'true' ">$([System.IO.Path]::GetFullPath('$(SolutionDir)\test.ruleset'))</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet Condition=" '$(IsTest)' == 'true' ">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\test.ruleset'))</CodeAnalysisRuleSet>
         <!--
             The culture which will be used by the code analysis when searching for spelling errors. The culture name should
             be formatted using the .NET culture format.
@@ -95,6 +70,12 @@
             Indicates what the warning level is for the C# compiler.
         -->
         <WarningLevel>4</WarningLevel>
+
+        <!--
+            Don't care about the XML documentation for unit test projects
+        -->
+        <NoWarn Condition=" '$(IsTest)' == 'true' ">1591;$(NoWarn)</NoWarn>
+
         <!--
             Define any additional constants for the C# compiler. Multiple constants should be
             separated by a semi-colon (;).
@@ -112,41 +93,24 @@
         <DefineDebug>true</DefineDebug>
         <DefineTrace>true</DefineTrace>
         <Optimize>false</Optimize>
-        <OutputPath Condition=" '$(IsWebProject)' == 'false' ">bin\Debug\</OutputPath>
-        <OutputPath Condition=" '$(IsWebProject)' == 'true' ">bin\</OutputPath>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunCodeAnalysis>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">true</RunCodeAnalysis>
+        <RunCodeAnalysis>false</RunCodeAnalysis>
+        <RunAnalyzersDuringBuild Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunAnalyzersDuringBuild>
+        <RunAnalyzersDuringBuild Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">true</RunAnalyzersDuringBuild>
     </PropertyGroup>
 
     <!--
         Release configuration
     -->
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <DefineConstants>CODE_ANALYSIS;INTERNALS_VISIBLE_TO;$(DefineConstants)</DefineConstants>
+        <DefineConstants></DefineConstants>
         <DebugSymbols>false</DebugSymbols>
         <DebugType>pdbonly</DebugType>
         <DefineDebug>false</DefineDebug>
         <DefineTrace>true</DefineTrace>
         <Optimize>true</Optimize>
-        <OutputPath Condition=" '$(IsWebProject)' == 'false' ">bin\Release\</OutputPath>
-        <OutputPath Condition=" '$(IsWebProject)' == 'true' ">bin\</OutputPath>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunCodeAnalysis>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">true</RunCodeAnalysis>
-    </PropertyGroup>
-
-    <!--
-        Deploy configuration
-    -->
-    <PropertyGroup Condition=" '$(Configuration)' == 'Deploy' ">
-        <DebugSymbols>false</DebugSymbols>
-        <DebugType>pdbonly</DebugType>
-        <DefineDebug>false</DefineDebug>
-        <DefineTrace>true</DefineTrace>
-        <Optimize>true</Optimize>
-        <OutputPath Condition=" '$(IsWebProject)' == 'false' ">bin\Deploy\</OutputPath>
-        <OutputPath Condition=" '$(IsWebProject)' == 'true' ">bin\</OutputPath>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunCodeAnalysis>
-        <RunCodeAnalysis Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">false</RunCodeAnalysis>
+        <RunCodeAnalysis>false</RunCodeAnalysis>
+        <RunAnalyzersDuringBuild Condition=" '$(ShouldPerformCodeAnalysis)' != 'true' ">false</RunAnalyzersDuringBuild>
+        <RunAnalyzersDuringBuild Condition=" '$(ShouldPerformCodeAnalysis)' == 'true' ">true</RunAnalyzersDuringBuild>
     </PropertyGroup>
 
     <!-- Generate the XML documentation file -->
@@ -154,7 +118,8 @@
         <!--
             The full file path where the XML documentation file should be created.
         -->
-        <DocumentationFile>$(OutputPath)\$(AssemblyName).XML</DocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GenerateDocumentationFile Condition=" '$(IsTest)' == 'false' ">true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <!-- Default includes -->

@@ -9,10 +9,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Reflection;
-using Nuclei;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
@@ -26,7 +24,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
     {
         private static string CreateTempDirectory()
         {
-            var assemblyDirectory = Assembly.GetExecutingAssembly().LocalDirectoryPath();
+            var assemblyDirectory = LocalDirectoryPath(Assembly.GetExecutingAssembly());
             var path = Path.Combine(assemblyDirectory, Guid.NewGuid().ToString());
             if (Directory.Exists(path))
             {
@@ -36,6 +34,24 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
             Directory.CreateDirectory(path);
 
             return path;
+        }
+
+        private static string LocalDirectoryPath(Assembly assembly)
+        {
+            if (assembly == null)
+            {
+                throw new ArgumentNullException(nameof(assembly));
+            }
+
+            // Get the location of the assembly before it was shadow-copied
+            // Note that Assembly.Codebase gets the path to the manifest-containing
+            // file, not necessarily the path to the file that contains a
+            // specific type.
+            var uncPath = new Uri(assembly.CodeBase);
+
+            // Get the local path. This may not work if the assembly isn't
+            // local. For now we assume it is.
+            return Path.GetDirectoryName(uncPath.LocalPath);
         }
 
         private static void CreateTempFile(string path)
@@ -181,7 +197,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         directory),
                     directory),
                 Is.EquivalentTo(
-                    new string[0]));
+                    Array.Empty<string>()));
             Assert.That(
                 PathUtilities.IncludedPaths(
                     string.Format(
@@ -270,7 +286,7 @@ namespace NBuildKit.MsBuild.Tasks.Core.FileSystem
                         directory),
                     directory),
                 Is.EquivalentTo(
-                    new string[0]));
+                    Array.Empty<string>()));
             Assert.That(
                 PathUtilities.IncludedPaths(
                     string.Format(

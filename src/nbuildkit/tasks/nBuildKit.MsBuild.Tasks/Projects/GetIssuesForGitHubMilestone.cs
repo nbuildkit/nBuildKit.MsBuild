@@ -195,7 +195,7 @@ namespace NBuildKit.MsBuild.Tasks.Projects
                     milestones = (List<Milestone>)serializer.ReadObject(ms);
                 }
 
-                milestone = milestones.Find(m => m.title != null && m.title.Equals(name));
+                milestone = milestones.Find(m => m.title != null && m.title.Equals(name, StringComparison.OrdinalIgnoreCase));
             }
 
             return milestone;
@@ -244,6 +244,10 @@ namespace NBuildKit.MsBuild.Tasks.Projects
         /// Gets or sets the collection containing all the issue information.
         /// </summary>
         [Output]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Issues
         {
             get;

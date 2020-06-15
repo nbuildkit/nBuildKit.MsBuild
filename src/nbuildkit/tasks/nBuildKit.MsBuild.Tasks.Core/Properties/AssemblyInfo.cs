@@ -6,11 +6,9 @@
 //-----------------------------------------------------------------------
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
-using Nuclei.Build;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -22,8 +20,8 @@ using Nuclei.Build;
 // Resources
 [assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.MainAssembly)]
 
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCompany("nbuildkit")]
+[assembly: AssemblyCopyright("Copyright (c) - nbuildkit 2014 - 2019. All rights reserved.")]
 
 [assembly: AssemblyCulture("")]
 
@@ -40,7 +38,7 @@ using Nuclei.Build;
 // Indicate that the assembly is CLS compliant.
 [assembly: CLSCompliant(true)]
 
-[assembly: AssemblyConfiguration("Release")]
+[assembly: AssemblyConfiguration("")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -53,15 +51,5 @@ using Nuclei.Build;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0.0")]
-
-// The time the assembly was build
-[assembly: AssemblyBuildTime(buildTime: "1900-01-01T00:00:00.0000000+00:00")]
-
-// The version from which the assembly was build
-[module: SuppressMessage(
-    "Microsoft.Usage",
-    "CA2243:AttributeStringLiteralsShouldParseCorrectly",
-    Justification = "It's a VCS revision, not a version")]
-[assembly: AssemblyBuildInformation(buildNumber: 0, versionControlInformation: "1234567890123456789012345678901234567890")]
+[assembly: AssemblyFileVersion("1.0.2.51")]
+[assembly: AssemblyInformationalVersion("1.0.2-nunit2.1+51")]

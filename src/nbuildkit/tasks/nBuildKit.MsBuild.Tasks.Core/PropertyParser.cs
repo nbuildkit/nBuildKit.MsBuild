@@ -44,7 +44,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
             MessageId = "4",
             Justification = "finalPropertiesTable is not an argument, it's an out variable that is initialized.")]
         public static bool GetTableWithEscaping(
-            TaskLoggingHelper log,
+            Core.ILogger log,
             string parameterName,
             string syntaxName,
             IEnumerable<string> propertyNameValues,
@@ -55,7 +55,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
             if (propertyNameValues != null)
             {
                 finalPropertiesTable = new Hashtable(StringComparer.OrdinalIgnoreCase);
-                List<PropertyNameValuePair> finalPropertiesList = new List<PropertyNameValuePair>();
+                var finalPropertiesList = new List<PropertyNameValuePair>();
 
                 // Loop through the array.  Each string in the array should be of the form:
                 //          MyPropName=MyPropValue
@@ -80,7 +80,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
                             // No property name?  That's no good to us.
                             if (log != null)
                             {
-                                log.LogErrorWithCodeFromResources("General.InvalidPropertyError", syntaxName, propertyNameValueString);
+                                log.LogError("General.InvalidPropertyError", syntaxName, propertyNameValueString);
                             }
 
                             return false;
@@ -126,7 +126,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
                             // No equals sign in the very first property?  That's a problem.
                             if (log != null)
                             {
-                                log.LogErrorWithCodeFromResources("General.InvalidPropertyError", syntaxName, propertyNameValueString);
+                                log.LogError("General.InvalidPropertyError", syntaxName, propertyNameValueString);
                             }
 
                             return false;
@@ -138,7 +138,7 @@ namespace NBuildKit.MsBuild.Tasks.Core
                 // needs to pass onto the engine.
                 if (log != null)
                 {
-                    log.LogMessageFromText(parameterName, MessageImportance.Low);
+                    log.LogMessage(MessageImportance.Low, parameterName);
                 }
 
                 foreach (PropertyNameValuePair propertyNameValuePair in finalPropertiesList)
@@ -147,13 +147,13 @@ namespace NBuildKit.MsBuild.Tasks.Core
                     finalPropertiesTable[propertyNameValuePair.Name] = propertyValue;
                     if (log != null)
                     {
-                        log.LogMessageFromText(
+                        log.LogMessage(
+                            MessageImportance.Low,
                             string.Format(
                                 CultureInfo.InvariantCulture,
                                 "  {0}={1}",
                                 propertyNameValuePair.Name,
-                                propertyValue),
-                            MessageImportance.Low);
+                                propertyValue));
                     }
                 }
             }

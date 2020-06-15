@@ -6,12 +6,8 @@
 //-----------------------------------------------------------------------
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using Nuclei.Diagnostics.Logging;
-
-using ILogger = Nuclei.Diagnostics.Logging.ILogger;
 
 namespace NBuildKit.MsBuild.Tasks.Core
 {
@@ -21,8 +17,6 @@ namespace NBuildKit.MsBuild.Tasks.Core
     public sealed class MsBuildLogger : ILogger
     {
         private readonly TaskLoggingHelper _logger;
-
-        private bool disposedValue = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MsBuildLogger"/> class.
@@ -35,121 +29,31 @@ namespace NBuildKit.MsBuild.Tasks.Core
         {
             if (logger == null)
             {
-                throw new ArgumentNullException("logger");
+                throw new ArgumentNullException(nameof(logger));
             }
 
             _logger = logger;
         }
 
         /// <summary>
-        /// Stops the logger and ensures that all log messages have been
-        /// saved to the log.
+        /// Logs the specified error.
         /// </summary>
-        public void Close()
+        /// <param name="format">The message format.</param>
+        /// <param name="arguments">The message arguments.</param>
+        public void LogError(string format, params object[] arguments)
         {
-            // Do nothing. MsBuild will kill the logger.
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        /// <summary>
-        ///  Performs application-defined tasks associated with freeing, releasing, or
-        ///  resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        /// <summary>
-        /// Gets or sets the current <see cref="LevelToLog"/>.
-        /// </summary>
-        public LevelToLog Level
-        {
-            get;
-            set;
+            _logger.LogError(format, arguments);
         }
 
         /// <summary>
         /// Logs the specified message.
         /// </summary>
-        /// <param name="message">The message.</param>
-        [SuppressMessage(
-            "Microsoft.Design",
-            "CA1062:Validate arguments of public methods",
-            MessageId = "0",
-            Justification = "The 'ShouldLog' method validates the message.")]
-        public void Log(LogMessage message)
+        /// <param name="importance">The message importance.</param>
+        /// <param name="format">The message format.</param>
+        /// <param name="arguments">The message arguments.</param>
+        public void LogMessage(MessageImportance importance, string format, params object[] arguments)
         {
-            if (!ShouldLog(message))
-            {
-                return;
-            }
-
-            switch (message.Level)
-            {
-                case LevelToLog.Trace:
-                    _logger.LogMessage(MessageImportance.Low, message.Text, message.FormatParameters);
-                    break;
-                case LevelToLog.Debug:
-                    _logger.LogMessage(MessageImportance.Low, message.Text, message.FormatParameters);
-                    break;
-                case LevelToLog.Info:
-                    _logger.LogMessage(MessageImportance.Normal, message.Text, message.FormatParameters);
-                    break;
-                case LevelToLog.Warn:
-                    _logger.LogWarning(message.Text, message.FormatParameters);
-                    break;
-                case LevelToLog.Error:
-                    _logger.LogError(message.Text, message.FormatParameters);
-                    break;
-                case LevelToLog.Fatal:
-                    _logger.LogError(message.Text, message.FormatParameters);
-                    break;
-                case LevelToLog.None:
-                    break;
-                default:
-                    _logger.LogMessage(MessageImportance.Normal, message.Text, message.FormatParameters);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Indicates if a message will be written to the log file based on the
-        /// current log level and the level of the message.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns>
-        /// <see langword="true" /> if the message will be logged; otherwise, <see langword="false" />.
-        /// </returns>
-        public bool ShouldLog(LogMessage message)
-        {
-            if (Level == LevelToLog.None)
-            {
-                return false;
-            }
-
-            if (message == null)
-            {
-                return false;
-            }
-
-            if (message.Level == LevelToLog.None)
-            {
-                return false;
-            }
-
-            return message.Level >= Level;
+            _logger.LogMessage(importance, format, arguments);
         }
     }
 }

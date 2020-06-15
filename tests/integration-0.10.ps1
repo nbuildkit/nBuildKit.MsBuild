@@ -296,7 +296,8 @@ foreach($testPair in $tests)
                 -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
                 -target 'build' `
                 -properties $msBuildProperties `
-                -logPath (Join-Path $logLocation "integration-0.10.0.1.$($testId).build.log")
+                -logPath (Join-Path $logLocation "integration-0.10.0.1.$($testId).build.log") `
+                -Verbose
 
             $hasBuild = ($exitCode -eq 0)
             It 'and completes with a zero exit code' {
@@ -389,7 +390,8 @@ foreach($testPair in $tests)
                 -scriptToExecute (Join-Path $testWorkspaceLocation 'entrypoint.msbuild') `
                 -target 'deploy' `
                 -properties $msBuildProperties `
-                -logPath (Join-Path $logLocation "integration-0.10.0.1.$($testId).deploy.log")
+                -logPath (Join-Path $logLocation "integration-0.10.0.1.$($testId).deploy.log") `
+                -Verbose
 
             $hasBuild = ($exitCode -eq 0)
             It 'and completes with a zero exit code' {

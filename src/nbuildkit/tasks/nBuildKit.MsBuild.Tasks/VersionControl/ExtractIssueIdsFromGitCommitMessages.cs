@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -87,6 +88,10 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
         /// Gets or sets the collection containing the issue IDs which were extracted from the set of unmerged commits.
         /// </summary>
         [Output]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] IssueIds
         {
             get;
@@ -122,7 +127,7 @@ namespace NBuildKit.MsBuild.Tasks.VersionControl
                     "branch",
                 });
             var hasMergeTarget = localBranchesAsText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(t => t.Contains(MergeTargetBranch))
+                .Where(t => t.TrimStart(new[] { '*' }).Trim().Equals(MergeTargetBranch, StringComparison.Ordinal))
                 .Any();
 
             // If the MergeTargetBranch doesn't exist, create it in the same location as the tracking branch (which should exist).

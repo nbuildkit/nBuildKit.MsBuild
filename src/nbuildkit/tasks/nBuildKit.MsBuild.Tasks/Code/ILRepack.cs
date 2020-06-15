@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
@@ -19,6 +20,37 @@ namespace NBuildKit.MsBuild.Tasks.Code
     /// </summary>
     public sealed class ILRepack : CommandLineToolTask
     {
+        private static Verbosity ToVerbosity(string verbosity)
+        {
+            if (string.Equals(verbosity, "q", StringComparison.OrdinalIgnoreCase) || string.Equals(verbosity, "quiet", StringComparison.OrdinalIgnoreCase))
+            {
+                return Verbosity.Quiet;
+            }
+
+            if (string.Equals(verbosity, "m", StringComparison.OrdinalIgnoreCase) || string.Equals(verbosity, "minimal", StringComparison.OrdinalIgnoreCase))
+            {
+                return Verbosity.Minimal;
+            }
+
+            if (string.Equals(verbosity, "n", StringComparison.OrdinalIgnoreCase) || string.Equals(verbosity, "normal", StringComparison.OrdinalIgnoreCase))
+            {
+                return Verbosity.Normal;
+            }
+
+            if (string.Equals(verbosity, "d", StringComparison.OrdinalIgnoreCase) || string.Equals(verbosity, "detailed", StringComparison.OrdinalIgnoreCase))
+            {
+                return Verbosity.Detailed;
+            }
+
+            if (string.Equals(verbosity, "diag", StringComparison.OrdinalIgnoreCase) || string.Equals(verbosity, "diagnostic", StringComparison.OrdinalIgnoreCase))
+            {
+                return Verbosity.Diagnostic;
+            }
+
+            // Unknown verbosity. Just assume normal
+            return Verbosity.Normal;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ILRepack"/> class.
         /// </summary>
@@ -40,6 +72,10 @@ namespace NBuildKit.MsBuild.Tasks.Code
         /// Gets or sets the collection of assemblies that should be merged into the primary assembly.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] AssembliesToMerge
         {
             get;
@@ -55,8 +91,8 @@ namespace NBuildKit.MsBuild.Tasks.Code
                 arguments.Add("/internalize ");
                 arguments.Add("/wildcards ");
 
-                var verbosity = MsBuildLog.ToVerbosity(VerbosityForCurrentMsBuildInstance());
-                if (verbosity > MsBuildLog.Verbosity.Normal)
+                var verbosity = ToVerbosity(VerbosityForCurrentMsBuildInstance());
+                if (verbosity > Verbosity.Normal)
                 {
                     arguments.Add("/verbose ");
                 }
@@ -200,6 +236,18 @@ namespace NBuildKit.MsBuild.Tasks.Code
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Defines the verbosity levels for MsBuild.
+        /// </summary>
+        private enum Verbosity
+        {
+            Quiet = 0,
+            Minimal = 1,
+            Normal = 2,
+            Detailed = 4,
+            Diagnostic = 8,
         }
     }
 }

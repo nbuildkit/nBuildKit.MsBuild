@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using NBuildKit.MsBuild.Tasks.Core;
 
@@ -20,9 +21,9 @@ namespace NBuildKit.MsBuild.Tasks.Templating
         /// <inheritdoc/>
         public override bool Execute()
         {
-            const string MetadataValueTag = "ReplacementValue";
+            const string MetadataReplacementValueTag = "ReplacementValue";
 
-            var toReplace = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var tokenPairs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             if (Tokens != null)
             {
                 ITaskItem[] processedTokens = Tokens;
@@ -31,13 +32,23 @@ namespace NBuildKit.MsBuild.Tasks.Templating
                     ITaskItem taskItem = processedTokens[i];
                     if (!string.IsNullOrEmpty(taskItem.ItemSpec))
                     {
-                        toReplace.Add(taskItem.ItemSpec, taskItem.GetMetadata(MetadataValueTag));
+                        if (!tokenPairs.ContainsKey(taskItem.ItemSpec))
+                        {
+                            tokenPairs.Add(taskItem.ItemSpec, taskItem.GetMetadata(MetadataReplacementValueTag));
+                        }
+                        else
+                        {
+                            Log.LogError(
+                                "A template token with the name {0} already exists in the list. Was going to add token: {0} - replacement value: {1}",
+                                taskItem.ItemSpec,
+                                taskItem.GetMetadata(MetadataReplacementValueTag));
+                        }
                     }
                 }
             }
 
             Output = Input;
-            foreach (var pair in toReplace)
+            foreach (var pair in tokenPairs)
             {
                 if (Output.Contains(pair.Key))
                 {
@@ -73,6 +84,10 @@ namespace NBuildKit.MsBuild.Tasks.Templating
         /// Gets or sets the collection of tokens.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Tokens
         {
             get;

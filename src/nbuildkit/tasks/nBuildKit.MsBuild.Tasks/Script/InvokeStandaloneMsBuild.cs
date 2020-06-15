@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,6 @@ using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using NBuildKit.MsBuild.Tasks.Core;
-using Nuclei;
 
 namespace NBuildKit.MsBuild.Tasks.Script
 {
@@ -126,8 +126,20 @@ namespace NBuildKit.MsBuild.Tasks.Script
                         </targetoutput>
                     </msbuildresults>
                 */
-                var doc = new XmlDocument();
-                doc.Load(targetOutputPath);
+                var doc = new XmlDocument
+                {
+                    XmlResolver = null,
+                };
+
+                var reader = new XmlTextReader(new StreamReader(targetOutputPath))
+                {
+                    DtdProcessing = DtdProcessing.Prohibit,
+                };
+                using (reader)
+                {
+                    doc.Load(reader);
+                }
+
                 var nodes = doc.SelectNodes("/msbuildresults/targetoutput");
                 foreach (var node in nodes)
                 {
@@ -156,14 +168,14 @@ namespace NBuildKit.MsBuild.Tasks.Script
 
         private void GenerateIntermediateMsBuildScript(string path, string targetOutputPath)
         {
-            var text = EmbeddedResourceExtracter.LoadEmbeddedTextFile(Assembly.GetExecutingAssembly(), "NBuildKit.MsBuild.Tasks.Script.MsBuildTemplate.xml");
+            var text = EmbeddedResourceExtracter.LoadEmbeddedTextFile(Assembly.GetExecutingAssembly(), "nBuildKit.MsBuild.Tasks.Script.MsBuildTemplate.xml");
             text = text.Replace("${TOOLS_VERSION}$", ToolsVersion);
             text = text.Replace("${OUTPUT_PATH}$", targetOutputPath);
             text = text.Replace("${PROJECTS}$", string.Join(";", Projects.Select(p => GetAbsolutePath(p))));
             text = text.Replace("${TARGETS}$", !string.IsNullOrEmpty(Targets) ? Targets : string.Empty);
-            text = text.Replace("${RUN_TARGETS_SEPARATELY}$", RunEachTargetSeparately.ToString());
-            text = text.Replace("${SKIP_NONEXISTANT_PROJECTS}$", SkipNonexistentProjects.ToString());
-            text = text.Replace("${STOP_ON_FIRST_FAILURE}$", StopOnFirstFailure.ToString());
+            text = text.Replace("${RUN_TARGETS_SEPARATELY}$", RunEachTargetSeparately.ToString(CultureInfo.InvariantCulture));
+            text = text.Replace("${SKIP_NONEXISTANT_PROJECTS}$", SkipNonexistentProjects.ToString(CultureInfo.InvariantCulture));
+            text = text.Replace("${STOP_ON_FIRST_FAILURE}$", StopOnFirstFailure.ToString(CultureInfo.InvariantCulture));
 
             var dir = Path.GetDirectoryName(path);
             if (!Directory.Exists(dir))
@@ -190,6 +202,10 @@ namespace NBuildKit.MsBuild.Tasks.Script
         /// build all the project files, the outputs of all the targets are collected into one array.
         /// </summary>
         [Output]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] TargetOutputs
         {
             get;

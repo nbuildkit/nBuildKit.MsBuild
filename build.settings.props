@@ -10,10 +10,10 @@
         <!-- <RedirectBuildOutputToSingleFolder>false</RedirectBuildOutputToSingleFolder> -->
 
         <!-- The build configuration (debug / release / ...) that will be used to run all the unit tests and the static verification on -->
-        <TestConfiguration>Release</TestConfiguration>
+        <TestConfiguration>Debug</TestConfiguration>
 
         <!-- The build configuration (debug / release / ..) that will be used to create the binaries that should be deployed -->
-        <ProductionConfiguration>Deploy</ProductionConfiguration>
+        <ProductionConfiguration>Release</ProductionConfiguration>
 
         <!-- The platform for which the binaries will be build -->
         <!-- <Platform>Any CPU</Platform> -->
@@ -93,26 +93,6 @@
             <HashFile></HashFile>
             <SignatureFile></SignatureFile>
         </ArchiveFilesToCopy>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - UPDATE ASSEMBLY INFO FILES ****
-    -->
-    <!--
-        The list of all assembly info files that should be updated with version and copyright information.
-
-        For additional information see the ShouldGenerateAssemblyXXXX properties below.
-    -->
-    <ItemGroup Condition=" '$(ShouldLoadAssemblyInfoFilesToUpdate)' == 'true' ">
-        <!--
-        <AssemblyInfoFilesToUpdate
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\**\AssemblyInfo.cs" />
-        <AssemblyInfoFilesToUpdate
-            Condition=" '$(DirSrc)' != '' "
-            Include="$(DirSrc)\**\AssemblyInfo.vb" />
         -->
     </ItemGroup>
 
@@ -283,7 +263,7 @@
             Note for this file to compile successfully a reference to the Nuclei.Build assembly needs to be added.
             This assembly can be found on NuGet.org (http://www.nuget.org/packages/Nuclei.Build/)
         -->
-        <ShouldGenerateAssemblyBuildInfo>true</ShouldGenerateAssemblyBuildInfo>
+        <ShouldGenerateAssemblyBuildInfo>false</ShouldGenerateAssemblyBuildInfo>
     </PropertyGroup>
 
     <!--
@@ -458,23 +438,24 @@
         <!--
             The full path to the XML file that contains the custom dictionary for FxCop.
         -->
-        <FxCopCustomDictionary>$(DirSrc)\nbuildkit\tasks\customdictionary.xml</FxCopCustomDictionary>
+        <!-- <FxCopCustomDictionary>$(DirSrc)\nbuildkit\tasks\customdictionary.xml</FxCopCustomDictionary> -->
 
         <!--
             The culture that FxCop should use for the spelling rules.
         -->
-        <FxCopCulture>en-US</FxCopCulture>
+        <!-- <FxCopCulture>en-US</FxCopCulture> -->
 
         <!--
             A flag that indicates whether any fxcop analysis errors should be marked as errors or as warnings. If FxCop analysis
             errors are marked as errors then any analysis error will stop the build.
         -->
-        <FxCopWarningsAsErrors>true</FxCopWarningsAsErrors>
+        <!-- <FxCopWarningsAsErrors>true</FxCopWarningsAsErrors> -->
     </PropertyGroup>
     <ItemGroup Condition=" '$(ShouldLoadFxCopFiles)' == 'true' ">
         <!--
             The locations of the files that should be analyzed by FxCop.
         -->
+        <!--
         <FxCopFiles
             Condition=" '$(DirSrc)' != '' "
             Include="$(DirSrc)\nbuildkit\tasks\**\bin\$(Configuration)\nBuildKit*.dll">
@@ -496,6 +477,7 @@
             <RuleSet>$(DirSrc)\tools\VSCoverageToReportGenerator\default.ruleset</RuleSet>
             <TargetFramework>4.5</TargetFramework>
         </FxCopFiles>
+        -->
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadFxCopReferenceFiles)' == 'true' ">
         <!--
@@ -865,13 +847,13 @@
             </PostSteps>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute Include="$(BuildStepsPrepareAssemblyInfo)">
+        <BuildStepsToExecute Include="$(BuildStepsPrepareUpdateProjectInfo)">
             <Properties>
             </Properties>
             <Groups>
                 prepare;
                 prepare.generate;
-                prepare.generate.assemblyinfo;
+                prepare.generate.projectinfo;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -920,7 +902,8 @@
             </PostSteps>
         </BuildStepsToExecute>
 
-        <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
+        <BuildStepsToExecute
+            Include="$(BuildStepsUnitTestNUnitV3)">
             <Properties>
                 Configuration=$(TestConfiguration);
                 Platform=$(Platform)
@@ -929,6 +912,7 @@
                 test;
                 test.unittest;
                 test.unittest.nunit;
+                test.unittest.nunit.v3;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -968,6 +952,7 @@
         </BuildStepsToExecute>
         -->
 
+        <!--
         <BuildStepsToExecute Include="$(BuildStepsAnalyzeBinariesFxCop)">
             <Properties>
                 Configuration=$(TestConfiguration);
@@ -983,6 +968,7 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
+        -->
 
         <BuildStepsToExecute Include="$(BuildStepsBuildILMerge)">
             <Properties>
@@ -1116,7 +1102,7 @@
             The full path and version to the ILRepack command line executable. If not defined the packages directory is searched.
         -->
         <!--<ToolsExternalILRepackPath>UNDEFINED</ToolsExternalILRepackPath>
-        <ToolsExternalILRepackVersion>2.0.12</ToolsExternalILRepackVersion>-->
+        <ToolsExternalILRepackVersion>2.0.18</ToolsExternalILRepackVersion>-->
         <!--
             The full path to the MsTest command line executable.
         -->
@@ -1127,23 +1113,26 @@
         <!--
             The full path and version to the nUnit command line executable. If not defined the packages directory is searched.
         -->
-        <!-- <ToolsExternalNUnitConsolePath>UNDEFINED</ToolsExternalNUnitConsolePath>
-        <ToolsExternalNUnitConsoleVersion>2.6.4</ToolsExternalNUnitConsoleVersion> -->
+        <!-- <ToolsExternalNUnitV2ConsolePath>UNDEFINED</ToolsExternalNUnitV2ConsolePath>
+        <ToolsExternalNUnitV2ConsoleVersion>2.7.0</ToolsExternalNUnitV2ConsoleVersion> -->
+
+        <!-- <ToolsExternalNUnitV3ConsolePath>UNDEFINED</ToolsExternalNUnitV3ConsolePath>
+        <ToolsExternalNUnitV3ConsoleVersion>3.10.0</ToolsExternalNUnitV3ConsoleVersion> -->
         <!--
             The full path and version to the OpenCover command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalOpenCoverPath>UNDEFINED</ToolsExternalOpenCoverPath>
-        <ToolsExternalOpenCoverVersion>4.6.519</ToolsExternalOpenCoverVersion>-->
+        <ToolsExternalOpenCoverVersion>4.7.922</ToolsExternalOpenCoverVersion>-->
         <!--
             The full path and version of the OpenCoverToCobertura converter command line executable. If not defined the packages directory is searched.
         -->
         <!--<ToolsExternalOpenCoverToCoberturaConverterPath>UNDEFINED</ToolsExternalOpenCoverToCoberturaConverterPath>
-        <ToolsExternalOpenCoverToCoberturaConverterVersion>0.2.4</ToolsExternalOpenCoverToCoberturaConverterVersion>-->
+        <ToolsExternalOpenCoverToCoberturaConverterVersion>0.3.4</ToolsExternalOpenCoverToCoberturaConverterVersion>-->
         <!--
             The full path and version to the ReportGenerator command line executable. If not defined the packages directory is searched.
         -->
         <!-- <ToolsExternalReportGeneratorPath>UNDEFINED</ToolsExternalReportGeneratorPath>
-        <ToolsExternalReportGeneratorVersion>2.4.4</ToolsExternalReportGeneratorVersion>-->
+        <ToolsExternalReportGeneratorVersion>4.1.9</ToolsExternalReportGeneratorVersion>-->
         <!--
             The full path to the sn.exe command line executable.
         -->

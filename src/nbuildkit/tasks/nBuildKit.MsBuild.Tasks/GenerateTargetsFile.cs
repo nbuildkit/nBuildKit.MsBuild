@@ -16,9 +16,8 @@ using System.Reflection;
 using System.Xml;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NBuildKit.MsBuild.Tasks.AppDomains;
 using NBuildKit.MsBuild.Tasks.Core;
-using NBuildKit.MsBuild.Tasks.Nuclei.AppDomains;
-using Nuclei;
 
 namespace NBuildKit.MsBuild.Tasks
 {
@@ -77,7 +76,7 @@ namespace NBuildKit.MsBuild.Tasks
                     new List<string>
                     {
                         // the nBuildKit task assembly
-                        Assembly.GetExecutingAssembly().LocalFilePath(),
+                        AppDomainBuilder.LocalFilePath(Assembly.GetExecutingAssembly()),
                     },
                     new List<string>
                     {
@@ -176,7 +175,10 @@ namespace NBuildKit.MsBuild.Tasks
                 </Project>
             */
 
-            var doc = new XmlDocument();
+            var doc = new XmlDocument
+            {
+                XmlResolver = null,
+            };
 
             var xmlDeclaration = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
             var root = doc.DocumentElement;
@@ -315,7 +317,7 @@ namespace NBuildKit.MsBuild.Tasks
                     return null;
                 }
 
-                string fileName = Path.GetFileNameWithoutExtension(file);
+                var fileName = Path.GetFileNameWithoutExtension(file);
                 try
                 {
                     return Assembly.Load(fileName);
@@ -384,7 +386,7 @@ namespace NBuildKit.MsBuild.Tasks
             {
                 if (assemblyFileToScan == null)
                 {
-                    throw new ArgumentNullException("assemblyFileToScan");
+                    throw new ArgumentNullException(nameof(assemblyFileToScan));
                 }
 
                 try
@@ -415,6 +417,10 @@ namespace NBuildKit.MsBuild.Tasks
             }
         }
 
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1812:AvoidUninstantiatedInternalClasses",
+            Justification = "This class is instantiated via AppDomain.CreateInstanceAndUnwrap.")]
         private sealed class RemoteAssemblyScannerLoader : MarshalByRefObject
         {
             [SuppressMessage(

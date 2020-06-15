@@ -43,8 +43,18 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
                     {
                         foreach (var relativePath in list)
                         {
-                            Log.LogMessage(MessageImportance.Low, string.Format(CultureInfo.InvariantCulture, "Adding: {0}. Storing as: {1}", filePath, relativePath));
-                            var archiveEntry = archive.CreateEntry(relativePath);
+                            // According to the ZIP specification 'directories' in ZIP files should be
+                            // separated by forward slashes (/), not backslashes (\). On a Windows OS
+                            // it doesn't matter but on a Unix OS it does.
+                            var path = relativePath.Replace("\\", "/");
+                            Log.LogMessage(
+                                MessageImportance.Low,
+                                string.Format(
+                                    CultureInfo.InvariantCulture,
+                                    "Adding: {0}. Storing as: {1}",
+                                    filePath,
+                                    path));
+                            var archiveEntry = archive.CreateEntry(path);
 
                             using (var zipStream = archiveEntry.Open())
                             {
@@ -82,8 +92,20 @@ namespace NBuildKit.MsBuild.Tasks.Packaging
 
             var workingDirectory = GetAbsolutePath(WorkingDirectory);
 
-            var xmlDoc = new XmlDocument();
-            xmlDoc.Load(GetAbsolutePath(File));
+            var xmlDoc = new XmlDocument
+            {
+                XmlResolver = null,
+            };
+
+            var reader = new XmlTextReader(new StreamReader(GetAbsolutePath(File)))
+            {
+                DtdProcessing = DtdProcessing.Prohibit,
+            };
+            using (reader)
+            {
+                xmlDoc.Load(reader);
+            }
+
             var name = xmlDoc.SelectSingleNode("//archive/name/text()").InnerText;
             var outputFilePath = Path.Combine(GetAbsolutePath(OutputDirectory), string.Format(CultureInfo.InvariantCulture, "{0}.zip", name));
 

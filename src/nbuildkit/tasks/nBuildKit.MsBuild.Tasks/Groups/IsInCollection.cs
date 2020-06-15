@@ -26,6 +26,10 @@ namespace NBuildKit.MsBuild.Tasks.Groups
         /// Gets or sets the collection.
         /// </summary>
         [Required]
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Collection
         {
             get;
@@ -98,6 +102,10 @@ namespace NBuildKit.MsBuild.Tasks.Groups
         /// <summary>
         /// Gets or sets a collection of items for which the collection should be checked.
         /// </summary>
+        [SuppressMessage(
+            "Microsoft.Performance",
+            "CA1819:PropertiesShouldNotReturnArrays",
+            Justification = "MsBuild does not understand collections")]
         public ITaskItem[] Items
         {
             get;

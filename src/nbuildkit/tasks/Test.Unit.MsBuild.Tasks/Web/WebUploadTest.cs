@@ -13,7 +13,6 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Moq;
 using NBuildKit.MsBuild.Tasks.Tests;
-using Nuclei;
 using NUnit.Framework;
 
 namespace NBuildKit.MsBuild.Tasks.Web
@@ -41,7 +40,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
                             Assert.AreEqual(new Uri(targetUri + "/" + Path.GetFileName(path)), uri);
                             Assert.AreEqual(fileToUpload, path);
                         })
-                    .Returns(new byte[0])
+                    .Returns(Array.Empty<byte>())
                     .Verifiable();
             }
 
@@ -136,7 +135,7 @@ namespace NBuildKit.MsBuild.Tasks.Web
 
             var task = new WebUpload(builder);
             task.BuildEngine = BuildEngine.Object;
-            task.Items = new ITaskItem[0];
+            task.Items = Array.Empty<ITaskItem>();
             task.Source = new TaskItem("http://www.microsoft.com/default.aspx");
             task.UseDefaultCredentials = false;
 

@@ -100,7 +100,7 @@
         <!--
             A flag that indicates whether all NuGet packages should be restored to a directory that includes the package version or not.
         -->
-        <ShouldRestoreNuGetPackagesWithoutVersionInPath Condition=" '$(ShouldRestoreNuGetPackagesWithoutVersionInPath)' == '' ">true</ShouldRestoreNuGetPackagesWithoutVersionInPath>
+        <ShouldRestoreNuGetPackagesWithoutVersionInPath Condition=" '$(ShouldRestoreNuGetPackagesWithoutVersionInPath)' == '' ">false</ShouldRestoreNuGetPackagesWithoutVersionInPath>
     </PropertyGroup>
 
     <!-- Overrides for the project specific properties -->
@@ -522,9 +522,14 @@
         <!--
             The full path to the Visual Studio installation directory
         -->
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools')">C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise')">C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise</ToolsExternalVisualStudioDir>
+        <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional')">C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional</ToolsExternalVisualStudioDir>
+
         <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools')">C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools</ToolsExternalVisualStudioDir>
         <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise')">C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise</ToolsExternalVisualStudioDir>
         <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional')">C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional</ToolsExternalVisualStudioDir>
+
         <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 14.0')">C:\Program Files (x86)\Microsoft Visual Studio 14.0</ToolsExternalVisualStudioDir>
         <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 12.0')">C:\Program Files (x86)\Microsoft Visual Studio 12.0</ToolsExternalVisualStudioDir>
         <ToolsExternalVisualStudioDir Condition=" '$(ToolsExternalVisualStudioDir)' == '' AND Exists('C:\Program Files (x86)\Microsoft Visual Studio 11.0')">C:\Program Files (x86)\Microsoft Visual Studio 11.0</ToolsExternalVisualStudioDir>
@@ -544,7 +549,7 @@
             The full path and version of the GitVersion command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalGitVersionPath Condition=" '$(ToolsExternalGitVersionPath)' == '' ">UNDEFINED</ToolsExternalGitVersionPath>
-        <ToolsExternalGitVersionVersion Condition=" '$(ToolsExternalGitVersionVersion)' == '' ">4.0.0-beta0012</ToolsExternalGitVersionVersion>
+        <ToolsExternalGitVersionVersion Condition=" '$(ToolsExternalGitVersionVersion)' == '' ">5.1.2</ToolsExternalGitVersionVersion>
 
         <!--
             The full path and version of the GPG command line executable. If not defined the packages directory is searched.
@@ -579,7 +584,7 @@
             The full path to the Pester module. If not defined the packages directory is searched.
         -->
         <ToolsExternalPesterPath Condition=" '$(ToolsExternalPesterPath)' == '' ">UNDEFINED</ToolsExternalPesterPath>
-        <ToolsExternalPesterVersion Condition=" '$(ToolsExternalPesterVersion)' == '' ">3.4.3</ToolsExternalPesterVersion>
+        <ToolsExternalPesterVersion Condition=" '$(ToolsExternalPesterVersion)' == '' ">4.9.0</ToolsExternalPesterVersion>
 
         <!--
             The full path to the Powershell command line executable.
